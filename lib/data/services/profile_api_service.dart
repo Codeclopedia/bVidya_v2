@@ -1,0 +1,39 @@
+import 'package:bvidya/data/models/response/base_response.dart';
+import 'package:dio/dio.dart';
+
+import '../../core/constants.dart';
+import '../network/dio_services.dart';
+
+class ProfileApiService {
+  static ProfileApiService instance = ProfileApiService._();
+
+  late Dio _dio;
+  ProfileApiService._() {
+    _dio = DioServices.instance.dio;
+  }
+
+  //Get
+  Future<BaseResponse> reportProblem(
+      String token, String module, String message) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    try {
+      final data = {
+        'module': module,
+        'message': message,
+      };
+
+      final response =
+          await _dio.post(baseUrlApi + ApiList.reportProblem, data: data);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+}
