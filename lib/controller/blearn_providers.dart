@@ -1,8 +1,8 @@
-import 'package:bvidya/data/models/models.dart';
-import 'package:bvidya/data/services/blearn_api_service.dart';
 
 import '../core/state.dart';
+import '../data/models/models.dart';
 import '../data/repository/blearn_repository.dart';
+import '../data/services/blearn_api_service.dart';
 
 final apiBLearnProvider = Provider<BLearnApiService>(
   (_) => BLearnApiService.instance,

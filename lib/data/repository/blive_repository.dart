@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:bvidya/data/models/response/blive/live_rtm_response.dart';
-
 import '../models/models.dart';
 import '../services/blive_api_services.dart';
 //
@@ -38,8 +36,8 @@ class BLiveRepository {
     }
   }
 
-  Future<LiveClass?> getLiveClass(String id) async {
-    final result = await _api.getLiveClass(_authToken, id);
+  Future<LiveClass?> getLiveClass(String broadcastStreamId) async {
+    final result = await _api.getLiveClass(_authToken, broadcastStreamId);
     if (result.status == successfull) {
       return result.body?.liveClass;
     } else {

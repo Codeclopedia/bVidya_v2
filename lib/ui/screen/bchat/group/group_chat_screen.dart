@@ -1,5 +1,4 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -7,6 +6,7 @@ import '../../../../controller/bchat_providers.dart';
 import '../../../../core/constants.dart';
 import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
+import '../../../../core/utils.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../data/models/models.dart';
 import '../../../widgets.dart';

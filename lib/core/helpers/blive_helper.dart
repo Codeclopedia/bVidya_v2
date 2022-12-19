@@ -10,7 +10,7 @@ import '../utils.dart';
 Future joinBroadcast(
   BuildContext context,
   WidgetRef ref,
-  String broadcastId,
+  String broadcastStreamId,
 ) async {
   // if (!await _handleCameraAndMic(Permission.microphone)) {
   //   if (defaultTargetPlatform == TargetPlatform.android) {
@@ -27,7 +27,7 @@ Future joinBroadcast(
   showLoading(ref);
 
   final liveClass =
-      await ref.read(bLiveRepositoryProvider).getLiveClass(broadcastId);
+      await ref.read(bLiveRepositoryProvider).getLiveClass(broadcastStreamId);
   if (liveClass == null) {
     AppSnackbar.instance.error(context, 'Error fetching broadcast detail');
     hideLoading(ref);

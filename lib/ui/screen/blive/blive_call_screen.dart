@@ -1,4 +1,3 @@
-import 'package:bvidya/ui/screen/blearn/widget/common.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pip_view/pip_view.dart';
@@ -11,6 +10,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../../data/models/models.dart';
 import '../../widget/chat_input_box.dart';
 import '../../widget/rtm_chat_bubble.dart';
+import '../blearn/widget/common.dart';
 import 'blive_home_screen.dart';
 
 class BLiveClassScreen extends HookConsumerWidget {

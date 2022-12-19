@@ -1,7 +1,7 @@
-import 'package:bvidya/core/state.dart';
 
 import '../../../controller/blearn_providers.dart';
 import '../../../core/constants.dart';
+import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../widgets.dart';

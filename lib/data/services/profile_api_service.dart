@@ -1,7 +1,7 @@
-import 'package:bvidya/data/models/response/base_response.dart';
 import 'package:dio/dio.dart';
 
 import '../../core/constants.dart';
+import '../models/models.dart';
 import '../network/dio_services.dart';
 
 class ProfileApiService {

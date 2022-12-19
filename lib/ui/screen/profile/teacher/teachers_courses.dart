@@ -1,5 +1,4 @@
-import 'package:bvidya/core/constants.dart';
-
+import '../../../../core/constants/colors.dart';
 import '../../../../core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 

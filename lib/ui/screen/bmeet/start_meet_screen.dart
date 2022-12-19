@@ -1,10 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/helpers/bmeet_helper.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import '../../../controller/bmeet_providers.dart';
 import '../../../core/constants.dart';
+import '../../../core/helpers/bmeet_helper.dart';
 import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../core/utils.dart';

@@ -1,9 +1,9 @@
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/base_back_screen.dart';
 
 import '../../../../controller/profile_providers.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
+import '../../../base_back_screen.dart';
 import '../base_settings.dart';
 
 // String? options = S.current.bmeet;

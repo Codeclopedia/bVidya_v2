@@ -1,7 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/blive_provider.dart';
 import 'package:intl/intl.dart';
 
+import '../../controller/providers/blive_provider.dart';
 import '../ui_core.dart';
 
 bool shouldShowDateRTMSeparator(
