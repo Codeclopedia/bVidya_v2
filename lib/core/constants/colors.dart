@@ -96,6 +96,10 @@ class AppColors {
   static const Color descTextColor = Color(0xFF8D8D8D);
 
   static const Color cardWhite = Color(0xFFF5F5F5);
+
+  static const Color cardBackground = Color(0xFFFAFAFA);
+
+  static const Color cardBorder = Color(0xFF707070);
   //old colors
 
   // static const Color gray = Color(0xFF6C7B8A);

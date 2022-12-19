@@ -1,5 +1,3 @@
-import 'package:bvidya/ui/screen/profile/settings/report_problem_screen.dart';
-
 import '../data/models/models.dart';
 import 'constants.dart';
 import 'ui_core.dart';
@@ -27,6 +25,31 @@ class Routes {
         break;
       case RouteList.groups:
         screen = const GroupsScreen();
+        break;
+      case RouteList.createNewGroup:
+        screen = const CreateNewGroupScreen();
+        break;
+      case RouteList.newGroupContacts:
+        screen = const NewGroupContactsScreen();
+        break;
+      case RouteList.groupChatScreen:
+        if (settings.arguments is GroupModel) {
+          screen = GroupChatScreen(
+            model: settings.arguments as GroupModel,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
+      case RouteList.groupInfo:
+        if (settings.arguments is GroupModel) {
+          screen = GroupInfoScreen(
+            group: settings.arguments as GroupModel,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+
         break;
       case RouteList.chatScreen:
         if (settings.arguments is ConversationModel) {
@@ -79,7 +102,7 @@ class Routes {
         }
         break;
       case RouteList.bMeetJoin:
-        screen = JoinMeetScreen();
+        screen = const JoinMeetScreen();
         break;
       case RouteList.bMeetCall:
         if (settings.arguments is Map<String, dynamic>) {
@@ -119,7 +142,23 @@ class Routes {
 
       //Live
       case RouteList.bLive:
-        screen = BLiveHomeScreen();
+        screen = const BLiveHomeScreen();
+        break;
+      case RouteList.bLiveSchedule:
+        screen = ScheduleBLiveScreen();
+        break;
+      case RouteList.bLiveClass:
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          LiveRtmToken token = args['rtm_token'] as LiveRtmToken;
+          LiveClass liveClass = args['live_class'] as LiveClass;
+          int userId = args['user_id'] as int;
+          screen = BLiveClassScreen(
+              liveClass: liveClass, rtmToken: token, userId: userId);
+        } else {
+          screen = _parameterMissing();
+        }
+
         break;
 
       //bLearn

@@ -1,8 +1,9 @@
+import '../core/helpers/duration.dart';
 import '../core/state.dart';
-import '../core/utils/date_utils.dart';
 import '../data/models/models.dart';
 import '../data/repository/blive_repository.dart';
 import '../data/services/blive_api_services.dart';
+import 'providers/blive_provider.dart';
 
 final apiBLiveProvider = Provider<BLiveApiService>(
   (_) => BLiveApiService.instance,
@@ -18,17 +19,37 @@ final bLiveClassesListProvider =
   return ref.read(bLiveRepositoryProvider).getLiveClasses();
 });
 
+final selectedDateProvider =
+    StateProvider.autoDispose<DateTime>((_) => DateTime.now());
 
-final selectedDateProvider = StateProvider.autoDispose<DateTime>((_) => DateTime.now());
-
-
-final bLiveSelectedHistoryProvider = FutureProvider.autoDispose<List<LMSLiveClass>>((ref) async {
-  final meetings = ref.watch(bLiveClassesListProvider).valueOrNull;
-  if (meetings?.liveClasses?.isNotEmpty == true) {
+final bLiveSelectedHistoryProvider =
+    FutureProvider.autoDispose<List<LMSLiveClass>>((ref) async {
+  final liveClasses = ref.watch(bLiveClassesListProvider).valueOrNull;
+  if (liveClasses?.liveClasses?.isNotEmpty == true) {
     final date = ref.watch(selectedDateProvider);
-    // print('Filter list of Live Class of ${date.toString()} ');
-    final list = meetings?.liveClasses??[];
-    return list.where((item) => isSameDate(item.startsAt??'', date)).toList();
+    print('Filter list of Live Class of ${date.toString()} ');
+    // final list = meetings?.liveClasses ?? [];
+    // return list.where((item) => isSameDate(item.startsAt ?? '', date)).toList();
+    return liveClasses!.liveClasses!;
+  } else {
+    print('Empty List of live classes');
   }
   return [];
 });
+
+final bLiveCallTimerProvider =
+    StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
+  (_) => DurationNotifier(),
+);
+
+final bLiveMessageListProvider = StateNotifierProvider.autoDispose<
+    RTMChatMessageNotifier,
+    List<RTMMessageModel>>((ref) => RTMChatMessageNotifier());
+
+final bLiveCallChangeProvider =
+    ChangeNotifierProvider.autoDispose<BLiveProvider>((ref) => BLiveProvider());
+
+final bLiveChatVisible = StateProvider<bool>((ref) => false);
+
+// final bLiveFloatingVisible = StateProvider<bool>((ref) => false);
+

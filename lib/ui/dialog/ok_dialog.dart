@@ -22,7 +22,7 @@ import '../../core/ui_core.dart';
 //     );
 
 Future showOkDialog(BuildContext context, String title, String message,
-        {String? positiveButton, Future Function()? positiveAction}) =>
+        {bool? type, String? positiveButton, Function()? positiveAction}) =>
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -34,6 +34,7 @@ Future showOkDialog(BuildContext context, String title, String message,
           message: message,
           positiveButton: positiveButton,
           positiveAction: positiveAction,
+          type: type,
         ),
       ),
     );
@@ -41,6 +42,7 @@ Future showOkDialog(BuildContext context, String title, String message,
 class OkDialogContent extends StatelessWidget {
   final String title;
   final String message;
+  final bool? type;
   final String? positiveButton;
 
   final Function()? positiveAction;
@@ -50,6 +52,7 @@ class OkDialogContent extends StatelessWidget {
       required this.title,
       required this.message,
       this.positiveButton,
+      this.type,
       this.positiveAction})
       : super(key: key);
 
@@ -63,6 +66,11 @@ class OkDialogContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (type != null)
+            Image(
+                image: getImageProvider(type!
+                    ? 'assets/images/check.png'
+                    : 'assets/images/check.png')),
           Text(
             title,
             style: TextStyle(
@@ -89,9 +97,10 @@ class OkDialogContent extends StatelessWidget {
           Center(
             child: ElevatedButton(
               style: dialogElevatedButtonStyle,
-              onPressed: () async {
+              onPressed: () {
+                Navigator.pop(context);
                 if (positiveAction != null) {
-                  await positiveAction!();
+                  positiveAction!();
                 }
               },
               child: Text(positiveButton ?? S.current.btn_ok

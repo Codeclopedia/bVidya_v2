@@ -85,6 +85,8 @@
     "home_btx_new_message":"New Message",
     "home_btx_new_group":"New Group",
     "home_btx_groups":"Groups",
+    "grp_caption_participation":"Participants",
+    "grp_txt_add_participant":"Add Participants",
 
     "chat_input_hint":"Write your message",
 
@@ -98,6 +100,9 @@
     "pr_btx_block":"Block",
     "pr_btx_report":"Report Contact",
 
+    "grp_btx_clear":"Clear Chat",
+    "grp_btx_exit":"Exit Group",
+
     "atc_content":"Share Content",
     "atc_camera":"Camera",
     "atc_media":"Media",
@@ -106,6 +111,9 @@
     "atc_audio_desc":"Share audios",
     "atc_document":"Documents",
     "atc_document_desc":"Share your files",
+
+    "im_picker_camera_desc":"Take a picture from Camera",
+    "im_picker_gallery_desc":"Pick an image from Gallery",
 
 
     "blearn_explore":"Explore",
@@ -181,6 +189,7 @@
     "bmeet_invalid_end":"Meeting end time can't be before start time",
 
 
+    "blive_schedule_heading":"Schedule a Broadcast",
     "blive_txt_schedule":"Scheduled Broadcast",
     "blive_txt_start_title":"BroadCast ID or Link",
     "blive_txt_start_desc":"Enter Broadcast ID or Link Here.",
@@ -191,14 +200,17 @@
     "blive_txt_broadcast":"Broadcast",
     "blive_btx_join":"Join Broadcast",
 
-    "blive_caption_title":"Broadcast Title",
-    "blive_caption_desc":"Broadcast desc",
+    "blive_caption_title":"Broadcast title",
+    "blive_caption_desc":"Broadcast description",
     "blive_caption_date":"Broadcast Date",
+    "blive_caption_image":"Select an Image",
+
     "blive_caption_starttime":"Broadcast Time",
     "blive_hint_title":"Enter Your Broadcast Title",
     "blive_hint_desc":"Enter Your Broadcast Description",
-    "blive_hint_date":"Select Broadcast Date",
-    "blive_hint_time":"Broadcast Time",
+    "blive_hint_date":"Select Date",
+    "blive_hint_time":"Time",
+
 
     "blive_empty_title":"Broadcast title can't be emplty",
     "blive_invalid_title":"Broadcast title must contains at least 5 characters",
@@ -229,8 +241,16 @@
     "bmeet_call_msg_diable_audio_host":"Your are muted by host",
     "bmeet_call_msg_diable_camera_host":"Your camera disabled by host.",
 
+    "btn_continue":"Continue",
     "btn_ok":"OK",
-    
+    "btn_create":"Create",
+    "dg_title_meeting_scheduled":"Meeting Scheduled",
+    "dg_message_meeting_scheduled":"Meeting has been scheduled. You can see the details in the scheduled meeting list.",
+
+    "dg_title_live_scheduled":"Live Session Scheduled",
+    "dg_message_live_scheduled":"Live session has been scheduled. You can see the details in the scheduled list.",
+
+
   "Account": "Account",
   "settingsNoti": "Notifications",
   "settingShare": "Share bVidya app",

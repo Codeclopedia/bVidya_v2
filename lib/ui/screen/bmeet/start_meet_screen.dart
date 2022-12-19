@@ -219,8 +219,8 @@ class StartMeetScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              shareUserMeetContent('Meeting Id', scheduledMeeting.id.toString(),
-                  'Instant Meeting');
+              shareUserMeetContent(
+                  'Meeting Id', scheduledMeeting.meetingId, 'Instant Meeting');
             },
             child: Column(
               children: [

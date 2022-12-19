@@ -11,7 +11,10 @@ class HomeDrawerScreen extends StatefulWidget {
   final String routeName;
 
   const HomeDrawerScreen(
-      {super.key, required this.topBar, required this.body,required  this.routeName});
+      {super.key,
+      required this.topBar,
+      required this.body,
+      required this.routeName});
 
   @override
   State<HomeDrawerScreen> createState() => _HomeDrawerScreenState();
@@ -36,7 +39,7 @@ class _HomeDrawerScreenState extends State<HomeDrawerScreen> {
       },
       endDrawer: EndDrawer(
         scaffoldKey: _scaffoldKey,
-        myRouteName: widget.routeName ,
+        myRouteName: widget.routeName,
       ),
       body: ColouredBoxBar(
         topBar: widget.topBar,
@@ -48,7 +51,7 @@ class _HomeDrawerScreenState extends State<HomeDrawerScreen> {
               Positioned(
                 top: 53.h,
                 right: -10.0,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
                   child: SvgPicture.asset(
                     'assets/icons/svgs/drawer.svg',

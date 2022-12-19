@@ -32,8 +32,9 @@ class BaseNoScrollSettings extends StatelessWidget {
               // padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4.w),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(4.w),
+                  topRight: Radius.circular(4.w),
                 ),
               ),
               child: Container(

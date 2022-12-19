@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bvidya/data/models/response/blive/live_class_response.dart';
@@ -51,7 +52,8 @@ class BLiveApiService {
   Future<LiveClassResponse> getLiveClass(String authToken, String id) async {
     try {
       _dio.options.headers['X-Auth-Token'] = authToken;
-      var response = await _dio.get(baseUrlApi + ApiList.liveClass + id);
+      var response =
+          await _dio.get(baseUrlApi + ApiList.liveClass + id.toString());
       if (response.statusCode == 200) {
         return LiveClassResponse.fromJson(response.data);
       } else {
@@ -84,6 +86,7 @@ class BLiveApiService {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final response = await _dio.get('$baseUrlApi${ApiList.lmsLiveClasses}');
+
       if (response.statusCode == 200) {
         return LMSLiveClassesResponse.fromJson(response.data);
       } else {
@@ -99,10 +102,12 @@ class BLiveApiService {
 
   Future<LiveRTMResponse> fetchLiveRTMToken(String authToken, int id) async {
     try {
+      print('$authToken');
       _dio.options.headers['X-Auth-Token'] = authToken;
       var response =
           await _dio.get(baseUrlApi + ApiList.fetchLiveRtm + id.toString());
       if (response.statusCode == 200) {
+        print('${jsonEncode(response.data)}');
         return LiveRTMResponse.fromJson(response.data);
       } else {
         return LiveRTMResponse(

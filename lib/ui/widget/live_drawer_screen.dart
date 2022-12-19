@@ -27,6 +27,7 @@ class _LiveDrawerScreenState extends State<LiveDrawerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       drawerScrimColor: Colors.transparent,
       drawerEdgeDragWidth: 20.w,
@@ -52,7 +53,7 @@ class _LiveDrawerScreenState extends State<LiveDrawerScreen> {
     return Positioned(
       top: 66.h,
       right: -10.0,
-      child: InkWell(
+      child: GestureDetector(
         onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
         child: SvgPicture.asset(
           'assets/icons/svgs/drawer.svg',

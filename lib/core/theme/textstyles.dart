@@ -129,6 +129,19 @@ final elevatedButtonStyle = ElevatedButton.styleFrom(
   ),
 );
 
+get elevatedButtonYellowStyle => ElevatedButton.styleFrom(
+      textStyle: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 11.sp,
+      ),
+      foregroundColor: AppColors.primaryColor,
+      backgroundColor: AppColors.yellowAccent,
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 0.7.h),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(2.w),
+      ),
+    );
+
 final elevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,

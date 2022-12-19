@@ -39,7 +39,8 @@ Future joinMeeting(BuildContext context, WidgetRef ref, String meetingId,
     Meeting smeeting = Meeting(joinMeeting.appid, joinMeeting.channel,
         joinMeeting.token, 'audience', joinMeeting.audienceLatency);
 
-    await _openMeetingScreen(context, smeeting, meetingId, -1, ref, camOff, micOff);
+    await _openMeetingScreen(
+        context, smeeting, meetingId, -1, ref, camOff, micOff);
   } else {
     showOkDialog(context, 'Oops!',
         'Oops! Broadcast is not started yet! \nPlease wait for moment.');
@@ -74,8 +75,8 @@ Future startMeeting(BuildContext context, WidgetRef ref,
   }
 }
 
-Future _openMeetingScreen(BuildContext context, Meeting meeting, String meetingId,
-    int id, WidgetRef ref, bool camOff, bool micOff) async {
+Future _openMeetingScreen(BuildContext context, Meeting meeting,
+    String meetingId, int id, WidgetRef ref, bool camOff, bool micOff) async {
   final User? user = await getMeAsUser();
 
   if (user == null) {

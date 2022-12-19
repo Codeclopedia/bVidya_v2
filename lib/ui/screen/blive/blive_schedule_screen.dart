@@ -6,13 +6,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import '../../../controller/blive_providers.dart';
+import '../../../core/constants.dart';
 import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../base_back_screen.dart';
+import '../../dialog/image_picker_dialog.dart';
+import '../../dialog/ok_dialog.dart';
 import '../profile/base_settings_noscroll.dart';
 
 // final dateStateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 // final startTimeStateProvider = StateProvider<DateTime>((ref) => DateTime.now());
+final selectedImageFileStateProvider =
+    StateProvider.autoDispose<File?>((ref) => null);
 
 class ScheduleBLiveScreen extends HookWidget {
   ScheduleBLiveScreen({Key? key}) : super(key: key);
@@ -33,7 +38,7 @@ class ScheduleBLiveScreen extends HookWidget {
   DateTime? _selectedDate;
   DateTime? _time;
   // DateTime? _endTime;
-  File? _image;
+  // File? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +83,9 @@ class ScheduleBLiveScreen extends HookWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(height: 5.h),
-            Text(S.current.bmeet_schedule_heading, style: textStyleHeading),
+            Text(S.current.blive_schedule_heading, style: textStyleHeading),
             SizedBox(height: 4.h),
-            Text(S.current.bmeet_caption_title, style: textStyleCaption),
+            Text(S.current.blive_caption_title, style: textStyleCaption),
             SizedBox(height: 0.5.h),
             TextFormField(
               controller: _controller,
@@ -89,10 +94,10 @@ class ScheduleBLiveScreen extends HookWidget {
               onTap: () {},
               validator: (value) {
                 if (value == null || value.isEmpty == true) {
-                  return S.current.bmeet_empty_title;
+                  return S.current.blive_empty_title;
                 }
                 if (value.length < 5) {
-                  return S.current.bmeet_invalid_title;
+                  return S.current.blive_invalid_title;
                 }
                 return null;
               },
@@ -100,80 +105,86 @@ class ScheduleBLiveScreen extends HookWidget {
               onFieldSubmitted: (value) {
                 _formKey.currentState?.save();
               },
-              decoration: inputMeetStyle.copyWith(
-                hintText: S.current.bmeet_hint_title,
-              ),
+              decoration:
+                  inputMeetStyle.copyWith(hintText: S.current.blive_hint_title),
             ),
             SizedBox(height: 3.h),
-            Text(S.current.bmeet_caption_subject, style: textStyleCaption),
-            SizedBox(height: 0.5.h),
-            TextFormField(
-              controller: _subjectController,
-              showCursor: false,
-              focusNode: _descFocus,
-              onTap: () {},
-              validator: (value) {
-                if (value == null || value.isEmpty == true) {
-                  return S.current.bmeet_empty_subject;
-                }
-                if (value.length < 5) {
-                  return S.current.bmeet_invalid_subject;
-                }
-                return null;
-              },
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (value) {
-                _formKey.currentState?.save();
-              },
-              decoration: inputMeetStyle.copyWith(
-                hintText: S.current.bmeet_hint_subject,
-              ),
-            ),
-            SizedBox(height: 3.h),
-            Text(S.current.bmeet_caption_date, style: textStyleCaption),
-            SizedBox(height: 0.5.h),
-            TextFormField(
-              controller: _dateController,
-              autofocus: false,
-              showCursor: false,
-              validator: (value) {
-                if (value == null ||
-                    value.isEmpty == true ||
-                    _selectedDate == null) {
-                  return S.current.bmeet_empty_date;
-                }
-                return null;
-              },
-              onTap: () async {
-                _dateFocus.unfocus();
-
-                _selectedDate = await _pickDate(context);
-                if (_selectedDate != null) {
-                  _dateController.text =
-                      DateFormat('dd-MM-yyyy').format(_selectedDate!);
-                }
-              },
-              focusNode: _dateFocus,
-              decoration: inputMeetStyle.copyWith(
-                  hintText: S.current.bmeet_hint_date,
-                  suffixIcon: const Icon(Icons.edit_calendar)),
-            ),
-            SizedBox(height: 3.h),
+            // Text(S.current.blive_caption_date, style: textStyleCaption),
+            // SizedBox(height: 0.5.h),
+            // TextFormField(
+            //   controller: _dateController,
+            //   autofocus: false,
+            //   showCursor: false,
+            //   validator: (value) {
+            //     if (value == null ||
+            //         value.isEmpty == true ||
+            //         _selectedDate == null) {
+            //       return S.current.blive_empty_date;
+            //     }
+            //     return null;
+            //   },
+            //   onTap: () async {
+            //     _dateFocus.unfocus();
+            //     _selectedDate = await _pickDate(context);
+            //     if (_selectedDate != null) {
+            //       _dateController.text =
+            //           DateFormat('dd-MM-yyyy').format(_selectedDate!);
+            //     }
+            //   },
+            //   focusNode: _dateFocus,
+            //   decoration: inputMeetStyle.copyWith(
+            //       hintText: S.current.blive_hint_date,
+            //       suffixIcon: const Icon(Icons.edit_calendar)),
+            // ),
             Row(
               children: [
                 Expanded(
-                    child: Text(S.current.bmeet_caption_starttime,
+                    flex: 3,
+                    child: Text(S.current.blive_caption_date,
                         style: textStyleCaption)),
                 SizedBox(width: 3.w),
-                // Expanded(
-                //     child: Text(S.current.bmeet_caption_endtime,
-                //         style: textStyleCaption)),
+                Expanded(
+                  flex: 2,
+                  child: Text(S.current.blive_caption_starttime,
+                      style: textStyleCaption),
+                ),
               ],
             ),
             SizedBox(height: 0.5.h),
             Row(
               children: [
                 Expanded(
+                  flex: 3,
+                  child: TextFormField(
+                    controller: _dateController,
+                    autofocus: false,
+                    showCursor: false,
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty == true ||
+                          _selectedDate == null) {
+                        return S.current.blive_empty_date;
+                      }
+                      return null;
+                    },
+                    onTap: () async {
+                      _dateFocus.unfocus();
+
+                      _selectedDate = await _pickDate(context);
+                      if (_selectedDate != null) {
+                        _dateController.text =
+                            DateFormat('dd-MM-yyyy').format(_selectedDate!);
+                      }
+                    },
+                    focusNode: _dateFocus,
+                    decoration: inputMeetStyle.copyWith(
+                        hintText: S.current.blive_hint_date,
+                        suffixIcon: const Icon(Icons.edit_calendar)),
+                  ),
+                ),
+                SizedBox(width: 3.w),
+                Expanded(
+                  flex: 2,
                   child: TextFormField(
                     controller: _startController,
                     autofocus: false,
@@ -182,15 +193,15 @@ class ScheduleBLiveScreen extends HookWidget {
                       if (value == null ||
                           value.isEmpty == true ||
                           _time == null) {
-                        return S.current.bmeet_empty_start;
+                        return S.current.blive_empty_time;
                       }
                       if (_time?.isBefore(DateTime.now()) == true) {
-                        return S.current.bmeet_invalid_start;
+                        return S.current.blive_invalid_time;
                       }
                       return null;
                     },
                     onTap: () {
-                      _pickTime(context, (time) {
+                      _showTimePicker(context, (time) {
                         _time = time;
                         final dt = DateFormat.jm().format(time);
                         // print('dt: $dt');
@@ -200,7 +211,7 @@ class ScheduleBLiveScreen extends HookWidget {
                     onFieldSubmitted: (value) {},
                     focusNode: _startFocus,
                     decoration: inputMeetStyle.copyWith(
-                        hintText: S.current.bmeet_hint_start,
+                        hintText: S.current.blive_hint_time,
                         suffixIcon: const Icon(
                           Icons.keyboard_arrow_down,
                         )),
@@ -217,10 +228,10 @@ class ScheduleBLiveScreen extends HookWidget {
                 //           value.isEmpty == true ||
                 //           _endTime == null ||
                 //           _time == null) {
-                //         return S.current.bmeet_empty_end;
+                //         return S.current.blive_empty_end;
                 //       }
                 //       if (_endTime?.isBefore(_time!) == true) {
-                //         return S.current.bmeet_invalid_end;
+                //         return S.current.blive_invalid_end;
                 //       }
                 //       return null;
                 //     },
@@ -235,7 +246,7 @@ class ScheduleBLiveScreen extends HookWidget {
                 //     focusNode: _endFocus,
                 //     onEditingComplete: () {},
                 //     decoration: inputMeetStyle.copyWith(
-                //         hintText: S.current.bmeet_hint_end,
+                //         hintText: S.current.blive_hint_end,
                 //         suffixIcon: const Icon(
                 //           Icons.keyboard_arrow_down,
                 //         )),
@@ -243,12 +254,73 @@ class ScheduleBLiveScreen extends HookWidget {
                 // ),
               ],
             ),
+            SizedBox(height: 3.h),
+            Text(S.current.blive_caption_desc, style: textStyleCaption),
+            SizedBox(height: 0.5.h),
+            TextFormField(
+              controller: _subjectController,
+              showCursor: false,
+              focusNode: _descFocus,
+              keyboardType: TextInputType.multiline,
+              onTap: () {},
+              validator: (value) {
+                if (value == null || value.isEmpty == true) {
+                  return S.current.blive_empty_desc;
+                }
+                if (value.length < 5) {
+                  return S.current.blive_invalid_desc;
+                }
+                return null;
+              },
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (value) {
+                _formKey.currentState?.save();
+              },
+              minLines: 3,
+              maxLines: 5,
+              decoration:
+                  inputMeetStyle.copyWith(hintText: S.current.blive_hint_desc),
+            ),
+            SizedBox(height: 3.h),
+            Text(S.current.blive_caption_image, style: textStyleCaption),
+            SizedBox(height: 0.5.h),
+            Container(
+              height: 15.h,
+              decoration: BoxDecoration(
+                  color: AppColors.cardWhite,
+                  borderRadius: BorderRadius.all(Radius.circular(3.w))),
+              child: Center(
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    File? image = ref.watch(selectedImageFileStateProvider);
+                    return InkWell(
+                      onTap: () async {
+                        final pickedFile = await showImageFilePicker(context);
+                        if (pickedFile != null) {
+                          ref
+                              .read(selectedImageFileStateProvider.notifier)
+                              .state = pickedFile;
+                        }
+                      },
+                      child: image != null
+                          ? _buildImage(image, () {
+                              ref
+                                  .read(selectedImageFileStateProvider.notifier)
+                                  .state = null;
+                            })
+                          : const Icon(Icons.camera_alt,
+                              color: AppColors.iconGreyColor),
+                    );
+                  },
+                ),
+              ),
+            ),
             // SizedBox(height: 6.h),
             // Consumer(
             //   builder: (context, ref, child) {
             //     bool mute = ref.watch(muteSchdeuleLiveProvider);
             //     return _buildSettingRow(
-            //         S.current.bmeet_mute_title, S.current.bmeet_mute_desc, mute,
+            //         S.current.blive_mute_title, S.current.blive_mute_desc, mute,
             //         (value) {
             //       ref.read(muteSchdeuleLiveProvider.notifier).state = value;
             //     });
@@ -258,8 +330,8 @@ class ScheduleBLiveScreen extends HookWidget {
             // Consumer(
             //   builder: (context, ref, child) {
             //     final camOff = ref.watch(videoOffSchdeuleLiveProvider);
-            //     return _buildSettingRow(S.current.bmeet_videooff_title,
-            //         S.current.bmeet_videooff_desc, camOff, (value) {
+            //     return _buildSettingRow(S.current.blive_videooff_title,
+            //         S.current.blive_videooff_desc, camOff, (value) {
             //       ref.read(videoOffSchdeuleLiveProvider.notifier).state = value;
             //     });
             //   },
@@ -271,9 +343,7 @@ class ScheduleBLiveScreen extends HookWidget {
                   style: elevatedButtonTextStyle,
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
-                      if (_selectedDate != null &&
-                          _time != null &&
-                          _image != null) {
+                      if (_selectedDate != null && _time != null) {
                         _scheduleBroadcast(context, ref);
                       }
                     }
@@ -289,54 +359,89 @@ class ScheduleBLiveScreen extends HookWidget {
     );
   }
 
-  void _scheduleBroadcast(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    showLoading(ref);
+  Widget _buildImage(File image, Function() onTap) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(3.w)),
+          child: Image.file(
+            image,
+            width: 88.w,
+            height: 15.h,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+                onPressed: () {
+                  onTap();
+                },
+                icon: const Icon(Icons.close, color: Colors.red)))
+      ],
+    );
+  }
 
+  void _scheduleBroadcast(BuildContext context, WidgetRef ref) async {
+    showLoading(ref);
+    final file = ref.read(selectedImageFileStateProvider.notifier).state;
+    if (file == null) {
+      AppSnackbar.instance.message(context, 'Pick an image first');
+      return;
+    }
     final result = await ref.read(bLiveRepositoryProvider).createClass(
-        title: _controller.text,
-        desc: _subjectController.text,
-        date: _selectedDate!,
-        time: _time!,
-        image: _image!);
+          title: _controller.text,
+          desc: _subjectController.text,
+          date: _selectedDate!,
+          time: _time!,
+          image: file,
+        );
     hideLoading(ref);
     if (result != null) {
-      AppSnackbar.instance.message(context, 'Broadcast scheduled successfully!!');
-      await Future.delayed(const Duration(seconds: 2));
-      Navigator.pop(context, true);
+      // AppSnackbar.instance
+      //     .message(context, 'Broadcast scheduled successfully!!');
+      // await Future.delayed(const Duration(seconds: 2));
+      // Navigator.pop(context, true);
+      showOkDialog(
+        context,
+        S.current.dg_title_live_scheduled,
+        S.current.dg_message_live_scheduled,
+        type: true,
+        positiveButton: S.current.btn_continue,
+        positiveAction: () {
+          Navigator.pop(context, true);
+        },
+      );
     } else {
       AppSnackbar.instance.error(context, 'Error while scheduling broadcast');
     }
   }
 
-  void dispose() {}
-
-  Widget _buildSettingRow(
-      String title, String desc, bool value, Function(bool) onTapSetting) {
-    return InkWell(
-      onTap: () {
-        onTapSetting(!value);
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: textStyleTitle),
-                SizedBox(height: 0.4.h),
-                Text(desc, style: textStyleDesc),
-              ],
-            ),
-          ),
-          mySwitch(value, onTapSetting),
-        ],
-      ),
-    );
-  }
+  // Widget _buildSettingRow(
+  //     String title, String desc, bool value, Function(bool) onTapSetting) {
+  //   return InkWell(
+  //     onTap: () {
+  //       onTapSetting(!value);
+  //     },
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.max,
+  //       children: [
+  //         Expanded(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Text(title, style: textStyleTitle),
+  //               SizedBox(height: 0.4.h),
+  //               Text(desc, style: textStyleDesc),
+  //             ],
+  //           ),
+  //         ),
+  //         mySwitch(value, onTapSetting),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Future<DateTime?> _pickDate(BuildContext context) async {
     return await showDatePicker(
@@ -347,7 +452,7 @@ class ScheduleBLiveScreen extends HookWidget {
             DateTime.now().year + 1, DateTime.now().month, DateTime.now().day));
   }
 
-  _pickTime(BuildContext context, Function(DateTime) onPick) {
+  _showTimePicker(BuildContext context, Function(DateTime) onPick) {
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
@@ -372,4 +477,6 @@ class ScheduleBLiveScreen extends HookWidget {
               ),
             ));
   }
+
+  void dispose() {}
 }

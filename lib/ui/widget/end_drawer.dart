@@ -3,12 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants.dart';
 import '../../core/ui_core.dart';
 
-// final iconSize = 7.w;
-// final iconTextStyle = TextStyle(
-//   fontFamily: kFontFamily,
-//   color: Colors.white,
-//   fontSize: 8.sp,
-// );
 
 class EndDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

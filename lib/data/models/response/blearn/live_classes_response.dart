@@ -39,6 +39,7 @@ class LMSLiveClasses {
 class LMSLiveClass {
   final int? id;
   final int? userId;
+  final String? streamId;
   final String? name;
   final String? description;
   final String? image;
@@ -49,6 +50,7 @@ class LMSLiveClass {
     this.id,
     this.userId,
     this.name,
+    this.streamId,
     this.description,
     this.image,
     this.status,
@@ -58,16 +60,18 @@ class LMSLiveClass {
   LMSLiveClass.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         userId = json['user_id'],
+        streamId = json['stream_id'],
         name = json['name'],
         description = json['description'],
         image = json['image'],
         status = json['status'],
-        startsAt = json['starts_at'] as String?;
+        startsAt = json['starts_at'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
     json['id'] = id;
     json['user_id'] = userId;
+    json['stream_id'] = streamId;
     json['name'] = name;
     json['description'] = description;
     json['image'] = image;

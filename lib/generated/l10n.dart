@@ -800,6 +800,26 @@ class S {
     );
   }
 
+  /// `Participants`
+  String get grp_caption_participation {
+    return Intl.message(
+      'Participants',
+      name: 'grp_caption_participation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Participants`
+  String get grp_txt_add_participant {
+    return Intl.message(
+      'Add Participants',
+      name: 'grp_txt_add_participant',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Write your message`
   String get chat_input_hint {
     return Intl.message(
@@ -900,6 +920,26 @@ class S {
     );
   }
 
+  /// `Clear Chat`
+  String get grp_btx_clear {
+    return Intl.message(
+      'Clear Chat',
+      name: 'grp_btx_clear',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exit Group`
+  String get grp_btx_exit {
+    return Intl.message(
+      'Exit Group',
+      name: 'grp_btx_exit',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Share Content`
   String get atc_content {
     return Intl.message(
@@ -975,6 +1015,26 @@ class S {
     return Intl.message(
       'Share your files',
       name: 'atc_document_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Take a picture from Camera`
+  String get im_picker_camera_desc {
+    return Intl.message(
+      'Take a picture from Camera',
+      name: 'im_picker_camera_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pick an image from Gallery`
+  String get im_picker_gallery_desc {
+    return Intl.message(
+      'Pick an image from Gallery',
+      name: 'im_picker_gallery_desc',
       desc: '',
       args: [],
     );
@@ -1570,6 +1630,16 @@ class S {
     );
   }
 
+  /// `Schedule a Broadcast`
+  String get blive_schedule_heading {
+    return Intl.message(
+      'Schedule a Broadcast',
+      name: 'blive_schedule_heading',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scheduled Broadcast`
   String get blive_txt_schedule {
     return Intl.message(
@@ -1660,20 +1730,20 @@ class S {
     );
   }
 
-  /// `Broadcast Title`
+  /// `Broadcast title`
   String get blive_caption_title {
     return Intl.message(
-      'Broadcast Title',
+      'Broadcast title',
       name: 'blive_caption_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Broadcast desc`
+  /// `Broadcast description`
   String get blive_caption_desc {
     return Intl.message(
-      'Broadcast desc',
+      'Broadcast description',
       name: 'blive_caption_desc',
       desc: '',
       args: [],
@@ -1685,6 +1755,16 @@ class S {
     return Intl.message(
       'Broadcast Date',
       name: 'blive_caption_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select an Image`
+  String get blive_caption_image {
+    return Intl.message(
+      'Select an Image',
+      name: 'blive_caption_image',
       desc: '',
       args: [],
     );
@@ -1720,20 +1800,20 @@ class S {
     );
   }
 
-  /// `Select Broadcast Date`
+  /// `Select Date`
   String get blive_hint_date {
     return Intl.message(
-      'Select Broadcast Date',
+      'Select Date',
       name: 'blive_hint_date',
       desc: '',
       args: [],
     );
   }
 
-  /// `Broadcast Time`
+  /// `Time`
   String get blive_hint_time {
     return Intl.message(
-      'Broadcast Time',
+      'Time',
       name: 'blive_hint_time',
       desc: '',
       args: [],
@@ -1980,11 +2060,71 @@ class S {
     );
   }
 
+  /// `Continue`
+  String get btn_continue {
+    return Intl.message(
+      'Continue',
+      name: 'btn_continue',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `OK`
   String get btn_ok {
     return Intl.message(
       'OK',
       name: 'btn_ok',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create`
+  String get btn_create {
+    return Intl.message(
+      'Create',
+      name: 'btn_create',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meeting Scheduled`
+  String get dg_title_meeting_scheduled {
+    return Intl.message(
+      'Meeting Scheduled',
+      name: 'dg_title_meeting_scheduled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meeting has been scheduled. You can see the details in the scheduled meeting list.`
+  String get dg_message_meeting_scheduled {
+    return Intl.message(
+      'Meeting has been scheduled. You can see the details in the scheduled meeting list.',
+      name: 'dg_message_meeting_scheduled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live Session Scheduled`
+  String get dg_title_live_scheduled {
+    return Intl.message(
+      'Live Session Scheduled',
+      name: 'dg_title_live_scheduled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Live session has been scheduled. You can see the details in the scheduled list.`
+  String get dg_message_live_scheduled {
+    return Intl.message(
+      'Live session has been scheduled. You can see the details in the scheduled list.',
+      name: 'dg_message_live_scheduled',
       desc: '',
       args: [],
     );

@@ -21,6 +21,10 @@ class RouteList {
   static const String contactProfile = '/contact-profile';
   static const String search = '/search';
   static const String groups = '/groups';
+  static const String newGroupContacts = '/new-group-contacts';
+  static const String createNewGroup = '/create-new-group-contacts';
+  static const String groupInfo = '/group-info';
+  static const String groupChatScreen = '/group-chat-screen';
 
   //BMeet
   static const String bMeet = '/b-meet';
@@ -31,6 +35,8 @@ class RouteList {
 
   //BLive
   static const String bLive = '/b-live';
+  static const String bLiveSchedule = '/b-live-schedule';
+  static const String bLiveClass = '/b-live-class';
 
   //BLearn
   static const String bLearnHome = '/b-learn';

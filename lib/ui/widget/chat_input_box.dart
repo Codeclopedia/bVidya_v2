@@ -1,20 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../widgets.dart';
+import '../../core/constants.dart';
+import '../../core/state.dart';
+import '../../core/ui_core.dart';
+import '../widgets.dart';
 
 class ChatInputBox extends StatefulWidget {
   final Future<String?> Function(String) onSend;
 
   /// Current user using the chat
   // final User currentUser;
-  final Function(AttachType type) onAttach;
+  final Function(AttachType type)? onAttach;
   const ChatInputBox({
     Key? key,
     required this.onSend,
-    required this.onAttach,
+    this.onAttach,
   }) : super(key: key);
 
   @override
@@ -61,6 +61,7 @@ class _ChatInputBoxState extends State<ChatInputBox>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: false,
       child: Container(
         padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 2.h),
         //
@@ -110,14 +111,15 @@ class _ChatInputBoxState extends State<ChatInputBox>
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 1.w,
-                ),
-                IconButton(
-                  onPressed: () {
-                    _showAttachDialog(context);
-                  },
-                  icon: getSvgIcon('icon_chat_attach.svg'),
+                SizedBox(width: 1.w),
+                Visibility(
+                  visible: widget.onAttach != null,
+                  child: IconButton(
+                    onPressed: () {
+                      _showAttachDialog(context);
+                    },
+                    icon: getSvgIcon('icon_chat_attach.svg'),
+                  ),
                 ),
                 if (input.isEmpty)
                   IconButton(
@@ -164,8 +166,8 @@ class _ChatInputBoxState extends State<ChatInputBox>
         return const AttachDialog();
       },
     );
-    if (result != null && result is AttachType) {
-      widget.onAttach(result);
+    if (result != null && result is AttachType && widget.onAttach != null) {
+      widget.onAttach!(result);
     }
   }
 

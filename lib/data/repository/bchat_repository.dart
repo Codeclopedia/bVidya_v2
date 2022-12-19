@@ -73,6 +73,76 @@ class BChatRepository {
     }
   }
 
+  void loadGroupConversations() async {
+    List<GroupModel> conversations = [];
+    // conversations.clear();
+    try {
+      List<ChatConversation> list =
+          await ChatClient.getInstance.chatManager.loadAllConversations();
+
+      if (list.isEmpty) {
+        try {
+          list = await ChatClient.getInstance.chatManager
+              .getConversationsFromServer();
+        } on ChatError catch (_) {
+          // print(e);
+          // recall failed, code: e.code, reason: e.description
+        }
+      }
+      final myUserId = _currentUser.id;
+      if (myUserId == 1 || myUserId == 24) {
+        if (list.isNotEmpty) {
+          for (var conv in list) {
+            if (conv.type != ChatConversationType.GroupChat) {
+              continue;
+            }
+            final unread = await conv.unreadCount();
+            final fromId = (await conv.lastReceivedMessage())?.from ??
+                (myUserId == 24 ? 1 : 24);
+
+            ChatMessage? message = await conv.latestMessage();
+            GroupModel model = GroupModel(
+              '', '',
+              badgeCount: unread,
+              lastMessage: message,
+
+              // id: fromId.toString(),
+              // badgeCount: unread,
+              // user: usersMap[fromId.toString()]!,
+              // conversation: conv,
+              // lastMessage: message,
+            );
+            conversations.add(model);
+          }
+        } else {
+          // print('Conversation is blank');
+          final fromId = myUserId == 24 ? 1 : 24;
+          GroupModel model = GroupModel(
+            '', '',
+            // id: fromId.toString(),
+            // badgeCount: 0,
+            // user: usersMap[fromId.toString()]!,
+            // conversation: null,
+            // lastMessage: null,
+          );
+          conversations.add(model);
+        }
+      }
+    } on ChatError catch (e) {
+      print(e);
+      // recall failed, code: e.code, reason: e.description
+    }
+    if (conversations.isNotEmpty) {
+      try {
+        _ref
+            ?.read(groupChatConversationListProvider.notifier)
+            .addConversations(conversations);
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
   void loadConversations() async {
     List<ConversationModel> conversations = [];
     // conversations.clear();
@@ -93,6 +163,9 @@ class BChatRepository {
       if (myUserId == 1 || myUserId == 24) {
         if (list.isNotEmpty) {
           for (var conv in list) {
+            if (conv.type != ChatConversationType.Chat) {
+              continue;
+            }
             final unread = await conv.unreadCount();
             final fromId = (await conv.lastReceivedMessage())?.from ??
                 (myUserId == 24 ? 1 : 24);

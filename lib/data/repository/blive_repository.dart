@@ -47,25 +47,30 @@ class BLiveRepository {
     }
   }
 
-
   Future<LMSLiveClasses?> getLiveClasses() async {
     final result = await _api.getLiveClasses(_authToken);
+    // print('result: ${result.status} ${result.message}');
     if (result.status == successfull && result.body != null) {
-      // print('result: ${result.status} ${result.body?.toJson()}');
+      print('result: ${result.status} ${result.body?.toJson()}');
       return result.body;
     } else {
       return null;
     }
   }
-
 
   Future<LiveRtmToken?> fetchLiveRTM(int id) async {
-    final result = await _api.fetchLiveRTMToken(_authToken,id);
+    final result = await _api.fetchLiveRTMToken(_authToken, id);
+
     if (result.status == successfull && result.body != null) {
+      // print('result: ${result.status} ${result.body}');
       return result.body;
     } else {
+      if (result.body?.roomStatus == 'locked') {
+        print('Room Status Locked');
+        return LiveRtmToken('', '', '', '', 'Locked');
+      }
+
       return null;
     }
   }
-  
 }

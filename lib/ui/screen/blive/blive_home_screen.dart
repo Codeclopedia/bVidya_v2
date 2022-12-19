@@ -1,9 +1,10 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:intl/intl.dart';
 
 import '../../../controller/blive_providers.dart';
 import '../../../core/constants.dart';
+import '../../../core/helpers/blive_helper.dart';
 import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../core/utils/date_utils.dart';
@@ -13,16 +14,12 @@ import '../../widgets.dart';
 import '../blearn/widget/common.dart';
 
 class BLiveHomeScreen extends HookWidget {
-  BLiveHomeScreen({Key? key}) : super(key: key);
-
-  late TextEditingController _controller;
+  const BLiveHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      _controller = TextEditingController();
-      return dipose;
-    }, []);
+    TextEditingController controller = useTextEditingController();
+
     return LiveDrawerScreen(
       screenName: RouteList.bLive,
       anotherContent: SafeArea(
@@ -74,20 +71,21 @@ class BLiveHomeScreen extends HookWidget {
                 ],
               ),
             ),
-            child: _buildCalendar(context),
+            child: _buildCalendar(context, controller),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCalendar(BuildContext context) {
+  Widget _buildCalendar(
+      BuildContext context, TextEditingController controller) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SafeArea(child: SizedBox(height: 1)),
-        _buildCard(context),
+        _buildCard(context, controller),
         SizedBox(height: 2.h),
         Text(
           S.current.blive_txt_schedule,
@@ -96,18 +94,18 @@ class BLiveHomeScreen extends HookWidget {
           ),
         ),
         // SizedBox(height: 0.5.h),
-        CalendarView(
-          onSelectedDate: (date) {},
-        )
+        Consumer(builder: (context, ref, child) {
+          return CalendarView(
+            onSelectedDate: (date) {
+              ref.read(selectedDateProvider.notifier).state = date;
+            },
+          );
+        })
       ],
     );
   }
 
-  Widget _buildCard(BuildContext context) {
-    // return Consumer(
-    //   builder: (context, ref, child) {
-    //     final user = ref.watch(loginRepositoryProvider).user;
-    //     if (user == null) return const SizedBox.shrink();
+  Widget _buildCard(BuildContext context, TextEditingController controller) {
     return Stack(
       children: [
         Center(
@@ -125,16 +123,43 @@ class BLiveHomeScreen extends HookWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 5.h),
-                Center(
+                // SizedBox(height: 2.h),
+                // SizedBox(height: 18.w),
+                Container(
+                  padding: EdgeInsets.only(top: 1.h),
+                  alignment: Alignment.topRight,
                   child: Consumer(
                     builder: (context, ref, child) {
                       final user = ref.watch(loginRepositoryProvider).user;
-                      return Text(user?.name ?? '', style: textStyleBlack);
+                      return user?.role.toLowerCase() == 'teacher'
+                          ? InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, RouteList.bLiveSchedule);
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: AppColors.yellowAccent,
+                                radius: 5.w,
+                                child: const Icon(Icons.add,
+                                    color: AppColors.primaryColor),
+                                // getSvgIcon('icon_next.svg', width: 4.5.w)
+                              ),
+                            )
+                          : SizedBox(height: 10.w);
                     },
                   ),
                 ),
-                SizedBox(height: 3.h),
+                SizedBox(height: 1.h),
+                SizedBox(height: 8.w),
+                // Center(
+                //   child: Consumer(
+                //     builder: (context, ref, child) {
+                //       final user = ref.watch(loginRepositoryProvider).user;
+                //       return Text(user?.name ?? '', style: textStyleBlack);
+                //     },
+                //   ),
+                // ),
+                // SizedBox(height: 3.h),
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,18 +187,35 @@ class BLiveHomeScreen extends HookWidget {
                         ),
                       ],
                     ),
-                    InkWell(
-                      onTap: () {},
-                      child: CircleAvatar(
-                          backgroundColor: AppColors.yellowAccent,
-                          radius: 5.w,
-                          child: getSvgIcon('icon_next.svg', width: 4.5.w)),
-                    ),
+                    ElevatedButton(
+                        style: elevatedButtonYellowStyle,
+                        onPressed: () {},
+                        child: Text(S.current.bmeet_btn_start))
+                    // Consumer(
+                    //   builder: (context, ref, child) {
+                    //     final user = ref.watch(loginRepositoryProvider).user;
+                    //     return user?.role.toLowerCase() != 'teacher'
+                    //         ? InkWell(
+                    //             onTap: () {
+                    //               Navigator.pushNamed(
+                    //                   context, RouteList.bLiveSchedule);
+                    //             },
+                    //             child: CircleAvatar(
+                    //               backgroundColor: AppColors.yellowAccent,
+                    //               radius: 5.w,
+                    //               child: const Icon(Icons.add,
+                    //                   color: AppColors.primaryColor),
+                    //               // getSvgIcon('icon_next.svg', width: 4.5.w)
+                    //             ),
+                    //           )
+                    //         : const SizedBox.shrink();
+                    //   },
+                    // ),
                   ],
                 ),
                 SizedBox(height: 2.h),
                 TextField(
-                  controller: _controller,
+                  controller: controller,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (value) {},
                   decoration: inputDirectionStyle.copyWith(
@@ -189,15 +231,19 @@ class BLiveHomeScreen extends HookWidget {
           child: Consumer(
             builder: (context, ref, child) {
               final user = ref.watch(loginRepositoryProvider).user;
-              return getRectFAvatar(
-                  size: 22.w, user?.name ?? '', user?.image ?? '');
+              return Column(
+                children: [
+                  getRectFAvatar(
+                      size: 22.w, user?.name ?? '', user?.image ?? ''),
+                  SizedBox(height: 0.5.h),
+                  Text(user?.name ?? '', style: textStyleBlack)
+                ],
+              );
             },
           ),
         ),
       ],
     );
-    //   },
-    // );
   }
 
   Widget _buildHistory() {
@@ -208,8 +254,8 @@ class BLiveHomeScreen extends HookWidget {
         builder: (context, ref, child) {
           return ref.watch(bLiveSelectedHistoryProvider).when(
               data: (liveBroadcasts) {
-                if (liveBroadcasts.isNotEmpty == true) {
-                  return _buildData(liveBroadcasts);
+                if (liveBroadcasts.isNotEmpty) {
+                  return _buildData(liveBroadcasts, ref);
                 } else {
                   return buildEmptyPlaceHolder(S.current.blive_no_meetings);
                 }
@@ -221,7 +267,7 @@ class BLiveHomeScreen extends HookWidget {
     );
   }
 
-  Widget _buildData(List<LMSLiveClass> broadcastList) {
+  Widget _buildData(List<LMSLiveClass> broadcastList, WidgetRef ref) {
     return ListView.builder(
       itemCount: broadcastList.length,
       shrinkWrap: true,
@@ -229,82 +275,109 @@ class BLiveHomeScreen extends HookWidget {
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         final broadcast = broadcastList[index];
-        return Container(
-          margin: EdgeInsets.only(right: 2.w),
-          padding: EdgeInsets.all(3.w),
-          height: 20.h,
-          width: 35.w,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFAFAFA),
-            border: Border.all(color: const Color(0xFF707070), width: 0.5),
-            borderRadius: BorderRadius.all(Radius.circular(4.w)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(S.current.blive_txt_broadcast,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 7.sp,
-                    fontFamily: kFontFamily,
-                    color: AppColors.black,
-                  )),
-              SizedBox(height: 1.w),
-              Text(
-                broadcast.name ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9.sp,
-                  fontFamily: kFontFamily,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                // "",
-                '${parseMeetingTime(broadcast.startsAt ?? '')}}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 7.sp,
-                  fontFamily: kFontFamily,
-                  color: AppColors.black,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    S.current.blive_btx_join,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 7.sp,
-                        fontFamily: kFontFamily,
-                        color: AppColors.black),
-                  ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return GestureDetector(
-                        onTap: () {
-                          // startMeeting(context, ref, meeting, true, false);
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: AppColors.yellowAccent,
-                          radius: 1.5.h,
-                          child: getSvgIcon('icon_next.svg', width: 1.4.h),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
+        return liveClassRow(broadcast, () {
+          joinBroadcast(context, ref, broadcast.streamId ?? '');
+        });
       },
     );
   }
+
+  Widget liveClassRow(LMSLiveClass broadcast, Function() onJoin) {
+    return Container(
+      margin: EdgeInsets.only(right: 2.w),
+      padding: EdgeInsets.all(3.w),
+      height: 20.h,
+      width: 35.w,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        border: Border.all(color: const Color(0xFF707070), width: 0.5),
+        borderRadius: BorderRadius.all(Radius.circular(4.w)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(S.current.blive_txt_broadcast,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 8.sp,
+                fontFamily: kFontFamily,
+                color: AppColors.black,
+              )),
+          SizedBox(height: 1.w),
+          Text(
+            broadcast.name ?? '',
+            //'${(broadcast.name ?? '')} - ${broadcast.id}',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 10.sp,
+              fontFamily: kFontFamily,
+              color: AppColors.primaryColor,
+            ),
+          ),
+          SizedBox(height: 1.h),
+          Text(
+            // "",
+            parseMeetingTime(broadcast.startsAt ?? ''),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 8.sp,
+              fontFamily: kFontFamily,
+              color: AppColors.black,
+            ),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                S.current.blive_btx_join,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 8.sp,
+                    fontFamily: kFontFamily,
+                    color: AppColors.black),
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  return GestureDetector(
+                    onTap: () {
+                      onJoin();
+                      // startMeeting(context, ref, meeting, true, false);
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppColors.yellowAccent,
+                      radius: 1.5.h,
+                      child: getSvgIcon('icon_next.svg', width: 1.4.h),
+                    ),
+                  );
+                },
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  // _joinLiveClass(
+  //     BuildContext context, WidgetRef ref, LMSLiveClass broadcast) async {
+  //   showLoading(ref);
+
+  //   final result = await ref
+  //       .read(bLiveRepositoryProvider)
+  //       .getLiveClass(broadcast.streamId!);
+  //   if (result != null) {
+  //     final rtmToken =
+  //         await ref.read(bLiveRepositoryProvider).fetchLiveRTM(result.id);
+  //     if (rtmToken != null) {
+  //       hideLoading(ref);
+  //       Navigator.pushNamed(context, RouteList.bLiveClass);
+  //       return;
+  //     }
+  //   }
+  //   hideLoading(ref);
+  // }
 
   void dipose() {}
 }

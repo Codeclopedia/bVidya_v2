@@ -133,7 +133,7 @@ class CalendarViewState extends State<CalendarView>
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
+      // mainAxisSize: MainAxisSize.min,
       children: [
         _buildMonthNameHeader(),
         _weekRow(),
@@ -142,12 +142,12 @@ class CalendarViewState extends State<CalendarView>
           builder: (context, child) => ClipRect(
             child: Align(
               alignment: Alignment(0.5, _activeRowYPosition),
-              // alignment: const Alignment(0.5, 0.5),
               heightFactor: _anim.value * (1 - _collapsedHeightFactor) +
                   _collapsedHeightFactor,
-              child: SizedBox(
+              child: Container(
+                alignment: Alignment.center,
                 width: 95.w,
-                height: 35.h,
+                height: 32.h,
                 child: PageView(
                   controller: pageController,
                   scrollDirection: Axis.horizontal,
@@ -159,10 +159,7 @@ class CalendarViewState extends State<CalendarView>
           ),
         ),
         IconButton(
-          splashRadius: _monthController.view.value == 0.0 ? 18.0 : 0.001,
-          onPressed:
-              _handleTap, //_monthController.view.value == 0.0 ? _handleTap : null,
-          enableFeedback: _monthController.view.value == 0.0,
+          onPressed: _handleTap,
           icon: RotationTransition(
             turns: _iconTurns,
             child: const Icon(
@@ -178,7 +175,7 @@ class CalendarViewState extends State<CalendarView>
 
   Widget _buildMonthNameHeader() {
     return SizedBox(
-      width: 60.w,
+      width: 55.w,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -236,29 +233,28 @@ class CalendarViewState extends State<CalendarView>
     );
   }
 
-  _onCurrentMonth() {
-    final DateTime currentDate =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-
-    _calList = [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.min,
-        children: returnRowList(
-          DateTime(currentDate.year, currentDate.month, 1),
-        ),
-      ),
-      // Column(
-      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //   mainAxisSize: MainAxisSize.min,
-      //   children: returnRowList(
-      //     DateTime(currentDate.year, currentDate.month, 1),
-      //   ),
-      // ),
-    ];
-    //Decrement the showDate by 1 month
-    _showDate = DateTime(currentDate.year, currentDate.month, 1);
-  }
+  // _onCurrentMonth() {
+  //   final DateTime currentDate =
+  //       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  //   _calList = [
+  //     Column(
+  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: returnRowList(
+  //         DateTime(currentDate.year, currentDate.month, 1),
+  //       ),
+  //     ),
+  //     // Column(
+  //     //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //     //   mainAxisSize: MainAxisSize.min,
+  //     //   children: returnRowList(
+  //     //     DateTime(currentDate.year, currentDate.month, 1),
+  //     //   ),
+  //     // ),
+  //   ];
+  //   //Decrement the showDate by 1 month
+  //   _showDate = DateTime(currentDate.year, currentDate.month, 1);
+  // }
 
   _onSelectedDate() {
     DateTime currentDate = _selectedDate;
@@ -390,14 +386,13 @@ class CalendarViewState extends State<CalendarView>
   void _handleTap() {
     setState(() {
       _expanded = !_expanded;
-
       if (_expanded) {
         _controller.forward();
       } else {
         _onSelectedDate();
         // _onCurrentMonth();
         _controller.reverse().then<void>((void value) {
-          if (!mounted) return;
+          // if (!mounted) return;
           // setState(() {
           // Rebuild without widget.children.
           // });
@@ -434,7 +429,7 @@ class CalendarViewState extends State<CalendarView>
 
   //checks to ensure that the dates used to generate active row dont use prev. or next. month's dates
   bool monthChecks(int rowIndex, int date) {
-    print('monthChecks=> $rowIndex - $date');
+    // print('monthChecks=> $rowIndex - $date');
     if (rowIndex <= 1 && date <= 14) {
       return true;
     } else if (rowIndex >= 4 && date > 7) {
@@ -448,13 +443,12 @@ class CalendarViewState extends State<CalendarView>
 
   Widget _weekRow() {
     return Container(
-      height: 95.w * 0.7 * _collapsedHeightFactor,
-      padding: EdgeInsets.only(
-        bottom: 4,
-        left: 4.w,
-        right: 4.w,
-      ),
+      // width: 95.w,
+      // alignment: Alignment.center,
+      padding: EdgeInsets.only(bottom: 10, left: 2.5.w, right: 2.5.w),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           calendarWeekday('M'),
@@ -511,8 +505,8 @@ class CalendarViewState extends State<CalendarView>
                       });
                     },
               child: Container(
-                height: 9.w,
-                width: 9.w,
+                height: 4.5.h,
+                width: 4.5.h,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isCurrentDate
@@ -541,13 +535,10 @@ class CalendarViewState extends State<CalendarView>
           ),
         );
       }
-      Widget weekRow = Padding(
-        padding: const EdgeInsets.only(bottom: 4, left: 6, right: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: weekDates,
-        ),
+      Widget weekRow = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: weekDates,
       );
       rowList.add(weekRow);
     }
@@ -558,8 +549,12 @@ class CalendarViewState extends State<CalendarView>
   Widget calendarWeekday(String day) {
     return Text(
       day,
+      textAlign: TextAlign.center,
       style: TextStyle(
-          fontFamily: kFontFamily, fontSize: 9.sp, color: Colors.white),
+        fontFamily: kFontFamily,
+        fontSize: 9.sp,
+        color: Colors.white,
+      ),
     );
   }
 

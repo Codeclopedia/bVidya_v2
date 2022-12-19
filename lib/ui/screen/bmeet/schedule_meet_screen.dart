@@ -7,6 +7,7 @@ import '../../../controller/bmeet_providers.dart';
 import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../base_back_screen.dart';
+import '../../dialog/ok_dialog.dart';
 import '../profile/base_settings_noscroll.dart';
 // import '../../widgets.dart';
 
@@ -367,9 +368,19 @@ class ScheduleMeetScreen extends HookWidget {
         noVideo: camOff);
     hideLoading(ref);
     if (result != null) {
-      AppSnackbar.instance.message(context, 'Meeting scheduled successfully!!');
-      await Future.delayed(const Duration(seconds: 2));
-      Navigator.pop(context, true);
+      // AppSnackbar.instance.message(context, 'Meeting scheduled successfully!!');
+      // await Future.delayed(const Duration(seconds: 2));
+      // Navigator.pop(context, true);
+      showOkDialog(
+        context,
+        S.current.dg_title_meeting_scheduled,
+        S.current.dg_message_meeting_scheduled,
+        type: true,
+        positiveButton: S.current.btn_continue,
+        positiveAction: () {
+          Navigator.pop(context, true);
+        },
+      );
     } else {
       AppSnackbar.instance.error(context, 'Error while scheduling meeting');
     }

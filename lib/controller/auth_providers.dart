@@ -1,12 +1,7 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
 import '../core/state.dart';
-import '../data/models/models.dart';
 import '../data/repository/auth_repository.dart';
 import '../data/services/auth_api_service.dart';
-import 'providers/chat_messagelist_provider.dart';
 import 'providers/chat_reply_provider.dart';
-import 'providers/chat_conversations_provider.dart';
 
 final apiServiceProvider = Provider<ApiAuthService>(
   (_) => ApiAuthService.instance,
@@ -82,16 +77,6 @@ final muteProvider = StateProvider.autoDispose<bool>(
 //   (_) => false,
 // );
 
-//Loading Previous Chat
-final chatLoadingPreviousProvider = StateProvider.autoDispose<bool>(
-  (_) => false,
-);
-
-//Loading Previous Chat
-final chatHasMoreOldMessageProvider = StateProvider.autoDispose<bool>(
-  ((ref) => true),
-);
-
 //Loading Previous Chat Curson
 // final chatChatCursorMessageProvider = StateProvider.autoDispose<String?>(
 //   ((_) => ''),
@@ -101,7 +86,3 @@ final chatModelProvider =
     ChangeNotifierProvider.autoDispose<ChatScreenModel>((ref) {
   return ChatScreenModel();
 });
-
-final chatMessageListProvider =
-    StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
-        (ref) => ChatMessageNotifier());

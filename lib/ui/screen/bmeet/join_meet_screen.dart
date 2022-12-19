@@ -57,7 +57,7 @@ class JoinMeetScreen extends HookWidget {
                                   ref.watch(videoOffJoinMeetingProvider);
                               final micOff = ref.watch(muteJoinMeetingProvider);
                               String meetingId = value;
-                              if (meetingId.length < 4) return;
+                              if (meetingId.length < 2) return;
                               joinMeeting(
                                   context, ref, meetingId, camOff, micOff);
                             },
@@ -108,7 +108,7 @@ class JoinMeetScreen extends HookWidget {
                       final camOff = ref.watch(videoOffJoinMeetingProvider);
                       final micOff = ref.watch(muteJoinMeetingProvider);
                       String meetingId = controller.text;
-                      if (meetingId.length < 4) return;
+                      if (meetingId.length < 2) return;
                       joinMeeting(context, ref, meetingId, camOff, micOff);
                     },
                     child: Text(S.current.bmeet_btn_start),

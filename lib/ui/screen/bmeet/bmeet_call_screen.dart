@@ -339,24 +339,25 @@ class BMeetCallScreen extends StatelessWidget {
             onTap: () => _showDetailDialog(context),
             child: Row(
               children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'b',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                        fontSize: 12.sp),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Meet',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 12.sp),
-                      ),
-                    ],
-                  ),
-                ),
+                buildBChatText(),
+                // RichText(
+                //   text: TextSpan(
+                //     text: 'b',
+                //     style: TextStyle(
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.red,
+                //         fontSize: 12.sp),
+                //     children: <TextSpan>[
+                //       TextSpan(
+                //         text: 'Meet',
+                //         style: TextStyle(
+                //             fontWeight: FontWeight.bold,
+                //             color: Colors.white,
+                //             fontSize: 12.sp),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 const Icon(Icons.keyboard_arrow_down_rounded, size: 25),
               ],
             ),

@@ -1,7 +1,21 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/blive_provider.dart';
 import 'package:intl/intl.dart';
 
 import '../ui_core.dart';
+
+bool shouldShowDateRTMSeparator(
+    RTMMessageModel? previousMessage, RTMMessageModel message) {
+  if (previousMessage == null) {
+    return true;
+  }
+
+  final DateTime previousDate =
+      DateTime.fromMillisecondsSinceEpoch(previousMessage.message.ts);
+  final DateTime messageDate =
+      DateTime.fromMillisecondsSinceEpoch(message.message.ts);
+  return previousDate.difference(messageDate).inDays.abs() > 0;
+}
 
 /// Check if a date separator needs to be shown
 bool shouldShowDateSeparator(

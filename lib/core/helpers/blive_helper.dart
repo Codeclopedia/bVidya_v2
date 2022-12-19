@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-
-
 import '../../controller/blive_providers.dart';
 import '../../ui/base_back_screen.dart';
+import '../constants/route_list.dart';
 import '../state.dart';
 import '../ui_core.dart';
+import '../utils.dart';
 
 Future joinBroadcast(
   BuildContext context,
@@ -42,22 +42,22 @@ Future joinBroadcast(
         .error(context, 'Error joing broadcast, Please try after some time');
     return;
   }
+  if (userToken.roomStatus == 'Locked' || userToken.appid.isEmpty) {
+    AppSnackbar.instance.error(context, 'Broadcast not live or full');
+    return;
+  }
 
-  // final meeting =
-  //     await ref.read(bMeetRepositoryProvider).joinMeeting(meetingId);
+  final user = await getMeAsUser();
+  if (user == null) {
+    AppSnackbar.instance
+        .error(context, 'Error joing broadcast, Please try after some time');
+    return;
+  }
+  final args = <String, dynamic>{
+    'user_id': user.id,
+    'rtm_token': userToken,
+    'live_class': liveClass
+  };
 
-  // if (meeting == null || meeting.appid.isEmpty) {
-  //   AppSnackbar.instance.error(context, 'Error joining meeting');
-  //   hideLoading(ref);
-  // } else {
-  // await _startMeeting(context, meeting, meetingId, ref, camOff, micOff);
-  // }
+  Navigator.pushNamed(context, RouteList.bLiveClass, arguments: args);
 }
-
-// Future _joinBroadcast(context, meeting, meetingId, ref)
-
-// Future<bool> _handleCameraAndMic(Permission permission) async {
-//   final status = await permission.request();
-//   debugPrint(status.name);
-//   return status == PermissionStatus.granted;
-// }

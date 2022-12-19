@@ -13,74 +13,78 @@ import '../../data/models/models.dart';
 class BMeetProvider extends ChangeNotifier {
   final MethodChannel _iosScreenShareChannel =
       const MethodChannel('example_screensharing_ios');
-
-  // late Timer _meetingTimer;
-  // int _meetingDuration = 0;
-  // String _meetingDurationTxt = "00:00";
-
+//
   int _localUid = 0;
-  bool _localUserJoined = false;
+  int? get localUid => _localUid;
 
+//
+  bool _localUserJoined = false;
+  bool get localUserJoined => _localUserJoined;
+
+//
   int _screenShareId = 0;
 
+//
   bool _isPreviewReady = false;
-
   bool get isPreviewReady => _isPreviewReady;
 
-  final Set<int> _userRemoteIds = HashSet();
-
-  // List<ViewModel> _viewModels = [];
-  //List<ViewModel>
-  late final Meeting _meeting;
-  late final bool _enableVideo;
-
-  late RtcEngineEx _engine;
-  late AgoraRtmClient _rtmClient;
-  AgoraRtmChannel? _rtmChannel;
-
+//
   bool _allMuted = true;
   bool get allMuted => _allMuted;
 
+//
   bool _hostCamera = false;
-  bool _hostMute = false;
-
   bool get hostCamera => _hostCamera;
+
+//
+  bool _hostMute = false;
   bool get hostMute => _hostMute;
 
+//
   bool _muted = false;
-
   bool get muted => _muted;
 
+//
   bool _speakerOn = false;
   bool get speakerOn => _speakerOn;
 
+//
   bool _camera = false;
   bool get camera => _camera;
 
+//
   int _indexValue = 0;
   int get indexValue => _indexValue;
 
-  RtcEngineEx get engine => _engine;
-
-  bool get localUserJoined => _localUserJoined;
-
-  int? get localUid => _localUid;
-
+//
   Set<int> get remoteUsersIds => _userRemoteIds;
+  final Set<int> _userRemoteIds = HashSet();
 
+//
   final Map<int, ConnectedUserInfo> _userList = <int, ConnectedUserInfo>{};
-
   Map<int, ConnectedUserInfo> get userList => _userList;
 
+//
   final List<AgoraRtmMember> _memberList = [];
-
   List<AgoraRtmMember> get memberList => _memberList;
 
   bool _initialized = false;
 
+//
   bool _shareScreen = false;
-
   bool get shareScreen => _shareScreen;
+
+//
+  late RtcEngineEx _engine;
+  RtcEngineEx get engine => _engine;
+
+//
+  late AgoraRtmClient _rtmClient;
+  AgoraRtmChannel? _rtmChannel;
+
+//
+  late final Meeting _meeting;
+  late final bool _enableVideo;
 
   final DurationNotifier _callTimerProvider;
 
@@ -197,7 +201,8 @@ class BMeetProvider extends ChangeNotifier {
           print("onError :$err $msg");
         },
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          print("local user ${connection.localUid} joined, since $elapsed");
+          print(
+              "local user ${connection.localUid} joined, since $elapsed seconds");
           _localUserJoined = true;
           if (connection.localUid == 1000) {
             _screenShareId = 1000;
@@ -216,8 +221,7 @@ class BMeetProvider extends ChangeNotifier {
           _updateMemberList();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          print(
-              "remote user $remoteUid joined, since $elapsed seconds ${connection.channelId}");
+          print("remote user $remoteUid joined, since $elapsed seconds");
           _userRemoteIds.add(remoteUid);
           if (remoteUid == 1000) {
             _screenShareId = 1000;
@@ -241,8 +245,22 @@ class BMeetProvider extends ChangeNotifier {
           //     "remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}");
         },
         onLeaveChannel: (connection, stats) {
-          _isPreviewReady = false;
-          _userRemoteIds.clear();
+          int userId = connection.localUid ?? 0;
+
+          print('User Id:$userid');
+          // if (_userRemoteIds.contains(userId)) {
+          //   _userRemoteIds.remove(userId);
+          // }
+          // if (_userList.containsKey(userId)) {
+          //   _userList.removeWhere((key, value) => key == userId);
+          // }
+          // if (localUid != userid) {
+          //   _updateMemberList();
+          // } else {
+          //   // _userRemoteIds.clear();
+          // }
+          // _isPreviewReady = false;
+          // _userRemoteIds.clear();
 
           // _speakingUsersMap.clear();
           // notifyListeners();
@@ -332,7 +350,7 @@ class BMeetProvider extends ChangeNotifier {
         interval: 250, smooth: 3, reportVad: true);
     await _engine.muteLocalAudioStream(_muted);
     await _engine.muteLocalVideoStream(_camera);
-    await _engine.enableVideo();
+    // await _engine.enableVideo();
 // await _engine.setEnableSpeakerphone(speakerOn)
     await _engine.setVideoEncoderConfiguration(
       const VideoEncoderConfiguration(

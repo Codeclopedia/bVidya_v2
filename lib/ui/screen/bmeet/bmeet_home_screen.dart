@@ -60,7 +60,7 @@ class BMeetHomeScreen extends StatelessWidget {
           ),
         ),
         body: Column(
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               // height: double.infinity,
@@ -86,6 +86,33 @@ class BMeetHomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildCalendar(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // const SafeArea(child: SizedBox(height: 1)),
+          _buildCard(context),
+          SizedBox(height: 2.h),
+          Text(
+            S.current.bmeet_txt_schedule,
+            style: textStyleWhite.copyWith(fontSize: 12.sp),
+          ),
+          // SizedBox(height: 0.5.h),
+          Consumer(builder: (context, ref, child) {
+            return CalendarView(
+              onSelectedDate: (date) {
+                ref.read(selectedDateProvider.notifier).state = date;
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHistory() {
     return Container(
       height: 20.h,
@@ -95,7 +122,7 @@ class BMeetHomeScreen extends StatelessWidget {
           return ref.watch(bMeetSelectedHistoryProvider).when(
               data: (meetings) {
                 if (meetings.isNotEmpty == true) {
-                  return _buildData(meetings);
+                  return _buildList(meetings, ref);
                 } else {
                   return buildEmptyPlaceHolder(S.current.bmeet_no_meetings);
                 }
@@ -107,7 +134,7 @@ class BMeetHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildData(List<ScheduledMeeting> meetings) {
+  Widget _buildList(List<ScheduledMeeting> meetings, WidgetRef ref) {
     return ListView.builder(
       itemCount: meetings.length,
       shrinkWrap: true,
@@ -115,112 +142,85 @@ class BMeetHomeScreen extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         final meeting = meetings[index];
-        return Container(
-          margin: EdgeInsets.only(right: 2.w),
-          padding: EdgeInsets.all(3.w),
-          height: 20.h,
-          width: 35.w,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFAFAFA),
-            border: Border.all(color: const Color(0xFF707070), width: 0.5),
-            borderRadius: BorderRadius.all(Radius.circular(4.w)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(S.current.bmeet_txt_meeting,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 7.sp,
-                    fontFamily: kFontFamily,
-                    color: AppColors.black,
-                  )),
-              SizedBox(height: 1.w),
-              Text(
-                meeting.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9.sp,
-                  fontFamily: kFontFamily,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                '${parseMeetingTime(meeting.startsAt)} - ${parseMeetingTime(meeting.endsAt)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 7.sp,
-                  fontFamily: kFontFamily,
-                  color: AppColors.black,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    S.current.bmeet_btx_join,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 7.sp,
-                        fontFamily: kFontFamily,
-                        color: AppColors.black),
-                  ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return GestureDetector(
-                        onTap: () {
-                          startMeeting(context, ref, meeting, true, false);
-                        },
-                        child: CircleAvatar(
-                          backgroundColor: AppColors.yellowAccent,
-                          radius: 1.5.h,
-                          child: getSvgIcon('icon_next.svg', width: 1.4.h),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
+        return _buildCardRow(meeting, () {
+          startMeeting(context, ref, meeting, true, false);
+        });
       },
     );
   }
 
-  Widget _buildCalendar(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SafeArea(child: SizedBox(height: 1)),
-        _buildCard(context),
-        SizedBox(height: 2.h),
-        Text(
-          S.current.bmeet_txt_schedule,
-          style: textStyleWhite.copyWith(
-            fontSize: 12.sp,
+  Widget _buildCardRow(ScheduledMeeting meeting, Function() onJoin) {
+    return Container(
+      margin: EdgeInsets.only(right: 2.w),
+      padding: EdgeInsets.all(3.w),
+      width: 35.w,
+      height: 20.h,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        border: Border.all(color: AppColors.cardBorder, width: 0.5),
+        borderRadius: BorderRadius.all(Radius.circular(4.w)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(S.current.bmeet_txt_meeting,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 7.sp,
+                fontFamily: kFontFamily,
+                color: AppColors.black,
+              )),
+          SizedBox(height: 1.w),
+          Text(
+            meeting.name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 9.sp,
+              fontFamily: kFontFamily,
+              color: AppColors.primaryColor,
+            ),
           ),
-        ),
-        // SizedBox(height: 0.5.h),
-        Consumer(
-          builder: (context, ref, child) {
-            return CalendarView(
-              onSelectedDate: (date) {
-                ref.read(selectedDateProvider.notifier).state = date;
-              },
-            );
-          },
-        )
-      ],
+          SizedBox(height: 1.h),
+          Text(
+            '${parseMeetingTime(meeting.startsAt)} - ${parseMeetingTime(meeting.endsAt)}',
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 7.sp,
+              fontFamily: kFontFamily,
+              color: AppColors.black,
+            ),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                S.current.bmeet_btx_join,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 7.sp,
+                    fontFamily: kFontFamily,
+                    color: AppColors.black),
+              ),
+              GestureDetector(
+                onTap: () {
+                  onJoin();
+                },
+                child: CircleAvatar(
+                  backgroundColor: AppColors.yellowAccent,
+                  radius: 1.5.h,
+                  child: getSvgIcon('icon_next.svg', width: 1.4.h),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
   Widget _buildCard(BuildContext context) {
-
     return Stack(
       children: [
         Center(
@@ -236,19 +236,8 @@ class BMeetHomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 5.h),
-                Center(
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final user = ref.watch(loginRepositoryProvider).user;
-                      return Text(
-                        user?.name ?? '',
-                        style: textStyleBlack,
-                      );
-                    },
-                  ),
-                ),
                 SizedBox(height: 2.h),
+                SizedBox(height: 18.w),
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -321,8 +310,14 @@ class BMeetHomeScreen extends StatelessWidget {
           child: Consumer(
             builder: (context, ref, child) {
               final user = ref.watch(loginRepositoryProvider).user;
-              return getRectFAvatar(
-                  size: 22.w, user?.name ?? '', user?.image ?? '');
+              return Column(
+                children: [
+                  getRectFAvatar(
+                      size: 22.w, user?.name ?? '', user?.image ?? ''),
+                  SizedBox(height: 0.5.h),
+                  Text(user?.name ?? '', style: textStyleBlack),
+                ],
+              );
             },
           ),
         ),

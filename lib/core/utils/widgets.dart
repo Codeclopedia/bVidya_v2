@@ -9,6 +9,28 @@ import 'package:flutter_switch/flutter_switch.dart';
 import '../constants.dart';
 import '../ui_core.dart';
 
+Widget buildBChatText() {
+  return RichText(
+      text: TextSpan(children: [
+    TextSpan(
+        text: 'b',
+        style: TextStyle(
+          fontFamily: kFontFamily,
+          color: AppColors.redBColor,
+          fontSize: 14.sp,
+          fontWeight: FontWeight.bold,
+        )),
+    TextSpan(
+        text: 'chat',
+        style: TextStyle(
+          fontFamily: kFontFamily,
+          color: AppColors.darkChatColor,
+          fontSize: 14.sp,
+          fontWeight: FontWeight.bold,
+        )),
+  ]));
+}
+
 Widget buildRatingBar(double rating) => RatingBar.builder(
       itemSize: 3.5.w,
       initialRating: rating,

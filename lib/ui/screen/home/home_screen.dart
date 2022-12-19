@@ -341,7 +341,7 @@ class HomeScreen extends HookConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildBChatText(),
+        buildBChatText(),
         _recentCallButton(context),
       ],
     );
@@ -452,27 +452,27 @@ class HomeScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildBChatText() {
-    return RichText(
-        text: TextSpan(children: [
-      TextSpan(
-          text: 'b',
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            color: AppColors.redBColor,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-          )),
-      TextSpan(
-          text: 'chat',
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            color: AppColors.darkChatColor,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-          )),
-    ]));
-  }
+  // Widget _buildBChatText() {
+  //   return RichText(
+  //       text: TextSpan(children: [
+  //     TextSpan(
+  //         text: 'b',
+  //         style: TextStyle(
+  //           fontFamily: kFontFamily,
+  //           color: AppColors.redBColor,
+  //           fontSize: 14.sp,
+  //           fontWeight: FontWeight.bold,
+  //         )),
+  //     TextSpan(
+  //         text: 'chat',
+  //         style: TextStyle(
+  //           fontFamily: kFontFamily,
+  //           color: AppColors.darkChatColor,
+  //           fontSize: 14.sp,
+  //           fontWeight: FontWeight.bold,
+  //         )),
+  //   ]));
+  // }
 
   Widget _userAppBar(BuildContext context) {
     return SizedBox(

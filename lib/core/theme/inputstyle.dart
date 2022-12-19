@@ -89,3 +89,23 @@ final InputDecoration inputMeetStyle = InputDecoration(
     borderRadius: BorderRadius.circular(12.0),
   ),
 );
+
+InputDecoration get inputNewGroupStyle => InputDecoration(
+      contentPadding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+      fillColor: AppColors.inputBoxFill,
+      filled: true,
+      hintStyle: TextStyle(
+        fontSize: 9.sp,
+        fontFamily: kFontFamily,
+        color: AppColors.inputHintText,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide:
+            const BorderSide(color: AppColors.inputBoxBorder, width: 1.0),
+      ),
+      border: OutlineInputBorder(
+        gapPadding: 4.0,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+    );

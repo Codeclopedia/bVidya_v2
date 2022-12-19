@@ -67,11 +67,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "blive_caption_date":
             MessageLookupByLibrary.simpleMessage("Broadcast Date"),
         "blive_caption_desc":
-            MessageLookupByLibrary.simpleMessage("Broadcast desc"),
+            MessageLookupByLibrary.simpleMessage("Broadcast description"),
+        "blive_caption_image":
+            MessageLookupByLibrary.simpleMessage("Select an Image"),
         "blive_caption_starttime":
             MessageLookupByLibrary.simpleMessage("Broadcast Time"),
         "blive_caption_title":
-            MessageLookupByLibrary.simpleMessage("Broadcast Title"),
+            MessageLookupByLibrary.simpleMessage("Broadcast title"),
         "blive_date_meeting": m0,
         "blive_empty_date":
             MessageLookupByLibrary.simpleMessage("Enter meeting date"),
@@ -81,14 +83,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter Broadcast time"),
         "blive_empty_title": MessageLookupByLibrary.simpleMessage(
             "Broadcast title can\'t be emplty"),
-        "blive_hint_date":
-            MessageLookupByLibrary.simpleMessage("Select Broadcast Date"),
+        "blive_hint_date": MessageLookupByLibrary.simpleMessage("Select Date"),
         "blive_hint_desc": MessageLookupByLibrary.simpleMessage(
             "Enter Your Broadcast Description"),
         "blive_hint_link":
             MessageLookupByLibrary.simpleMessage("Enter Broadcast ID or Link."),
-        "blive_hint_time":
-            MessageLookupByLibrary.simpleMessage("Broadcast Time"),
+        "blive_hint_time": MessageLookupByLibrary.simpleMessage("Time"),
         "blive_hint_title":
             MessageLookupByLibrary.simpleMessage("Enter Your Broadcast Title"),
         "blive_invalid_date": MessageLookupByLibrary.simpleMessage(
@@ -101,6 +101,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Broadcast title must contains at least 5 characters"),
         "blive_no_meetings": MessageLookupByLibrary.simpleMessage(
             "You currently have no live broadcast\n scheduled on the selected date. \n Select a different date."),
+        "blive_schedule_heading":
+            MessageLookupByLibrary.simpleMessage("Schedule a Broadcast"),
         "blive_today_meeting":
             MessageLookupByLibrary.simpleMessage("Today\'s Broadcast"),
         "blive_txt_broadcast":
@@ -224,6 +226,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Always turn off my camera on start"),
         "bmmet_txt_start_title":
             MessageLookupByLibrary.simpleMessage("Start Instant Meeting"),
+        "btn_continue": MessageLookupByLibrary.simpleMessage("Continue"),
+        "btn_create": MessageLookupByLibrary.simpleMessage("Create"),
         "btn_ok": MessageLookupByLibrary.simpleMessage("OK"),
         "callDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block call notifications"),
@@ -261,6 +265,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
             MessageLookupByLibrary.simpleMessage("Delete your account"),
+        "dg_message_live_scheduled": MessageLookupByLibrary.simpleMessage(
+            "Live session has been scheduled. You can see the details in the scheduled list."),
+        "dg_message_meeting_scheduled": MessageLookupByLibrary.simpleMessage(
+            "Meeting has been scheduled. You can see the details in the scheduled meeting list."),
+        "dg_title_live_scheduled":
+            MessageLookupByLibrary.simpleMessage("Live Session Scheduled"),
+        "dg_title_meeting_scheduled":
+            MessageLookupByLibrary.simpleMessage("Meeting Scheduled"),
         "dltCancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "dltConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure want to delete\nyour account?"),
@@ -297,6 +309,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forgot Password"),
         "groupDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block group notifications"),
+        "grp_btx_clear": MessageLookupByLibrary.simpleMessage("Clear Chat"),
+        "grp_btx_exit": MessageLookupByLibrary.simpleMessage("Exit Group"),
+        "grp_caption_participation":
+            MessageLookupByLibrary.simpleMessage("Participants"),
+        "grp_txt_add_participant":
+            MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
             "Help center,contact us ,privacy policy"),
         "home_btx_groups": MessageLookupByLibrary.simpleMessage("Groups"),
@@ -306,6 +324,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "home_btx_recent_calls":
             MessageLookupByLibrary.simpleMessage("Recent Calls"),
         "home_welcome": MessageLookupByLibrary.simpleMessage("Hello,"),
+        "im_picker_camera_desc":
+            MessageLookupByLibrary.simpleMessage("Take a picture from Camera"),
+        "im_picker_gallery_desc":
+            MessageLookupByLibrary.simpleMessage("Pick an image from Gallery"),
         "issues": MessageLookupByLibrary.simpleMessage("Issues Description"),
         "issuesDesc": MessageLookupByLibrary.simpleMessage(
             "Describe your issues in detail."),
