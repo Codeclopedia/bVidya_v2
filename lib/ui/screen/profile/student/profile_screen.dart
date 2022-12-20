@@ -6,12 +6,6 @@ import '../base_settings.dart';
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
 
-//   @override
-//   _MyappState createState() => _MyappState();
-// }
-
-// class _MyappState extends State<ProfileSettings> {
-
   @override
   Widget build(BuildContext context) {
     return BaseSettings(
@@ -74,27 +68,27 @@ class StudentProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfile() {
-    return Container(
-      margin: EdgeInsets.only(top: 4.h),
-      child: Text(
-        S.current.profile_title,
-        style: textStyleHeading,
-      ),
-    );
-  }
+  // Widget _buildProfile() {
+  //   return Container(
+  //     margin: EdgeInsets.only(top: 4.h),
+  //     child: Text(
+  //       S.current.profile_title,
+  //       style: textStyleHeading,
+  //     ),
+  //   );
+  // }
 
-  Widget _buildGmail() {
-    return Text(
-      S.current.profile_gmail,
-      style: TextStyle(
-        fontSize: 10.sp,
-        fontWeight: FontWeight.w600,
-        color: AppColors.primaryColor,
-        fontFamily: kFontFamily,
-      ),
-    );
-  }
+  // Widget _buildGmail() {
+  //   return Text(
+  //     S.current.profile_gmail,
+  //     style: TextStyle(
+  //       fontSize: 10.sp,
+  //       fontWeight: FontWeight.w600,
+  //       color: AppColors.primaryColor,
+  //       fontFamily: kFontFamily,
+  //     ),
+  //   );
+  // }
 
   Widget _buildContent(String title, String icon, Function() onClick) {
     return InkWell(

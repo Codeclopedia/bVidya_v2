@@ -1,4 +1,3 @@
-
 import '../core/state.dart';
 import '../data/models/models.dart';
 import '../data/repository/blearn_repository.dart';
@@ -38,4 +37,14 @@ final bLearnLessonsProvider =
 
 final bLearnInstructorsProvider = FutureProvider<Instructors?>((ref) {
   return ref.read(bLearnRepositoryProvider).getInstructors();
+});
+
+final bLearnInstructorCoursesProvider =
+    FutureProvider.autoDispose.family<List<Course>?, String>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).getInstructorCourses(id);
+});
+
+final bLearnInstructorProfileProvider =
+    FutureProvider.autoDispose.family<ProfileBody?, String>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).getInstructorProfile(id);
 });

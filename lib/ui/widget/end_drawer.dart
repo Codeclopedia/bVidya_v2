@@ -1,8 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:bvidya/core/utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/constants.dart';
 import '../../core/ui_core.dart';
-
 
 class EndDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -58,8 +60,20 @@ class EndDrawer extends StatelessWidget {
                         () {
                       Navigator.pushNamed(context, RouteList.settings);
                     }),
-                    _buildIcon(
-                        S.current.drawer_profile, 'ic_Profile.svg', () {}),
+                    _buildIcon(S.current.drawer_profile, 'ic_Profile.svg',
+                        () async {
+                      final user = await getMeAsUser();
+                      if (user != null) {
+                        // print('user role ${user.role}');
+                        if (user.role == 'teacher' || user.role == 'admin') {
+                          Navigator.pushNamed(
+                              context, RouteList.teacherProfile);
+                        } else {
+                          Navigator.pushNamed(
+                              context, RouteList.studentProfile);
+                        }
+                      }
+                    }),
                     _buildIcon(
                         S.current.drawer_disucss, 'ic_Community.svg', () {}),
                     _buildIcon(S.current.drawer_forum, 'ic_Forum.svg', () {}),

@@ -1,3 +1,7 @@
+import 'package:bvidya/ui/screen/profile/teacher/teacher_dashboard_screen.dart';
+import 'package:bvidya/ui/screen/profile/teacher/teacher_profile.dart';
+import 'package:bvidya/ui/screen/profile/teacher/teacher_profile_edit.dart';
+
 import '../data/models/models.dart';
 import 'constants.dart';
 import 'ui_core.dart';
@@ -231,6 +235,32 @@ class Routes {
 
       case RouteList.studentProfile:
         screen = const StudentProfileScreen();
+        break;
+
+      case RouteList.teacherProfile:
+        screen = const TeacherProfile();
+        break;
+      case RouteList.teacherEditProfile:
+        if (settings.arguments is Profile) {
+          Profile profile = settings.arguments as Profile;
+          screen = TeacherProfileEdit(
+            profile: profile,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
+
+      case RouteList.teacherDashboard:
+        screen = const TeacherDashboard();
+        // if (settings.arguments is User) {
+        //   User course = settings.arguments as User;
+        //   screen = TeacherDashboard(
+        //     user: course,
+        //   );
+        // } else {
+        //   screen = _parameterMissing();
+        // }
         break;
 
       default:

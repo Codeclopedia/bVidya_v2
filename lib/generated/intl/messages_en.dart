@@ -411,6 +411,24 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Private Class Requests"),
         "privateDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block private class\nrequest notifications"),
+        "prof_edit_address": MessageLookupByLibrary.simpleMessage("Address"),
+        "prof_edit_age": MessageLookupByLibrary.simpleMessage("Age"),
+        "prof_edit_email":
+            MessageLookupByLibrary.simpleMessage("Email Address"),
+        "prof_edit_name": MessageLookupByLibrary.simpleMessage("Name"),
+        "prof_edit_no": MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "prof_edit_title":
+            MessageLookupByLibrary.simpleMessage("Profile Detail"),
+        "prof_hint_add":
+            MessageLookupByLibrary.simpleMessage("Enter Your Address"),
+        "prof_hint_age": MessageLookupByLibrary.simpleMessage("Enter Your Age"),
+        "prof_hint_email":
+            MessageLookupByLibrary.simpleMessage("Enter Your EmailId"),
+        "prof_hint_name":
+            MessageLookupByLibrary.simpleMessage("Enter Your Name"),
+        "prof_hint_no":
+            MessageLookupByLibrary.simpleMessage("Enter Your Phone Number"),
+        "prof_save_btn": MessageLookupByLibrary.simpleMessage("Save"),
         "profile_details":
             MessageLookupByLibrary.simpleMessage("Profile Details"),
         "profile_gmail":
@@ -474,7 +492,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_fullname_caption":
             MessageLookupByLibrary.simpleMessage("Full Name"),
         "signup_fullname_empty":
-            MessageLookupByLibrary.simpleMessage("Full Name"),
+            MessageLookupByLibrary.simpleMessage("Full Name can\'t be emply"),
         "signup_fullname_hint":
             MessageLookupByLibrary.simpleMessage("Full Name"),
         "signup_header_title":
@@ -501,6 +519,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "soundTitle": MessageLookupByLibrary.simpleMessage("Sound"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
         "sureDlt": MessageLookupByLibrary.simpleMessage("Sure, want to delete"),
+        "td_amt": MessageLookupByLibrary.simpleMessage("₹ 20,456"),
+        "td_courses": MessageLookupByLibrary.simpleMessage("Uploaded Courses"),
+        "td_dash": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "td_hrs": MessageLookupByLibrary.simpleMessage("Total Watch Time"),
+        "td_revenue":
+            MessageLookupByLibrary.simpleMessage("Total Revnue Generated"),
+        "td_running":
+            MessageLookupByLibrary.simpleMessage("Top Running Courses"),
+        "td_subs": MessageLookupByLibrary.simpleMessage("Total Subscriber"),
+        "td_total_subs": MessageLookupByLibrary.simpleMessage("2.6 K"),
+        "td_watch_time": MessageLookupByLibrary.simpleMessage("60+ hrs"),
         "teacher_about": MessageLookupByLibrary.simpleMessage("About"),
         "teacher_all_courses":
             MessageLookupByLibrary.simpleMessage("All Courses"),
@@ -514,7 +543,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "teacher_prep": MessageLookupByLibrary.simpleMessage("K12 & NEET"),
         "teacher_sub":
             MessageLookupByLibrary.simpleMessage("Chemistry Educator"),
-        "teacher_view_all": MessageLookupByLibrary.simpleMessage("view all"),
+        "teacher_view_all": MessageLookupByLibrary.simpleMessage("View all >"),
         "teacher_watch": MessageLookupByLibrary.simpleMessage("Watch Time"),
         "teacher_watch_time": MessageLookupByLibrary.simpleMessage("57 Hours"),
         "teachers_followers":
@@ -525,6 +554,17 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Bhavya Malik"),
         "termsDesc":
             MessageLookupByLibrary.simpleMessage("Terms and Conditions"),
-        "terms_title": MessageLookupByLibrary.simpleMessage("Terms of Use")
+        "terms_title": MessageLookupByLibrary.simpleMessage("Terms of Use"),
+        "tp_classes": MessageLookupByLibrary.simpleMessage("Class Requests"),
+        "tp_dashboard": MessageLookupByLibrary.simpleMessage("My Dashboard"),
+        "tp_schedule": MessageLookupByLibrary.simpleMessage("My Schedule"),
+        "tpe_bio": MessageLookupByLibrary.simpleMessage("Bio"),
+        "tpe_bio_hint": MessageLookupByLibrary.simpleMessage("Enter your bio"),
+        "tpe_lang": MessageLookupByLibrary.simpleMessage("Language Known"),
+        "tpe_lang_hint":
+            MessageLookupByLibrary.simpleMessage("What language do you know?"),
+        "tpe_worked": MessageLookupByLibrary.simpleMessage("Worked At"),
+        "tpe_worked_hint": MessageLookupByLibrary.simpleMessage(
+            "What was the name of our previous Organzation?")
       };
 }

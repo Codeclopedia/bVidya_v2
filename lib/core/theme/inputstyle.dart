@@ -1,6 +1,5 @@
 import '../constants.dart';
 import '../ui_core.dart';
-import '../utils/widgets.dart';
 
 final InputDecoration inputDirectionStyle = InputDecoration(
   fillColor: AppColors.inputBoxFill,
@@ -90,10 +89,33 @@ final InputDecoration inputMeetStyle = InputDecoration(
   ),
 );
 
-InputDecoration get inputNewGroupStyle => InputDecoration(
-      contentPadding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-      fillColor: AppColors.inputBoxFill,
+final InputDecoration inputNewGroupStyle = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+  fillColor: AppColors.inputBoxFill,
+  filled: true,
+  hintStyle: TextStyle(
+    fontSize: 9.sp,
+    fontFamily: kFontFamily,
+    color: AppColors.inputHintText,
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12.0),
+    borderSide: const BorderSide(color: AppColors.inputBoxBorder, width: 1.0),
+  ),
+  border: OutlineInputBorder(
+    gapPadding: 4.0,
+    borderRadius: BorderRadius.circular(12.0),
+  ),
+);
+
+InputDecoration get inputEditProfileStyle => InputDecoration(
+      contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.h),
+      fillColor: const Color(0xFFF5F5F5),
       filled: true,
+      suffixIcon: Padding(
+        padding: EdgeInsets.all(3.w),
+        child: Icon(Icons.edit, size: 5.w),
+      ),
       hintStyle: TextStyle(
         fontSize: 9.sp,
         fontFamily: kFontFamily,
@@ -101,8 +123,7 @@ InputDecoration get inputNewGroupStyle => InputDecoration(
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        borderSide:
-            const BorderSide(color: AppColors.inputBoxBorder, width: 1.0),
+        borderSide: const BorderSide(color: Color(0xFF989898), width: 1.0),
       ),
       border: OutlineInputBorder(
         gapPadding: 4.0,

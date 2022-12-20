@@ -41,7 +41,10 @@ class ApiList {
   static const String lmsLessons = 'lessons/'; //GET
   static const String lmsInstructors = 'instructors'; //GET
   static const String lmsSearch = 'search'; //POST
+  static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET
+  static const String lmsInstructorProfile = 'instructor/'; //GET
 
   //Settings
   static const String reportProblem = 'report'; //POST
+  static const String userProfile = 'profile'; //POST
 }

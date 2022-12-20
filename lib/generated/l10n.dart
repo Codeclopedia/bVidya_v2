@@ -350,10 +350,10 @@ class S {
     );
   }
 
-  /// `Full Name`
+  /// `Full Name can't be emply`
   String get signup_fullname_empty {
     return Intl.message(
-      'Full Name',
+      'Full Name can\'t be emply',
       name: 'signup_fullname_empty',
       desc: '',
       args: [],
@@ -3000,10 +3000,10 @@ class S {
     );
   }
 
-  /// `view all`
+  /// `View all >`
   String get teacher_view_all {
     return Intl.message(
-      'view all',
+      'View all >',
       name: 'teacher_view_all',
       desc: '',
       args: [],
@@ -3065,6 +3065,306 @@ class S {
     return Intl.message(
       'Knows Hinglish, Hindi and\nEnglish',
       name: 'course_lang',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile Detail`
+  String get prof_edit_title {
+    return Intl.message(
+      'Profile Detail',
+      name: 'prof_edit_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name`
+  String get prof_edit_name {
+    return Intl.message(
+      'Name',
+      name: 'prof_edit_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone Number`
+  String get prof_edit_no {
+    return Intl.message(
+      'Phone Number',
+      name: 'prof_edit_no',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Age`
+  String get prof_edit_age {
+    return Intl.message(
+      'Age',
+      name: 'prof_edit_age',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address`
+  String get prof_edit_address {
+    return Intl.message(
+      'Address',
+      name: 'prof_edit_address',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email Address`
+  String get prof_edit_email {
+    return Intl.message(
+      'Email Address',
+      name: 'prof_edit_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Your Name`
+  String get prof_hint_name {
+    return Intl.message(
+      'Enter Your Name',
+      name: 'prof_hint_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Your Phone Number`
+  String get prof_hint_no {
+    return Intl.message(
+      'Enter Your Phone Number',
+      name: 'prof_hint_no',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Your EmailId`
+  String get prof_hint_email {
+    return Intl.message(
+      'Enter Your EmailId',
+      name: 'prof_hint_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Your Address`
+  String get prof_hint_add {
+    return Intl.message(
+      'Enter Your Address',
+      name: 'prof_hint_add',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter Your Age`
+  String get prof_hint_age {
+    return Intl.message(
+      'Enter Your Age',
+      name: 'prof_hint_age',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get prof_save_btn {
+    return Intl.message(
+      'Save',
+      name: 'prof_save_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Dashboard`
+  String get tp_dashboard {
+    return Intl.message(
+      'My Dashboard',
+      name: 'tp_dashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Schedule`
+  String get tp_schedule {
+    return Intl.message(
+      'My Schedule',
+      name: 'tp_schedule',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Requests`
+  String get tp_classes {
+    return Intl.message(
+      'Class Requests',
+      name: 'tp_classes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Language Known`
+  String get tpe_lang {
+    return Intl.message(
+      'Language Known',
+      name: 'tpe_lang',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bio`
+  String get tpe_bio {
+    return Intl.message(
+      'Bio',
+      name: 'tpe_bio',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Worked At`
+  String get tpe_worked {
+    return Intl.message(
+      'Worked At',
+      name: 'tpe_worked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your bio`
+  String get tpe_bio_hint {
+    return Intl.message(
+      'Enter your bio',
+      name: 'tpe_bio_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What was the name of our previous Organzation?`
+  String get tpe_worked_hint {
+    return Intl.message(
+      'What was the name of our previous Organzation?',
+      name: 'tpe_worked_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What language do you know?`
+  String get tpe_lang_hint {
+    return Intl.message(
+      'What language do you know?',
+      name: 'tpe_lang_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get td_dash {
+    return Intl.message(
+      'Dashboard',
+      name: 'td_dash',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Revnue Generated`
+  String get td_revenue {
+    return Intl.message(
+      'Total Revnue Generated',
+      name: 'td_revenue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `₹ 20,456`
+  String get td_amt {
+    return Intl.message(
+      '₹ 20,456',
+      name: 'td_amt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Subscriber`
+  String get td_subs {
+    return Intl.message(
+      'Total Subscriber',
+      name: 'td_subs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Watch Time`
+  String get td_hrs {
+    return Intl.message(
+      'Total Watch Time',
+      name: 'td_hrs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `2.6 K`
+  String get td_total_subs {
+    return Intl.message(
+      '2.6 K',
+      name: 'td_total_subs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `60+ hrs`
+  String get td_watch_time {
+    return Intl.message(
+      '60+ hrs',
+      name: 'td_watch_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploaded Courses`
+  String get td_courses {
+    return Intl.message(
+      'Uploaded Courses',
+      name: 'td_courses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Top Running Courses`
+  String get td_running {
+    return Intl.message(
+      'Top Running Courses',
+      name: 'td_running',
       desc: '',
       args: [],
     );

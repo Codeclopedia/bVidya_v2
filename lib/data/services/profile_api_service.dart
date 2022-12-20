@@ -36,4 +36,21 @@ class ProfileApiService {
       return BaseResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
+
+  Future<UserProfileResponse> getUserProfile(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    try {
+      final response = await _dio.get(baseUrlApi + ApiList.userProfile);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        return UserProfileResponse.fromJson(response.data);
+      } else {
+        return UserProfileResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return UserProfileResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
 }

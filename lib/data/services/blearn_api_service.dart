@@ -151,4 +151,39 @@ class BLearnApiService {
       return LMSSearchResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
+
+
+  Future<InstructorProfileResponse> getInstructorProfile(String authToken, String instructorId) async{
+    _dio.options.headers["X-Auth-Token"] = authToken;
+    try {
+      final response = await _dio.get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
+      if (response.statusCode == 200) {
+        return InstructorProfileResponse.fromJson(response.data);
+      } else {
+        return InstructorProfileResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return InstructorProfileResponse(
+          status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future<InstructorCoursesResponse> getCoursesByInstructor(String authToken, String instructorId) async{
+    _dio.options.headers["X-Auth-Token"] = authToken;
+    try {
+      final response = await _dio.get('$baseUrlApi${ApiList.lmsCourseByInstructor}$instructorId');
+      if (response.statusCode == 200) {
+        return InstructorCoursesResponse.fromJson(response.data);
+      } else {
+        return InstructorCoursesResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return InstructorCoursesResponse(
+          status: 'error', message: 'Unknown error -$e');
+    }
+  }
 }

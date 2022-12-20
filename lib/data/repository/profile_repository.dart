@@ -1,3 +1,4 @@
+import '../models/models.dart';
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -13,6 +14,15 @@ class ProfileRepository {
       return null;
     } else {
       return result.message ?? 'Unknown error';
+    }
+  }
+
+  Future<Profile?> getUserProfile() async {
+    final result = await _api.getUserProfile(_authToken);
+    if (result.status == successfull) {
+      return result.body;
+    } else {
+      return null;
     }
   }
 }

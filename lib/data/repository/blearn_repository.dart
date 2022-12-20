@@ -1,3 +1,4 @@
+
 import '../models/models.dart';
 import '../services/blearn_api_service.dart';
 
@@ -70,6 +71,24 @@ class BLearnRepository {
     if (result.status == successfull && result.body != null) {
       // print('result: ${result.status} ${result.body?.toJson()}');
       return result.body;
+    } else {
+      return null;
+    }
+  }
+
+  Future<ProfileBody?> getInstructorProfile(String instructorId) async {
+    final result = await _api.getInstructorProfile(_authToken, instructorId);
+    if (result.status == successfull && result.body != null) {
+      return result.body!;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Course>?> getInstructorCourses(String instructorId) async {
+    final result = await _api.getCoursesByInstructor(_authToken, instructorId);
+    if (result.status == successfull && result.body != null) {
+      return result.body!;
     } else {
       return null;
     }
