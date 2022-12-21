@@ -28,13 +28,16 @@ class EndDrawer extends StatelessWidget {
               return Positioned(
                 top: drag.arcTop,
                 right: drag.arcRight,
-                child: InkWell(
-                  onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
-                  child: SvgPicture.asset(
-                    'assets/icons/svgs/arc_drawer.svg',
-                    color: AppColors.yellowAccent,
-                    width: 7.w,
-                    height: 12.h,
+                child: SafeArea(
+                  top: false,
+                  child: InkWell(
+                    onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
+                    child: SvgPicture.asset(
+                      'assets/icons/svgs/arc_drawer.svg',
+                      color: AppColors.yellowAccent,
+                      width: 7.w,
+                      height: 12.h,
+                    ),
                   ),
                 ),
               );
@@ -44,10 +47,11 @@ class EndDrawer extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Container(
               width: 20.w,
+              height: double.infinity,
               color: AppColors.drawerBackgroundColor,
-              child: SafeArea(
-                child: Consumer(builder: (context, ref, child) {
-                  return Column(
+              child: Consumer(builder: (context, ref, child) {
+                return SafeArea(
+                  child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,9 +187,9 @@ class EndDrawer extends StatelessWidget {
                         ]),
                       ),
                     ],
-                  );
-                }),
-              ),
+                  ),
+                );
+              }),
             ),
           ),
         ],

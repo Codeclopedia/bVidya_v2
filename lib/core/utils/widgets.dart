@@ -9,7 +9,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import '../constants.dart';
 import '../ui_core.dart';
 
-Widget buildBChatText() {
+Widget buildBText(String text) {
   return RichText(
       text: TextSpan(children: [
     TextSpan(
@@ -21,7 +21,7 @@ Widget buildBChatText() {
           fontWeight: FontWeight.bold,
         )),
     TextSpan(
-        text: 'chat',
+        text: text,
         style: TextStyle(
           fontFamily: kFontFamily,
           color: AppColors.darkChatColor,

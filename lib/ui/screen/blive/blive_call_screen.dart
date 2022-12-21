@@ -51,8 +51,6 @@ class BLiveClassScreen extends HookConsumerWidget {
     final provider = ref.watch(bLiveCallChangeProvider);
     provider.init(liveClass, rtmToken, userId, ref);
 
-    
-
     return PIPView(builder: (context, isFloating) {
       return Scaffold(
         backgroundColor: Colors.black,
@@ -386,7 +384,7 @@ class BLiveClassScreen extends HookConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildBChatText(),
+                buildBText('Live'),
                 const Icon(
                   Icons.keyboard_arrow_down_rounded,
                   size: 24,

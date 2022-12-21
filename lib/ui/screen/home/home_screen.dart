@@ -341,7 +341,7 @@ class HomeScreen extends HookConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        buildBChatText(),
+        buildBText('Chat'),
         _recentCallButton(context),
       ],
     );

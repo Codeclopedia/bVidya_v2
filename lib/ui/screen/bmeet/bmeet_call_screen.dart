@@ -339,7 +339,7 @@ class BMeetCallScreen extends StatelessWidget {
             onTap: () => _showDetailDialog(context),
             child: Row(
               children: [
-                buildBChatText(),
+                buildBText('Meet'),
                 // RichText(
                 //   text: TextSpan(
                 //     text: 'b',
