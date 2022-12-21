@@ -103,6 +103,7 @@ flutter:
     - assets/audio/
     # - assets/images/bottombar/
     - assets/icons/
+    - assets/icons/png/
     - assets/icons/svgs/
     - assets/icons/svg/
 flutter_intl:

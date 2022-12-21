@@ -25,28 +25,28 @@ class DragNotifier extends StateNotifier<DrawerPositionModel> {
   updatDrawerPositions(String currentPage) {
     switch (currentPage) {
       case RouteList.settings:
-        _updateState(56.h, 0, 4.h, 19.w);
+        _updateState(56.h, 0, 8.h, 19.w);
         break;
       case RouteList.profile:
-        _updateState(56.h, 0, 16.h, 19.w);
+        _updateState(56.h, 0, 23.h, 19.w);
         break;
-      case RouteList.bDiscuss:
-        _updateState(56.h, 0, 27.h, 19.w);
-        break;
-      case RouteList.bForum:
-        _updateState(56.h, 0, 38.h, 19.w);
-        break;
+      // case RouteList.bDiscuss:
+      //   _updateState(56.h, 0, 28.5.h, 19.w);
+      //   break;
+      // case RouteList.bForum:
+      //   _updateState(56.h, 0, 38.h, 19.w);
+      //   break;
       case RouteList.bLive:
-        _updateState(56.h, 0, 49.h, 19.w);
+        _updateState(56.h, 0, 37.5.h, 19.w);
         break;
       case RouteList.bMeet:
-        _updateState(56.h, 0, 60.h, 19.w);
+        _updateState(56.h, 0, 53.h, 19.w);
         break;
       case RouteList.bLearnHome:
-        _updateState(56.h, 0, 72.h, 19.w);
+        _updateState(56.h, 0, 68.h, 19.w);
         break;
       case RouteList.home:
-        _updateState(56.h, 0, 82.h, 19.w);
+        _updateState(56.h, 0, 83.h, 19.w);
         break;
     }
   }

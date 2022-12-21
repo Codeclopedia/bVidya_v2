@@ -82,6 +82,15 @@ SvgPicture getSvgIcon(String name,
       fit: BoxFit.fitWidth,
     );
 
+Image getPngIcon(String name,
+        {double? width = 24.0, Color? color, double height = 24.0}) =>
+    Image.asset(
+      'assets/icons/png/$name',
+      width: width,
+      color: color,
+      fit: BoxFit.fitWidth,
+    );
+
 Widget getRectFAvatar(String name, String image, {double? size}) => Avatar(
       shape: AvatarShape.rectangle(
         size ?? 14.w,
