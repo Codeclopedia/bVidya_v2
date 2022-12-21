@@ -66,7 +66,7 @@ class EndDrawer extends StatelessWidget {
                       // ),
                       _buildIcon(
                           S.current.drawer_setting, 'icons8-settings.svg', () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.settings);
@@ -75,7 +75,7 @@ class EndDrawer extends StatelessWidget {
                       }),
                       _buildIcon(S.current.drawer_profile, 'ic_Profile.svg',
                           () async {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.profile);
@@ -93,19 +93,19 @@ class EndDrawer extends StatelessWidget {
                       }),
                       _buildIcon(S.current.drawer_disucss, 'ic_Community.svg',
                           () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.bDiscuss);
                       }),
                       _buildIcon(S.current.drawer_forum, 'ic_Forum.svg', () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.bForum);
                       }),
                       _buildIcon(S.current.drawer_blive, 'ic_blive.svg', () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         if (myRouteName == RouteList.bLive) return;
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
@@ -114,7 +114,7 @@ class EndDrawer extends StatelessWidget {
                             context, RouteList.bLive);
                       }),
                       _buildIcon(S.current.drawer_bmeet, 'ic_bmeet.svg', () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         if (myRouteName == RouteList.bMeet) return;
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
@@ -123,7 +123,7 @@ class EndDrawer extends StatelessWidget {
                             context, RouteList.bMeet);
                       }),
                       _buildIcon(S.current.drawer_blearn, 'ic_blearn.svg', () {
-                        scaffoldKey.currentState?.closeDrawer();
+                        scaffoldKey.currentState?.closeEndDrawer();
                         if (myRouteName == RouteList.bLearnHome) return;
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
@@ -133,7 +133,7 @@ class EndDrawer extends StatelessWidget {
                       }),
                       Stack(children: [
                         _buildIcon(S.current.drawer_bchat, 'ic_Bchat.svg', () {
-                          scaffoldKey.currentState?.closeDrawer();
+                          scaffoldKey.currentState?.closeEndDrawer();
                           if (myRouteName == RouteList.home) return;
                           ref
                               .read(drawerPositionNotifierProvider.notifier)

@@ -8,8 +8,9 @@ import 'ui_core.dart';
 import '../ui/screens.dart';
 
 class Routes {
-  static MaterialPageRoute generateRoute(RouteSettings settings) {
+  static Route generateRoute(RouteSettings settings) {
     final Widget screen;
+    bool hasDrawer = false;
     switch (settings.name) {
       case RouteList.signup:
         screen = SignUpScreen();
@@ -26,6 +27,7 @@ class Routes {
         break;
       case RouteList.home:
         screen = const HomeScreen();
+        hasDrawer = true;
         break;
       case RouteList.groups:
         screen = const GroupsScreen();
@@ -94,6 +96,7 @@ class Routes {
         break;
       case RouteList.bMeet:
         screen = const BMeetHomeScreen();
+        hasDrawer = true;
         break;
       case RouteList.bMeetStart:
         if (settings.arguments is ScheduledMeeting) {
@@ -107,6 +110,7 @@ class Routes {
         break;
       case RouteList.bMeetJoin:
         screen = const JoinMeetScreen();
+
         break;
       case RouteList.bMeetCall:
         if (settings.arguments is Map<String, dynamic>) {
@@ -147,6 +151,7 @@ class Routes {
       //Live
       case RouteList.bLive:
         screen = const BLiveHomeScreen();
+        hasDrawer = true;
         break;
       case RouteList.bLiveSchedule:
         screen = ScheduleBLiveScreen();
@@ -168,6 +173,7 @@ class Routes {
       //bLearn
       case RouteList.bLearnHome:
         screen = const BLearnHomeScreen();
+        hasDrawer = true;
         break;
       case RouteList.bLearnCategories:
         screen = const CategoriesScreen();
@@ -210,6 +216,7 @@ class Routes {
 
       case RouteList.settings:
         screen = const SettingsScreen();
+
         break;
       case RouteList.accountSetting:
         screen = const AccountSettingScreen();
@@ -274,6 +281,24 @@ class Routes {
             ),
           ),
         );
+    }
+    if (hasDrawer) {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => screen,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // const begin = Offset(0.0, 0.0);
+          // const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+              Tween<double>(begin: 0, end: 1).chain(CurveTween(curve: curve));
+
+          return FadeTransition(
+            opacity: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
     }
     return MaterialPageRoute(
       builder: (context) => screen,
