@@ -1,6 +1,8 @@
 import 'package:flutter_svg/svg.dart';
 
+import '../../core/state.dart';
 import '../../core/ui_core.dart';
+import '../../core/helpers/drag_position.dart';
 import '../widgets.dart';
 
 class LiveDrawerScreen extends StatefulWidget {
@@ -50,18 +52,21 @@ class _LiveDrawerScreenState extends State<LiveDrawerScreen> {
   }
 
   Widget _toggler() {
-    return Positioned(
-      top: 66.h,
-      right: -10.0,
-      child: GestureDetector(
-        onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
-        child: SvgPicture.asset(
-          'assets/icons/svgs/drawer.svg',
-          width: 15.w,
-          height: 42.w,
-          fit: BoxFit.cover,
+    return Consumer(builder: (context, ref, child) {
+      final drag = ref.watch(drawerPositionNotifierProvider);
+      return Positioned(
+        top: drag.iconTop,
+        right: -10.0, //+ drag.arcRight,
+        child: GestureDetector(
+          onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
+          child: SvgPicture.asset(
+            'assets/icons/svgs/drawer.svg',
+            width: 15.w,
+            height: 42.w,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

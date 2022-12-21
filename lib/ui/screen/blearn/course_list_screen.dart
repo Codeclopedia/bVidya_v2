@@ -4,8 +4,8 @@ import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../widgets.dart';
-import 'widget/common.dart';
-import 'widget/course_row.dart';
+import 'components/common.dart';
+import 'components/course_row.dart';
 
 class CourseListScreen extends StatelessWidget {
   final SubCategory subCategory;

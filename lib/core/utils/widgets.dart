@@ -53,6 +53,7 @@ ImageProvider getImageProvider(String url) {
   } else if (url.startsWith('assets')) {
     return AssetImage(url);
   } else {
+    print('$url');
     return CachedNetworkImageProvider('$baseImageApi$url');
     // return FileImage(
     //   File(url),

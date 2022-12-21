@@ -67,4 +67,8 @@ class RouteList {
   static const String teacherEditProfile = '/teacher-edit-profile';
   static const String teacherDashboard = '/teacher-dashboard';
   static const String teacherProfilePublic = '/teacher-profile-public';
+
+  //
+  static const String bForum = '/forum';
+  static const String bDiscuss = '/discuss';
 }

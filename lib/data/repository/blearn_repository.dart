@@ -1,4 +1,3 @@
-
 import '../models/models.dart';
 import '../services/blearn_api_service.dart';
 
@@ -87,9 +86,11 @@ class BLearnRepository {
 
   Future<List<Course>?> getInstructorCourses(String instructorId) async {
     final result = await _api.getCoursesByInstructor(_authToken, instructorId);
+    // print('message ${result.message}  ${result.body}');
     if (result.status == successfull && result.body != null) {
       return result.body!;
     } else {
+      print('Error ${result.message ?? 'Error'} ');
       return null;
     }
   }

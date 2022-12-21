@@ -4,52 +4,32 @@ import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../widgets.dart';
-import 'widget/common.dart';
-import 'widget/lesson_list_row.dart';
+import 'components/common.dart';
+import 'components/lesson_list_row.dart';
 
-const colorUnSelect = Color(0xFFF5F5F5);
-const colorSelect = AppColors.primaryColor;
+// int _selectedIndex = -1;
 
-final textStyleUnselect = TextStyle(
-  fontFamily: kFontFamily,
-  color: Colors.black,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
+final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
+final selectedIndexLessonProvider = StateProvider<int>((ref) => 0);
 
-final textStyleSelect = TextStyle(
-  fontFamily: kFontFamily,
-  color: Colors.white,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
-
-class CourseDetailScreen extends StatefulWidget {
+class CourseDetailScreen extends ConsumerWidget {
   final Course courses;
   const CourseDetailScreen({Key? key, required this.courses}) : super(key: key);
 
   @override
-  State<CourseDetailScreen> createState() => _CourseDetailScreenState();
-}
-
-class _CourseDetailScreenState extends State<CourseDetailScreen> {
-  bool _selectedDesc = true;
-  int _selectedIndex = -1;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // topBar: const BAppBar(title: 'Course Detail'),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            _topImage(),
+            _topImage(context),
             _subjectDetail(),
-            _toggleItems(),
-            _selectedDesc ? _buildDescView() : _builCurriculumView()
+            _buildTab(ref, selectedIndex),
+            // _toggleItems(),
+            selectedIndex == 0 ? _buildDescView() : _builCurriculumView()
           ],
         ),
       ),
@@ -57,7 +37,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   }
 
   Widget _builCurriculumView() {
-    // widget.courses?.
     return Expanded(
         child: SingleChildScrollView(
       child: Padding(
@@ -78,13 +57,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
             Consumer(
               builder: (context, ref, child) {
                 return ref
-                    .watch(bLearnLessonsProvider(widget.courses.id.toString()))
+                    .watch(bLearnLessonsProvider(courses.id.toString()))
                     .when(
                         data: (data) {
                           if (data != null) {
-                            return _buildLessons();
+                            return _buildLessons(ref);
                           } else {
-                            return _buildLessons();
+                            return buildEmptyPlaceHolder('text');
+                            // return _buildLessons();
                           }
                         },
                         error: (error, stackTrace) =>
@@ -98,7 +78,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
     ));
   }
 
-  Widget _buildLessons() {
+  Widget _buildLessons(WidgetRef ref) {
+    final selectedIndex = ref.watch(selectedIndexLessonProvider);
     return ListView.builder(
       itemCount: 4,
       shrinkWrap: true,
@@ -106,15 +87,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
       itemBuilder: (context, index) {
         return LessonListRow(
           index: index + 1,
-          openIndex: _selectedIndex,
+          openIndex: selectedIndex,
           onExpand: (selected) {
-            setState(() {
-              if (selected == _selectedIndex) {
-                _selectedIndex = -1;
-              } else {
-                _selectedIndex = selected;
-              }
-            });
+            ref.read(selectedIndexLessonProvider.notifier).state = selected;
           },
         );
       },
@@ -135,16 +110,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildDetailItem('Duration:',
-                          ' ${widget.courses.duration}', Icons.history),
+                      _buildDetailItem(
+                          'Duration:', ' ${courses.duration}', Icons.history),
                       Container(
                         height: 0.5,
                         color: const Color(0xFFDBDBDB),
                       ),
-                      _buildDetailItem(
-                          'Lectures:',
-                          ' ${widget.courses.numberOfLesson}',
-                          Icons.description),
+                      _buildDetailItem('Lectures:',
+                          ' ${courses.numberOfLesson}', Icons.description),
                     ],
                   ),
                 ),
@@ -153,7 +126,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   child: Column(
                     children: [
                       _buildDetailItem(
-                          'Level:', ' ${widget.courses.level}', Icons.sort),
+                          'Level:', ' ${courses.level}', Icons.sort),
                       Container(
                         height: 0.5,
                         color: const Color(0xFFDBDBDB),
@@ -189,7 +162,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   }
 
   Widget _getText() {
-    return Text(widget.courses.description);
+    return Text(courses.description);
   }
 
   Widget _buildGridView() {
@@ -240,65 +213,104 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
     );
   }
 
-  Widget _toggleItems() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6.w),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-              child: InkWell(
-            onTap: (() {
-              setState(() {
-                _selectedDesc = true;
-              });
-            }),
-            child: Container(
-              padding: EdgeInsets.all(3.w),
-              decoration: BoxDecoration(
-                color: _selectedDesc ? colorSelect : colorUnSelect,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(3.w),
-                  bottomLeft: Radius.circular(3.w),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Description',
-                  style: _selectedDesc ? textStyleSelect : textStyleUnselect,
-                ),
-              ),
-            ),
-          )),
-          Expanded(
-            child: InkWell(
-              onTap: (() {
-                setState(() {
-                  _selectedDesc = false;
-                });
-              }),
-              child: Container(
-                padding: EdgeInsets.all(3.w),
-                decoration: BoxDecoration(
-                  color: !_selectedDesc ? colorSelect : colorUnSelect,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(3.w),
-                    bottomRight: Radius.circular(3.w),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    'Curriculum',
-                    style: !_selectedDesc ? textStyleSelect : textStyleUnselect,
-                  ),
-                ),
-              ),
-            ),
+  Widget _buildTab(WidgetRef ref, int selectedIndex) {
+    // return Consumer(
+    //   builder: (context, ref, child) {
+    //     int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
+    return Center(
+      child: SlideTab(
+          initialIndex: selectedIndex,
+          containerWidth: 80.w,
+          onSelect: (index) {
+            ref.read(selectedTabCourseDetailProvider.notifier).state = index;
+          },
+          containerHeight: 6.h,
+          sliderColor: AppColors.primaryColor,
+          containerBorderRadius: 2.5.w,
+          sliderBorderRadius: 2.6.w,
+          containerColor: AppColors.cardWhite,
+          activeTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w500,
+            fontFamily: kFontFamily,
           ),
-        ],
-      ),
+          inactiveTextStyle: TextStyle(
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w400,
+            fontFamily: kFontFamily,
+            color: Colors.black,
+          ),
+          texts:const [
+            'Description',
+            'Curriculum',
+          ]),
     );
+    //   },
+    // );
   }
+
+  // Widget _toggleItems() {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(horizontal: 6.w),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.max,
+  //       children: [
+  //         Expanded(
+  //             child: InkWell(
+  //           onTap: (() {
+  //             setState(() {
+  //               _selectedDesc = true;
+  //             });
+  //           }),
+  //           child: Container(
+  //             padding: EdgeInsets.all(3.w),
+  //             decoration: BoxDecoration(
+  //               color: _selectedDesc
+  //                   ? AppColors.primaryColor
+  //                   : AppColors.cardWhite,
+  //               borderRadius: BorderRadius.only(
+  //                 topLeft: Radius.circular(3.w),
+  //                 bottomLeft: Radius.circular(3.w),
+  //               ),
+  //             ),
+  //             child: Center(
+  //               child: Text(
+  //                 'Description',
+  //                 style: _selectedDesc ? textStyleSelect : textStyleUnselect,
+  //               ),
+  //             ),
+  //           ),
+  //         )),
+  //         Expanded(
+  //           child: InkWell(
+  //             onTap: (() {
+  //               setState(() {
+  //                 _selectedDesc = false;
+  //               });
+  //             }),
+  //             child: Container(
+  //               padding: EdgeInsets.all(3.w),
+  //               decoration: BoxDecoration(
+  //                 color: !_selectedDesc ? colorSelect : colorUnSelect,
+  //                 borderRadius: BorderRadius.only(
+  //                   topRight: Radius.circular(3.w),
+  //                   bottomRight: Radius.circular(3.w),
+  //                 ),
+  //               ),
+  //               child: Center(
+  //                 child: Text(
+  //                   'Curriculum',
+  //                   style: !_selectedDesc ? textStyleSelect : textStyleUnselect,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildDetailItem(String title, String value, IconData icon) {
     return Padding(
@@ -349,7 +361,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
             children: [
               Expanded(
                 child: Text(
-                  widget.courses.name,
+                  courses.name,
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 17.sp,
@@ -386,10 +398,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
             children: [
               _buildIntructor(),
               const Spacer(),
-              _buildMeta(
-                  'Launguage', widget.courses.language, 'icon_language.svg'),
+              _buildMeta('Launguage', courses.language, 'icon_language.svg'),
               const Spacer(),
-              _buildMeta('Category', widget.courses.categoryId.toString(),
+              _buildMeta('Category', courses.categoryId.toString(),
                   'icon_category.svg'),
             ],
           )
@@ -403,8 +414,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        getCicleAvatar(
-            widget.courses.instructorName, widget.courses.instructorImage,
+        getCicleAvatar(courses.instructorName, courses.instructorImage,
             radius: 4.w),
         SizedBox(width: 1.w),
         Column(
@@ -419,7 +429,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
               ),
             ),
             Text(
-              widget.courses.instructorName,
+              courses.instructorName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -468,7 +478,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
     );
   }
 
-  Widget _topImage() {
+  Widget _topImage(BuildContext context) {
     // final providerFallback = getImageProvider('assets/images/banner_image.png');
     return Stack(
       children: [
@@ -477,7 +487,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(2.w)),
               child: Image(
-                image: getImageProvider(widget.courses.image),
+                image: getImageProvider(courses.image),
                 fit: BoxFit.fitWidth,
               )),
         ),

@@ -26,7 +26,7 @@ class TeacherProfile extends StatelessWidget {
             _buildProfile(),
             Consumer(builder: (context, ref, child) {
               return _buildContent(
-                  S.current.profile_details, "profile_user.svg", () async {
+                  S.current.profile_details, 'profile_user.svg', () async {
                 // final user = await getMeAsUser();
                 showLoading(ref);
                 final profile =
@@ -46,31 +46,30 @@ class TeacherProfile extends StatelessWidget {
                 // );
               });
             }),
-            _buildContent(S.current.tp_dashboard, "profile_learning.svg",
+            _buildContent(S.current.tp_dashboard, 'profile_learning.svg',
                 () async {
               final user = await getMeAsUser();
               if (user != null) {
                 Navigator.pushNamed(context, RouteList.teacherDashboard);
               }
             }),
-            _buildContent(S.current.tp_schedule, "noti_calender.svg", () {
+            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () {
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(
               //       builder: (context) => const NotificationSetting()),
               // );
             }),
-            _buildClassRequest(
-                S.current.tp_classes, "profile_instru.svg", "back.svg", () {
+            _buildClassRequest(S.current.tp_classes, 'profile_instru.svg', () {
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(builder: (context) => const HelpCenter()),
               // );
             }),
             _buildContent(
-                S.current.profile_invite, "profile_invite.svg", () {}),
+                S.current.profile_invite, 'profile_invite.svg', () {}),
             _buildContent(
-                S.current.profile_logout, "profile_logout.svg", () {}),
+                S.current.profile_logout, 'profile_logout.svg', () {}),
             Container(
               width: 0.5.w,
             )
@@ -79,8 +78,8 @@ class TeacherProfile extends StatelessWidget {
   }
 
   Widget _buildProfile() {
-    return Container(
-      margin: EdgeInsets.only(top: 4.h, left: 6.w),
+    return Padding(
+      padding: EdgeInsets.only(top: 4.h, left: 6.w),
       child: Text(
         S.current.profile_title,
         style: textStyleHeading,
@@ -88,12 +87,11 @@ class TeacherProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildClassRequest(
-      String title, String icon, String image, Function() onClick) {
+  Widget _buildClassRequest(String title, String icon, Function() onClick) {
     return InkWell(
       onTap: onClick,
-      child: Container(
-        margin: EdgeInsets.only(top: 3.h),
+      child: Padding(
+        padding: EdgeInsets.only(top: 3.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -137,8 +135,8 @@ class TeacherProfile extends StatelessWidget {
   Widget _buildContent(String title, String icon, Function() onClick) {
     return InkWell(
       onTap: onClick,
-      child: Container(
-        margin: EdgeInsets.only(top: 3.h),
+      child: Padding(
+        padding: EdgeInsets.only(top: 3.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

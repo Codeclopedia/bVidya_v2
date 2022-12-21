@@ -10,7 +10,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../../data/models/models.dart';
 import '../../widget/chat_input_box.dart';
 import '../../widget/rtm_chat_bubble.dart';
-import '../blearn/widget/common.dart';
+import '../blearn/components/common.dart';
 import 'blive_home_screen.dart';
 
 class BLiveClassScreen extends HookConsumerWidget {

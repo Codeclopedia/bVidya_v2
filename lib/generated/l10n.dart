@@ -2130,6 +2130,26 @@ class S {
     );
   }
 
+  /// `Courses`
+  String get sp_tab_course {
+    return Intl.message(
+      'Courses',
+      name: 'sp_tab_course',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Teacher Followed`
+  String get sp_tab_followed {
+    return Intl.message(
+      'Teacher Followed',
+      name: 'sp_tab_followed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Account`
   String get Account {
     return Intl.message(

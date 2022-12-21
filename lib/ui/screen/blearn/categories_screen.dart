@@ -4,7 +4,7 @@ import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../widgets.dart';
-import 'widget/common.dart';
+import 'components/common.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({Key? key}) : super(key: key);

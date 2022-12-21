@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../../core/constants.dart';
 import '../models/models.dart';
@@ -152,12 +154,16 @@ class BLearnApiService {
     }
   }
 
-
-  Future<InstructorProfileResponse> getInstructorProfile(String authToken, String instructorId) async{
-    _dio.options.headers["X-Auth-Token"] = authToken;
+  Future<InstructorProfileResponse> getInstructorProfile(
+      String authToken, String instructorId) async {
     try {
-      final response = await _dio.get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
+      _dio.options.headers["X-Auth-Token"] = authToken;
+      print('$authToken $instructorId');
+      final response = await _dio
+          .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
+
       if (response.statusCode == 200) {
+        print('${jsonEncode(response.data)}');
         return InstructorProfileResponse.fromJson(response.data);
       } else {
         return InstructorProfileResponse(
@@ -165,15 +171,18 @@ class BLearnApiService {
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
+      print('error: $e');
       return InstructorProfileResponse(
           status: 'error', message: 'Unknown error -$e');
     }
   }
 
-  Future<InstructorCoursesResponse> getCoursesByInstructor(String authToken, String instructorId) async{
+  Future<InstructorCoursesResponse> getCoursesByInstructor(
+      String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
-      final response = await _dio.get('$baseUrlApi${ApiList.lmsCourseByInstructor}$instructorId');
+      final response = await _dio
+          .get('$baseUrlApi${ApiList.lmsCourseByInstructor}$instructorId');
       if (response.statusCode == 200) {
         return InstructorCoursesResponse.fromJson(response.data);
       } else {

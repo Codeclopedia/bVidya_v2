@@ -19,14 +19,14 @@ final bLiveClassesListProvider =
   return ref.read(bLiveRepositoryProvider).getLiveClasses();
 });
 
-final selectedDateProvider =
+final bLiveSelectedDateProvider =
     StateProvider.autoDispose<DateTime>((_) => DateTime.now());
 
 final bLiveSelectedHistoryProvider =
     FutureProvider.autoDispose<List<LMSLiveClass>>((ref) async {
   final liveClasses = ref.watch(bLiveClassesListProvider).valueOrNull;
   if (liveClasses?.liveClasses?.isNotEmpty == true) {
-    final date = ref.watch(selectedDateProvider);
+    final date = ref.watch(bLiveSelectedDateProvider);
     print('Filter list of Live Class of ${date.toString()} ');
     // final list = meetings?.liveClasses ?? [];
     // return list.where((item) => isSameDate(item.startsAt ?? '', date)).toList();

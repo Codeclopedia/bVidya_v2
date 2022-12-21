@@ -1,6 +1,20 @@
 import '../constants.dart';
 import '../ui_core.dart';
 
+final textStyleUnselect = TextStyle(
+  fontFamily: kFontFamily,
+  color: Colors.black,
+  fontSize: 10.sp,
+  fontWeight: FontWeight.w500,
+);
+
+final textStyleSelect = TextStyle(
+  fontFamily: kFontFamily,
+  color: Colors.white,
+  fontSize: 10.sp,
+  fontWeight: FontWeight.w500,
+);
+
 final textButtonStyle = TextButton.styleFrom(
   foregroundColor: AppColors.primaryColor,
   disabledForegroundColor: Colors.grey,

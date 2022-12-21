@@ -11,7 +11,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../../data/models/models.dart';
 import '../../widget/calendar_view.dart';
 import '../../widgets.dart';
-import '../blearn/widget/common.dart';
+import '../blearn/components/common.dart';
 
 class BLiveHomeScreen extends HookWidget {
   const BLiveHomeScreen({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class BLiveHomeScreen extends HookWidget {
                 padding: EdgeInsets.symmetric(horizontal: 6.w),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final date = ref.watch(selectedDateProvider);
+                    final date = ref.watch(bLiveSelectedDateProvider);
                     final txt = DateUtils.isSameDay(date, DateTime.now())
                         ? S.current.blive_today_meeting
                         : S.current.blive_date_meeting(
@@ -97,7 +97,7 @@ class BLiveHomeScreen extends HookWidget {
         Consumer(builder: (context, ref, child) {
           return CalendarView(
             onSelectedDate: (date) {
-              ref.read(selectedDateProvider.notifier).state = date;
+              ref.read(bLiveSelectedDateProvider.notifier).state = date;
             },
           );
         })

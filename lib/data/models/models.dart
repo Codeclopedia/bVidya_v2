@@ -12,8 +12,8 @@ export 'response/blearn/recorded_classes_response.dart';
 export 'response/blearn/instructors_response.dart';
 export 'response/blearn/search_response.dart';
 export 'response/blearn/instructor_courses_response.dart';
-export 'response/blearn/instructor_profile_response.dart';
-export 'response/blearn/user_profile_response.dart';
+export 'response/profile/instructor_profile_response.dart';
+export 'response/profile/user_profile_response.dart';
 
 export 'response/bmeet/schedule_response.dart';
 export 'response/bmeet/start_meeting_response.dart';

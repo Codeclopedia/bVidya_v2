@@ -8,4 +8,5 @@ export 'widget/live_drawer_screen.dart';
 export 'widget/appbar.dart';
 export 'widget/two_color_text.dart';
 export 'widget/user_top_bar.dart';
+export 'widget/tab_switcher.dart';
 export '../core/utils/widgets.dart';

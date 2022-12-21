@@ -517,6 +517,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "soundDesc": MessageLookupByLibrary.simpleMessage(
             "Report an issue you are facing in app"),
         "soundTitle": MessageLookupByLibrary.simpleMessage("Sound"),
+        "sp_tab_course": MessageLookupByLibrary.simpleMessage("Courses"),
+        "sp_tab_followed":
+            MessageLookupByLibrary.simpleMessage("Teacher Followed"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
         "sureDlt": MessageLookupByLibrary.simpleMessage("Sure, want to delete"),
         "td_amt": MessageLookupByLibrary.simpleMessage("₹ 20,456"),

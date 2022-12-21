@@ -1,122 +1,67 @@
 import '../../../../core/constants/colors.dart';
+import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
+import '../../../widgets.dart';
 import '../base_settings_noscroll.dart';
 
-const colorUnSelect = Color(0xFFF5F5F5);
-const colorSelect = AppColors.primaryColor;
+final selectedTabUsersCourseProvider = StateProvider<int>((ref) => 0);
 
-final textStyleUnselect = TextStyle(
-  fontFamily: kFontFamily,
-  color: Colors.black,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
-
-final textStyleSelect = TextStyle(
-  fontFamily: kFontFamily,
-  color: Colors.white,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
-
-class ResponsiveApp extends StatelessWidget {
-  const ResponsiveApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Sizer(
-      builder: (context, orientation, deviceType) => const CoursesUsersUi(),
-    );
-  }
-}
-
-class CoursesUsersUi extends StatefulWidget {
+class CoursesUsersUi extends ConsumerWidget {
   const CoursesUsersUi({Key? key}) : super(key: key);
 
-  @override
-  _MyappState createState() => _MyappState();
-}
+//   @override
+//   _MyappState createState() => _MyappState();
+// }
 
-class _MyappState extends State<CoursesUsersUi> {
-  bool _isSelected = true;
+// class _MyappState extends State<CoursesUsersUi> {
+  // bool _isSelected = true;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int selectedIndex = ref.watch(selectedTabUsersCourseProvider);
+
     return BaseNoScrollSettings(
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _buildTabs((result) {
-              setState(() {
-                _isSelected = result;
-              });
-            }),
-            //_buildTeachers(),
-            // _buildCourses()
+            _buildTab(ref, selectedIndex),
+            Expanded(
+                child: selectedIndex == 0 ? _buildTeachers() : _buildCourses())
           ]),
     );
   }
 
-  Widget _buildTabs(Function(bool) onclick) {
-    // print('selected :$_isSelected');
-    return Container(
-      margin: EdgeInsets.only(top: 3.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _isSelected = true;
-                  _buildCourses();
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: 5.5.h,
-                width: 15.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(3.w),
-                      bottomLeft: Radius.circular(3.w)),
-                  color: _isSelected ? colorSelect : colorUnSelect,
-                ),
-                child: Text(
-                  S.current.course_header,
-                  style: _isSelected ? textStyleSelect : textStyleUnselect,
-                ),
-              ),
-            ),
+  Widget _buildTab(WidgetRef ref, int selectedIndex) {
+    return Center(
+      child: SlideTab(
+          initialIndex: selectedIndex,
+          containerWidth: 80.w,
+          onSelect: (index) {
+            ref.read(selectedTabUsersCourseProvider.notifier).state = index;
+          },
+          containerHeight: 6.h,
+          sliderColor: AppColors.primaryColor,
+          containerBorderRadius: 2.5.w,
+          sliderBorderRadius: 2.6.w,
+          containerColor: AppColors.cardWhite,
+          activeTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w500,
+            fontFamily: kFontFamily,
           ),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _isSelected = false;
-                  _buildTeachers();
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: 5.5.h,
-                width: 15.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(3.w),
-                      bottomRight: Radius.circular(3.w)),
-                  color: _isSelected ? colorUnSelect : colorSelect,
-                ),
-                child: Text(
-                  S.current.teachers_header,
-                  style: _isSelected ? textStyleUnselect : textStyleSelect,
-                ),
-              ),
-            ),
+          inactiveTextStyle: TextStyle(
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w400,
+            fontFamily: kFontFamily,
+            color: Colors.black,
           ),
-        ],
-      ),
+          texts: [
+            S.current.course_header,
+            S.current.teachers_header,
+          ]),
     );
   }
 

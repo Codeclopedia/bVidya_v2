@@ -5,7 +5,7 @@ import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../widgets.dart';
-import 'widget/common.dart';
+import 'components/common.dart';
 
 class SubCategoriesScreen extends StatelessWidget {
   final Category category;

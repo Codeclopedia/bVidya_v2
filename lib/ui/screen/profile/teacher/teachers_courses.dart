@@ -1,34 +1,17 @@
-import '../../../../core/constants/colors.dart';
-import '../../../../core/ui_core.dart';
 import '../base_settings_noscroll.dart';
+import '../../../../core/constants/colors.dart';
+import '../../../../core/state.dart';
+import '../../../../core/ui_core.dart';
+import '../../../widgets.dart';
 
-const colorUnSelect = Color(0xFFF5F5F5);
-const colorSelect = AppColors.primaryColor;
+final selectedTabTeacherCourseProvider = StateProvider<int>((ref) => 0);
 
-final textStyleUnselect = TextStyle(
-  color: Colors.black,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
-
-final textStyleSelect = TextStyle(
-  color: Colors.white,
-  fontSize: 10.sp,
-  fontWeight: FontWeight.w500,
-);
-
-class CoursesTeachersUi extends StatefulWidget {
+class CoursesTeachersUi extends ConsumerWidget {
   const CoursesTeachersUi({Key? key}) : super(key: key);
 
   @override
-  _MyappState createState() => _MyappState();
-}
-
-class _MyappState extends State<CoursesTeachersUi> {
-  bool _isSelected = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int selectedIndex = ref.read(selectedTabTeacherCourseProvider);
     return BaseNoScrollSettings(
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
@@ -37,14 +20,18 @@ class _MyappState extends State<CoursesTeachersUi> {
           children: [
             _buildInfo(),
             _buildViews(),
-            _buildTabs((result) {
-              setState(() {
-                _isSelected = result;
-              });
-            }),
-            _buildAllCourses(),
+            _buildTab(ref, selectedIndex),
+            // _buildTabs((result) {
+            //   setState(() {
+            //     _isSelected = result;
+            //   });
+            // }),
+            Expanded(
+                child:
+                    selectedIndex == 0 ? _buildAllCourses() : _buildCourses())
+            // _buildAllCourses(),
             //_buildTeachers(),
-            _buildCourses()
+            // _buildCourses()
           ]),
     );
   }
@@ -147,62 +134,93 @@ class _MyappState extends State<CoursesTeachersUi> {
     );
   }
 
-  Widget _buildTabs(Function(bool) onclick) {
-    return Container(
-      margin: EdgeInsets.only(top: 3.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _isSelected = true;
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: 5.5.h,
-                width: 15.w,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(3.w),
-                        bottomLeft: Radius.circular(3.w)),
-                    color: _isSelected ? colorSelect : colorUnSelect),
-                child: Text(
-                  S.current.course_header,
-                  style: _isSelected ? textStyleSelect : textStyleUnselect,
-                ),
-              ),
-            ),
+  Widget _buildTab(WidgetRef ref, int selectedIndex) {
+    return Center(
+      child: SlideTab(
+          initialIndex: selectedIndex,
+          containerWidth: 80.w,
+          onSelect: (index) {
+            ref.read(selectedTabTeacherCourseProvider.notifier).state = index;
+          },
+          containerHeight: 6.h,
+          sliderColor: AppColors.primaryColor,
+          containerBorderRadius: 2.5.w,
+          sliderBorderRadius: 2.6.w,
+          containerColor: AppColors.cardWhite,
+          activeTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w500,
+            fontFamily: kFontFamily,
           ),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _isSelected = false;
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: 5.5.h,
-                width: 15.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(3.w),
-                      bottomRight: Radius.circular(3.w)),
-                  color: _isSelected ? colorUnSelect : colorSelect,
-                ),
-                child: Text(
-                  S.current.teacher_about,
-                  style: _isSelected ? textStyleUnselect : textStyleSelect,
-                ),
-              ),
-            ),
+          inactiveTextStyle: TextStyle(
+            fontSize: 9.sp,
+            fontWeight: FontWeight.w400,
+            fontFamily: kFontFamily,
+            color: Colors.black,
           ),
-        ],
-      ),
+          texts: [
+            S.current.course_header,
+            S.current.teacher_about,
+          ]),
     );
   }
+  // Widget _buildTabs(Function(bool) onclick) {
+  //   return Container(
+  //     margin: EdgeInsets.only(top: 3.h),
+  //     child: Row(
+  //       children: [
+  //         Expanded(
+  //           child: InkWell(
+  //             onTap: () {
+  //               setState(() {
+  //                 _isSelected = true;
+  //               });
+  //             },
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               height: 5.5.h,
+  //               width: 15.w,
+  //               decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.only(
+  //                       topLeft: Radius.circular(3.w),
+  //                       bottomLeft: Radius.circular(3.w)),
+  //                   color: _isSelected ? colorSelect : colorUnSelect),
+  //               child: Text(
+  //                 S.current.course_header,
+  //                 style: _isSelected ? textStyleSelect : textStyleUnselect,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: InkWell(
+  //             onTap: () {
+  //               setState(() {
+  //                 _isSelected = false;
+  //               });
+  //             },
+  //             child: Container(
+  //               alignment: Alignment.center,
+  //               height: 5.5.h,
+  //               width: 15.w,
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.only(
+  //                     topRight: Radius.circular(3.w),
+  //                     bottomRight: Radius.circular(3.w)),
+  //                 color: _isSelected ? colorUnSelect : colorSelect,
+  //               ),
+  //               child: Text(
+  //                 S.current.teacher_about,
+  //                 style: _isSelected ? textStyleUnselect : textStyleSelect,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildAllCourses() {
     return Container(
@@ -215,7 +233,7 @@ class _MyappState extends State<CoursesTeachersUi> {
             style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 12.sp,
-                color: colorSelect,
+                color: AppColors.cardWhite,
                 fontWeight: FontWeight.bold),
           ),
           Text(
@@ -223,7 +241,7 @@ class _MyappState extends State<CoursesTeachersUi> {
             style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 9.sp,
-                color: colorSelect,
+                color: AppColors.primaryColor,
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.bold),
           ),
@@ -243,7 +261,7 @@ class _MyappState extends State<CoursesTeachersUi> {
             style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 12.sp,
-                color: colorSelect,
+                color: AppColors.primaryColor,
                 fontWeight: FontWeight.bold),
           ),
         ],

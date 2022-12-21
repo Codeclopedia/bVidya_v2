@@ -236,6 +236,9 @@ class Routes {
       case RouteList.studentProfile:
         screen = const StudentProfileScreen();
         break;
+      case RouteList.studentLearnings:
+        screen = const MyLearningScreen();
+        break;
 
       case RouteList.teacherProfile:
         screen = const TeacherProfile();

@@ -251,6 +251,9 @@
     "dg_message_live_scheduled":"Live session has been scheduled. You can see the details in the scheduled list.",
 
 
+    "sp_tab_course":"Courses",
+    "sp_tab_followed":"Teacher Followed",
+
   "Account": "Account",
   "settingsNoti": "Notifications",
   "settingShare": "Share bVidya app",

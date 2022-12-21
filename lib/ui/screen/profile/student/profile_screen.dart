@@ -1,3 +1,6 @@
+import 'package:bvidya/core/constants/route_list.dart';
+import 'package:bvidya/core/state.dart';
+
 import '../../../../core/constants/colors.dart';
 import '../../../../core/ui_core.dart';
 
@@ -14,15 +17,21 @@ class StudentProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height: 0.4.h),
             Center(
-              child: Text(
-                S.current.profile_gmail,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryColor,
-                  fontFamily: kFontFamily,
-                ),
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final user = ref.watch(loginRepositoryProvider).user;
+                  return Text(
+                    user?.email ?? '',
+                    style: TextStyle(
+                      fontSize: 8.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryColor,
+                      fontFamily: kFontFamily,
+                    ),
+                  );
+                },
               ),
             ),
             SizedBox(height: 4.h),
@@ -41,8 +50,10 @@ class StudentProfileScreen extends StatelessWidget {
               //       builder: (context) => const AccountSettingScreen()),
               // );
             }),
-            _buildContent(
-                S.current.profile_learning, "profile_learning.svg", () {}),
+            _buildContent(S.current.profile_learning, "profile_learning.svg",
+                () {
+              Navigator.pushNamed(context, RouteList.studentLearnings);
+            }),
             _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
               // Navigator.push(
               //   context,

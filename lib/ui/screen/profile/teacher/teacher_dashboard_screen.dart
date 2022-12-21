@@ -1,13 +1,14 @@
 import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screen/blearn/widget/common.dart';
-import 'package:bvidya/ui/screen/blearn/widget/course_list_row.dart';
+import 'package:bvidya/ui/screen/blearn/components/common.dart';
+import 'package:bvidya/ui/screen/blearn/components/course_list_row.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
 import '../../../../controller/blearn_providers.dart';
 import '../../../../core/constants.dart';
 import '../../../../core/ui_core.dart';
 import '../../../../data/models/models.dart';
-import '../../blearn/widget/webinar_list_row.dart';
+import '../components/instructor_course_row.dart';
+import '../components/webinar_list_row.dart';
 import '../base_settings.dart';
 
 var data = [
@@ -47,6 +48,7 @@ class TeacherDashboard extends StatelessWidget {
           return data.when(
               data: (data) {
                 if (data == null) {
+                  print('data is null');
                   return const SizedBox.shrink();
                 }
                 return Column(
@@ -54,9 +56,7 @@ class TeacherDashboard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 4.h,
-                      ),
+                      SizedBox(height: 4.h),
                       Text(
                         S.current.td_dash,
                         style: TextStyle(
@@ -146,6 +146,10 @@ class TeacherDashboard extends StatelessWidget {
 
   Widget _buildPerformance(
       List<Followers>? followers, List<Watchtime>? watchtime) {
+    String watchTime = (watchtime?.isNotEmpty == true)
+        ? (watchtime![0].total?.toString() ?? '0')
+        : '0';
+
     return Row(
       children: [
         SizedBox(
@@ -262,9 +266,7 @@ class TeacherDashboard extends StatelessWidget {
                           Padding(
                             padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
                             child: Text(
-                              (watchtime?.isNotEmpty == true)
-                                  ? watchtime![0].total.toString()
-                                  : '',
+                              watchTime,
                               // S.current.td_watch_time,
                               style: TextStyle(
                                   fontWeight: FontWeight.w600,
@@ -322,35 +324,45 @@ class TeacherDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildCoursesList(List<Course>? courses) {
+  Widget _buildCoursesList(List<InstructorCourse>? courses) {
     return Container(
-      height: 30.h,
-      margin: EdgeInsets.only(top: 0.5.h),
-      child: Consumer(
-        builder: (context, ref, child) {
-          final user = ref.watch(loginRepositoryProvider).user;
-          if (user == null) return const SizedBox.shrink();
-          return ref
-              .watch(bLearnInstructorCoursesProvider(user.id.toString()))
-              .when(
-                  data: (data) {
-                    if (data?.isNotEmpty == true) {
-                      return ListView.builder(
-                          itemCount: data!.length,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return CourseListRow(course: data[index]);
-                          });
-                    } else {
-                      return buildEmptyPlaceHolder('No Course uploaded');
-                    }
-                  },
-                  error: (_, s) => buildEmptyPlaceHolder('No Course uploaded'),
-                  loading: () => buildLoading);
-        },
-      ),
-    );
+        height: 30.h,
+        margin: EdgeInsets.only(top: 0.5.h),
+        child: courses?.isNotEmpty == true
+            ? ListView.builder(
+                itemCount: courses!.length,
+                shrinkWrap: false,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return InstructorCourseRowItem(course: courses[index]);
+                })
+            : buildEmptyPlaceHolder('No Cources uploaded yet')
+
+        // Consumer(
+        //   builder: (context, ref, child) {
+        //     final user = ref.watch(loginRepositoryProvider).user;
+        //     if (user == null) return const SizedBox.shrink();
+        //     return ref
+        //         .watch(bLearnInstructorCoursesProvider(user.id.toString()))
+        //         .when(
+        //             data: (data) {
+        //               if (data?.isNotEmpty == true) {
+        //                 return ListView.builder(
+        //                     itemCount: data!.length,
+        //                     shrinkWrap: true,
+        //                     scrollDirection: Axis.horizontal,
+        //                     itemBuilder: (context, index) {
+        //                       return CourseListRow(course: data[index]);
+        //                     });
+        //               } else {
+        //                 return buildEmptyPlaceHolder('No Course uploaded');
+        //               }
+        //             },
+        //             error: (_, s) => buildEmptyPlaceHolder('No Course uploaded'),
+        //             loading: () => buildLoading);
+        //   },
+        // ),
+        );
   }
 
   Widget _buildRunningCourse() {

@@ -6,11 +6,11 @@ import '../../../data/models/models.dart';
 import '../../widget/home_drawer_screen.dart';
 import '../../widget/user_top_bar.dart';
 import '../../widgets.dart';
-import 'widget/common.dart';
-import 'widget/complemetry_course.dart';
-import 'widget/course_list_row.dart';
-import 'widget/course_row.dart';
-import 'widget/instructor_row.dart';
+import 'components/common.dart';
+import 'components/complemetry_course.dart';
+import 'components/course_list_row.dart';
+import 'components/course_row.dart';
+import 'components/instructor_row.dart';
 
 final recommenedSelectedProvider = StateProvider.autoDispose<CourseType>(
   (_) => CourseType.trending,

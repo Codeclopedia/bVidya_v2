@@ -13,7 +13,7 @@ import '../../../data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../../widget/calendar_view.dart';
 import '../../widgets.dart';
-import '../blearn/widget/common.dart';
+import '../blearn/components/common.dart';
 
 class BMeetHomeScreen extends StatelessWidget {
   const BMeetHomeScreen({Key? key}) : super(key: key);
