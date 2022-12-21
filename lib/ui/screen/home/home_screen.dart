@@ -10,7 +10,7 @@ import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
 import '../../dialog/conversation_menu_dialog.dart';
-import '../../widget/home_drawer_screen.dart';
+import '../../widget/base_drawer_appbar_screen.dart';
 
 class HomeScreen extends HookConsumerWidget {
   // late User? _currentUser;
@@ -25,7 +25,7 @@ class HomeScreen extends HookConsumerWidget {
       _addHandler(ref);
       return _disposeAll;
     }, const []);
-    return HomeDrawerScreen(
+    return BaseDrawerAppBarScreen(
       routeName: RouteList.home,
       topBar: _userAppBar(context),
       body: _chatListScreen(context),

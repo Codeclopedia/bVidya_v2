@@ -22,7 +22,7 @@ class BLiveHomeScreen extends HookWidget {
 
     return LiveDrawerScreen(
       screenName: RouteList.bLive,
-      anotherContent: SafeArea(
+      baseBody: SafeArea(
         child: Container(
           alignment: Alignment.bottomCenter,
           width: 100.w,
@@ -54,7 +54,7 @@ class BLiveHomeScreen extends HookWidget {
           ),
         ),
       ),
-      body: Column(
+      overlayBody: Column(
         children: [
           Container(
             decoration: BoxDecoration(

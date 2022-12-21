@@ -1,13 +1,14 @@
 import '../../../../core/constants.dart';
 import '../../../../core/ui_core.dart';
-import '../base_settings.dart';
+import '../../../widget/base_drawer_setting_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseSettings(
+    return BaseDrawerSettingScreen(
+      screenName: RouteList.settings,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1,8 +1,6 @@
-import 'package:bvidya/ui/screen/profile/teacher/teacher_dashboard_screen.dart';
-import 'package:bvidya/ui/screen/profile/teacher/teacher_profile.dart';
-import 'package:bvidya/ui/screen/profile/teacher/teacher_profile_edit.dart';
 
 import '../data/models/models.dart';
+import '../ui/widget/base_drawer_page.dart';
 import 'constants.dart';
 import 'ui_core.dart';
 import '../ui/screens.dart';
@@ -24,6 +22,15 @@ class Routes {
         break;
       case RouteList.forgotPassword:
         screen = ForgetPasswordScreen();
+        break;
+
+      case RouteList.bForum:
+        screen = _commingSoon(RouteList.bForum);
+        hasDrawer = true;
+        break;
+      case RouteList.bDiscuss:
+        screen = _commingSoon(RouteList.bDiscuss);
+        hasDrawer = true;
         break;
       case RouteList.home:
         screen = const HomeScreen();
@@ -127,7 +134,7 @@ class Routes {
           int id = args['id'] as int;
           String userName = args['user_name'] as String;
 
-          print('Meeting: ${meeting.toJson()}');
+          // print('Meeting: ${meeting.toJson()}');
           screen = BMeetCallScreen(
               meeting: meeting,
               enableVideo: video,
@@ -216,7 +223,7 @@ class Routes {
 
       case RouteList.settings:
         screen = const SettingsScreen();
-
+        hasDrawer = true;
         break;
       case RouteList.accountSetting:
         screen = const AccountSettingScreen();
@@ -242,6 +249,7 @@ class Routes {
 
       case RouteList.studentProfile:
         screen = const StudentProfileScreen();
+        hasDrawer = true;
         break;
       case RouteList.studentLearnings:
         screen = const MyLearningScreen();
@@ -249,6 +257,7 @@ class Routes {
 
       case RouteList.teacherProfile:
         screen = const TeacherProfile();
+        hasDrawer = true;
         break;
       case RouteList.teacherEditProfile:
         if (settings.arguments is Profile) {
@@ -309,6 +318,15 @@ class Routes {
     return const Scaffold(
       body: Center(
         child: Text('Not a valid parameter passed'),
+      ),
+    );
+  }
+
+  static Widget _commingSoon(String name) {
+    return BaseDrawerPage(
+      screenName: name,
+      body: Center(
+        child: Text('Feature Comming soon', style: textStyleHeading),
       ),
     );
   }

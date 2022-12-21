@@ -1,5 +1,4 @@
-import 'package:bvidya/core/constants.dart';
-import 'package:bvidya/core/ui_core.dart';
+import '../../core/ui_core.dart';
 
 class SlideTab extends StatefulWidget {
   final List<String> texts;
@@ -53,7 +52,7 @@ class SlideTab extends StatefulWidget {
     this.indents = 0,
     // this.slidersColors = const [AppColors.primaryColor],
     // this.slidersGradients = const [],
-    this.containerColor = AppColors.cardWhite,
+    this.containerColor = Colors.white,
     this.containerBorderRadius = 20,
     this.sliderBorderRadius = 20,
     this.direction = Axis.horizontal,

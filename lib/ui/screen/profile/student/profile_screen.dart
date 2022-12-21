@@ -1,17 +1,18 @@
-import 'package:bvidya/core/constants/route_list.dart';
-import 'package:bvidya/core/state.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/route_list.dart';
+import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
 
-import '../base_settings.dart';
+import '../../../widget/base_drawer_setting_screen.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseSettings(
+    return BaseDrawerSettingScreen(
+      screenName: RouteList.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,

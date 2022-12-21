@@ -27,7 +27,7 @@ class BMeetHomeScreen extends StatelessWidget {
       },
       child: LiveDrawerScreen(
         screenName: RouteList.bMeet,
-        anotherContent: SafeArea(
+        baseBody: SafeArea(
           child: Container(
             alignment: Alignment.bottomCenter,
             width: 100.w,
@@ -59,7 +59,7 @@ class BMeetHomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        body: Column(
+        overlayBody: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(

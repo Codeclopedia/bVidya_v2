@@ -3,7 +3,7 @@ import '../../../core/constants.dart';
 import '../../../core/state.dart';
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';
-import '../../widget/home_drawer_screen.dart';
+import '../../widget/base_drawer_appbar_screen.dart';
 import '../../widget/user_top_bar.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
@@ -23,7 +23,7 @@ class BLearnHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
-      body: HomeDrawerScreen(
+      body: BaseDrawerAppBarScreen(
         routeName: RouteList.bLearnHome,
         topBar: _buildUser(),
         body: Consumer(

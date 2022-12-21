@@ -94,15 +94,21 @@ class EndDrawer extends StatelessWidget {
                       _buildIcon(S.current.drawer_disucss, 'ic_Community.svg',
                           () {
                         scaffoldKey.currentState?.closeEndDrawer();
+                        if (myRouteName == RouteList.bDiscuss) return;
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.bDiscuss);
+                        Navigator.pushReplacementNamed(
+                            context, RouteList.bDiscuss);
                       }),
                       _buildIcon(S.current.drawer_forum, 'ic_Forum.svg', () {
                         scaffoldKey.currentState?.closeEndDrawer();
+                        if (myRouteName == RouteList.bForum) return;
                         ref
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.bForum);
+                        Navigator.pushReplacementNamed(
+                            context, RouteList.bForum);
                       }),
                       _buildIcon(S.current.drawer_blive, 'ic_blive.svg', () {
                         scaffoldKey.currentState?.closeEndDrawer();

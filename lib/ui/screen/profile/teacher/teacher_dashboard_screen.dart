@@ -1,12 +1,11 @@
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screen/blearn/components/common.dart';
-import 'package:bvidya/ui/screen/blearn/components/course_list_row.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
 import '../../../../controller/blearn_providers.dart';
 import '../../../../core/constants.dart';
+import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
 import '../../../../data/models/models.dart';
+import '../../blearn/components/common.dart';
 import '../components/instructor_course_row.dart';
 import '../components/webinar_list_row.dart';
 import '../base_settings.dart';

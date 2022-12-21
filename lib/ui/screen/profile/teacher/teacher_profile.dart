@@ -6,14 +6,15 @@ import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
 import '../../../../core/utils.dart';
 import '../../../base_back_screen.dart';
-import '../base_settings.dart';
+import '../../../widget/base_drawer_setting_screen.dart';
 
 class TeacherProfile extends StatelessWidget {
   const TeacherProfile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseSettings(
+    return BaseDrawerSettingScreen(
+      screenName: RouteList.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
