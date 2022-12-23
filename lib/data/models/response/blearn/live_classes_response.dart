@@ -7,7 +7,7 @@ class LMSLiveClassesResponse {
   LMSLiveClassesResponse({this.body, this.status, this.message});
 
   LMSLiveClassesResponse.fromJson(Map<String, dynamic> json)
-      : body = LMSLiveClasses.fromJson(json['body']),
+      : body = json['body']!=null?LMSLiveClasses.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

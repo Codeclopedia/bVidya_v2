@@ -6,7 +6,7 @@ class JoinMeetingResponse {
   JoinMeetingResponse({this.message, this.status, this.body});
 
   JoinMeetingResponse.fromJson(Map<String, dynamic> json)
-      : body = JoinMeetingBody.fromJson(json['body']),
+      : body = json['body']!=null?JoinMeetingBody.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

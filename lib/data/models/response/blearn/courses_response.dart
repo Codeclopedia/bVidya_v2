@@ -10,7 +10,7 @@ class CoursesResponse {
   });
 
   CoursesResponse.fromJson(Map<String, dynamic> json)
-      : body = Courses.fromJson(json['body']),
+      : body = json['body']!=null?Courses.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

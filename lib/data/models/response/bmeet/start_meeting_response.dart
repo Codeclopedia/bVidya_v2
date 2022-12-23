@@ -6,7 +6,7 @@ class StartMeetingResponse {
   StartMeetingResponse({this.message, this.status, this.body});
 
   StartMeetingResponse.fromJson(Map<String, dynamic> json)
-      : body = MeetingBody.fromJson(json['body']),
+      : body = json['body']!=null?MeetingBody.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

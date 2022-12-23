@@ -1,4 +1,3 @@
-
 import '../../models.dart';
 
 class UserProfileResponse {
@@ -13,7 +12,7 @@ class UserProfileResponse {
   });
 
   UserProfileResponse.fromJson(Map<String, dynamic> json)
-      : body = Profile?.fromJson(json['body']),
+      : body = json['body'] != null ? Profile.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 

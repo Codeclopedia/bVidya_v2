@@ -12,7 +12,7 @@ class InstructorCoursesResponse {
   });
 
   InstructorCoursesResponse.fromJson(Map<String, dynamic> json)
-      : body = List.from(json['body']).map((e) => Course.fromJson(e)).toList(),
+      : body = json['body']!=null?List.from(json['body']).map((e) => Course.fromJson(e)).toList():null,
         status = json['status'],
         message = json['message'];
 

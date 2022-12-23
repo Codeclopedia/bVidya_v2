@@ -13,7 +13,7 @@ class LMSSearchResponse{
   });
 
   LMSSearchResponse.fromJson(Map<String, dynamic> json)
-      : body = SearchResults.fromJson(json['body']),
+      : body = json['body']!=null?SearchResults.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

@@ -10,7 +10,7 @@ class IntructionsResponse {
   });
 
   IntructionsResponse.fromJson(Map<String, dynamic> json)
-      : body = Instructors.fromJson(json['body']),
+      : body = json['body']!=null?Instructors.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

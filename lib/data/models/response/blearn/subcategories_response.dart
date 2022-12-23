@@ -10,7 +10,7 @@ class SubCategoriesResponse {
   });
 
   SubCategoriesResponse.fromJson(Map<String, dynamic> json)
-      : body = SubCategories.fromJson(json['body']),
+      : body = json['body']!=null?SubCategories.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

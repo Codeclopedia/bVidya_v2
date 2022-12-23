@@ -6,7 +6,7 @@ class RecordedClassesResponse {
   RecordedClassesResponse({this.body, this.status, this.message});
 
   RecordedClassesResponse.fromJson(Map<String, dynamic> json)
-      : body = RecordedClasses.fromJson(json['body']),
+      : body = json['body']!=null?RecordedClasses.fromJson(json['body']):null,
         message = json['message'],
         status = json['status'];
 

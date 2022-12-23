@@ -15,5 +15,10 @@ class DioServices {
     _dio.options.sendTimeout = 100000;
     _dio.options.receiveTimeout = 120000;
   }
+
   Dio get dio => _dio;
+
+  // static Future<Response> get(Dio dio, String url) async {
+  //   return dio.get(url);
+  // }
 }

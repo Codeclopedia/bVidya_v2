@@ -12,7 +12,7 @@ class InstructorProfileResponse {
   });
 
   InstructorProfileResponse.fromJson(Map<String, dynamic> json)
-      : body = ProfileBody?.fromJson(json['body']),
+      : body = json['body']!=null?ProfileBody.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

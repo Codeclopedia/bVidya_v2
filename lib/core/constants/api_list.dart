@@ -47,4 +47,11 @@ class ApiList {
   //Settings
   static const String reportProblem = 'report'; //POST
   static const String userProfile = 'profile'; //POST
+
+  //bChat
+  static const String getChatToken = 'chat-user/token'; //GET
+  static const String addContact = 'chat-user/add-contact'; //POST
+  static const String searchContact = 'chat-user/search-contact'; //POST
+  static const String allContacts = 'chat-user/contacts'; //GET
+  static const String deleteContact = 'chat-user/delete-contact'; //POST
 }

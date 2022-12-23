@@ -6,7 +6,7 @@ class LiveRTMResponse {
   LiveRTMResponse({this.message, this.status, this.body});
 
   LiveRTMResponse.fromJson(Map<String, dynamic> json)
-      : body = LiveRtmToken.fromJson(json['body']),
+      : body = json['body']!=null?LiveRtmToken.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

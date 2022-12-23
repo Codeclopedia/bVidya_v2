@@ -7,7 +7,7 @@ class HomeResponse {
   HomeResponse({this.body, this.status, this.message});
 
   HomeResponse.fromJson(Map<String, dynamic> json) {
-    body = HomeBody.fromJson(json['body']);
+    body = json['body']!=null?HomeBody.fromJson(json['body']):null;
     status = json['status'] as String?;
     message = json['message'] as String?;
   }

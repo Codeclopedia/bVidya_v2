@@ -6,7 +6,7 @@ class ScheduleResponse {
   ScheduleResponse({this.message, this.status, this.body});
 
   ScheduleResponse.fromJson(Map<String, dynamic> json)
-      : body = ScheduledMeeting.fromJson(json['body']),
+      : body = json['body']!=null?ScheduledMeeting.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 

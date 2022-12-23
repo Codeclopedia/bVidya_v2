@@ -8,7 +8,7 @@ class MeetingListResponse {
   MeetingListResponse({this.message, this.status, this.body});
 
   MeetingListResponse.fromJson(Map<String, dynamic> json)
-      : body = Meetings.fromJson(json['body']),
+      : body = json['body']!=null?Meetings.fromJson(json['body']):null,
         status = json['status'],
         message = json['message'];
 
