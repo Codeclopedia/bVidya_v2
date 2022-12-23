@@ -47,7 +47,7 @@ export 'screen/profile/settings/contactus_screen.dart';
 export 'screen/profile/settings/report_problem_screen.dart';
 
 export 'screen/profile/student/profile_screen.dart';
-export 'screen/profile/student/users_courses.dart';
+// export 'screen/profile/student/users_courses.dart';
 export 'screen/profile/student/my_learning_screen.dart';
 
 export 'screen/profile/teacher/teacher_dashboard_screen.dart';
