@@ -26,38 +26,55 @@ Future joinBroadcast(
   // }
   showLoading(ref);
 
-  final liveClass =
+  final liveClassResponse =
       await ref.read(bLiveRepositoryProvider).getLiveClass(broadcastStreamId);
-  if (liveClass == null) {
-    AppSnackbar.instance.error(context, 'Error fetching broadcast detail');
+  // if (liveClassResponse == null) {
+  //   AppSnackbar.instance.error(context, 'Error fetching broadcast detail');
+  //   hideLoading(ref);
+  //   return;
+  // }
+  if (liveClassResponse.status != 'successfull' ||
+      liveClassResponse.body == null) {
     hideLoading(ref);
-    return;
-  }
+    AppSnackbar.instance.error(
+        context,
+        liveClassResponse.message ??
+            'Error joing broadcast, Please try after some time');
 
-  final userToken =
-      await ref.read(bLiveRepositoryProvider).fetchLiveRTM(liveClass.id);
-  hideLoading(ref);
-  if (userToken == null) {
-    AppSnackbar.instance
-        .error(context, 'Error joing broadcast, Please try after some time');
     return;
   }
-  if (userToken.roomStatus == 'Locked' || userToken.appid.isEmpty) {
-    AppSnackbar.instance.error(context, 'Broadcast not live or full');
-    return;
-  }
+  if (liveClassResponse.body?.liveClass?.id != null) {
+    final liveClass = liveClassResponse.body!.liveClass!;
+    final userToken =
+        await ref.read(bLiveRepositoryProvider).fetchLiveRTM(liveClass.id);
+    hideLoading(ref);
+    if (userToken == null) {
+      AppSnackbar.instance
+          .error(context, 'Error joing broadcast, Please try after some time');
+      return;
+    }
+    if (userToken.roomStatus == 'Locked' || userToken.appid.isEmpty) {
+      AppSnackbar.instance.error(context, 'Broadcast not live or full');
+      return;
+    }
 
-  final user = await getMeAsUser();
-  if (user == null) {
-    AppSnackbar.instance
-        .error(context, 'Error joing broadcast, Please try after some time');
-    return;
-  }
-  final args = <String, dynamic>{
-    'user_id': user.id,
-    'rtm_token': userToken,
-    'live_class': liveClass
-  };
+    final user = await getMeAsUser();
+    if (user == null) {
+      AppSnackbar.instance
+          .error(context, 'Error joing broadcast, Please try after some time');
+      return;
+    }
+    final args = <String, dynamic>{
+      'user_id': user.id,
+      'rtm_token': userToken,
+      'live_class': liveClass
+    };
 
-  Navigator.pushNamed(context, RouteList.bLiveClass, arguments: args);
+    Navigator.pushNamed(context, RouteList.bLiveClass, arguments: args);
+  } else {
+    AppSnackbar.instance.error(
+        context,
+        liveClassResponse.message ??
+            'Error joing broadcast, Please try after some time');
+  }
 }

@@ -522,6 +522,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Teacher Followed"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
         "sureDlt": MessageLookupByLibrary.simpleMessage("Sure, want to delete"),
+        "t_schedule_caption":
+            MessageLookupByLibrary.simpleMessage("Upcoming classes"),
+        "t_schedule_class":
+            MessageLookupByLibrary.simpleMessage("Schedule a Class"),
+        "t_schedule_class_msg": MessageLookupByLibrary.simpleMessage(
+            "Send Request for group or personal class"),
+        "t_schedule_no_class":
+            MessageLookupByLibrary.simpleMessage("No Upcoming class"),
+        "t_scheduled_header":
+            MessageLookupByLibrary.simpleMessage("Scheduled classes"),
         "td_amt": MessageLookupByLibrary.simpleMessage("₹ 20,456"),
         "td_courses": MessageLookupByLibrary.simpleMessage("Uploaded Courses"),
         "td_dash": MessageLookupByLibrary.simpleMessage("Dashboard"),

@@ -2150,6 +2150,56 @@ class S {
     );
   }
 
+  /// `Scheduled classes`
+  String get t_scheduled_header {
+    return Intl.message(
+      'Scheduled classes',
+      name: 't_scheduled_header',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Schedule a Class`
+  String get t_schedule_class {
+    return Intl.message(
+      'Schedule a Class',
+      name: 't_schedule_class',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Request for group or personal class`
+  String get t_schedule_class_msg {
+    return Intl.message(
+      'Send Request for group or personal class',
+      name: 't_schedule_class_msg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upcoming classes`
+  String get t_schedule_caption {
+    return Intl.message(
+      'Upcoming classes',
+      name: 't_schedule_caption',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Upcoming class`
+  String get t_schedule_no_class {
+    return Intl.message(
+      'No Upcoming class',
+      name: 't_schedule_no_class',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Account`
   String get Account {
     return Intl.message(

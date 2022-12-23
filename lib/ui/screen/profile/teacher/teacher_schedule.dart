@@ -1,18 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/ui_core.dart';
-import 'package:bvidya/ui/widget/live_drawer_screen_type2.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// import 'package:bvidya/core/ui_core.dart';
+// import 'package:bvidya/ui/widgets.dart';
 
-import '../../../../controller/bmeet_providers.dart';
-import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/route_list.dart';
-import '../../../../core/helpers/bmeet_helper.dart';
-import '../../../../core/state.dart';
-import '../../../../core/theme/appstyle.dart';
-import '../../../../core/utils/date_utils.dart';
-import '../../../../data/models/response/bmeet/schedule_response.dart';
+import '../../../widgets.dart';
+import '/controller/bmeet_providers.dart';
+import '/core/constants/colors.dart';
+import '/core/constants/route_list.dart';
+import '/core/helpers/bmeet_helper.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils/date_utils.dart';
+import '/data/models/response/bmeet/schedule_response.dart';
 import '../../../base_back_screen.dart';
 import '../../../widget/calendar_view.dart';
 import '../../blearn/components/common.dart';
@@ -27,89 +26,70 @@ class TeacherScheduleScreen extends StatelessWidget {
       onBack: () async {
         return true;
       },
-      child: LiveDrawerScreenType2(
+      child: LiveDrawerScreen(
         screenName: RouteList.teacherSchedule,
         baseBody: SafeArea(
           child: Container(
-            alignment: Alignment.bottomCenter,
-            width: 100.w,
+            // alignment: Alignment.bottomCenter,
+            // width: 100.w,
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
             margin: EdgeInsets.only(bottom: 1.h),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
-                  child: Container(
-                    height: 6.h,
-                    width: 100.w,
-                    padding: EdgeInsets.symmetric(horizontal: 5.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 7.w,
-                              backgroundColor:
-                                  AppColors.iconGreyColor.withOpacity(0.2),
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppColors.primaryColor,
-                                  size: 8.w,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 3.w),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Schedule a class",
-                                    style: TextStyle(
-                                        fontSize: 4.5.w,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    "Send Request for group or personal class",
-                                    style: TextStyle(
-                                        fontSize: 2.5.w,
-                                        fontWeight: FontWeight.w200,
-                                        color: AppColors.iconGreyColor),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                SizedBox(height: 50.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CircleAvatar(
+                      radius: 7.w,
+                      backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
+                      child: Center(
+                        child: Icon(
+                          Icons.add,
+                          color: AppColors.primaryColor,
+                          size: 8.w,
                         ),
-                        Icon(
-                          Icons.keyboard_arrow_right,
-                          size: 10.w,
-                          color: AppColors.iconGreyColor,
-                        )
-                      ],
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 3.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            S.current.t_schedule_class,
+                            style: TextStyle(
+                                fontSize: 12.sp,
+                                fontFamily: kFontFamily,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800),
+                          ),
+                          Text(
+                            S.current.t_schedule_class_msg,
+                            style: TextStyle(
+                                fontSize: 9.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.w200,
+                                color: AppColors.iconGreyColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // const Spacer(),
+                    Icon(
+                      Icons.keyboard_arrow_right,
+                      size: 7.w,
+                      color: AppColors.iconGreyColor,
+                    )
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w),
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final date = ref.watch(selectedDateProvider);
-                      final txt = DateUtils.isSameDay(date, DateTime.now())
-                          ? S.current.bmeet_today_meeting
-                          : S.current.bmeet_date_meeting(
-                              DateFormat('dd MMM').format(date));
-                      return Text(
-                        txt,
-                        style: textStyleCaption,
-                      );
-                    },
-                  ),
+                SizedBox(height: 5.h),
+                Text(
+                  S.current.t_schedule_caption,
+                  style: textStyleCaption,
                 ),
                 SizedBox(height: 1.h),
                 _buildHistory(),
@@ -151,7 +131,6 @@ class TeacherScheduleScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // const SafeArea(child: SizedBox(height: 1)),
           _buildProfileCard(context),
           SizedBox(height: 2.h),
           Text(
@@ -162,7 +141,7 @@ class TeacherScheduleScreen extends StatelessWidget {
           Consumer(builder: (context, ref, child) {
             return CalendarView(
               onSelectedDate: (date) {
-                ref.read(selectedDateProvider.notifier).state = date;
+                ref.read(selectedClassDateProvider.notifier).state = date;
               },
             );
           }),
@@ -175,20 +154,21 @@ class TeacherScheduleScreen extends StatelessWidget {
     return Container(
       height: 20.h,
       alignment: Alignment.bottomLeft,
-      child: Consumer(
-        builder: (context, ref, child) {
-          return ref.watch(bMeetSelectedHistoryProvider).when(
-              data: (meetings) {
-                if (meetings.isNotEmpty == true) {
-                  return _buildList(meetings, ref);
-                } else {
-                  return buildEmptyPlaceHolder(S.current.bmeet_no_meetings);
-                }
-              },
-              error: (err, str) => buildEmptyPlaceHolder('$err'),
-              loading: () => buildLoading);
-        },
-      ),
+      child: buildEmptyPlaceHolder(S.current.t_schedule_no_class),
+      // child: Consumer(
+      //   builder: (context, ref, child) {
+      //     return ref.watch(bMeetSelectedHistoryProvider).when(
+      //         data: (meetings) {
+      //           if (meetings.isNotEmpty == true) {
+      //             return _buildList(meetings, ref);
+      //           } else {
+      //             return buildEmptyPlaceHolder(S.current.bmeet_no_meetings);
+      //           }
+      //         },
+      //         error: (err, str) => buildEmptyPlaceHolder('$err'),
+      //         loading: () => buildLoading);
+      //   },
+      // ),
     );
   }
 
@@ -196,7 +176,6 @@ class TeacherScheduleScreen extends StatelessWidget {
     return ListView.builder(
       itemCount: meetings.length,
       shrinkWrap: true,
-      padding: EdgeInsets.symmetric(horizontal: 6.w),
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         final meeting = meetings[index];

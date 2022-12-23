@@ -11,30 +11,31 @@ class StudentProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
+      showEmail: true,
       screenName: RouteList.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 0.4.h),
-            Center(
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final user = ref.watch(loginRepositoryProvider).user;
-                  return Text(
-                    user?.email ?? '',
-                    style: TextStyle(
-                      fontSize: 8.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                      fontFamily: kFontFamily,
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 4.h),
+            // SizedBox(height: 0.4.h),
+            // Center(
+            //   child: Consumer(
+            //     builder: (context, ref, child) {
+            //       final user = ref.watch(loginRepositoryProvider).user;
+            //       return Text(
+            //         user?.email ?? '',
+            //         style: TextStyle(
+            //           fontSize: 8.sp,
+            //           fontWeight: FontWeight.w600,
+            //           color: AppColors.primaryColor,
+            //           fontFamily: kFontFamily,
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+            SizedBox(height: 8.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
               child: Text(

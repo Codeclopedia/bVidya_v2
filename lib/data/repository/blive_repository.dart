@@ -36,13 +36,14 @@ class BLiveRepository {
     }
   }
 
-  Future<LiveClass?> getLiveClass(String broadcastStreamId) async {
+  Future<LiveClassResponse> getLiveClass(String broadcastStreamId) async {
     final result = await _api.getLiveClass(_authToken, broadcastStreamId);
-    if (result.status == successfull) {
-      return result.body?.liveClass;
-    } else {
-      return null;
-    }
+    return result;
+    // if (result.status == successfull) {
+    //   return result.body;
+    // } else {
+    //   return null;
+    // }
   }
 
   Future<LMSLiveClasses?> getLiveClasses() async {

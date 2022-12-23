@@ -53,6 +53,7 @@ class BLiveApiService {
       _dio.options.headers['X-Auth-Token'] = authToken;
       var response =
           await _dio.get(baseUrlApi + ApiList.liveClass + broadcastStreamId);
+      print('result: ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return LiveClassResponse.fromJson(response.data);
       } else {

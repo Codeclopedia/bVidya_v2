@@ -254,6 +254,12 @@
     "sp_tab_course":"Courses",
     "sp_tab_followed":"Teacher Followed",
 
+    "t_scheduled_header":"Scheduled classes",
+    "t_schedule_class":"Schedule a Class",
+    "t_schedule_class_msg":"Send Request for group or personal class",
+    "t_schedule_caption":"Upcoming classes",
+    "t_schedule_no_class":"No Upcoming class",
+
   "Account": "Account",
   "settingsNoti": "Notifications",
   "settingShare": "Share bVidya app",

@@ -202,8 +202,8 @@ class BLiveProvider extends ChangeNotifier {
           _userList.addAll({_localUid: _localView()});
           // _userList.addAll(
           //     {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
-          // _updateMemberList();
-          notifyListeners();
+          _updateMemberList();
+          // notifyListeners();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           print("remote user $remoteUid joined, since $elapsed seconds");
@@ -212,8 +212,8 @@ class BLiveProvider extends ChangeNotifier {
           // _userList.addAll({
           //   remoteUid: ConnectedUserInfo(remoteUid, '', _remoteView(remoteUid))
           // });
-          notifyListeners();
-          // _updateMemberList();
+          // notifyListeners();
+          _updateMemberList();
         },
         onRemoteVideoStateChanged:
             (connection, remoteUid, state, reason, elapsed) {
@@ -241,14 +241,15 @@ class BLiveProvider extends ChangeNotifier {
           // _speakingUsersMap.clear();
           // notifyListeners();
         },
+
         onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
           _userRemoteIds.remove(remoteUid);
           _userList.removeWhere((key, value) => key == remoteUid);
           // print("remote user $remoteUid left channel");
           // _userRemoteIds.removeWhere((item) => item == remoteUid);
           // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
-          // _updateMemberList();
-          notifyListeners();
+          _updateMemberList();
+          // notifyListeners();
         },
         onLocalVideoStateChanged: (source, state, error) {
           // print(
@@ -365,12 +366,17 @@ class BLiveProvider extends ChangeNotifier {
       };
       _rtmChannel?.onMemberJoined = (member) {
         _memberList.add(member);
+        print('JOINED - ${member.userId}');
       };
       _rtmChannel?.onMemberLeft = (member) {
         _memberList.remove(member);
+        print('LEFT - ${member.userId}');
       };
-      _rtmChannel?.onMemberCountUpdated = (count) {};
+      _rtmChannel?.onMemberCountUpdated = (count) {
+        print('onMemberCountUpdated - $count');
+      };
       _rtmChannel?.onMessageReceived = (message, fromMember) {
+        print('MESSAGE - ${message.text} : ${fromMember.userId}');
         _ref
             .read(bLiveMessageListProvider.notifier)
             .addChat((RTMMessageModel(message, fromMember)));
@@ -408,23 +414,28 @@ class BLiveProvider extends ChangeNotifier {
     }
     _memberList.clear();
     _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
+    for (var u in userList.keys) {
+      print('user - $u');
+    }
     for (var e in _memberList) {
       String user = e.userId;
-      if (user.contains(':')) {
-        int id = int.tryParse(user.split(':')[0]) ?? 0;
-        String name = user.split(':')[1];
-        // if (_userList.containsKey(id)) {
-        //   _userList.update(
-        //     id,
-        //     (value) {
-        //       value.name = name;
-        //       return value;
-        //     },
-        //   );
-        // } else {
-        //   // _userList.addAll({id: ViewModel(id, name, _remoteView(id), false)});
-        // }
-      }
+      print('member - $user');
+      // if (user.contains(':')) {
+      // int id = int.tryParse(user.split(':')[0]) ?? 0;
+      // String name = user.split(':')[1];
+
+      // if (_userList.containsKey(id)) {
+      //   _userList.update(
+      //     id,
+      //     (value) {
+      //       value.name = name;
+      //       return value;
+      //     },
+      //   );
+      // } else {
+      //   // _userList.addAll({id: ViewModel(id, name, _remoteView(id), false)});
+      // }
+      // }
     }
     // if (_screenShareId == 1000) {
     //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
@@ -441,7 +452,11 @@ class BLiveProvider extends ChangeNotifier {
 
   void sendChannelMessage(String content) async {
     AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
-    await _rtmChannel?.sendMessage(message);
+    try {
+      await _rtmChannel?.sendMessage(message);
+      _ref.read(bLiveMessageListProvider.notifier).addChat(
+          (RTMMessageModel(message, AgoraRtmMember('', _token.rtmChannel))));
+    } catch (e) {}
   }
 
   void toggleVolume() async {
@@ -513,10 +528,9 @@ class BLiveProvider extends ChangeNotifier {
         canvas: VideoCanvas(
           uid: uid,
           renderMode: RenderModeType.renderModeHidden,
-          isScreenView: false,
           sourceType: VideoSourceType.videoSourceRemote,
         ),
-        connection: RtcConnection(channelId: _token.rtmChannel),
+        connection: RtcConnection(channelId: _liveClass.streamChannel),
       ),
     );
   }

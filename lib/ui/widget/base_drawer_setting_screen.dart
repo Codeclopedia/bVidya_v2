@@ -1,3 +1,4 @@
+import '../../data/models/response/auth/login_response.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -6,9 +7,13 @@ import 'base_drawer_page.dart';
 class BaseDrawerSettingScreen extends StatelessWidget {
   final Widget bodyContent;
   final String screenName;
+  final bool showEmail;
 
   const BaseDrawerSettingScreen(
-      {Key? key, required this.bodyContent, required this.screenName})
+      {Key? key,
+      required this.bodyContent,
+      required this.screenName,
+      this.showEmail = false})
       : super(key: key);
 
   @override
@@ -39,39 +44,60 @@ class BaseDrawerSettingScreen extends StatelessWidget {
                   Radius.circular(4.w),
                 ),
               ),
-              child: Container(
-                height: double.infinity,
-                padding: EdgeInsets.only(top: 7.h),
-                child: SingleChildScrollView(
-                  child: bodyContent,
-                  // child: _buildBody(),
-                ),
-              ),
+              // child: Container(
+              //   height: double.infinity,
+              //   padding: EdgeInsets.only(top: 7.h),
+              //   child: SingleChildScrollView(
+              //     child: bodyContent,
+              //     // child: _buildBody(),
+              //   ),
+              // ),
             ),
             Consumer(
               builder: (context, ref, child) {
                 final user = ref.watch(loginRepositoryProvider).user;
-                return Container(
-                  alignment: Alignment.topCenter,
-                  margin: EdgeInsets.only(top: 4.h),
-                  child: Column(
-                    children: [
-                      getRectFAvatar(
-                          size: 22.w, user?.name ?? '', user?.image ?? ''),
-                      Text(
-                        user?.name ?? '',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12.sp,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
-                );
+                return _buildUser(user);
               },
             ),
           ],
         )),
+      ),
+    );
+  }
+
+  Widget _buildUser(User? user) {
+    return Container(
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(top: 4.h),
+      child: Column(
+        // crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
+          Text(
+            user?.name ?? '',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12.sp,
+                color: Colors.black),
+          ),
+          if (showEmail)
+            Text(
+              user?.email ?? '',
+              style: TextStyle(
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryColor,
+                fontFamily: kFontFamily,
+              ),
+            ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: bodyContent,
+              // child: _buildBody(),
+            ),
+          ),
+        ],
       ),
     );
   }

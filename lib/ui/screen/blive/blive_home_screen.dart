@@ -191,10 +191,17 @@ class BLiveHomeScreen extends HookWidget {
                         ),
                       ],
                     ),
-                    ElevatedButton(
-                        style: elevatedButtonYellowStyle,
-                        onPressed: () {},
-                        child: Text(S.current.bmeet_btn_start))
+                    Consumer(builder: (context, ref, child) {
+                      return ElevatedButton(
+                          style: elevatedButtonYellowStyle,
+                          onPressed: () {
+                            if (controller.text.isNotEmpty) {
+                              String broadcastStreamId = controller.text;
+                              joinBroadcast(context, ref, broadcastStreamId);
+                            } else {}
+                          },
+                          child: Text(S.current.bmeet_btn_start));
+                    })
                     // Consumer(
                     //   builder: (context, ref, child) {
                     //     final user = ref.watch(loginRepositoryProvider).user;

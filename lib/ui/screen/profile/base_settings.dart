@@ -1,12 +1,21 @@
+import '../../../core/constants.dart';
+import '../../../data/models/response/auth/login_response.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
 class BaseSettings extends StatelessWidget {
   final Widget bodyContent;
-  static const Color gradientTopColor = Color(0xFF360C35);
-  static const Color gradientLiveBottomColor = Color(0xFF9C1132);
+  // final bool showEmail;
+  final bool showName;
+  // static const Color gradientTopColor = Color(0xFF360C35);
+  // static const Color gradientLiveBottomColor = Color(0xFF9C1132);
 
-  const BaseSettings({Key? key, required this.bodyContent}) : super(key: key);
+  const BaseSettings({
+    Key? key,
+    required this.bodyContent,
+    this.showName = true,
+    // this.showEmail = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +26,8 @@ class BaseSettings extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              gradientTopColor,
-              gradientLiveBottomColor,
+              AppColors.gradientTopColor,
+              AppColors.gradientLiveBottomColor,
             ],
           ),
         ),
@@ -35,14 +44,14 @@ class BaseSettings extends StatelessWidget {
                   Radius.circular(4.w),
                 ),
               ),
-              child: Container(
-                height: double.infinity,
-                padding: EdgeInsets.only(top: 7.h),
-                child: SingleChildScrollView(
-                  child: bodyContent,
-                  // child: _buildBody(),
-                ),
-              ),
+              // child: Container(
+              //   height: double.infinity,
+              //   padding: EdgeInsets.only(top: 7.h),
+              //   child: SingleChildScrollView(
+              //     child: bodyContent,
+              //     // child: _buildBody(),
+              //   ),
+              // ),
             ),
             IconButton(
                 onPressed: () {
@@ -52,27 +61,47 @@ class BaseSettings extends StatelessWidget {
             Consumer(
               builder: (context, ref, child) {
                 final user = ref.watch(loginRepositoryProvider).user;
-                return Container(
-                  alignment: Alignment.topCenter,
-                  margin: EdgeInsets.only(top: 4.h),
-                  child: Column(
-                    children: [
-                      getRectFAvatar(
-                          size: 22.w, user?.name ?? '', user?.image ?? ''),
-                      Text(
-                        user?.name ?? '',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12.sp,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
-                );
+                return _buildUser(user);
               },
             )
           ],
         )),
+      ),
+    );
+  }
+
+  Widget _buildUser(User? user) {
+    return Container(
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(top: 4.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        // crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
+          if (showName)
+            Text(
+              user?.name ?? '',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
+                  color: Colors.black),
+            ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: bodyContent,
+            ),
+          )
+          // Text(
+          //   user?.email ?? '',
+          //   style: TextStyle(
+          //     fontSize: 8.sp,
+          //     fontWeight: FontWeight.w600,
+          //     color: AppColors.primaryColor,
+          //     fontFamily: kFontFamily,
+          //   ),
+          // ),
+        ],
       ),
     );
   }

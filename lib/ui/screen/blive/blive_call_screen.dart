@@ -33,11 +33,23 @@ class BLiveClassScreen extends HookConsumerWidget {
   //   _me = await getMeAsUser();
   // }
 
+  // late AnimationController _controller;
+  // late Animation<double> _animation;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // _scrollController = useScrollController();
     useEffect(() {
       _scrollController = ScrollController();
+      //   _controller = AnimationController(
+      //   duration: const Duration(seconds: 3),
+      //   vsync: this,
+      // )..repeat(reverse: true);
+      // _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
       //   // _myUserId = ChatClient.getInstance.currentUserId ?? '24';
       //   // _otherUserId = _myUserId == '24' ? '1' : '24';
       //   // _scrollController.addListener(() => _onScroll(_scrollController, ref));
@@ -56,17 +68,17 @@ class BLiveClassScreen extends HookConsumerWidget {
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset:
             !isFloating, //!ref.watch(bLiveFloatingVisible),
-        appBar: chatVisible ? _buildAppBar(context) : null,
+        appBar: !chatVisible ? _buildAppBar(context) : null,
         body: provider.isPreviewReady &&
                 provider.error == null &&
                 provider.remoteUsersIds.isNotEmpty
-            ? Column(
+            ? Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                       child: Stack(
                     children: [
-                      chatVisible
+                      !chatVisible
                           ? _viewRows(provider)
                           : RotatedBox(
                               quarterTurns: 4, child: _viewRows(provider)),
@@ -233,6 +245,7 @@ class BLiveClassScreen extends HookConsumerWidget {
                   // setState(() {
                   //   chatvisibility = !chatvisibility;
                   // });
+
                   if (!chatVisible) {
                     SystemChrome.setPreferredOrientations(
                         [DeviceOrientation.landscapeRight]);

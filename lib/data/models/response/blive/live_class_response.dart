@@ -6,7 +6,8 @@ class LiveClassResponse {
   LiveClassResponse({this.message, this.status, this.body});
 
   LiveClassResponse.fromJson(Map<String, dynamic> json)
-      : body = LiveClassBody.fromJson(json['body']),
+      : body =
+            json['body'] != null ? LiveClassBody.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 
@@ -20,15 +21,15 @@ class LiveClassResponse {
 }
 
 class LiveClassBody {
-  final LiveClass liveClass;
-  LiveClassBody({required this.liveClass});
+  final LiveClass? liveClass;
+  LiveClassBody({this.liveClass});
 
   LiveClassBody.fromJson(Map<String, dynamic> json)
       : liveClass = LiveClass.fromJson(json['live_class']);
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['live_class'] = liveClass.toJson();
+    data['live_class'] = liveClass?.toJson();
     return data;
   }
 }
