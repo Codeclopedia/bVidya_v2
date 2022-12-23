@@ -4,9 +4,9 @@ import 'dart:collection';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
-import '../../data/models/models.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../blive_providers.dart';
 
 class BLiveProvider extends ChangeNotifier {

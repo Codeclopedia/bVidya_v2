@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
 
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
-import '../../core/utils/date_utils.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
+import '/core/utils/date_utils.dart';
 
 class CalendarView extends StatefulWidget {
   final Function(DateTime) onSelectedDate;

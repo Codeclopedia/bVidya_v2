@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
-import '../../core/constants.dart';
+import '/core/constants.dart';
 
 class ChatDatabaseHelper {
   ChatDatabaseHelper._();

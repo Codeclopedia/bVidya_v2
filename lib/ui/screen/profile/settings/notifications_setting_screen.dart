@@ -1,4 +1,4 @@
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 import '../base_settings.dart';
 import 'show_notifications.dart';
 

@@ -1,5 +1,5 @@
-import '../../core/constants/colors.dart';
-import '../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/ui_core.dart';
 
 class TwoColorText extends StatelessWidget {
   final String first;

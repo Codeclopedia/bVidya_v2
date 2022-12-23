@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../../../controller/profile_providers.dart';
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../core/utils.dart';
+import '/controller/profile_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
 import '../../../base_back_screen.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
 

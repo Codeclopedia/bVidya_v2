@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
 
-import '../../../core/constants.dart';
-import '../../../core/constants/data.dart';
-import '../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/constants/data.dart';
+import '/core/ui_core.dart';
 import '../../widgets.dart';
 
 class RecentCallScreen extends StatelessWidget {

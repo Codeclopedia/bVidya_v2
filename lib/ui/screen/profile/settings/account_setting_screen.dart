@@ -1,4 +1,4 @@
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 import '../../../dialog/basic_dialog.dart';
 import '../base_settings.dart';
 import 'reset_password_screen.dart';

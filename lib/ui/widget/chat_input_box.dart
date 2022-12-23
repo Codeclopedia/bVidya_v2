@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../core/constants.dart';
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../widgets.dart';
 
 class ChatInputBox extends StatefulWidget {

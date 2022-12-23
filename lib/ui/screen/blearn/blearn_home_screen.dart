@@ -1,8 +1,8 @@
-import '../../../controller/blearn_providers.dart';
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../data/models/models.dart';
+import '/controller/blearn_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
 import '../../widget/user_top_bar.dart';
 import '../../widgets.dart';

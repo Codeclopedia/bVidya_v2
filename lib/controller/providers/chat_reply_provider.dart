@@ -1,7 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../ui/screen/bchat/dash/models/reply_model.dart';
+import '/ui/screen/bchat/dash/models/reply_model.dart';
 
 class ChatScreenModel extends ChangeNotifier {
   bool _isReplyBoxVisible = false;

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
-import '../../core/constants/api_list.dart';
+import '/core/constants/api_list.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
 

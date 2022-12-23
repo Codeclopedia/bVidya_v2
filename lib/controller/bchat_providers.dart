@@ -1,9 +1,9 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import '../core/state.dart';
-import '../data/models/models.dart';
-import '../data/repository/bchat_repository.dart';
-import '../data/services/bchat_api_service.dart';
+import '/data/models/models.dart';
+import '/data/repository/bchat_repository.dart';
+import '/data/services/bchat_api_service.dart';
 import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
 import 'providers/group_chat_conversations_provider.dart';

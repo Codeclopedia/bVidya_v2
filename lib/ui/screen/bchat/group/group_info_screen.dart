@@ -1,12 +1,11 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../../../core/constants.dart';
-import '../../../../core/constants/data.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../data/models/models.dart';
+import '/core/constants.dart';
+import '/core/constants/data.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../../widgets.dart';
-
 
 class GroupInfoScreen extends StatelessWidget {
   final GroupModel currentGroup;

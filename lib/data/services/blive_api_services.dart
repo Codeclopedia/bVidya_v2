@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
-import '../../core/constants.dart';
+import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
 

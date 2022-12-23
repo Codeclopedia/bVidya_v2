@@ -2,11 +2,11 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../controller/bchat_providers.dart';
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../data/models/models.dart';
+import '/controller/bchat_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../../widgets.dart';
 
 class GroupsScreen extends StatelessWidget {

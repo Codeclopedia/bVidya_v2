@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/models/models.dart';
+import '/data/models/models.dart';
 
 bool isValidEmail(String email) => RegExp(
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")

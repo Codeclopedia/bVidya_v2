@@ -1,8 +1,8 @@
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});

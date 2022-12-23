@@ -1,9 +1,9 @@
 import '../core/helpers/duration.dart';
 import '../core/state.dart';
 import '../core/utils/date_utils.dart';
-import '../data/models/models.dart';
-import '../data/repository/bmeet_repository.dart';
-import '../data/services/bmeet_api_services.dart';
+import '/data/models/models.dart';
+import '/data/repository/bmeet_repository.dart';
+import '/data/services/bmeet_api_services.dart';
 import 'providers/bmeet_provider.dart';
 
 final callTimerProvider =
@@ -24,14 +24,16 @@ final bMeetHistoryProvider = FutureProvider.autoDispose<Meetings?>(
   (ref) => ref.watch(bMeetRepositoryProvider).fetchMeetingList(),
 );
 
-final selectedDateProvider = StateProvider.autoDispose<DateTime>((_) => DateTime.now());
+final selectedDateProvider =
+    StateProvider.autoDispose<DateTime>((_) => DateTime.now());
 
-final bMeetSelectedHistoryProvider = FutureProvider.autoDispose<List<ScheduledMeeting>>((ref) async {
+final bMeetSelectedHistoryProvider =
+    FutureProvider.autoDispose<List<ScheduledMeeting>>((ref) async {
   final meetings = ref.watch(bMeetHistoryProvider).valueOrNull;
   if (meetings?.meetings?.isNotEmpty == true) {
     final date = ref.watch(selectedDateProvider);
     // print('Filter list of Meetings of ${date.toString()} ');
-    final list = meetings?.meetings??[];
+    final list = meetings?.meetings ?? [];
     return list.where((item) => isSameDate(item.startsAt, date)).toList();
   }
   return [];

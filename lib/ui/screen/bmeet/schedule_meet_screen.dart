@@ -3,9 +3,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-import '../../../controller/bmeet_providers.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
+import '/controller/bmeet_providers.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../../base_back_screen.dart';
 import '../../dialog/ok_dialog.dart';
 import '../profile/base_settings_noscroll.dart';

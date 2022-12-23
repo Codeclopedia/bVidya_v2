@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../core/constants.dart';
+import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
 

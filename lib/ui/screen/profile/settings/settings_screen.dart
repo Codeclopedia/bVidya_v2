@@ -1,5 +1,5 @@
-import '../../../../core/constants.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
 
 class SettingsScreen extends StatelessWidget {

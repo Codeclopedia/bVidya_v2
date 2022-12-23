@@ -1,9 +1,9 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../controller/bchat_providers.dart';
-import '../../core/constants/agora_config.dart';
-import '../../core/constants/data.dart';
-import '../../core/state.dart';
+import '/controller/bchat_providers.dart';
+import '/core/constants/agora_config.dart';
+import '/core/constants/data.dart';
+import '/core/state.dart';
 import '../../firebase_options.dart';
 import '../models/models.dart';
 import '../services/bchat_api_service.dart';

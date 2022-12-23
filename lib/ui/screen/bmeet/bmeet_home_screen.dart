@@ -2,14 +2,14 @@
 
 import 'package:intl/intl.dart';
 
-import '../../../controller/bmeet_providers.dart';
-import '../../../core/constants.dart';
-import '../../../core/helpers/bmeet_helper.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
+import '/controller/bmeet_providers.dart';
+import '/core/constants.dart';
+import '/core/helpers/bmeet_helper.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
-import '../../../core/utils/date_utils.dart';
-import '../../../data/models/models.dart';
+import '/core/utils/date_utils.dart';
+import '/data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../../widget/calendar_view.dart';
 import '../../widgets.dart';

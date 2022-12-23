@@ -4,8 +4,8 @@ import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/constants.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 import '../dash/models/mention.dart';
 
 class ChatMessageBubble extends StatelessWidget {

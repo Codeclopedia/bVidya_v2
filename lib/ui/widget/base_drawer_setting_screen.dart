@@ -1,6 +1,6 @@
-import '../../core/constants/colors.dart';
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import 'base_drawer_page.dart';
 
 class BaseDrawerSettingScreen extends StatelessWidget {

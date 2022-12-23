@@ -1,7 +1,7 @@
 import '../core/state.dart';
-import '../data/models/models.dart';
-import '../data/repository/profile_repository.dart';
-import '../data/services/profile_api_service.dart';
+import '/data/models/models.dart';
+import '/data/repository/profile_repository.dart';
+import '/data/services/profile_api_service.dart';
 
 final apiProfileProvider = Provider<ProfileApiService>(
   (_) => ProfileApiService.instance,

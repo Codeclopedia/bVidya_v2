@@ -1,8 +1,7 @@
-
-import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/route_list.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/constants/route_list.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
 import '../../../widget/base_drawer_setting_screen.dart';
 

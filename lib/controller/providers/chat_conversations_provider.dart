@@ -1,5 +1,5 @@
-import '../../core/state.dart';
-import '../../data/models/conversation_model.dart';
+import '/core/state.dart';
+import '/data/models/conversation_model.dart';
 
 class ChatConversationNotifier extends StateNotifier<List<ConversationModel>> {
   ChatConversationNotifier() : super([]);

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dio/dio.dart';
 
-import '../../core/constants.dart';
+import '/core/constants.dart';
 
 class FCMApiService {
   static final FCMApiService instance = FCMApiService._private();
@@ -21,8 +21,8 @@ class FCMApiService {
     _dio.options.receiveTimeout = 120000;
   }
 
-  Future<dynamic> sendChatPush(ChatMessage chat, 
-      String toToken, String fromUserId,String senderName, NotificationType type) async {
+  Future<dynamic> sendChatPush(ChatMessage chat, String toToken,
+      String fromUserId, String senderName, NotificationType type) async {
     _dio.options.headers['Authorization'] =
         'key=  ${'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT'}';
 

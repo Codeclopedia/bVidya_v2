@@ -1,5 +1,5 @@
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
 class UserTopBar extends StatelessWidget {
   const UserTopBar({Key? key}) : super(key: key);

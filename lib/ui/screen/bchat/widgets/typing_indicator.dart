@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 /// @nodoc
 class TypingIndicator extends StatefulWidget {

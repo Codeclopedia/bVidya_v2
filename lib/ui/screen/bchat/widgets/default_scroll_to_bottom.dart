@@ -1,4 +1,4 @@
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 /// {@category Default widgets}
 class DefaultScrollToBottom extends StatelessWidget {

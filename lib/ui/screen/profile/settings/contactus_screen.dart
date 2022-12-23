@@ -1,4 +1,4 @@
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 
 class ContactUsScreen extends StatelessWidget {

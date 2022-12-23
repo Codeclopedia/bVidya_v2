@@ -2,10 +2,10 @@
 
 import 'package:flutter/gestures.dart';
 
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../core/utils.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 

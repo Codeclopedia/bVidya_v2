@@ -1,6 +1,6 @@
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../../../widget/tab_switcher.dart';
 import '../base_settings_noscroll.dart';
 

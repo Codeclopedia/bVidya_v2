@@ -1,4 +1,4 @@
-import '../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 import '../widgets.dart';
 import 'base_drawer_page.dart';

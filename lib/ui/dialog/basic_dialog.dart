@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 
 Future showBottomDialog(BuildContext context, String title, String message,
         String positiveButton, Future Function() positiveAction,

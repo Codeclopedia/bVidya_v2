@@ -5,10 +5,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-import '../../../controller/blive_providers.dart';
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
+import '/controller/blive_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../../base_back_screen.dart';
 import '../../dialog/image_picker_dialog.dart';
 import '../../dialog/ok_dialog.dart';

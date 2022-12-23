@@ -1,6 +1,6 @@
 // import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-// import '../../../../../../core/ui_core.dart';
+// import '/core/ui_core.dart';
 // import '../image_provider/image_provider_mobile.dart';
 
 // /// @nodoc

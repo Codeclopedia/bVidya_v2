@@ -3,10 +3,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../controller/bmeet_providers.dart';
-import '../../data/models/models.dart';
-import '../../ui/base_back_screen.dart';
-import '../../ui/dialog/ok_dialog.dart';
+import '/controller/bmeet_providers.dart';
+import '/data/models/models.dart';
+import '/ui/base_back_screen.dart';
+import '/ui/dialog/ok_dialog.dart';
 import '../constants.dart';
 import '../state.dart';
 import '../ui_core.dart';

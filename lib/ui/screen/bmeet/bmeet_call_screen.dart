@@ -5,14 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pip_view/pip_view.dart';
 
-import '../../../controller/bmeet_providers.dart';
-import '../../../controller/providers/bmeet_provider.dart';
-import '../../../core/constants.dart';
-import '../../../core/helpers/duration.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../core/utils.dart';
-import '../../../data/models/models.dart';
+import '/controller/bmeet_providers.dart';
+import '/controller/providers/bmeet_provider.dart';
+import '/core/constants.dart';
+import '/core/helpers/duration.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
+import '/data/models/models.dart';
 import '../../screens.dart';
 
 class BMeetCallScreen extends StatelessWidget {

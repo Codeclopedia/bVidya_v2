@@ -1,8 +1,8 @@
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/constants.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 
 class RTMChatMessageBubble extends StatelessWidget {
   final AgoraRtmMessage message;
@@ -107,7 +107,6 @@ class RTMChatMessageBubble extends StatelessWidget {
         ));
   }
 
-
   // textBubbleDecoration() => BoxDecoration(
   //       color: mine
   //           ? AppColors.chatBoxBackgroundMine
@@ -128,7 +127,6 @@ class RTMChatMessageBubble extends StatelessWidget {
   //     );
 
   Widget _buildTextMessage() {
-    
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
@@ -187,7 +185,6 @@ class RTMChatMessageBubble extends StatelessWidget {
       // ),
     );
   }
-
 
   Widget _textMessage(String content) {
     // final bool isOwnMessage = message.from == currentUser.id;

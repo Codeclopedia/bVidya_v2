@@ -1,6 +1,6 @@
 // import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../../data/models/models.dart';
+import '/data/models/models.dart';
 
 final User user = User(
   name: 'Saurabh Sharma',

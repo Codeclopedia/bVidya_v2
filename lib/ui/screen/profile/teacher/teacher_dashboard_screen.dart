@@ -1,10 +1,10 @@
 import 'package:chart_sparkline/chart_sparkline.dart';
 
-import '../../../../controller/blearn_providers.dart';
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../data/models/models.dart';
+import '/controller/blearn_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../blearn/components/common.dart';
 import '../components/instructor_course_row.dart';
 import '../components/webinar_list_row.dart';

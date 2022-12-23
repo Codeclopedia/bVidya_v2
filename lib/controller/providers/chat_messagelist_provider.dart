@@ -1,6 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../core/state.dart';
+import '/core/state.dart';
 
 class ChatMessageNotifier extends StateNotifier<List<ChatMessage>> {
   ChatMessageNotifier() : super([]); //listMessages.reversed.toList()

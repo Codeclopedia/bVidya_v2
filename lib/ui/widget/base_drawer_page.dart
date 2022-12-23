@@ -1,8 +1,8 @@
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../core/helpers/drag_position.dart';
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
+import '/core/helpers/drag_position.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import 'end_drawer.dart';
 
 final drawerStateProvider = StateProvider<bool>((ref) => false);

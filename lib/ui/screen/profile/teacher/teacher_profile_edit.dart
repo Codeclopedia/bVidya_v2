@@ -1,10 +1,8 @@
-
-
-import '../../../../core/constants/colors.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../core/utils.dart';
-import '../../../../data/models/models.dart';
+import '/core/constants/colors.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
+import '/data/models/models.dart';
 
 class TeacherProfileEdit extends HookWidget {
   final Profile profile;

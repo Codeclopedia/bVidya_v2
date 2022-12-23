@@ -1,6 +1,4 @@
-import '../../core/ui_core.dart';
-
-
+import '/core/ui_core.dart';
 
 class ErrorJoiningBroadcast extends StatelessWidget {
   const ErrorJoiningBroadcast({Key? key}) : super(key: key);

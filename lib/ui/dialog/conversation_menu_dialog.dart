@@ -1,6 +1,6 @@
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
-import '../../data/models/conversation_model.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
+import '/data/models/conversation_model.dart';
 
 class ConversationMenuDialog extends StatelessWidget {
   final ConversationModel model;

@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../core/utils.dart';
-import '../../../data/services/auth_api_service.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
+import '/data/services/auth_api_service.dart';
 import '../../screens.dart';
 import '../../widgets.dart';
 

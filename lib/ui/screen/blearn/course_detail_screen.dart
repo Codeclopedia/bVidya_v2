@@ -1,8 +1,8 @@
-import '../../../controller/blearn_providers.dart';
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../data/models/models.dart';
+import '/controller/blearn_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
 import 'components/lesson_list_row.dart';
@@ -241,7 +241,7 @@ class CourseDetailScreen extends ConsumerWidget {
             fontFamily: kFontFamily,
             color: Colors.black,
           ),
-          texts:const [
+          texts: const [
             'Description',
             'Curriculum',
           ]),

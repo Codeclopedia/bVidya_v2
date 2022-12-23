@@ -1,5 +1,5 @@
-import '../../../../core/constants/colors.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 
 class ResetPasswordScreen extends StatelessWidget {

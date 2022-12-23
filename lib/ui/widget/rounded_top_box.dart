@@ -1,5 +1,5 @@
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 
 class RoundedTopBox extends StatelessWidget {
   final Widget child;

@@ -1,4 +1,4 @@
-import '../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 class SlideTab extends StatefulWidget {
   final List<String> texts;

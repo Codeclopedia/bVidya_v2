@@ -1,5 +1,5 @@
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 
 // Future showBottomOkDialog(BuildContext context, String title, String message,
 //         String positiveButton, Future Function() positiveAction,

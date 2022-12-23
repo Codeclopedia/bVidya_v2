@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../controller/blive_providers.dart';
-import '../../ui/base_back_screen.dart';
-import '../constants/route_list.dart';
-import '../state.dart';
-import '../ui_core.dart';
+import '/controller/blive_providers.dart';
+import '/ui/base_back_screen.dart';
+import '/core/constants/route_list.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../utils.dart';
 
 Future joinBroadcast(

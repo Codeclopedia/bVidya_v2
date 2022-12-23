@@ -1,7 +1,6 @@
-
-import '../../../core/helpers/bmeet_helper.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
+import '/core/helpers/bmeet_helper.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../profile/base_settings_noscroll.dart';
 
 final muteJoinMeetingProvider = StateProvider<bool>(

@@ -2,12 +2,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pip_view/pip_view.dart';
 
-import '../../../controller/blive_providers.dart';
-import '../../../controller/providers/blive_provider.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../core/utils/date_utils.dart';
-import '../../../data/models/models.dart';
+import '/controller/blive_providers.dart';
+import '/controller/providers/blive_provider.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils/date_utils.dart';
+import '/data/models/models.dart';
 import '../../widget/chat_input_box.dart';
 import '../../widget/rtm_chat_bubble.dart';
 import '../blearn/components/common.dart';

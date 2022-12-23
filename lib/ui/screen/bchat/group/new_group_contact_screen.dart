@@ -1,9 +1,9 @@
 import 'package:grouped_list/grouped_list.dart';
 
-import '../../../../core/constants.dart';
-import '../../../../core/constants/data.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/constants/data.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../../../widgets.dart';
 
 final selectedContactProvider =

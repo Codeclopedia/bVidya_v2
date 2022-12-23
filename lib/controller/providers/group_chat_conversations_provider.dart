@@ -1,6 +1,5 @@
-
-import '../../core/state.dart';
-import '../../data/models/models.dart';
+import '/core/state.dart';
+import '/data/models/models.dart';
 
 class GroupChatConversationNotifier extends StateNotifier<List<GroupModel>> {
   GroupChatConversationNotifier() : super([]);

@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 
-import '../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 const cameraColor = Color(0xFF91E1FF);
 const mediaColor = Color(0xFF9491FF);

@@ -1,5 +1,5 @@
-import '../../core/constants.dart';
-import '../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
 
 const cameraColor = Color(0xFF91E1FF);
 const mediaColor = Color(0xFF9491FF);

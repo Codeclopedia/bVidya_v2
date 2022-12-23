@@ -1,9 +1,8 @@
-
-import '../../../controller/blearn_providers.dart';
-import '../../../core/constants.dart';
-import '../../../core/state.dart';
-import '../../../core/ui_core.dart';
-import '../../../data/models/models.dart';
+import '/controller/blearn_providers.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
 
@@ -55,7 +54,8 @@ class SubCategoriesScreen extends StatelessWidget {
 
         return InkWell(
           onTap: () {
-            Navigator.pushNamed(context, RouteList.bLearnCoursesList,arguments: item);
+            Navigator.pushNamed(context, RouteList.bLearnCoursesList,
+                arguments: item);
           },
           child: Center(
             child: Column(

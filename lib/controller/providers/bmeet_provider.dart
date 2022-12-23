@@ -6,9 +6,9 @@ import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import '../../core/helpers/duration.dart';
-import '../../core/ui_core.dart';
-import '../../data/models/models.dart';
+import '/core/helpers/duration.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 
 class BMeetProvider extends ChangeNotifier {
   final MethodChannel _iosScreenShareChannel =

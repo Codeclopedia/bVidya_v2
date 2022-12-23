@@ -1,6 +1,6 @@
-import '../../../../core/constants.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../data/models/models.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 
 class WebinarListRow extends StatelessWidget {
   final Webinar webinar;

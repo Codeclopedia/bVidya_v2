@@ -1,7 +1,6 @@
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/ui_core.dart';
-
+import '/core/ui_core.dart';
 
 /// @nodoc
 class VideoPlayer extends StatefulWidget {

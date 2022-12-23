@@ -1,5 +1,5 @@
-import '../core/state.dart';
-import '../core/ui_core.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
 showLoading(WidgetRef ref) {
   ref.watch(loadingStateProvider.notifier).state = true;

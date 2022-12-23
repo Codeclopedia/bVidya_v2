@@ -1,4 +1,4 @@
-import '../../../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 Widget get buildLoading => const Center(
       child: CircularProgressIndicator(),

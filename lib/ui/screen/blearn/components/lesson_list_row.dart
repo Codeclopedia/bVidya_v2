@@ -1,6 +1,6 @@
-import '../../../../core/constants.dart';
-import '../../../../core/ui_core.dart';
-import '../../../../data/models/models.dart';
+import '/core/constants.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 
 class LessonListRow extends StatelessWidget {
   final int index;
