@@ -29,10 +29,9 @@ Future joinMeeting(BuildContext context, WidgetRef ref, String meetingId,
   showLoading(ref);
   final joinMeeting =
       await ref.read(bMeetRepositoryProvider).joinMeeting(meetingId);
-
+  hideLoading(ref);
   if (joinMeeting == null || joinMeeting.appid.isEmpty) {
     AppSnackbar.instance.error(context, 'Error joining meeting');
-    hideLoading(ref);
   } else if (joinMeeting.status == 'streaming') {
     // joinMeeting.role = 'audience';
 

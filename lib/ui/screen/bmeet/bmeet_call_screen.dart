@@ -58,7 +58,14 @@ class BMeetCallScreen extends StatelessWidget {
           children: [
             Consumer(builder: (context, ref, child) {
               final provider = ref.watch(bMeetCallChangeProvider);
-              provider.init(meeting, enableVideo, rtmToken, rtmUser, userId);
+              ref.listen(endedMeetingProvider, (previous, next) {
+                if (next) {
+                  _onCallEnd(context);
+                }
+              });
+
+              provider.init(
+                  ref, meeting, enableVideo, rtmToken, rtmUser, userId);
               return provider.localUserJoined
                   ? _buildGridVideoView(provider)
                   : const Center(child: CircularProgressIndicator());
@@ -383,6 +390,7 @@ class BMeetCallScreen extends StatelessWidget {
                     _onCallEnd(context);
                     return;
                   }
+                  await ref.read(bMeetCallChangeProvider).sendLeaveApi();
                   // _onCallEnd(context);
                   final error =
                       await ref.read(bMeetRepositoryProvider).leaveMeet(id);
@@ -1108,6 +1116,7 @@ class BMeetCallScreen extends StatelessWidget {
                                             GestureDetector(
                                                 onTap: () {
                                                   setState(() {
+                                                    
                                                     provider.sendPeerMessage(
                                                         member.userId,
                                                         userAudio[index]

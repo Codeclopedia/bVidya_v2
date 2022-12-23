@@ -67,7 +67,7 @@ class TeacherClassRequest extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(top: 0.3.h),
                   child: Text(
-                    "2K Followers",
+                    "Private class request",
                     style: TextStyle(
                         fontSize: 8.sp,
                         color: AppColors.descTextColor,
