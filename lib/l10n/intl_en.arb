@@ -247,9 +247,14 @@
     "dg_title_meeting_scheduled":"Meeting Scheduled",
     "dg_message_meeting_scheduled":"Meeting has been scheduled. You can see the details in the scheduled meeting list.",
 
+    
     "dg_title_live_scheduled":"Live Session Scheduled",
     "dg_message_live_scheduled":"Live session has been scheduled. You can see the details in the scheduled list.",
 
+    "dg_title_logout":"Logout Account",
+    "dg_message_logout":"Are you sure want to logout your account?",
+    "btn_yes_logout":"Sure, want to logout",
+    
 
     "sp_tab_course":"Courses",
     "sp_tab_followed":"Teacher Followed",

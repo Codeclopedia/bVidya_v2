@@ -6,6 +6,7 @@ import '../../../../core/state.dart';
 import '../../../../core/ui_core.dart';
 import '../../../../core/utils.dart';
 import '../../../base_back_screen.dart';
+import '../../../dialog/basic_dialog.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
 
 class TeacherProfile extends StatelessWidget {
@@ -70,8 +71,9 @@ class TeacherProfile extends StatelessWidget {
             }),
             _buildContent(
                 S.current.profile_invite, 'profile_invite.svg', () {}),
-            _buildContent(
-                S.current.profile_logout, 'profile_logout.svg', () {}),
+            _buildContent(S.current.profile_logout, 'profile_logout.svg', () {
+              showLogoutDialog(context);
+            }),
             Container(
               width: 0.5.w,
             )

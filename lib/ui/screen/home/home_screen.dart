@@ -4,6 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -522,11 +523,11 @@ class HomeScreen extends HookConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () async {
-                  await _signOutAsync();
+                  // await _signOutAsync();
                   // Navigator.pop(context);
-                  // final pref = await SharedPreferences.getInstance();
-                  // await pref.clear();
-                  Navigator.pushReplacementNamed(context, RouteList.home);
+                  final pref = await SharedPreferences.getInstance();
+                  await pref.clear();
+                  Navigator.pushReplacementNamed(context, RouteList.login);
                 },
                 icon: const Icon(Icons.logout, color: Colors.white),
               )

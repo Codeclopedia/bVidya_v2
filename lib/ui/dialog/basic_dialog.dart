@@ -1,7 +1,19 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '/core/constants.dart';
 import '/core/ui_core.dart';
+
+showLogoutDialog(BuildContext context, {Future Function()? callback}) {
+  return showBasicDialog(context, S.current.dg_title_logout,
+      S.current.dg_message_logout, S.current.btn_yes_logout, () async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.clear();
+    Navigator.pushReplacementNamed(context, RouteList.login);
+    if (callback != null) await callback();
+  });
+}
 
 Future showBottomDialog(BuildContext context, String title, String message,
         String positiveButton, Future Function() positiveAction,
@@ -71,19 +83,21 @@ class BasicDialogContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontFamily: kFontFamily,
-              fontSize: 15.sp,
-              color: AppColors.primaryColor,
+          Padding(
+            padding: EdgeInsets.only(left: 6.w, right: 6.w),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontFamily: kFontFamily,
+                fontSize: 15.sp,
+                color: AppColors.primaryColor,
+              ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 1.5.h),
+          Padding(
+            padding: EdgeInsets.only(top: 1.5.h, left: 6.w, right: 6.w),
             child: Text(
-              // S.current.dltConfirmation,
               message,
               textAlign: TextAlign.center,
               style: TextStyle(

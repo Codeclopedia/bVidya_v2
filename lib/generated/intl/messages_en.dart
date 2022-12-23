@@ -229,6 +229,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "btn_continue": MessageLookupByLibrary.simpleMessage("Continue"),
         "btn_create": MessageLookupByLibrary.simpleMessage("Create"),
         "btn_ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "btn_yes_logout":
+            MessageLookupByLibrary.simpleMessage("Sure, want to logout"),
         "callDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block call notifications"),
         "chatHistory": MessageLookupByLibrary.simpleMessage(
@@ -267,10 +269,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Delete your account"),
         "dg_message_live_scheduled": MessageLookupByLibrary.simpleMessage(
             "Live session has been scheduled. You can see the details in the scheduled list."),
+        "dg_message_logout": MessageLookupByLibrary.simpleMessage(
+            "Are you sure want to logout your account?"),
         "dg_message_meeting_scheduled": MessageLookupByLibrary.simpleMessage(
             "Meeting has been scheduled. You can see the details in the scheduled meeting list."),
         "dg_title_live_scheduled":
             MessageLookupByLibrary.simpleMessage("Live Session Scheduled"),
+        "dg_title_logout":
+            MessageLookupByLibrary.simpleMessage("Logout Account"),
         "dg_title_meeting_scheduled":
             MessageLookupByLibrary.simpleMessage("Meeting Scheduled"),
         "dltCancel": MessageLookupByLibrary.simpleMessage("Cancel"),

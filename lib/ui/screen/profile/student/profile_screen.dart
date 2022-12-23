@@ -1,3 +1,5 @@
+import 'package:bvidya/ui/dialog/basic_dialog.dart';
+
 import '/core/constants/colors.dart';
 import '/core/constants/route_list.dart';
 import '/core/state.dart';
@@ -71,8 +73,9 @@ class StudentProfileScreen extends StatelessWidget {
             }),
             _buildContent(
                 S.current.profile_invite, "profile_invite.svg", () {}),
-            _buildContent(
-                S.current.profile_logout, "profile_logout.svg", () {}),
+            _buildContent(S.current.profile_logout, "profile_logout.svg", () {
+              showLogoutDialog(context);
+            }),
             Container(
               width: 0.5.w,
             )

@@ -6,12 +6,12 @@ import '/core/ui_core.dart';
 class BaseNoScrollSettings extends StatelessWidget {
   final Widget bodyContent;
   // final bool showEmail;
-  // final bool showName;
+  final bool showName;
 
   const BaseNoScrollSettings({
     Key? key,
     required this.bodyContent,
-    // this.showName = true,
+    this.showName = true,
     // this.showEmail = false,
   }) : super(key: key);
 
@@ -92,13 +92,14 @@ class BaseNoScrollSettings extends StatelessWidget {
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
-          Text(
-            user?.name ?? '',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12.sp,
-                color: Colors.black),
-          ),
+          if (showName)
+            Text(
+              user?.name ?? '',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
+                  color: Colors.black),
+            ),
           Expanded(child: bodyContent)
           // Text(
           //   user?.email ?? '',

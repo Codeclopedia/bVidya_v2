@@ -2130,6 +2130,36 @@ class S {
     );
   }
 
+  /// `Logout Account`
+  String get dg_title_logout {
+    return Intl.message(
+      'Logout Account',
+      name: 'dg_title_logout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure want to logout your account?`
+  String get dg_message_logout {
+    return Intl.message(
+      'Are you sure want to logout your account?',
+      name: 'dg_message_logout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sure, want to logout`
+  String get btn_yes_logout {
+    return Intl.message(
+      'Sure, want to logout',
+      name: 'btn_yes_logout',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Courses`
   String get sp_tab_course {
     return Intl.message(
