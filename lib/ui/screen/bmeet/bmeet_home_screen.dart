@@ -46,10 +46,7 @@ class BMeetHomeScreen extends StatelessWidget {
                           ? S.current.bmeet_today_meeting
                           : S.current.bmeet_date_meeting(
                               DateFormat('dd MMM').format(date));
-                      return Text(
-                        txt,
-                        style: textStyleCaption,
-                      );
+                      return Text(txt, style: textStyleCaption);
                     },
                   ),
                 ),
@@ -60,7 +57,7 @@ class BMeetHomeScreen extends StatelessWidget {
           ),
         ),
         overlayBody: Column(
-          mainAxisSize: MainAxisSize.min,
+          // mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               // height: double.infinity,
@@ -87,29 +84,24 @@ class BMeetHomeScreen extends StatelessWidget {
   }
 
   Widget _buildCalendar(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // const SafeArea(child: SizedBox(height: 1)),
-          _buildCard(context),
-          SizedBox(height: 2.h),
-          Text(
-            S.current.bmeet_txt_schedule,
-            style: textStyleWhite.copyWith(fontSize: 12.sp),
-          ),
-          // SizedBox(height: 0.5.h),
-          Consumer(builder: (context, ref, child) {
-            return CalendarView(
-              onSelectedDate: (date) {
-                ref.read(selectedDateProvider.notifier).state = date;
-              },
-            );
-          }),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SafeArea(child: SizedBox(height: 1)),
+        _buildCard(context),
+        SizedBox(height: 2.h),
+        Text(S.current.bmeet_txt_schedule,
+            style: textStyleWhite.copyWith(fontSize: 12.sp)),
+        // SizedBox(height: 0.5.h),
+        Consumer(builder: (context, ref, child) {
+          return CalendarView(
+            onSelectedDate: (date) {
+              ref.read(selectedDateProvider.notifier).state = date;
+            },
+          );
+        }),
+      ],
     );
   }
 

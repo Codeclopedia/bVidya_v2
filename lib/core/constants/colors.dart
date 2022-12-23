@@ -57,6 +57,8 @@ class AppColors {
 
   static const Color iconGreyColor = Color(0xFF989E9C);
 
+  static const Color circularFillColor = Color(0xFFCECECE);
+
   static const Color audioMessageBoxColor = Color(0xFFF2F7FB);
 
   static const Color loginBgColor = Color(0xFFE6EAFE);
@@ -100,6 +102,8 @@ class AppColors {
   static const Color cardBackground = Color(0xFFFAFAFA);
 
   static const Color cardBorder = Color(0xFF707070);
+
+  static const Color divider = Color(0xAA707070);
   //old colors
 
   // static const Color gray = Color(0xFF6C7B8A);

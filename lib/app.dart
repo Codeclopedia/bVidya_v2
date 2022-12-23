@@ -166,7 +166,7 @@ class _BVideyAppState extends State<BVideyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.themeLight,
       darkTheme: AppTheme.themeDark,
       themeMode: ThemeMode.light,

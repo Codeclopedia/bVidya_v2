@@ -37,26 +37,29 @@ class _CoursesCircularIndicatorState extends State<CoursesCircularIndicator>
 
   @override
   Widget build(BuildContext context) {
-    return Align(
+    return Container(
+      height: 9.h,
+      width: 9.h,
       alignment: Alignment.centerLeft,
       child: Stack(
         children: [
-          Positioned(
-              right: 5.w,
-              top: 4.h,
-              child: Text(
-                "${widget.progressValue..toString().replaceRange(3, 4, "")}%",
-                style: TextStyle(
-                    fontFamily: kFontFamily,
-                    fontSize: 5.w,
-                    fontWeight: FontWeight.bold),
-              )),
+          Center(
+              child: Padding(
+            padding: EdgeInsets.all(2.w),
+            child: Text(
+              "${widget.progressValue.toString().replaceRange(2, 4, "")}%",
+              style: TextStyle(
+                  fontFamily: kFontFamily,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold),
+            ),
+          )),
           SizedBox(
-            height: 11.h,
-            width: 24.w,
+            height: 9.h,
+            width: 9.h,
             child: CircularProgressIndicator(
               strokeWidth: 2.5.w,
-              backgroundColor: AppColors.iconGreyColor,
+              backgroundColor: AppColors.circularFillColor,
               value: controller.value,
               color: AppColors.yellowAccent,
             ),

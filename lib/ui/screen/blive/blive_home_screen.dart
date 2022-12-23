@@ -2,6 +2,7 @@
 
 import 'package:intl/intl.dart';
 
+import '../../base_back_screen.dart';
 import '/controller/blive_providers.dart';
 import '/core/constants.dart';
 import '/core/helpers/blive_helper.dart';
@@ -20,60 +21,63 @@ class BLiveHomeScreen extends HookWidget {
   Widget build(BuildContext context) {
     TextEditingController controller = useTextEditingController();
 
-    return LiveDrawerScreen(
-      screenName: RouteList.bLive,
-      baseBody: SafeArea(
-        child: Container(
-          alignment: Alignment.bottomCenter,
-          width: 100.w,
-          margin: EdgeInsets.only(bottom: 1.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.w),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final date = ref.watch(bLiveSelectedDateProvider);
-                    final txt = DateUtils.isSameDay(date, DateTime.now())
-                        ? S.current.blive_today_meeting
-                        : S.current.blive_date_meeting(
-                            DateFormat('dd MMM').format(date));
-                    return Text(
-                      txt,
-                      style: textStyleCaption,
-                    );
-                  },
+    return BaseWilPopupScreen(
+      onBack: () async {
+        return true;
+      },
+      child: LiveDrawerScreen(
+        screenName: RouteList.bLive,
+        baseBody: SafeArea(
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            width: 100.w,
+            margin: EdgeInsets.only(bottom: 1.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w),
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      final date = ref.watch(bLiveSelectedDateProvider);
+                      final txt = DateUtils.isSameDay(date, DateTime.now())
+                          ? S.current.blive_today_meeting
+                          : S.current.blive_date_meeting(
+                              DateFormat('dd MMM').format(date));
+                      return Text(txt, style: textStyleCaption);
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: 1.h),
-              _buildHistory(),
-            ],
+                SizedBox(height: 1.h),
+                _buildHistory(),
+              ],
+            ),
           ),
         ),
-      ),
-      overlayBody: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(7.w),
-                bottomRight: Radius.circular(7.w),
+        overlayBody: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(7.w),
+                  bottomRight: Radius.circular(7.w),
+                ),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.gradientTopColor,
+                    AppColors.gradientLiveBottomColor,
+                  ],
+                ),
               ),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  AppColors.gradientTopColor,
-                  AppColors.gradientLiveBottomColor,
-                ],
-              ),
+              child: _buildCalendar(context, controller),
             ),
-            child: _buildCalendar(context, controller),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -81,7 +85,7 @@ class BLiveHomeScreen extends HookWidget {
   Widget _buildCalendar(
       BuildContext context, TextEditingController controller) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SafeArea(child: SizedBox(height: 1)),

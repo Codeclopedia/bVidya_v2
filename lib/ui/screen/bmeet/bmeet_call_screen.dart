@@ -472,7 +472,7 @@ class BMeetCallScreen extends StatelessWidget {
               //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
               GestureDetector(
                 onTap: () {
-                  provider.toggleShareScreen();
+                  // provider.toggleShareScreen();
                   // try {
                   //   if (!Platform.isAndroid) {
                   //     EasyLoading.showToast(

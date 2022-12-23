@@ -1,13 +1,13 @@
-import '../../../../core/constants.dart';
-import '../../../../core/state.dart';
-import '../../../../core/ui_core.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 import '../../../widget/courses_circularIndicator.dart';
 import '../../../widget/tab_switcher.dart';
 import '../base_settings_noscroll.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 
-class MyLearningScreen extends ConsumerWidget {
+class fit extends ConsumerWidget {
   const MyLearningScreen({Key? key}) : super(key: key);
 
   @override
@@ -66,90 +66,101 @@ class MyLearningScreen extends ConsumerWidget {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 0.5.h),
-              child: Container(
-                height: 25.h,
-                width: 100.w,
-                decoration: BoxDecoration(
-                    color: AppColors.cardWhite,
-                    border: Border.all(color: Colors.grey.withOpacity(0.4)),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 18.h,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 3.w, vertical: 1.5.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 50.w,
-                              child: Text(
-                                "Course name: Course name and details",
-                                style: TextStyle(
-                                    fontSize: 4.6.w,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            const CoursesCircularIndicator(
-                              progressValue: 65,
-                            )
-                          ],
-                        ),
-                      ),
+            return rowCourse();
+          }),
+    );
+  }
+
+  Widget rowCourse() {
+    return Container(
+      // height: 20.h,
+      width: 100.w,
+      margin: EdgeInsets.symmetric(vertical: 1.h),
+      decoration: BoxDecoration(
+          color: AppColors.cardWhite,
+          border: Border.all(color: AppColors.cardBorder, width: 0.3),
+          borderRadius: BorderRadius.circular(3.w)),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 15.h,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 50.w,
+                    child: Text(
+                      "Course name: Course name and details",
+                      style: TextStyle(
+                          fontFamily: kFontFamily,
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11.sp),
                     ),
-                    const Divider(),
+                  ),
+                  const CoursesCircularIndicator(
+                    progressValue: 65,
+                  )
+                ],
+              ),
+            ),
+          ),
+          const Divider(
+            color: AppColors.divider,
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+                left: 3.w, right: 3.w, top: 0.5.h, bottom: 1.5.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      color: AppColors.primaryColor,
+                      size: 5.w,
+                    ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 2.w),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.timer,
-                                color: AppColors.drawerBackgroundColor,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 0.5.w),
-                                child: const Text(
-                                  "0 Hours left",
-                                  style: TextStyle(
-                                      color: AppColors.drawerBackgroundColor),
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.play_arrow,
-                                color: AppColors.drawerBackgroundColor,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 0.5.w),
-                                child: const Text(
-                                  "Continue learning",
-                                  style: TextStyle(
-                                      color: AppColors.drawerBackgroundColor),
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
+                      padding: EdgeInsets.only(left: 1.w, right: 1.w),
+                      child: Text(
+                        "0 Hours left",
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 7.sp),
                       ),
                     )
                   ],
                 ),
-              ),
-            );
-          }),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.play_arrow,
+                      color: AppColors.primaryColor,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 1.w, right: 1.w),
+                      child: Text(
+                        "Continue Learning",
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 8.sp),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
