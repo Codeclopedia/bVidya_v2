@@ -7,7 +7,7 @@ import '../base_settings_noscroll.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 
-class fit extends ConsumerWidget {
+class MyLearningScreen extends ConsumerWidget {
   const MyLearningScreen({Key? key}) : super(key: key);
 
   @override
@@ -169,44 +169,55 @@ class fit extends ConsumerWidget {
       color: Colors.white,
       child: ListView.builder(
         shrinkWrap: true,
+        padding: EdgeInsets.only(top: 1.h),
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
-          return Container(
-            height: 10.h,
-            width: 100.w,
-            child: Row(
+          return _buldFollwedRow();
+        },
+      ),
+    );
+  }
+
+  Widget _buldFollwedRow() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.2.h),
+      child: Row(
+        children: [
+          getCicleAvatar('A', '', radius: 3.h),
+          // CircleAvatar(
+          //   radius: 7.w,
+          //   backgroundImage:
+          //       AssetImage("assets/images/dummy_profile.png"),
+          // ),
+          SizedBox(width: 5.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 7.w,
-                  backgroundImage:
-                      AssetImage("assets/images/dummy_profile.png"),
+                Text(
+                  "User Name",
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: kFontFamily,
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w400),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 5.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Username",
-                        style: TextStyle(
-                            fontSize: 4.5.w, fontWeight: FontWeight.w400),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 0.3.h),
-                        child: Text(
-                          "1000 followers",
-                          style: TextStyle(
-                              fontSize: 3.w, fontWeight: FontWeight.w300),
-                        ),
-                      )
-                    ],
+                  padding: EdgeInsets.only(top: 0.3.h),
+                  child: Text(
+                    "2K Followers",
+                    style: TextStyle(
+                        fontSize: 8.sp,
+                        color: AppColors.descTextColor,
+                        fontFamily: kFontFamily,
+                        fontWeight: FontWeight.w300),
                   ),
                 )
               ],
             ),
-          );
-        },
+          )
+        ],
       ),
     );
   }
