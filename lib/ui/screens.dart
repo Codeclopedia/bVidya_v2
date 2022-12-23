@@ -54,3 +54,5 @@ export 'screen/profile/teacher/teacher_dashboard_screen.dart';
 export 'screen/profile/teacher/teacher_profile.dart';
 export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
+export 'screen/profile/teacher/teacher_classrequest.dart';
+export 'screen/profile/teacher/teacher_schedule.dart';

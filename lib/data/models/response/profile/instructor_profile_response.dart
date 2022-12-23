@@ -111,26 +111,26 @@ class ProfileBody {
 }
 
 class Profile {
-  final String name;
-  final String phone;
-  final String email;
-  final String gender;
+  final String? name;
+  final String? phone;
+  final String? email;
+  final String? gender;
   final dynamic age;
-  final String language;
-  final String bio;
-  final String occupation;
+  final String? language;
+  final String? bio;
+  final String? occupation;
   final dynamic experience;
-  final String specialization;
-  final String city;
-  final String state;
-  final String country;
-  final String address;
-  final String image;
-  final String twitterUrl;
-  final String facebookUrl;
-  final String instagramUrl;
-  final String youtubeUrl;
-  final String websiteUrl;
+  final String? specialization;
+  final String? city;
+  final String? state;
+  final String? country;
+  final String? address;
+  final String? image;
+  final String? twitterUrl;
+  final String? facebookUrl;
+  final String? instagramUrl;
+  final String? youtubeUrl;
+  final String? websiteUrl;
 
   Profile(
       {required this.name,

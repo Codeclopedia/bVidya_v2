@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '/controller/profile_providers.dart';
-import '/core/constants.dart';
-import '/core/state.dart';
-import '/core/ui_core.dart';
-import '/core/utils.dart';
+import '../../../../controller/profile_providers.dart';
+import '../../../../core/constants.dart';
+import '../../../../core/state.dart';
+import '../../../../core/ui_core.dart';
+import '../../../../core/utils.dart';
 import '../../../base_back_screen.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
 
@@ -33,6 +33,7 @@ class TeacherProfile extends StatelessWidget {
                 final profile =
                     await ref.read(profileRepositoryProvider).getUserProfile();
                 hideLoading(ref);
+
                 if (profile != null) {
                   Navigator.pushNamed(context, RouteList.teacherEditProfile,
                       arguments: profile);
@@ -54,18 +55,18 @@ class TeacherProfile extends StatelessWidget {
                 Navigator.pushNamed(context, RouteList.teacherDashboard);
               }
             }),
-            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const NotificationSetting()),
-              // );
+            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () async {
+              final user = await getMeAsUser();
+              if (user != null) {
+                Navigator.pushNamed(context, RouteList.teacherSchedule);
+              }
             }),
-            _buildClassRequest(S.current.tp_classes, 'profile_instru.svg', () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => const HelpCenter()),
-              // );
+            _buildClassRequest(S.current.tp_classes, 'profile_instru.svg',
+                () async {
+              final user = await getMeAsUser();
+              if (user != null) {
+                Navigator.pushNamed(context, RouteList.teacherClassRequest);
+              }
             }),
             _buildContent(
                 S.current.profile_invite, 'profile_invite.svg', () {}),

@@ -1,0 +1,68 @@
+import '/core/constants.dart';
+import '/core/ui_core.dart';
+
+class CoursesCircularIndicator extends StatefulWidget {
+  final double progressValue;
+  const CoursesCircularIndicator({super.key, required this.progressValue});
+
+  @override
+  State<CoursesCircularIndicator> createState() =>
+      _CoursesCircularIndicatorState();
+}
+
+class _CoursesCircularIndicatorState extends State<CoursesCircularIndicator>
+    with SingleTickerProviderStateMixin {
+  //Circular progress animation controller
+  late AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.animateTo((widget.progressValue) / 100,
+        duration: const Duration(seconds: 3), curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Stack(
+        children: [
+          Positioned(
+              right: 5.w,
+              top: 4.h,
+              child: Text(
+                "${widget.progressValue..toString().replaceRange(3, 4, "")}%",
+                style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 5.w,
+                    fontWeight: FontWeight.bold),
+              )),
+          SizedBox(
+            height: 11.h,
+            width: 24.w,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5.w,
+              backgroundColor: AppColors.iconGreyColor,
+              value: controller.value,
+              color: AppColors.yellowAccent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -61,12 +61,15 @@ class RouteList {
   static const String studentProfile = '/student-profile';
   static const String editStudentProfile = '/edit-student-profile';
   static const String studentLearnings = '/student-learnings';
+  static const String studentProfileDetail = '/student_profile_detail';
 
   //*teacher
   static const String teacherProfile = '/teacher-profile';
   static const String teacherEditProfile = '/teacher-edit-profile';
   static const String teacherDashboard = '/teacher-dashboard';
   static const String teacherProfilePublic = '/teacher-profile-public';
+  static const String teacherSchedule = '/teacher_schedule';
+  static const String teacherClassRequest = '/teacher_classrequest';
 
   //
   static const String bForum = '/forum';

@@ -2,11 +2,11 @@
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '/core/constants.dart';
-import '/core/state.dart';
-import '/core/ui_core.dart';
-import '/core/utils.dart';
-import '/core/helpers/drag_position.dart';
+import '../../core/constants.dart';
+import '../../core/state.dart';
+import '../../core/ui_core.dart';
+import '../../core/utils.dart';
+import '../../core/helpers/drag_position.dart';
 
 class EndDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -19,25 +19,24 @@ class EndDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 28.w,
+      width: 30.w,
       child: Stack(
         children: [
           Consumer(
             builder: (context, ref, child) {
               final drag = ref.watch(drawerPositionNotifierProvider);
               return Positioned(
-                top: drag.arcTop,
-                right: drag.arcRight,
-                child: SafeArea(
-                  top: false,
-                  child: InkWell(
-                    onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
-                    child: SvgPicture.asset(
-                      'assets/icons/svgs/arc_drawer.svg',
-                      color: AppColors.yellowAccent,
-                      width: 7.w,
-                      height: 12.h,
-                    ),
+                top: 86.85.h,
+                right: 17.5.w,
+                child: InkWell(
+                  onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
+                  child: SvgPicture.asset(
+                    'assets/icons/svgs/arc_type1.svg',
+                    color: myRouteName == RouteList.home
+                        ? AppColors.yellowAccent
+                        : AppColors.drawerBackgroundColor,
+                    width: 8.w,
+                    height: 12.h,
                   ),
                 ),
               );
@@ -46,12 +45,11 @@ class EndDrawer extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: Container(
-              width: 20.w,
-              height: double.infinity,
+              width: 18.w,
               color: AppColors.drawerBackgroundColor,
-              child: Consumer(builder: (context, ref, child) {
-                return SafeArea(
-                  child: Column(
+              child: SafeArea(
+                child: Consumer(builder: (context, ref, child) {
+                  return Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,6 +88,8 @@ class EndDrawer extends StatelessWidget {
                             .updatDrawerPositions(RouteList.profile);
                         final user = await getMeAsUser();
                         if (user != null) {
+                          //removed to work as  a teacher profile
+
                           // print('user role ${user.role}');
                           if (user.role == 'teacher' || user.role == 'admin') {
                             Navigator.pushNamed(
@@ -167,7 +167,7 @@ class EndDrawer extends StatelessWidget {
                                 context, RouteList.home);
                           }),
                           Positioned(
-                            right: 3.w,
+                            right: 5.w,
                             top: 0.5.h,
                             child: CircleAvatar(
                               backgroundColor: myRouteName == RouteList.home
@@ -187,9 +187,9 @@ class EndDrawer extends StatelessWidget {
                         ]),
                       ),
                     ],
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ),
         ],
@@ -232,19 +232,22 @@ class EndDrawer extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         width: 20.w,
-        height: 8.h,
+        height: 10.h,
         color: selected ? AppColors.yellowAccent : Colors.transparent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            getPngIcon(icon, width: 7.w),
-            Text(
-              title,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: selected ? AppColors.primaryColor : Colors.white,
-                fontSize: 9.sp,
+            getPngIcon(icon, width: 8.w),
+            Padding(
+              padding: EdgeInsets.only(top: 0.2.h),
+              child: Text(
+                title,
+                style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: selected ? AppColors.primaryColor : Colors.white,
+                    fontSize: 9.sp,
+                    fontWeight: FontWeight.w600),
               ),
             )
           ],

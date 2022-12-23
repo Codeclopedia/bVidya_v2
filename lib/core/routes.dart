@@ -1,8 +1,8 @@
-import '/data/models/models.dart';
-import '/ui/widget/base_drawer_page.dart';
+import '../data/models/models.dart';
+import '../ui/widget/base_drawer_page.dart';
 import 'constants.dart';
 import 'ui_core.dart';
-import '/ui/screens.dart';
+import '../ui/screens.dart';
 
 class Routes {
   static Route generateRoute(RouteSettings settings) {
@@ -252,6 +252,14 @@ class Routes {
         break;
       case RouteList.studentLearnings:
         screen = const MyLearningScreen();
+        break;
+
+      case RouteList.teacherSchedule:
+        screen = const TeacherScheduleScreen();
+        break;
+
+      case RouteList.teacherClassRequest:
+        screen = const TeacherClassRequest();
         break;
 
       case RouteList.teacherProfile:
