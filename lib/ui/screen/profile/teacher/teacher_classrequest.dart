@@ -1,11 +1,11 @@
-import 'package:bvidya/core/ui_core.dart';
-import 'package:bvidya/ui/screen/profile/base_settings_noscroll.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sizer/sizer.dart';
+// import 'package:sizer/sizer.dart';
 
-import '../../../../core/constants/colors.dart';
-import '../base_settings.dart';
+import '../base_settings_noscroll.dart';
+import '/core/constants/colors.dart';
+import '/core/ui_core.dart';
+// import '../base_settings.dart';
 
 class TeacherClassRequest extends StatelessWidget {
   const TeacherClassRequest({super.key});
@@ -28,54 +28,63 @@ class TeacherClassRequest extends StatelessWidget {
               ),
               SizedBox(height: 1.h),
               Expanded(
-                child: ListView.builder(
+                child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: 80,
                   scrollDirection: Axis.vertical,
+                  separatorBuilder: (context, index) =>
+                      const Divider(color: AppColors.divider),
                   itemBuilder: (context, index) {
-                    return SizedBox(
-                      height: 10.h,
-                      width: 100.w,
-                      child: Row(
-                        children: [
-                          getCicleAvatar('', '', radius: 6.5.w),
-                          // CircleAvatar(
-                          //   radius: 7.w,
-                          //   backgroundImage:
-                          //       AssetImage("assets/images/dummy_profile.png"),
-                          // ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 5.w),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Username",
-                                  style: TextStyle(
-                                      fontSize: 4.5.w,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 0.3.h),
-                                  child: Text(
-                                    "1000 followers",
-                                    style: TextStyle(
-                                        fontSize: 3.w,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
+                    return _buldFollwedRow();
                   },
                 ),
               )
             ],
           ),
         ));
+  }
+
+  Widget _buldFollwedRow() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.2.h),
+      child: Row(
+        children: [
+          getCicleAvatar('A', '', radius: 3.h),
+          SizedBox(width: 5.w),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "User Name",
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: kFontFamily,
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w400),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 0.3.h),
+                  child: Text(
+                    "2K Followers",
+                    style: TextStyle(
+                        fontSize: 8.sp,
+                        color: AppColors.descTextColor,
+                        fontFamily: kFontFamily,
+                        fontWeight: FontWeight.w300),
+                  ),
+                )
+              ],
+            ),
+          ),
+          IconButton(
+              onPressed: () {
+                print("Hello");
+              },
+              icon: getSvgIcon('icon_req_chat.svg'))
+        ],
+      ),
+    );
   }
 }

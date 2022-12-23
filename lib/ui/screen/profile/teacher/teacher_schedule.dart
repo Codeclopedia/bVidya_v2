@@ -21,122 +21,128 @@ class TeacherScheduleScreen extends StatelessWidget {
         onBack: () async {
           return true;
         },
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Container(
-                // alignment: Alignment.bottomCenter,
-                // width: 100.w,
-                padding: EdgeInsets.symmetric(horizontal: 4.w),
-                margin: EdgeInsets.only(bottom: 1.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 50.h),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, RouteList.teacherClassRequest);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 1.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CircleAvatar(
-                              radius: 7.w,
-                              backgroundColor:
-                                  AppColors.iconGreyColor.withOpacity(0.2),
-                              child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppColors.primaryColor,
-                                  size: 8.w,
+        child: Material(
+          color: Colors.white,
+          child: Stack(
+            children: [
+              SafeArea(
+                child: Container(
+                  // alignment: Alignment.bottomCenter,
+                  // width: 100.w,
+
+                  margin: EdgeInsets.only(bottom: 1.h),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 50.h),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteList.teacherClassRequest);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 6.w),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CircleAvatar(
+                                radius: 7.w,
+                                backgroundColor:
+                                    AppColors.iconGreyColor.withOpacity(0.2),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    color: AppColors.primaryColor,
+                                    size: 8.w,
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 3.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    S.current.t_schedule_class,
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontFamily: kFontFamily,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  Text(
-                                    S.current.t_schedule_class_msg,
-                                    style: TextStyle(
-                                        fontSize: 9.sp,
-                                        fontFamily: kFontFamily,
-                                        fontWeight: FontWeight.w200,
-                                        color: AppColors.iconGreyColor),
-                                  ),
-                                ],
+                              SizedBox(width: 3.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      S.current.t_schedule_class,
+                                      style: TextStyle(
+                                          fontSize: 12.sp,
+                                          fontFamily: kFontFamily,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                    Text(
+                                      S.current.t_schedule_class_msg,
+                                      style: TextStyle(
+                                          fontSize: 9.sp,
+                                          fontFamily: kFontFamily,
+                                          fontWeight: FontWeight.w200,
+                                          color: AppColors.iconGreyColor),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            // const Spacer(),
-                            Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 7.w,
-                              color: AppColors.iconGreyColor,
-                            )
-                          ],
+                              // const Spacer(),
+                              Icon(
+                                Icons.keyboard_arrow_right,
+                                size: 7.w,
+                                color: AppColors.iconGreyColor,
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      S.current.t_schedule_caption,
-                      style: textStyleCaption,
-                    ),
-                    SizedBox(height: 1.h),
-                    _buildHistory(),
-                  ],
-                ),
-              ),
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  // height: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(7.w),
-                      bottomRight: Radius.circular(7.w),
-                    ),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColors.gradientTopColor,
-                        Color(0xFF9C1132),
-                      ],
-                    ),
+                      SizedBox(height: 5.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        child: Text(
+                          S.current.t_schedule_caption,
+                          style: textStyleCaption,
+                        ),
+                      ),
+                      SizedBox(height: 1.h),
+                      _buildHistory(),
+                    ],
                   ),
-                  child: _buildCalendar(context),
                 ),
-              ],
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: getSvgIcon('arrow_back.svg')),
               ),
-            ),
-          ],
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    // height: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(7.w),
+                        bottomRight: Radius.circular(7.w),
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.gradientTopColor,
+                          Color(0xFF9C1132),
+                        ],
+                      ),
+                    ),
+                    child: _buildCalendar(context),
+                  ),
+                ],
+              ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: getSvgIcon('arrow_back.svg')),
+                ),
+              ),
+            ],
+          ),
         ));
   }
 
@@ -169,6 +175,7 @@ class TeacherScheduleScreen extends StatelessWidget {
   Widget _buildHistory() {
     return Container(
       height: 20.h,
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
       alignment: Alignment.bottomLeft,
       child: buildEmptyPlaceHolder(S.current.t_schedule_no_class),
       // child: Consumer(
