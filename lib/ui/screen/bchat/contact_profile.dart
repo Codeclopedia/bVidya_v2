@@ -1,5 +1,3 @@
-import 'package:flutter_switch/flutter_switch.dart';
-
 import '/core/constants.dart';
 import '/core/constants/data.dart';
 import '/core/state.dart';
@@ -10,13 +8,8 @@ import '../../widgets.dart';
 final imageSize = 28.w;
 
 class ContactProfileScreen extends StatelessWidget {
-  final User currentUser;
-  final int contactId;
-
-  ContactProfileScreen({Key? key, User? users, int? userId})
-      : currentUser = users ?? user,
-        contactId = userId ?? 1,
-        super(key: key);
+  final Contacts currentUser;
+  const ContactProfileScreen({super.key, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +37,11 @@ class ContactProfileScreen extends StatelessWidget {
             SizedBox(height: 2.h),
             _textCaption(S.current.pr_email),
             SizedBox(height: 0.4.h),
-            _textValue(currentUser.email),
+            _textValue(currentUser.email ?? ''),
             SizedBox(height: 2.h),
             _textCaption(S.current.pr_phone),
             SizedBox(height: 0.4.h),
-            _textValue(currentUser.phone),
+            _textValue(currentUser.phone ?? ''),
             SizedBox(height: 3.h),
             _buildMuteSettings(),
             SizedBox(height: 3.h),
@@ -310,7 +303,7 @@ class ContactProfileScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  getRectFAvatar(currentUser.name, currentUser.image,
+                  getRectFAvatar(currentUser.name, currentUser.profileImage,
                       size: 20.w),
                   SizedBox(
                     height: 0.7.h,

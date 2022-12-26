@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/data/models/response/bchat/contacts_response.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +13,7 @@ class ChatMessageBubble extends StatelessWidget {
   final ChatMessage message;
   final bool isOwnMessage;
 
-  final ChatUserInfo senderUser;
+  final Contacts senderUser;
   final bool isAfterDateSeparator;
   final bool isBeforeDateSeparator;
   final bool isNextSameAuthor;
@@ -57,9 +58,7 @@ class ChatMessageBubble extends StatelessWidget {
                 ? 1
                 : 0,
             child: getCicleAvatar(
-                radius: 6.w,
-                senderUser.nickName ?? senderUser.userId,
-                senderUser.avatarUrl ?? ''),
+                radius: 6.w, senderUser.name, senderUser.profileImage),
           ),
           Column(
             crossAxisAlignment: isOwnMessage
@@ -75,7 +74,7 @@ class ChatMessageBubble extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
                   child: Text(
-                    senderUser.nickName ?? '',
+                    senderUser.name,
                     style: const TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ),
@@ -90,9 +89,7 @@ class ChatMessageBubble extends StatelessWidget {
           Opacity(
             opacity: isOwnMessage && !isPreviousSameAuthor ? 1 : 0,
             child: getCicleAvatar(
-                radius: 6.w,
-                senderUser.nickName ?? senderUser.userId,
-                senderUser.avatarUrl ?? ''),
+                radius: 6.w, senderUser.name, senderUser.profileImage),
           ),
         ],
       ),

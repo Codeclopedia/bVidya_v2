@@ -205,34 +205,34 @@ final callList = [
 //           'https://c4.wallpaperflare.com/wallpaper/308/540/975/autumn-scenery-wallpaper-preview.jpg'),
 // ];
 
-final usersMap = {
-  '1': User(
-      id: 1,
-      authToken: '',
-      name: 'KUNAL PANDEY',
-      email: 'kunal@shivalikjournal.com',
-      phone: '9149252803',
-      role: 'admin',
-      fcmToken:
-          'flzJPfqjTQWbAf3RAMmKvB:APA91bHdiMNW4obVmX9anHaadAdRXlJRZyr4T8YJAk8wSWzfdPo4QiRh4VutXHI_K0JuOVokzTbjMOAVYXl3BuLu3EdptVyCrsRtiI_nUcib2ujMDY2gDjjiyrWVa--WlOZjSX4TVzCq',
-      image: 'users/sTRwHiQ4vv1seYqbwygKKUwnc3PY7yOMQnCkxC7M.jpeg'),
-  '24': User(
-      id: 24,
-      authToken: 'authToken',
-      name: 'Shubham Pandey',
-      email: 'shubham@shivalikjournal.com',
-      phone: '7060873196',
-      role: 'instructor',
-      fcmToken:
-          'cmjgAwXuRvSKUG46ErJGy1:APA91bEU6tBuu5owshzgQgPprNxOrX_64vVIXqLSGOcKcb55imxDgFqsV2WGIZes9OS-Q0IIkLlXijRv90-f7HNb9qRK2sxsgxEMOov0egtWoXYFQYcf0l8_Fs7paqsRyqNH_rcXLmD0',
-      image: 'users/58JBJIEb8JYAL4O7WpEXYKc8aRsA6bVAocJlX9Kf.jpeg'),
-};
+// final usersMap = {
+//   '1': User(
+//       id: 1,
+//       authToken: '',
+//       name: 'KUNAL PANDEY',
+//       email: 'kunal@shivalikjournal.com',
+//       phone: '9149252803',
+//       role: 'admin',
+//       fcmToken:
+//           'flzJPfqjTQWbAf3RAMmKvB:APA91bHdiMNW4obVmX9anHaadAdRXlJRZyr4T8YJAk8wSWzfdPo4QiRh4VutXHI_K0JuOVokzTbjMOAVYXl3BuLu3EdptVyCrsRtiI_nUcib2ujMDY2gDjjiyrWVa--WlOZjSX4TVzCq',
+//       image: 'users/sTRwHiQ4vv1seYqbwygKKUwnc3PY7yOMQnCkxC7M.jpeg'),
+//   '24': User(
+//       id: 24,
+//       authToken: 'authToken',
+//       name: 'Shubham Pandey',
+//       email: 'shubham@shivalikjournal.com',
+//       phone: '7060873196',
+//       role: 'instructor',
+//       fcmToken:
+//           'cmjgAwXuRvSKUG46ErJGy1:APA91bEU6tBuu5owshzgQgPprNxOrX_64vVIXqLSGOcKcb55imxDgFqsV2WGIZes9OS-Q0IIkLlXijRv90-f7HNb9qRK2sxsgxEMOov0egtWoXYFQYcf0l8_Fs7paqsRyqNH_rcXLmD0',
+//       image: 'users/58JBJIEb8JYAL4O7WpEXYKc8aRsA6bVAocJlX9Kf.jpeg'),
+// };
 
 //{auth_token: $2y$10$6y7rX3ImTQUeZhk24lfjkObnOVqa4Y/crkJVybErTK8CX2UXLRVEq, name: Shubham Pandey, email: shubham@shivalikjournal.com, phone: 7060873196, role: instructor, id: 24, fcm_token: cmjgAwXuRvSKUG46ErJGy1:APA91bEU6tBuu5owshzgQgPprNxOrX_64vVIXqLSGOcKcb55imxDgFqsV2WGIZes9OS-Q0IIkLlXijRv90-f7HNb9qRK2sxsgxEMOov0egtWoXYFQYcf0l8_Fs7paqsRyqNH_rcXLmD0, image: users/58JBJIEb8JYAL4O7WpEXYKc8aRsA6bVAocJlX9Kf.jpeg}
 
-final userTokenMap = {
-  '1':
-      '007eJxTYFhsfzpkj2nEH+2yikdbSm7+4Htg9KWuOHt9YVbtpsY50c0KDKZmpgZJiSYpiQYmhiZGFqYWJinJxuYmicnGloYGpkZpbTcnJTcEMjIsMuthYmRgZWAEQhBfhSHFxMLE1NDQQNcsLcVI19AwNUXX0jglWTcpDWhAioGFpYGlJQAXLyiX',
-  '24':
-      '007eJxTYKiK/3vrQ+7Gy2czWm7V1hgGqu0y5eTwurxgxYKACU8W7wtRYDA1MzVISjRJSTQwMTQxsjC1MElJNjY3SUw2tjQ0MDVK67s1KbkhkJFhToAwAyMDKxAzMoD4KgzJFpaJSckmBrrmBuZGuoaGqSm6iclGxrqmhsmJhslGFknJFikADRgokg=='
-};
+// final userTokenMap = {
+//   '1':
+//       '007eJxTYFhsfzpkj2nEH+2yikdbSm7+4Htg9KWuOHt9YVbtpsY50c0KDKZmpgZJiSYpiQYmhiZGFqYWJinJxuYmicnGloYGpkZpbTcnJTcEMjIsMuthYmRgZWAEQhBfhSHFxMLE1NDQQNcsLcVI19AwNUXX0jglWTcpDWhAioGFpYGlJQAXLyiX',
+//   '24':
+//       '007eJxTYKiK/3vrQ+7Gy2czWm7V1hgGqu0y5eTwurxgxYKACU8W7wtRYDA1MzVISjRJSTQwMTQxsjC1MElJNjY3SUw2tjQ0MDVK67s1KbkhkJFhToAwAyMDKxAzMoD4KgzJFpaJSckmBrrmBuZGuoaGqSm6iclGxrqmhsmJhslGFknJFikADRgokg=='
+// };

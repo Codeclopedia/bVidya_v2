@@ -143,7 +143,7 @@ final elevatedButtonStyle = ElevatedButton.styleFrom(
   ),
 );
 
-get elevatedButtonEndStyle => ElevatedButton.styleFrom(
+final elevatedButtonEndStyle = ElevatedButton.styleFrom(
       textStyle: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: 8.sp,
@@ -157,7 +157,7 @@ get elevatedButtonEndStyle => ElevatedButton.styleFrom(
       ),
     );
 
-get elevatedButtonYellowStyle => ElevatedButton.styleFrom(
+final elevatedButtonYellowStyle = ElevatedButton.styleFrom(
       textStyle: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: 11.sp,

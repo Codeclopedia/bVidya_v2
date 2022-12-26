@@ -1,10 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import 'response/auth/login_response.dart';
+import 'models.dart';
 
 class ConversationModel {
+  final Contacts contact;
   final String id;
-  final User user;
   final ChatMessage? lastMessage;
   final int badgeCount;
   final ChatConversation? conversation;
@@ -12,7 +12,7 @@ class ConversationModel {
 
   const ConversationModel(
       {required this.id,
-      required this.user,
+      required this.contact,
       required this.badgeCount,
       required this.conversation,
       required this.lastMessage,

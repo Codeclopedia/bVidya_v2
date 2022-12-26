@@ -243,7 +243,7 @@ class GroupChatScreen extends HookConsumerWidget {
 
         bool isOwnMessage = message.from == _myUserId;
 
-        ChatUserInfo otherUser = _getUser();
+        // ChatUserInfo otherUser = _getUser();
         return Column(
           crossAxisAlignment:
               isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -271,7 +271,8 @@ class GroupChatScreen extends HookConsumerWidget {
               child: ChatMessageBubble(
                 message: message,
                 isOwnMessage: message.from == _myUserId,
-                senderUser: otherUser,
+                senderUser:
+                    Contacts(name: '', userId: 1, peerId: '', profileImage: ''),
                 isPreviousSameAuthor: isPreviousSameAuthor,
                 isNextSameAuthor: isNextSameAuthor,
                 isAfterDateSeparator: isAfterDateSeparator,
@@ -452,21 +453,21 @@ class GroupChatScreen extends HookConsumerWidget {
   //   Navigator.pop(context);
   // }
 
-  ChatUserInfo _getUser() {
-    Map map = {'userId': '1', 'nickName': model.name, 'avatarUrl': model.image};
+  // ChatUserInfo _getUser() {
+  //   Map map = {'userId': '1', 'nickName': model.name, 'avatarUrl': model.image};
 
-    //map["userId"],
-    // nickName: map.getStringValue("nickName"),
-    // avatarUrl: map.getStringValue("avatarUrl"),
-    // mail: map.getStringValue("mail"),
-    // phone: map.getStringValue("phone"),
-    // gender: map.getIntValue("gender", defaultValue: 0)!,
-    // sign: map.getStringValue("sign"),
-    // birth: map.getStringValue("birth"),
-    // ext: map.getStringValue("ext"),
+  //   //map["userId"],
+  //   // nickName: map.getStringValue("nickName"),
+  //   // avatarUrl: map.getStringValue("avatarUrl"),
+  //   // mail: map.getStringValue("mail"),
+  //   // phone: map.getStringValue("phone"),
+  //   // gender: map.getIntValue("gender", defaultValue: 0)!,
+  //   // sign: map.getStringValue("sign"),
+  //   // birth: map.getStringValue("birth"),
+  //   // ext: map.getStringValue("ext"),
 
-    return ChatUserInfo.fromJson(map);
-  }
+  //   return ChatUserInfo.fromJson(map);
+  // }
 
   Widget _topBar(BuildContext context) {
     // final ChatUserInfo otherUser = _getUser();
@@ -490,7 +491,7 @@ class GroupChatScreen extends HookConsumerWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(context, RouteList.contactProfile);
+                Navigator.pushNamed(context, RouteList.groupInfo);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

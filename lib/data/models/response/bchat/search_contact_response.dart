@@ -22,14 +22,15 @@ class SearchContactResponse {
 }
 
 class SearchContactBody {
-  final List<Contact>? contacts;
+  final List<SearchContactResult>? contacts;
   SearchContactBody({
     this.contacts,
   });
 
   SearchContactBody.fromJson(Map<String, dynamic> json)
       : contacts = json["contacts"] != null
-            ? List.from(json["contacts"].map((x) => Contact.fromJson(x)))
+            ? List.from(
+                json["contacts"].map((x) => SearchContactResult.fromJson(x)))
             : null;
 
   Map<String, dynamic> toJson() {
@@ -39,29 +40,28 @@ class SearchContactBody {
   }
 }
 
-class Contact {
+class SearchContactResult {
   final int? userId;
   final String? name;
   final String? phone;
   final String? email;
+  final String? image;
 
-  Contact({
-    this.userId,
-    this.name,
-    this.phone,
-    this.email,
-  });
+  SearchContactResult(
+      {this.userId, this.name, this.phone, this.email, this.image});
 
-  Contact.fromJson(Map<String, dynamic> json)
+  SearchContactResult.fromJson(Map<String, dynamic> json)
       : userId = json["user_id"],
         name = json["name"],
         phone = json["phone"],
-        email = json["email"];
+        email = json["email"],
+        image = json["profile_image"];
 
   Map<String, dynamic> toJson() => {
         "user_id": userId,
         "name": name,
         "phone": phone,
         "email": email,
+        "profile_image": image,
       };
 }

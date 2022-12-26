@@ -21,8 +21,7 @@ class ChatScreen extends HookConsumerWidget {
   final ConversationModel model;
   ChatScreen({Key? key, required this.model}) : super(key: key);
 
-  late final String _myUserId;
-  late final String _otherUserId;
+  late final String _myChatPeerUserId;
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
@@ -36,8 +35,8 @@ class ChatScreen extends HookConsumerWidget {
       // if(_scrollController.i)
 
       _scrollController = ScrollController();
-      _myUserId = ChatClient.getInstance.currentUserId ?? '24';
-      _otherUserId = _myUserId == '24' ? '1' : '24';
+      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '24';
+      // _otherUserId = _myUserId == '24' ? '1' : '24';
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
       _preLoadChat(ref);
@@ -70,7 +69,8 @@ class ChatScreen extends HookConsumerWidget {
       }
 
       final value = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(conversationId: _otherUserId, pageSize: 20);
+          .fetchHistoryMessages(
+              conversationId: model.contact.peerId, pageSize: 20);
 
       final chats = value.data;
       if (chats.isNotEmpty) {
@@ -224,8 +224,8 @@ class ChatScreen extends HookConsumerWidget {
         return ChatInputBox(
           onSend: (input) async {
             final msg = ChatMessage.createTxtSendMessage(
-                targetId: _otherUserId, content: input)
-              ..from = _myUserId;
+                targetId: model.contact.peerId, content: input)
+              ..from = _myChatPeerUserId;
 
             // ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
             // if (replyOf != null) {
@@ -243,7 +243,7 @@ class ChatScreen extends HookConsumerWidget {
 
   final ImagePicker _picker = ImagePicker();
   _pickFiles(AttachType type) async {
-    print('Request Attach: $type');
+    // print('Request Attach: $type');
     var fileExts = ['jpg', 'pdf', 'doc'];
 
     switch (type) {
@@ -304,9 +304,9 @@ class ChatScreen extends HookConsumerWidget {
           isNextSameAuthor = true;
         }
 
-        bool isOwnMessage = message.from == _myUserId;
+        bool isOwnMessage = message.from == _myChatPeerUserId;
 
-        ChatUserInfo otherUser = _getUser();
+        // ChatUserInfo otherUser = _getUser();
         return Column(
           crossAxisAlignment:
               isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -333,8 +333,8 @@ class ChatScreen extends HookConsumerWidget {
               },
               child: ChatMessageBubble(
                 message: message,
-                isOwnMessage: message.from == _myUserId,
-                senderUser: otherUser,
+                isOwnMessage: message.from == _myChatPeerUserId,
+                senderUser: model.contact,
                 isPreviousSameAuthor: isPreviousSameAuthor,
                 isNextSameAuthor: isNextSameAuthor,
                 isAfterDateSeparator: isAfterDateSeparator,
@@ -430,30 +430,30 @@ class ChatScreen extends HookConsumerWidget {
       if (cursor == null || cursor.isEmpty) return;
       final oldResult = await ChatClient.getInstance.chatManager
           .fetchHistoryMessages(
-              conversationId: _otherUserId,
+              conversationId: model.contact.peerId,
               pageSize: 20,
               startMsgId: message.msgId);
 
-      debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
+      // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
       if (oldResult.cursor == null ||
           cursor == oldResult.cursor ||
           oldResult.cursor?.isEmpty == true) {
-        debugPrint('Not a new cursor : ${oldResult.cursor}');
+        // debugPrint('Not a new cursor : ${oldResult.cursor}');
         ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
         return;
       }
       // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
-      debugPrint('old data list ${oldResult.data.length}');
+      // debugPrint('old data list ${oldResult.data.length}');
       if (oldResult.data.isNotEmpty) {
         ref.read(chatHasMoreOldMessageProvider.notifier).state =
             oldResult.data.length == 20;
-        print('Set has More Data :${(oldResult.data.length == 20)})');
+        // print('Set has More Data :${(oldResult.data.length == 20)})');
         ref
             .read(chatMessageListProvider.notifier)
             .addChats(oldResult.data, oldResult.cursor);
       } else {
         ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-        print('Set has More Data :false');
+        // print('Set has More Data :false');
       }
     } catch (e) {}
 
@@ -512,28 +512,28 @@ class ChatScreen extends HookConsumerWidget {
   //   Navigator.pop(context);
   // }
 
-  ChatUserInfo _getUser() {
-    Map map = {
-      'userId': '1',
-      'nickName': model.user.name,
-      'avatarUrl': model.user.image
-    };
+  // ChatUserInfo _getUser() {
+  //   Map map = {
+  //     'userId': '1',
+  //     'nickName': model.contact.name??'',
+  //     'avatarUrl': model.contact.profileImage??''
+  //   };
 
-    //map["userId"],
-    // nickName: map.getStringValue("nickName"),
-    // avatarUrl: map.getStringValue("avatarUrl"),
-    // mail: map.getStringValue("mail"),
-    // phone: map.getStringValue("phone"),
-    // gender: map.getIntValue("gender", defaultValue: 0)!,
-    // sign: map.getStringValue("sign"),
-    // birth: map.getStringValue("birth"),
-    // ext: map.getStringValue("ext"),
+  //   //map["userId"],
+  //   // nickName: map.getStringValue("nickName"),
+  //   // avatarUrl: map.getStringValue("avatarUrl"),
+  //   // mail: map.getStringValue("mail"),
+  //   // phone: map.getStringValue("phone"),
+  //   // gender: map.getIntValue("gender", defaultValue: 0)!,
+  //   // sign: map.getStringValue("sign"),
+  //   // birth: map.getStringValue("birth"),
+  //   // ext: map.getStringValue("ext"),
 
-    return ChatUserInfo.fromJson(map);
-  }
+  //   return ChatUserInfo.fromJson(map);
+  // }
 
   Widget _topBar(BuildContext context) {
-    final ChatUserInfo otherUser = _getUser();
+    // final Contacts otherUser = _getUser();
     // _otherUser = ChatUser(
     //   id: otherUser.id.toString(),
     //   firstName: otherUser.name,
@@ -552,14 +552,15 @@ class ChatScreen extends HookConsumerWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.w),
             child: getRectFAvatar(
-              otherUser.nickName ?? '',
-              otherUser.avatarUrl ?? '',
+              model.contact.name,
+              model.contact.profileImage,
             ),
           ),
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(context, RouteList.contactProfile);
+                Navigator.pushNamed(context, RouteList.contactProfile,
+                    arguments: model.contact);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -567,7 +568,7 @@ class ChatScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    otherUser.nickName ?? '',
+                    model.contact.name,
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         color: Colors.white,

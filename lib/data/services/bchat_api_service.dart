@@ -13,41 +13,41 @@ class BChatApiService {
     _dio = DioServices.instance.dio;
   }
 
-  Future fetchChatToken(String token) async {
+  Future<ChatTokenResponse> fetchChatToken(String token) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final response = await _dio.get('$baseUrlApi${ApiList.getChatToken}');
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
-        return BaseResponse.fromJson(response.data);
+        return ChatTokenResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return ChatTokenResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: '$e');
+      return ChatTokenResponse(status: 'error', message: '$e');
     }
   }
 
-  Future getContacts(String token) async {
+  Future<ContactListResponse> getContacts(String token) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final response = await _dio.get('$baseUrlApi${ApiList.allContacts}');
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
-        return BaseResponse.fromJson(response.data);
+        return ContactListResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return ContactListResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: '$e');
+      return ContactListResponse(status: 'error', message: '$e');
     }
   }
 
-  Future addContact(String token, String userId) async {
+  Future<BaseResponse> addContact(String token, String userId) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final data = {'user_id': userId};
@@ -66,7 +66,7 @@ class BChatApiService {
     }
   }
 
-  Future searchContact(String token, String term) async {
+  Future<SearchContactResponse> searchContact(String token, String term) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final data = {'term': term};
@@ -74,18 +74,18 @@ class BChatApiService {
           await _dio.post('$baseUrlApi${ApiList.searchContact}', data: data);
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
-        return BaseResponse.fromJson(response.data);
+        return SearchContactResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return SearchContactResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: '$e');
+      return SearchContactResponse(status: 'error', message: '$e');
     }
   }
 
-  Future deleteContact(String token, String userId) async {
+  Future<BaseResponse> deleteContact(String token, String userId) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final data = {'user_id': userId};

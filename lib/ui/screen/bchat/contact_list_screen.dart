@@ -1,7 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
 
+import '../../../controller/bchat_providers.dart';
+import '../../../core/constants/route_list.dart';
+import '../../../core/state.dart';
+import '../../../data/models/models.dart';
+import '../blearn/components/common.dart';
 import '/core/constants/colors.dart';
-import '/core/constants/data.dart';
+// import '/core/constants/data.dart';
 import '/core/ui_core.dart';
 import '../../widgets.dart';
 
@@ -13,12 +21,26 @@ class ContactListScreen extends StatelessWidget {
     return Scaffold(
       body: ColouredBoxBar(
         topBar: const BAppBar(title: 'Add New People'),
-        body: _buildList(context),
+        body: Consumer(
+          builder: (context, ref, child) {
+            return ref.watch(chatContactsList).when(
+                data: (data) {
+                  if (data.isNotEmpty) {
+                    return _buildList(context, ref, data);
+                  } else {
+                    return buildEmptyPlaceHolder('No Contacts');
+                  }
+                },
+                error: (error, t) => buildEmptyPlaceHolder('No Contacts'),
+                loading: () => buildLoading);
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildList(BuildContext context) {
+  Widget _buildList(
+      BuildContext context, WidgetRef ref, List<Contacts> contacts) {
     return Padding(
       padding: EdgeInsets.only(left: 6.w, right: 6.w, bottom: 2.h),
       child: Column(
@@ -26,7 +48,7 @@ class ContactListScreen extends StatelessWidget {
         children: [
           SizedBox(height: 3.h),
           Text(
-            'My Contact',
+            'My Contacts',
             style: TextStyle(
               fontFamily: kFontFamily,
               color: Colors.black,
@@ -41,8 +63,28 @@ class ContactListScreen extends StatelessWidget {
               // groupComparator: (item1, item2) => item1.compareTo(item2),
               groupSeparatorBuilder: (String groupByValue) =>
                   _groupHeader(groupByValue),
-              itemBuilder: (context, ContactModel element) =>
-                  _contactRow(element),
+              itemBuilder: (context, element) {
+                return InkWell(
+                    onTap: (() async {
+                      final conv = await ChatClient.getInstance.chatManager
+                          .getConversation(element.peerId,
+                              type: ChatConversationType.Chat);
+                      if (conv != null) {
+                        ConversationModel model = ConversationModel(
+                          id: element.peerId,
+                          badgeCount: await conv.unreadCount(),
+                          contact: element,
+                          conversation: conv,
+                          lastMessage: await conv.latestMessage(),
+                        );
+                        Navigator.pushReplacementNamed(
+                            context, RouteList.chatScreen,
+                            arguments: model);
+                      }
+                    }),
+                    child: _contactRow(element));
+              },
+
               itemComparator: (item1, item2) =>
                   item1.name.compareTo(item2.name), // optional
               useStickyGroupSeparators: false, // optional
@@ -55,12 +97,12 @@ class ContactListScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(ContactModel contact) {
+  Widget _contactRow(Contacts contact) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name, contact.image),
+          getCicleAvatar(contact.name, contact.profileImage),
           SizedBox(
             width: 3.w,
           ),
@@ -105,30 +147,30 @@ class ContactListScreen extends StatelessWidget {
     );
   }
 
-  Widget _topBar(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-      width: double.infinity,
-      child: Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          IconButton(
-            onPressed: (() => Navigator.pop(context)),
-            icon: getSvgIcon('arrow_back.svg'),
-          ),
-          Center(
-            child: Text(
-              'Add New People',
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: Colors.white,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _topBar(BuildContext context) {
+  //   return Container(
+  //     padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+  //     width: double.infinity,
+  //     child: Stack(
+  //       alignment: Alignment.centerLeft,
+  //       children: [
+  //         IconButton(
+  //           onPressed: (() => Navigator.pop(context)),
+  //           icon: getSvgIcon('arrow_back.svg'),
+  //         ),
+  //         Center(
+  //           child: Text(
+  //             'Add New People',
+  //             style: TextStyle(
+  //               fontFamily: kFontFamily,
+  //               color: Colors.white,
+  //               fontSize: 14.sp,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

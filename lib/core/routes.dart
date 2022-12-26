@@ -84,21 +84,17 @@ class Routes {
         screen = const ContactListScreen();
         break;
       case RouteList.contactProfile:
-        if (settings.arguments is User) {
+        if (settings.arguments is Contacts) {
           screen = ContactProfileScreen(
-            users: settings.arguments as User,
-          );
-        } else if (settings.arguments is int) {
-          screen = ContactProfileScreen(
-            userId: settings.arguments as int,
+            currentUser: settings.arguments as Contacts,
           );
         } else {
-          screen = ContactProfileScreen();
+          screen = _parameterMissing();
         }
 
         break;
       case RouteList.search:
-        screen = const SearchScreen();
+        screen = SearchScreen();
         break;
       case RouteList.bMeet:
         screen = const BMeetHomeScreen();

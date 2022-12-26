@@ -21,7 +21,7 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      ref.read(bChatRepositoryProvider).initChatSDK(ref);
+      ref.read(bChatSDKControllerProvider).initChatSDK(ref);
       // _loadConversations(ref);
       _addHandler(ref);
       return _disposeAll;
@@ -50,7 +50,7 @@ class HomeScreen extends HookConsumerWidget {
     // ref.read(chatMessageListProvider.notifier).addChat(msg);
     // }
     if (messages.isNotEmpty) {
-      ref.read(bChatRepositoryProvider).loadConversations();
+      ref.read(bChatSDKControllerProvider).loadConversations();
       // _loadConversations(ref);
     }
   }
@@ -193,7 +193,7 @@ class HomeScreen extends HookConsumerWidget {
               builder: (context, ref, child) {
                 final conversationList =
                     ref.watch(chatConversationListProvider);
-                print('conversationList:${conversationList.length}');
+                // print('conversationList:${conversationList.length}');
                 return ListView.separated(
                   shrinkWrap: false,
                   itemCount: conversationList.length,
@@ -225,7 +225,7 @@ class HomeScreen extends HookConsumerWidget {
         await Future.delayed(
             const Duration(milliseconds: 500)); //delay to reset state
         // ref.invalidate(chatConversationListProvider);
-        ref.read(bChatRepositoryProvider).loadConversations();
+        ref.read(bChatSDKControllerProvider).loadConversations();
       },
       onLongPress: (() {
         showDialog(
@@ -268,14 +268,14 @@ class HomeScreen extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          getCicleAvatar(model.user.name, model.user.image),
+          getCicleAvatar(model.contact.name, model.contact.profileImage),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.user.name,
+                  model.contact.name,
                   style: TextStyle(
                     fontWeight: model.badgeCount > 0
                         ? FontWeight.w700
@@ -302,12 +302,12 @@ class HomeScreen extends HookConsumerWidget {
           Column(
             children: [
               Text(
-                DateFormat('h:mm a')
-                    .format(model.lastMessage == null
-                        ? DateTime.now()
-                        : DateTime.fromMillisecondsSinceEpoch(
+                model.lastMessage == null
+                    ? ''
+                    : DateFormat('h:mm a')
+                        .format(DateTime.fromMillisecondsSinceEpoch(
                             model.lastMessage!.serverTime))
-                    .toUpperCase(),
+                        .toUpperCase(),
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: colorTimeBadge,
@@ -488,9 +488,16 @@ class HomeScreen extends HookConsumerWidget {
             children: [
               SizedBox(width: 7.w),
               InkWell(
-                onTap: (() => Navigator.pushNamed(
-                    context, RouteList.contactProfile,
-                    arguments: user)),
+                onTap: () {
+                  if (user.role == 'teacher' || user.role == 'admin') {
+                    Navigator.pushNamed(context, RouteList.teacherProfile);
+                  } else {
+                    Navigator.pushNamed(context, RouteList.studentProfile);
+                  }
+                },
+                // onTap: (() => Navigator.pushNamed(
+                //     context, RouteList.contactProfile,
+                //     arguments: user)),
                 child: getRectFAvatar(user.name, user.image),
               ),
               SizedBox(
@@ -521,16 +528,37 @@ class HomeScreen extends HookConsumerWidget {
                 ],
               ),
               const Spacer(),
-              IconButton(
-                onPressed: () async {
-                  // await _signOutAsync();
-                  // Navigator.pop(context);
-                  final pref = await SharedPreferences.getInstance();
-                  await pref.clear();
-                  Navigator.pushReplacementNamed(context, RouteList.login);
+              InkWell(
+                onTap: () async {
+                  final result =
+                      await Navigator.pushNamed(context, RouteList.search);
+                  if (result == true) {
+                    ref.read(bChatSDKControllerProvider).loadConversations();
+                  }
                 },
-                icon: const Icon(Icons.logout, color: Colors.white),
-              )
+                child: Container(
+                  padding: EdgeInsets.all(1.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                    color: AppColors.yellowAccent,
+                  ),
+                  child: const Icon(
+                    Icons.search,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ),
+              SizedBox(width: 5.w),
+              // IconButton(
+              //   onPressed: () async {
+              //     // await _signOutAsync();
+              //     // Navigator.pop(context);
+              //     final pref = await SharedPreferences.getInstance();
+              //     await pref.clear();
+              //     Navigator.pushReplacementNamed(context, RouteList.login);
+              //   },
+              //   icon: const Icon(Icons.logout, color: Colors.white),
+              // )
             ],
           );
         },

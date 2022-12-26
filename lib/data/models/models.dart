@@ -15,6 +15,10 @@ export 'response/blearn/instructor_courses_response.dart';
 export 'response/profile/instructor_profile_response.dart';
 export 'response/profile/user_profile_response.dart';
 
+export 'response/bchat/search_contact_response.dart';
+export 'response/bchat/contacts_response.dart';
+export 'response/bchat/chat_token_response.dart';
+
 export 'response/bmeet/schedule_response.dart';
 export 'response/bmeet/start_meeting_response.dart';
 export 'response/bmeet/join_meeting_response.dart';

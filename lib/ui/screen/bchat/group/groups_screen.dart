@@ -65,7 +65,7 @@ class GroupsScreen extends StatelessWidget {
           const Duration(milliseconds: 500),
         ); //delay to reset state
         // ref.invalidate(chatConversationListProvider);
-        ref.read(bChatRepositoryProvider).loadConversations();
+        ref.read(bChatSDKControllerProvider).loadConversations();
       },
       // onLongPress: (() {
       //   showDialog(
