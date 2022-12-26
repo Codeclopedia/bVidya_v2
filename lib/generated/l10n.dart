@@ -2060,6 +2060,126 @@ class S {
     );
   }
 
+  /// `Mute`
+  String get bmeet_tool_mute {
+    return Intl.message(
+      'Mute',
+      name: 'bmeet_tool_mute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unmute`
+  String get bmeet_tool_unmute {
+    return Intl.message(
+      'Unmute',
+      name: 'bmeet_tool_unmute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video`
+  String get bmeet_tool_video {
+    return Intl.message(
+      'Video',
+      name: 'bmeet_tool_video',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stop Video`
+  String get bmeet_tool_stop_video {
+    return Intl.message(
+      'Stop Video',
+      name: 'bmeet_tool_stop_video',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share Screen`
+  String get bmeet_tool_share_screen {
+    return Intl.message(
+      'Share Screen',
+      name: 'bmeet_tool_share_screen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stop Share`
+  String get bmeet_tool_stop_sshare {
+    return Intl.message(
+      'Stop Share',
+      name: 'bmeet_tool_stop_sshare',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participants`
+  String get bmeet_tool_participants {
+    return Intl.message(
+      'Participants',
+      name: 'bmeet_tool_participants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More`
+  String get bmeet_tool_more {
+    return Intl.message(
+      'More',
+      name: 'bmeet_tool_more',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Raise Hand`
+  String get bmeet_tool_raisehand {
+    return Intl.message(
+      'Raise Hand',
+      name: 'bmeet_tool_raisehand',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You`
+  String get bmeet_user_you {
+    return Intl.message(
+      'You',
+      name: 'bmeet_user_you',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove`
+  String get btn_remove {
+    return Intl.message(
+      'Remove',
+      name: 'btn_remove',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `End`
+  String get btn_end {
+    return Intl.message(
+      'End',
+      name: 'btn_end',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Continue`
   String get btn_continue {
     return Intl.message(

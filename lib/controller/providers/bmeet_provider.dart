@@ -11,6 +11,8 @@ import '/core/helpers/duration.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
+final raisedHandMeetingProvider = StateProvider<String>((ref) => '');
+
 final endedMeetingProvider = StateProvider<bool>((ref) => false);
 
 class BMeetProvider extends ChangeNotifier {
@@ -141,7 +143,7 @@ class BMeetProvider extends ChangeNotifier {
         (AgoraRtmMessage message, String peerId) async {
       // debugPrint("Peer ID $peerId");
       debugPrint("onMessageReceived=> Peer ID:$peerId - msg:${message.text}");
-      if (message.text == 'leave') {
+      if (message.text == 'remove') {
         _ref.read(endedMeetingProvider.notifier).state = true;
         // _ended = true;
         notifyListeners();
@@ -411,15 +413,38 @@ class BMeetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Timer? _timer;
   Future<void> _createJoinRTMChannel() async {
     try {
       _rtmChannel = await _rtmClient.createChannel(_meeting.channel);
       await _rtmChannel?.join();
       _rtmChannel?.onMessageReceived = (message, fromMember) {
-        if (message.text == 'mute_all') {
+        if (message.text == 'raise_hand') {
+          //from id
+          _timer?.cancel();
+          _ref.read(raisedHandMeetingProvider.notifier).state =
+              fromMember.userId.split(':')[1];
+          _timer = Timer(const Duration(seconds: 2), () {
+            _ref.read(raisedHandMeetingProvider.notifier).state = '';
+          });
+
+          // Future.delayed(
+          //   const Duration(seconds: 2),
+          //   () {
+          //     _ref.read(raisedHandMeetingProvider.notifier).state = '';
+          //   },
+          // );
+        } else if (message.text == 'mute_all') {
           _hostMute = true;
           notifyListeners();
-        } 
+        } else if (message.text == 'unmute_all') {
+          _hostMute = false;
+          notifyListeners();
+        } else if (message.text == 'leave') {
+          _ref.read(endedMeetingProvider.notifier).state = true;
+          notifyListeners();
+          return;
+        }
       };
       print('Join channel success.');
     } catch (errorCode) {
@@ -585,6 +610,18 @@ class BMeetProvider extends ChangeNotifier {
 
   Future sendMuteAll() async {
     _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('mute_all'));
+  }
+
+  Future sendRaiseHand() async {
+    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('raise_hand'));
+
+    _timer?.cancel();
+//Show to sender too
+    _ref.read(raisedHandMeetingProvider.notifier).state =
+        S.current.bmeet_user_you;
+    _timer = Timer(const Duration(seconds: 2), () {
+      _ref.read(raisedHandMeetingProvider.notifier).state = '';
+    });
   }
 
   // Future sendVideoOffAll() async {

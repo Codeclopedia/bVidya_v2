@@ -215,11 +215,26 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Meeting Joining Options"),
         "bmeet_today_meeting":
             MessageLookupByLibrary.simpleMessage("Today\'s Meeting"),
+        "bmeet_tool_more": MessageLookupByLibrary.simpleMessage("More"),
+        "bmeet_tool_mute": MessageLookupByLibrary.simpleMessage("Mute"),
+        "bmeet_tool_participants":
+            MessageLookupByLibrary.simpleMessage("Participants"),
+        "bmeet_tool_raisehand":
+            MessageLookupByLibrary.simpleMessage("Raise Hand"),
+        "bmeet_tool_share_screen":
+            MessageLookupByLibrary.simpleMessage("Share Screen"),
+        "bmeet_tool_stop_sshare":
+            MessageLookupByLibrary.simpleMessage("Stop Share"),
+        "bmeet_tool_stop_video":
+            MessageLookupByLibrary.simpleMessage("Stop Video"),
+        "bmeet_tool_unmute": MessageLookupByLibrary.simpleMessage("Unmute"),
+        "bmeet_tool_video": MessageLookupByLibrary.simpleMessage("Video"),
         "bmeet_txt_meeting": MessageLookupByLibrary.simpleMessage("Meeting"),
         "bmeet_txt_schedule":
             MessageLookupByLibrary.simpleMessage("Scheduled Meetings"),
         "bmeet_txt_start_desc": MessageLookupByLibrary.simpleMessage(
             "Generate your meeting link to begin."),
+        "bmeet_user_you": MessageLookupByLibrary.simpleMessage("You"),
         "bmeet_videooff_desc": MessageLookupByLibrary.simpleMessage(
             "Grand or restrict video access"),
         "bmeet_videooff_title": MessageLookupByLibrary.simpleMessage(
@@ -228,7 +243,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Start Instant Meeting"),
         "btn_continue": MessageLookupByLibrary.simpleMessage("Continue"),
         "btn_create": MessageLookupByLibrary.simpleMessage("Create"),
+        "btn_end": MessageLookupByLibrary.simpleMessage("End"),
         "btn_ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "btn_remove": MessageLookupByLibrary.simpleMessage("Remove"),
         "btn_yes_logout":
             MessageLookupByLibrary.simpleMessage("Sure, want to logout"),
         "callDesc": MessageLookupByLibrary.simpleMessage(

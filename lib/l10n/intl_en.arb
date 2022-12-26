@@ -241,6 +241,20 @@
     "bmeet_call_msg_diable_audio_host":"Your are muted by host",
     "bmeet_call_msg_diable_camera_host":"Your camera disabled by host.",
 
+    "bmeet_tool_mute":"Mute",
+    "bmeet_tool_unmute":"Unmute",
+    "bmeet_tool_video":"Video",
+    "bmeet_tool_stop_video":"Stop Video",
+    "bmeet_tool_share_screen":"Share Screen",
+    "bmeet_tool_stop_sshare":"Stop Share",
+    "bmeet_tool_participants":"Participants",
+    "bmeet_tool_more":"More",
+    "bmeet_tool_raisehand":"Raise Hand",
+
+    "bmeet_user_you":"You",
+
+    "btn_remove":"Remove",
+    "btn_end":"End",
     "btn_continue":"Continue",
     "btn_ok":"OK",
     "btn_create":"Create",

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pip_view/pip_view.dart';
 
+import '../../dialog/meet_participants_dialog.dart';
 import '/controller/bmeet_providers.dart';
 import '/controller/providers/bmeet_provider.dart';
 import '/core/constants.dart';
@@ -71,6 +72,27 @@ class BMeetCallScreen extends StatelessWidget {
                   : const Center(child: CircularProgressIndicator());
             }),
             _buildRow(context),
+            Positioned(
+              top: 12.h,
+              left: 30.w,
+              right: 30.w,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  String id = ref.watch(raisedHandMeetingProvider);
+                  return id.isNotEmpty
+                      ? Column(
+                          children: [
+                            getSvgIcon('vc_raise_hand.svg', width: 12.w),
+                            Text(
+                              id,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink();
+                },
+              ),
+            ),
           ],
         ),
       );
@@ -90,10 +112,7 @@ class BMeetCallScreen extends StatelessWidget {
               final duration = ref.watch(callTimerProvider).duration;
               return Row(
                 children: [
-                  const Icon(
-                    Icons.timer,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.timer, color: Colors.white),
                   const SizedBox(width: 2),
                   Text(
                     durationString(duration),
@@ -150,20 +169,145 @@ class BMeetCallScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildAppBar(BuildContext context) {
+    return Padding(
+      // decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.all(Radius.circular(2.w)),
+      //     color: Colors.black),
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+      child: Consumer(builder: (context, ref, child) {
+        bool volume = ref.watch(bMeetCallChangeProvider).speakerOn;
+
+        return Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      ref.read(bMeetCallChangeProvider).onSwitchCamera();
+                    },
+                    icon: getSvgIcon('vc_camera_flip.svg'),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      ref.read(bMeetCallChangeProvider).toggleVolume();
+                    },
+                    icon: getSvgIcon(
+                        volume ? 'vc_sound_on.svg' : 'vc_sound_off.svg'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: InkWell(
+                  onTap: () {
+                    _showDetailDialog(context);
+                  },
+                  child: Row(
+                    children: [
+                      buildBText('Meet'),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.white,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: InkWell(
+                onTap: () async {
+                  if (meeting.role != 'host' || id < 0) {
+                    _onCallEnd(context);
+                    return;
+                  }
+                  showLoading(ref);
+                  await ref.read(bMeetCallChangeProvider).sendLeaveApi();
+                  // _onCallEnd(context);
+                  final error =
+                      await ref.read(bMeetRepositoryProvider).leaveMeet(id);
+                  hideLoading(ref);
+                  if (error != null) {
+                    print('error:$error');
+                    AppSnackbar.instance.error(context, error);
+                    _onCallEnd(context);
+                  } else {
+                    _onCallEnd(context);
+                  }
+                },
+                child: Container(
+                  width: 6.w,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                  decoration: BoxDecoration(
+                      color: AppColors.redBColor,
+                      borderRadius: BorderRadius.all(Radius.circular(2.w))),
+                  child: Text(
+                    S.current.btn_end,
+                    style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                  ),
+                ),
+              ),
+              //     child: ElevatedButton(
+              //   onPressed: () async {
+              //     if (meeting.role != 'host' || id < 0) {
+              //       _onCallEnd(context);
+              //       return;
+              //     }
+              //     showLoading(ref);
+              //     await ref.read(bMeetCallChangeProvider).sendLeaveApi();
+              //     // _onCallEnd(context);
+              //     final error =
+              //         await ref.read(bMeetRepositoryProvider).leaveMeet(id);
+              //     hideLoading(ref);
+              //     if (error != null) {
+              //       print('error:$error');
+              //       AppSnackbar.instance.error(context, error);
+              //       _onCallEnd(context);
+              //     } else {
+              //       _onCallEnd(context);
+              //     }
+              //   },
+              //   style: elevatedButtonEndStyle,
+              //   child: Text(
+              //     S.current.btn_end,
+              //     style: TextStyle(
+              //       fontSize: 8.sp,
+              //       fontFamily: kFontFamily,
+              //     ),
+              //   ),
+              // )
+            )
+          ],
+        );
+      }),
+    );
+  }
+
   _showDetailDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
+        return StatefulBuilder(builder: (context, _) {
+          return Container(
+              height: 100.h,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               padding: const EdgeInsets.only(
                   top: 10, bottom: 30, left: 20, right: 20),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(3.w),
+                  topRight: Radius.circular(3.w),
                 ),
                 color: Colors.black,
               ),
@@ -282,8 +426,8 @@ class BMeetCallScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                 ],
-              )),
-        );
+              ));
+        });
       },
     );
   }
@@ -294,157 +438,172 @@ class BMeetCallScreen extends StatelessWidget {
 
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.black,
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Consumer(
-                builder: (context, ref, child) {
-                  return GestureDetector(
-                    onTap: () {
-                      ref.read(bMeetCallChangeProvider).onSwitchCamera();
-                    },
-                    child: Image.asset(
-                      'assets/icons/svg/camera_flip.png',
-                      height: 3.h,
-                      width: 3.h,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              Consumer(
-                builder: (context, ref, child) {
-                  bool volume = ref.watch(bMeetCallChangeProvider).speakerOn;
-                  return GestureDetector(
-                    onTap: () {
-                      ref.read(bMeetCallChangeProvider).toggleVolume();
-                    },
-                    child: volume
-                        ? Image.asset(
-                            'assets/icons/svg/volume_off.png',
-                            height: 3.h,
-                            width: 3.h,
-                          )
-                        : SvgPicture.asset(
-                            'assets/icons/svg/volume.svg',
-                            height: 3.h,
-                            width: 3.h,
-                          ),
-                  );
-                },
-              ),
-            ],
-          ),
-          GestureDetector(
-            onTap: () => _showDetailDialog(context),
-            child: Row(
-              children: [
-                buildBText('Meet'),
-                // RichText(
-                //   text: TextSpan(
-                //     text: 'b',
-                //     style: TextStyle(
-                //         fontWeight: FontWeight.bold,
-                //         color: Colors.red,
-                //         fontSize: 12.sp),
-                //     children: <TextSpan>[
-                //       TextSpan(
-                //         text: 'Meet',
-                //         style: TextStyle(
-                //             fontWeight: FontWeight.bold,
-                //             color: Colors.white,
-                //             fontSize: 12.sp),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                const Icon(Icons.keyboard_arrow_down_rounded, size: 25),
-              ],
+        backgroundColor: Colors.black,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: _buildAppBar(context)
+
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Row(
+        //       children: [
+        //         Consumer(
+        //           builder: (context, ref, child) {
+        //             return GestureDetector(
+        //               onTap: () {
+        //                 ref.read(bMeetCallChangeProvider).onSwitchCamera();
+        //               },
+        //               child: Image.asset(
+        //                 'assets/icons/svg/camera_flip.png',
+        //                 height: 3.h,
+        //                 width: 3.h,
+        //               ),
+        //             );
+        //           },
+        //         ),
+        //         const SizedBox(
+        //           width: 15,
+        //         ),
+        //         Consumer(
+        //           builder: (context, ref, child) {
+        //             bool volume = ref.watch(bMeetCallChangeProvider).speakerOn;
+        //             return GestureDetector(
+        //               onTap: () {
+        //                 ref.read(bMeetCallChangeProvider).toggleVolume();
+        //               },
+        //               child: volume
+        //                   ? Image.asset(
+        //                       'assets/icons/svg/volume_off.png',
+        //                       height: 3.h,
+        //                       width: 3.h,
+        //                     )
+        //                   : SvgPicture.asset(
+        //                       'assets/icons/svg/volume.svg',
+        //                       height: 3.h,
+        //                       width: 3.h,
+        //                     ),
+        //             );
+        //           },
+        //         ),
+        //       ],
+        //     ),
+        //     GestureDetector(
+        //       onTap: () => _showDetailDialog(context),
+        //       child: Row(
+        //         children: [
+        //           buildBText('Meet'),
+        //           // RichText(
+        //           //   text: TextSpan(
+        //           //     text: 'b',
+        //           //     style: TextStyle(
+        //           //         fontWeight: FontWeight.bold,
+        //           //         color: Colors.red,
+        //           //         fontSize: 12.sp),
+        //           //     children: <TextSpan>[
+        //           //       TextSpan(
+        //           //         text: 'Meet',
+        //           //         style: TextStyle(
+        //           //             fontWeight: FontWeight.bold,
+        //           //             color: Colors.white,
+        //           //             fontSize: 12.sp),
+        //           //       ),
+        //           //     ],
+        //           //   ),
+        //           // ),
+        //           const Icon(Icons.keyboard_arrow_down_rounded, size: 25),
+        //         ],
+        //       ),
+        //     ),
+        //     Consumer(
+        //       builder: (context, ref, child) {
+        //         return GestureDetector(
+        //           child: Container(
+        //               decoration: BoxDecoration(
+        //                   color: const Color(0xffca2424),
+        //                   borderRadius: BorderRadius.circular(5)),
+        //               padding:
+        //                   EdgeInsets.symmetric(horizontal: 2.h, vertical: .5.h),
+        //               child: Text(
+        //                 S.current.bmeet_call_bxt_end.toUpperCase(),
+        //                 style: TextStyle(
+        //                     fontSize: 12.sp,
+        //                     letterSpacing: .5,
+        //                     fontWeight: FontWeight.w700),
+        //               )),
+        //           onTap: () async {
+        //             if (meeting.role != 'host' || id < 0) {
+        //               _onCallEnd(context);
+        //               return;
+        //             }
+        //             await ref.read(bMeetCallChangeProvider).sendLeaveApi();
+        //             // _onCallEnd(context);
+        //             final error =
+        //                 await ref.read(bMeetRepositoryProvider).leaveMeet(id);
+        //             if (error != null) {
+        //               print('error:$error');
+        //               AppSnackbar.instance.error(context, error);
+        //               _onCallEnd(context);
+        //             } else {
+        //               _onCallEnd(context);
+        //             }
+        //             // _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+        //           },
+        //         );
+        //       },
+        //     )
+        //   ],
+        // ),
+        );
+  }
+
+  _buildToolItem(
+      {required Widget child,
+      required String text,
+      required Function() onTap}) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              padding: EdgeInsets.all(1.w),
+              width: 8.w,
+              height: 8.w,
+              child: child,
             ),
-          ),
-          Consumer(
-            builder: (context, ref, child) {
-              return GestureDetector(
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color(0xffca2424),
-                        borderRadius: BorderRadius.circular(5)),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 2.h, vertical: .5.h),
-                    child: Text(
-                      S.current.bmeet_call_bxt_end.toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          letterSpacing: .5,
-                          fontWeight: FontWeight.w700),
-                    )),
-                onTap: () async {
-                  if (meeting.role != 'host' || id < 0) {
-                    _onCallEnd(context);
-                    return;
-                  }
-                  await ref.read(bMeetCallChangeProvider).sendLeaveApi();
-                  // _onCallEnd(context);
-                  final error =
-                      await ref.read(bMeetRepositoryProvider).leaveMeet(id);
-                  if (error != null) {
-                    print('error:$error');
-                    AppSnackbar.instance.error(context, error);
-                    _onCallEnd(context);
-                  } else {
-                    _onCallEnd(context);
-                  }
-                  // _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-                },
-              );
-            },
-          )
-        ],
+            Text(
+              text,
+              maxLines: 1,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 7.sp,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget _toolbar() {
     return Container(
-      padding: EdgeInsets.only(left: 6.w, right: 5.w),
+      // padding: EdgeInsets.only(left: 6.w, right: 5.w),
+      padding: EdgeInsets.only(top: 1.h),
       alignment: Alignment.center,
       child: Consumer(
         builder: (context, ref, child) {
           final provider = ref.watch(bMeetCallChangeProvider);
-
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              GestureDetector(
-                  onTap: () {
-                    if (provider.hostCamera) {
-                      EasyLoading.showToast(
-                          S.current.bmeet_call_msg_diable_camera_host,
-                          duration: const Duration(seconds: 5),
-                          toastPosition: EasyLoadingToastPosition.bottom);
-                    } else {
-                      ref.read(bMeetCallChangeProvider).toggleCamera();
-                    }
-                  },
-                  child: provider.camera == true
-                      ? Image.asset(
-                          'assets/icons/svg/video_camera.png',
-                          height: 3.h,
-                          width: 3.h,
-                        )
-                      : SvgPicture.asset(
-                          'assets/icons/svg/video_camera.svg',
-                          height: 3.h,
-                          width: 3.h,
-                        )),
-              GestureDetector(
+              _buildToolItem(
+                  text: provider.muted
+                      ? S.current.bmeet_tool_unmute
+                      : S.current.bmeet_tool_mute,
                   onTap: () {
                     if (provider.hostMute) {
                       EasyLoading.showToast(
@@ -455,71 +614,82 @@ class BMeetCallScreen extends StatelessWidget {
                       ref.read(bMeetCallChangeProvider).onToggleMute();
                     }
                   },
-                  child: provider.muted
-                      ? Image.asset(
-                          'assets/icons/svg/mic_off.png',
-                          height: 3.h,
-                          width: 3.h,
-                        )
-                      : SvgPicture.asset(
-                          'assets/icons/svg/mic_icon.svg',
-                          height: 3.h,
-                          width: 3.h,
-                        )),
-              GestureDetector(
-                  onTap: () {
-                    _onShareWithEmptyFields(context, meetingId, 'Meeting');
-                  },
-                  child: SvgPicture.asset(
-                    'assets/icons/svgs/ic_set_share.svg',
-                    height: 3.h,
-                    width: 3.h,
-                    color: Colors.white,
+                  child: getSvgIcon(
+                    provider.muted ? 'vc_mic_off.svg' : 'vc_mic_off.svg',
+                    width: 3.w,
                   )),
+              _buildToolItem(
+                text: provider.camera
+                    ? S.current.bmeet_tool_stop_video
+                    : S.current.bmeet_tool_video,
+                onTap: () {
+                  if (provider.hostCamera) {
+                    EasyLoading.showToast(
+                        S.current.bmeet_call_msg_diable_camera_host,
+                        duration: const Duration(seconds: 5),
+                        toastPosition: EasyLoadingToastPosition.bottom);
+                  } else {
+                    ref.read(bMeetCallChangeProvider).toggleCamera();
+                  }
+                },
+                child: getSvgIcon(
+                    provider.camera ? 'vc_video_on.svg' : 'vc_video_off.svg'),
+              ),
+
+              // provider.muted
+              //     ? Image.asset(
+              //         'assets/icons/svg/mic_off.png',
+              //         height: 3.h,
+              //         width: 3.h,
+              //       )
+              //     : SvgPicture.asset(
+              //         'assets/icons/svg/mic_icon.svg',
+              //         height: 3.h,
+              //         width: 3.h,
+              //       )),
+              // GestureDetector(
+              //     onTap: () {
+              //       _onShareWithEmptyFields(context, meetingId, 'Meeting');
+              //     },
+              //     child: SvgPicture.asset(
+              //       'assets/icons/svgs/ic_set_share.svg',
+              //       height: 3.h,
+              //       width: 3.h,
+              //       color: Colors.white,
+              //     )),
               // SizedBox(
               //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
-              GestureDetector(
+              _buildToolItem(
+                text: provider.shareScreen
+                    ? S.current.bmeet_tool_stop_sshare
+                    : S.current.bmeet_tool_share_screen,
                 onTap: () {
-                  // provider.toggleShareScreen();
-                  // try {
-                  //   if (!Platform.isAndroid) {
-                  //     EasyLoading.showToast(
-                  //         'Screen sharing only supporting in Android');
-                  //     return;
-                  //   }
-                  //   platform.invokeMethod('startNewActivity', {
-                  //     "rtcchannal": channelName,
-                  //     "rtctoken": widget.token,
-                  //     "stop": "share"
-                  //   });
-                  // } on PlatformException catch (e) {
-                  //   debugPrint(e.message);
-                  // }
+                  provider.toggleShareScreen();
                 },
                 child: Center(
-                    child: Icon(
-                  provider.shareScreen
-                      ? Icons.stop_screen_share
-                      : Icons.screen_share,
-                  color: Colors.white,
-                )
-
-                    // :Image.asset(
-                    //   'assets/icons/svg/screen_share.png',
-                    //   height: 3.h,
-                    //   width: 3.h,
-                    //   color: Colors.white,
-                    // ),
-                    ),
+                  child: Icon(
+                    provider.shareScreen
+                        ? Icons.stop_screen_share
+                        : Icons.screen_share,
+                    color: Colors.white,
+                    size: 6.w,
+                  ),
+                ),
               ),
-              GestureDetector(
+              _buildToolItem(
+                  text: S.current.bmeet_tool_participants,
                   onTap: () {
-                    _participantsList(context, provider);
+                    _showParticipantsList(context, provider);
                   },
                   child: SizedBox(
                     height: 5.h,
                     child: Stack(
                       children: [
+                        Container(
+                          width: 8.w,
+                          alignment: Alignment.center,
+                          child: getSvgIcon('vc_participants.svg'),
+                        ),
                         if (provider.memberList.isNotEmpty)
                           Positioned(
                             right: 0,
@@ -541,21 +711,25 @@ class BMeetCallScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                        Container(
-                          width: 10.w,
-                          alignment: Alignment.center,
-                          child: SvgPicture.asset('assets/icons/svg/users.svg',
-                              height: 3.h, width: 3.h),
-                        ),
                       ],
                     ),
                   )),
-              GestureDetector(
+              _buildToolItem(
+                text: S.current.bmeet_tool_raisehand,
+                onTap: () {
+                  provider.sendRaiseHand();
+                },
+                child: getSvgIcon('vc_raise_hand.svg'),
+              ),
+              _buildToolItem(
+                text: S.current.bmeet_tool_more,
                 onTap: () {
                   _addMoreDetails(context, provider);
                 },
-                child: SvgPicture.asset('assets/icons/svg/dots.svg',
-                    height: 3.h, width: 3.h),
+                child: const Icon(
+                  Icons.more_horiz,
+                  color: Colors.white,
+                ),
               ),
             ],
           );
@@ -1012,6 +1186,133 @@ class BMeetCallScreen extends StatelessWidget {
     );
   }
 
+  // _showDetails(BuildContext context, BMeetProvider provider) {}
+  _showParticipantsList(BuildContext context, BMeetProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      // isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return MeetParticipantsDialog(
+            provider: provider, isHost: meeting.role == 'host');
+        //   return Container(
+        //     // margin: EdgeInsets.symmetric(horizontal: 3.w),
+        //     constraints: BoxConstraints(minHeight: 20.h),
+        //     margin: EdgeInsets.symmetric(horizontal: 3.w),
+        //     padding:
+        //         EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
+        //     decoration: const BoxDecoration(
+        //       borderRadius: BorderRadius.only(
+        //         topLeft: Radius.circular(20),
+        //         topRight: Radius.circular(20),
+        //       ),
+        //       color: Colors.black,
+        //     ),
+        //     child: Column(
+        //       mainAxisSize: MainAxisSize.max,
+        //       children: [
+        //         Stack(
+        //           children: [
+        //             IconButton(
+        //               onPressed: () {
+        //                 Navigator.pop(context);
+        //               },
+        //               icon: getSvgIcon('arrow_back.svg'),
+        //             ),
+        //             Center(
+        //               child: Text(
+        //                 S.current.grp_caption_participation,
+        //                 style: TextStyle(
+        //                   fontFamily: kFontFamily,
+        //                   color: Colors.white,
+        //                 ),
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //         SizedBox(height: 2.h),
+        //         ListView.separated(
+        //           physics: const NeverScrollableScrollPhysics(),
+        //           separatorBuilder: (context, index) =>
+        //               const Divider(color: Colors.grey),
+        //           itemCount: provider.memberList.length,
+        //           itemBuilder: (context, index) {
+        //             return _buildMember(
+        //                 context, provider, provider.memberList[index]);
+        //           },
+        //         )
+        //       ],
+        //     ),
+        //   );
+      },
+    );
+  }
+
+  Widget _buildMember(
+      BuildContext context, BMeetProvider provider, AgoraRtmMember member) {
+    final split = member.userId.split(':');
+    String name = split[1];
+    String id = split[0];
+    final ConnectedUserInfo? info = provider.userList[id];
+
+    return Container(
+      padding: EdgeInsets.all(2.w),
+      child: Row(
+        children: [
+          getCicleAvatar(info?.name ?? name, ''),
+          SizedBox(width: 3.w),
+          Text(
+            name,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              color: Colors.white,
+              fontSize: 9.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Spacer(),
+          Visibility(
+            visible: meeting.role == 'host',
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    provider.sendPeerMessage(id, 'content');
+                  },
+                  child: getSvgIcon(
+                    info?.muteAudio == true
+                        ? 'vc_mic_off.svg'
+                        : 'vc_mic_off.svg',
+                  ),
+                ),
+                SizedBox(width: 2.w),
+                InkWell(
+                  onTap: () {
+                    provider.sendPeerMessage(id, 'content');
+                  },
+                  child: getSvgIcon(
+                    info?.enabledVideo == true
+                        ? 'vc_video_off.svg'
+                        : 'vc_video_on.svg',
+                  ),
+                ),
+                ElevatedButton(
+                  style: elevatedButtonEndStyle,
+                  onPressed: () {
+                    provider.sendPeerMessage(id, 'remove');
+                  },
+                  child: Text(
+                    S.current.btn_remove,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// ==========  Meeting Joiner Users ==============
   _participantsList(BuildContext context, BMeetProvider provider) {
     var userAudio = [], userVideo = [];
@@ -1032,10 +1333,10 @@ class BMeetCallScreen extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 3.w),
             padding:
                 EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+                topLeft: Radius.circular(3.w),
+                topRight: Radius.circular(3.w),
               ),
               color: Color(0xff4d4d4d),
             ),
@@ -1116,7 +1417,6 @@ class BMeetCallScreen extends StatelessWidget {
                                             GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    
                                                     provider.sendPeerMessage(
                                                         member.userId,
                                                         userAudio[index]
