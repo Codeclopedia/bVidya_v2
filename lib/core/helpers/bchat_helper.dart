@@ -40,11 +40,11 @@ Future<String?> sendRequestToAddContact(String contactId) async {
   try {
     final list = await getContactList();
     if (list.contains(contactId)) {
+      return 'Already exists';
+    } else {
       await ChatClient.getInstance.contactManager
           .addContact(contactId, reason: 'Hi,Please accept my invitation');
       return null;
-    } else {
-      return 'Already exists';
     }
   } on ChatError catch (e) {
     print('chatError: ${e.code}- ${e.description}');

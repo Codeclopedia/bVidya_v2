@@ -136,7 +136,8 @@ class SearchScreen extends HookWidget {
                                     '${data[index].name} added successfully into Contacts');
                                 // Navigator.pop(context, true);
                               } else {
-                                AppSnackbar.instance.error(context, result);
+                                AppSnackbar.instance
+                                    .error(context, 'Error: $result');
                               }
                             },
                             child: _contactRow(data[index], ref));

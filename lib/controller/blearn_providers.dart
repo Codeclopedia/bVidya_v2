@@ -31,7 +31,7 @@ final bLearnCoursesProvider =
 });
 
 final bLearnLessonsProvider =
-    FutureProvider.family<Lessons?, String>((ref, id) {
+    FutureProvider.autoDispose.family<Lessons?, int>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getLessons(id);
 });
 

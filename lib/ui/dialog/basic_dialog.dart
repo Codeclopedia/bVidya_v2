@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '/core/constants.dart';
@@ -8,9 +9,10 @@ import '/core/ui_core.dart';
 showLogoutDialog(BuildContext context, {Future Function()? callback}) {
   return showBasicDialog(context, S.current.dg_title_logout,
       S.current.dg_message_logout, S.current.btn_yes_logout, () async {
+    await ChatClient.getInstance.logout();
     final pref = await SharedPreferences.getInstance();
     await pref.clear();
-    Navigator.pushReplacementNamed(context, RouteList.login);
+
     if (callback != null) await callback();
   });
 }

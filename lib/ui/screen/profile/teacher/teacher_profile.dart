@@ -72,7 +72,10 @@ class TeacherProfile extends StatelessWidget {
             _buildContent(
                 S.current.profile_invite, 'profile_invite.svg', () {}),
             _buildContent(S.current.profile_logout, 'profile_logout.svg', () {
-              showLogoutDialog(context);
+              showLogoutDialog(context, callback: () async {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, RouteList.login, (route) => route.isFirst);
+              });
             }),
             Container(
               width: 0.5.w,

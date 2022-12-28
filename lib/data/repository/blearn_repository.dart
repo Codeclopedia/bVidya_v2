@@ -47,8 +47,8 @@ class BLearnRepository {
     }
   }
 
-  Future<Lessons?> getLessons(String catId) async {
-    final result = await _api.getLessons(_authToken, catId.toString());
+  Future<Lessons?> getLessons(int courseId) async {
+    final result = await _api.getLessons(_authToken, courseId);
     if (result.status == successfull && result.body != null) {
       return result.body;
     } else {

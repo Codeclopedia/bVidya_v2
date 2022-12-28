@@ -85,11 +85,12 @@ class BLearnApiService {
     }
   }
 
-  Future<LessonsResponse> getLessons(String token, String subCatId) async {
+  Future<LessonsResponse> getLessons(String token, int courseId) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
+      // print('requst id ${courseId}');
       final response =
-          await _dio.get('$baseUrlApi${ApiList.lmsLessons}/$subCatId');
+          await _dio.get('$baseUrlApi${ApiList.lmsLessons}$courseId');
       if (response.statusCode == 200) {
         return LessonsResponse.fromJson(response.data);
       } else {

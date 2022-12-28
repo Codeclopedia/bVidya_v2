@@ -5,13 +5,13 @@ import '/data/models/models.dart';
 class LessonListRow extends StatelessWidget {
   final int index;
   final int openIndex;
-  final Lesson? lesson;
+  final Lesson lesson;
   final Function(int) onExpand;
 
   const LessonListRow(
       {Key? key,
       required this.index,
-      this.lesson,
+      required this.lesson,
       required this.openIndex,
       required this.onExpand})
       : super(key: key);
@@ -41,7 +41,7 @@ class LessonListRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  lesson?.name ?? 'Lesson Name',
+                  lesson.name,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 11.sp,
@@ -54,7 +54,7 @@ class LessonListRow extends StatelessWidget {
                     children: [
                       const Icon(Icons.ondemand_video),
                       Expanded(
-                        child: Text(lesson?.description ?? 'Lesson Name'),
+                        child: Text(lesson.description),
                       )
                     ],
                   )

@@ -56,20 +56,17 @@ class CourseDetailScreen extends ConsumerWidget {
             ),
             Consumer(
               builder: (context, ref, child) {
-                return ref
-                    .watch(bLearnLessonsProvider(courses.id.toString()))
-                    .when(
-                        data: (data) {
-                          if (data != null) {
-                            return _buildLessons(ref);
-                          } else {
-                            return buildEmptyPlaceHolder('text');
-                            // return _buildLessons();
-                          }
-                        },
-                        error: (error, stackTrace) =>
-                            buildEmptyPlaceHolder('text'),
-                        loading: () => buildLoading);
+                return ref.watch(bLearnLessonsProvider(courses.id)).when(
+                    data: (data) {
+                      if (data?.lessons?.isNotEmpty==true) {
+                        return _buildLessons(ref,data!.lessons!);
+                      } else {
+                        return buildEmptyPlaceHolder('No Lessons');
+                        // return _buildLessons();
+                      }
+                    },
+                    error: (error, stackTrace) => buildEmptyPlaceHolder('text'),
+                    loading: () => buildLoading);
               },
             )
           ],
@@ -78,19 +75,25 @@ class CourseDetailScreen extends ConsumerWidget {
     ));
   }
 
-  Widget _buildLessons(WidgetRef ref) {
+  Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
     final selectedIndex = ref.watch(selectedIndexLessonProvider);
     return ListView.builder(
-      itemCount: 4,
+      itemCount: lessons.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return LessonListRow(
-          index: index + 1,
-          openIndex: selectedIndex,
-          onExpand: (selected) {
-            ref.read(selectedIndexLessonProvider.notifier).state = selected;
-          },
+        return GestureDetector(
+          onTap: (() {
+            
+          }),
+          child: LessonListRow(
+            index: index + 1,
+            openIndex: selectedIndex,
+            lesson: lessons[index],
+            onExpand: (selected) {
+              ref.read(selectedIndexLessonProvider.notifier).state = selected;
+            },
+          ),
         );
       },
     );

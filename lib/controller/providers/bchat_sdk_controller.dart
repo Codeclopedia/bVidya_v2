@@ -1,6 +1,9 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/bchat_api_service.dart';
 import '/controller/bchat_providers.dart';
@@ -32,25 +35,46 @@ class BChatSDKController {
       return;
     }
     _initialized = true;
+
+    final pref = await SharedPreferences.getInstance();
+
     final token =
         await BChatApiService.instance.fetchChatToken(_currentUser.authToken);
+    String? oldChatBody = pref.getString('chat_body');
     if (token.body != null) {
+      bool shouldLogin = true;
+      if (oldChatBody != null) {
+        ChatTokenBody oldBody = ChatTokenBody.fromJson(jsonDecode(oldChatBody));
+        shouldLogin = oldBody.appKey != token.body!.appKey ||
+            oldBody.userId != token.body!.userId ||
+            oldBody.userToken != token.body!.userToken;
+      }
       ChatOptions options = ChatOptions(
         appKey: token.body!.appKey,
         autoLogin: false,
       );
+
       options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
       await ChatClient.getInstance.init(options);
       // showLoading(ref);
       bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
-      if (alreadyLoggedIn) {
-        // registerForPresence(ref);
 
-        return;
+      if (alreadyLoggedIn) {
+        if (!shouldLogin) {
+          return;
+        }
+        try {
+          await ChatClient.getInstance.logout(false);
+        } catch (e) {}
+      }
+
+      if (shouldLogin || !alreadyLoggedIn) {
+        await _signIn(token.body!.userId.toString(), token.body!.userToken);
+        await pref.setString('chat_body', jsonEncode(token.body!));
       }
 
       // print('token - ${token.body!.userId}');
-      await _signIn(token.body!.userId.toString(), token.body!.userToken);
+
     }
   }
 
@@ -66,6 +90,7 @@ class BChatSDKController {
       // registerForPresence();
       // await loadConversations(ref);
     } on ChatError catch (e) {
+      print('Login Error: ${e.code}- ${e.description}');
       if (e.code == 200 || e.code == 202) {
         // await loadConversations(ref);
       }

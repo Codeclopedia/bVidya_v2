@@ -10,7 +10,7 @@ class LessonsResponse {
   });
 
   LessonsResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body']!=null?Lessons.fromJson(json['body']):null,
+      : body = json['body'] != null ? Lessons.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 
@@ -80,7 +80,7 @@ class Lesson {
         videoUrl = json['video_url'];
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = {};
     data['id'] = id;
     data['name'] = name;
     data['course_id'] = courseId;

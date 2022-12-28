@@ -4,6 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
+import '../../../core/helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
@@ -14,8 +15,6 @@ import '../../dialog/conversation_menu_dialog.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
 
 class HomeScreen extends HookConsumerWidget {
-  // late User? _currentUser;
-
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -35,32 +34,7 @@ class HomeScreen extends HookConsumerWidget {
   }
 
   void _addHandler(WidgetRef ref) {
-    try {
-      // ChatClient.getInstance.
-      ChatClient.getInstance.contactManager.addEventHandler(
-        "contact_handler_home",
-        ContactEventHandler(
-          onContactInvited: (userId, reason) {
-            //
-          },
-          onContactAdded: (userId) {
-            //
-          },
-          onContactDeleted: (userId) {
-            //
-          },
-          onFriendRequestAccepted: (userId) {
-            //
-          },
-          onFriendRequestDeclined: (userId) {
-            //
-          },
-        ),
-      );
-    } on ChatError catch (e) {
-      debugPrint('Error ${e.code} - ${e.description}');
-    }
-
+    registerForContact('home_screen_contact', ref);
     try {
       ChatClient.getInstance.chatManager.addEventHandler(
         'home_screen_chat',
@@ -97,9 +71,8 @@ class HomeScreen extends HookConsumerWidget {
   }
 
   void _disposeAll() {
+    unregisterForContact('home_screen_contact');
     try {
-      ChatClient.getInstance.contactManager
-          .removeEventHandler("contact_handler_home");
       ChatClient.getInstance.chatManager.removeEventHandler('home_screen_chat');
     } catch (e) {
       debugPrint('Error $e');
