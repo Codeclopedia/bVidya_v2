@@ -1,8 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pip_view/pip_view.dart';
 
 import '../../dialog/meet_participants_dialog.dart';
@@ -45,55 +43,76 @@ class BMeetCallScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PIPView(builder: (context, isFloating) {
-      return Scaffold(
-        resizeToAvoidBottomInset: !isFloating,
-        backgroundColor: Colors.black,
-        appBar: _appBar(context),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.only(top: 0),
-          height: 10.h,
-          color: Colors.black,
-          child: _toolbar(),
-        ),
-        body: Stack(
-          children: [
-            Consumer(builder: (context, ref, child) {
-              final provider = ref.watch(bMeetCallChangeProvider);
-              ref.listen(endedMeetingProvider, (previous, next) {
-                if (next) {
-                  _onCallEnd(context);
-                }
-              });
+      return BaseWilPopupScreen(
+        onBack: () async {
+          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+          PIPView.of(context)?.presentBelow(const BMeetHomeScreen());
+          return false;
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: !isFloating,
+          backgroundColor: Colors.black,
+          appBar: _appBar(context),
+          bottomNavigationBar: Container(
+            padding: const EdgeInsets.only(top: 0),
+            height: 10.h,
+            color: Colors.black,
+            child: _toolbar(),
+          ),
+          body: Stack(
+            children: [
+              Consumer(builder: (context, ref, child) {
+                final provider = ref.watch(bMeetCallChangeProvider);
 
-              provider.init(
-                  ref, meeting, enableVideo, rtmToken, rtmUser, userId);
-              return provider.localUserJoined
-                  ? _buildGridVideoView(provider)
-                  : const Center(child: CircularProgressIndicator());
-            }),
-            _buildRow(context),
-            Positioned(
-              top: 12.h,
-              left: 30.w,
-              right: 30.w,
-              child: Consumer(
-                builder: (context, ref, child) {
-                  String id = ref.watch(raisedHandMeetingProvider);
-                  return id.isNotEmpty
-                      ? Column(
-                          children: [
-                            getSvgIcon('vc_raise_hand.svg', width: 12.w),
-                            Text(
-                              id,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink();
-                },
+                provider.init(
+                    ref, meeting, enableVideo, rtmToken, rtmUser, userId);
+
+                ref.listen(bMeetCallChangeProvider, (previous, next) {
+                  if (next.kickOut) {
+                    _onCallEnd(context);
+                  }
+                });
+                // ref.listen(
+                //   endedMeetingProvider,
+                //   (previous, next) {
+                //     print('listen  $previous - to  - $next');
+                //     if (next) {
+                //       print('To Remove User');
+                //       _onCallEnd(context);
+                //     }
+                //   },
+                //   onError: (error, stackTrace) {
+                //     print('To error: $error');
+                //   },
+                // );
+                return provider.localUserJoined
+                    ? _buildGridVideoView(provider)
+                    : const Center(child: CircularProgressIndicator());
+              }),
+              _buildRow(context),
+              Positioned(
+                top: 12.h,
+                left: 30.w,
+                right: 30.w,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    String id = ref.watch(raisedHandMeetingProvider);
+                    return id.isNotEmpty
+                        ? Column(
+                            children: [
+                              getSvgIcon('vc_raise_hand.svg', width: 12.w),
+                              Text(
+                                id,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     });
@@ -196,8 +215,11 @@ class BMeetCallScreen extends StatelessWidget {
                     onPressed: () {
                       ref.read(bMeetCallChangeProvider).toggleVolume();
                     },
-                    icon: getSvgIcon(
-                        volume ? 'vc_sound_on.svg' : 'vc_sound_off.svg'),
+                    icon:
+                        // ignore: prefer_const_constructors
+                        getSvgIcon(
+                            color: Colors.white,
+                            volume ? 'vc_volume_off.svg' : 'vc_volume.svg'),
                   ),
                 ],
               ),
@@ -300,7 +322,7 @@ class BMeetCallScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, _) {
           return Container(
-              height: 100.h,
+              height: 50.h,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               padding: const EdgeInsets.only(
                   top: 10, bottom: 30, left: 20, right: 20),
@@ -557,7 +579,7 @@ class BMeetCallScreen extends StatelessWidget {
         );
   }
 
-  _buildToolItem(
+  Widget _buildToolItem(
       {required Widget child,
       required String text,
       required Function() onTap}) {
@@ -573,6 +595,42 @@ class BMeetCallScreen extends StatelessWidget {
               height: 8.w,
               child: child,
             ),
+            // child,
+            Text(
+              text,
+              maxLines: 1,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 7.sp,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildToolItemIcon(
+      {required IconData icon,
+      required String text,
+      required Function() onTap}) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              padding: EdgeInsets.all(1.w),
+              width: 8.w,
+              height: 8.w,
+              child: Icon(
+                icon,
+                color: Colors.white,
+              ),
+            ),
+            // child,
             Text(
               text,
               maxLines: 1,
@@ -600,7 +658,7 @@ class BMeetCallScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _buildToolItem(
+              _buildToolItemIcon(
                   text: provider.muted
                       ? S.current.bmeet_tool_unmute
                       : S.current.bmeet_tool_mute,
@@ -614,27 +672,32 @@ class BMeetCallScreen extends StatelessWidget {
                       ref.read(bMeetCallChangeProvider).onToggleMute();
                     }
                   },
-                  child: getSvgIcon(
-                    provider.muted ? 'vc_mic_off.svg' : 'vc_mic_off.svg',
-                    width: 3.w,
-                  )),
-              _buildToolItem(
-                text: provider.camera
-                    ? S.current.bmeet_tool_stop_video
-                    : S.current.bmeet_tool_video,
-                onTap: () {
-                  if (provider.hostCamera) {
-                    EasyLoading.showToast(
-                        S.current.bmeet_call_msg_diable_camera_host,
-                        duration: const Duration(seconds: 5),
-                        toastPosition: EasyLoadingToastPosition.bottom);
-                  } else {
-                    ref.read(bMeetCallChangeProvider).toggleCamera();
-                  }
-                },
-                child: getSvgIcon(
-                    provider.camera ? 'vc_video_on.svg' : 'vc_video_off.svg'),
-              ),
+                  icon: provider.muted ? Icons.mic : Icons.mic_off
+                  // child: getSvgIcon(
+                  //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
+                  //   width: 2.w,
+                  // )
+                  ),
+              _buildToolItemIcon(
+                  text: provider.disableLocalCamera
+                      ? S.current.bmeet_tool_stop_video
+                      : S.current.bmeet_tool_video,
+                  onTap: () {
+                    if (provider.hostCamera) {
+                      EasyLoading.showToast(
+                          S.current.bmeet_call_msg_diable_camera_host,
+                          duration: const Duration(seconds: 5),
+                          toastPosition: EasyLoadingToastPosition.bottom);
+                    } else {
+                      ref.read(bMeetCallChangeProvider).toggleCamera();
+                    }
+                  },
+                  icon: provider.disableLocalCamera
+                      ? Icons.videocam
+                      : Icons.videocam_off
+                  // child: getSvgIcon(
+                  //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
+                  ),
 
               // provider.muted
               //     ? Image.asset(
@@ -667,53 +730,52 @@ class BMeetCallScreen extends StatelessWidget {
                   provider.toggleShareScreen();
                 },
                 child: Center(
-                  child: Icon(
-                    provider.shareScreen
-                        ? Icons.stop_screen_share
-                        : Icons.screen_share,
-                    color: Colors.white,
-                    size: 6.w,
-                  ),
+                  child: provider.initializingScreenShare
+                      ? const CircularProgressIndicator()
+                      : Icon(
+                          provider.shareScreen
+                              ? Icons.stop_screen_share
+                              : Icons.screen_share,
+                          color: Colors.white,
+                          size: 6.w,
+                        ),
                 ),
               ),
-              _buildToolItem(
-                  text: S.current.bmeet_tool_participants,
-                  onTap: () {
-                    _showParticipantsList(context, provider);
-                  },
-                  child: SizedBox(
-                    height: 5.h,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 8.w,
-                          alignment: Alignment.center,
-                          child: getSvgIcon('vc_participants.svg'),
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildToolItemIcon(
+                        text: S.current.bmeet_tool_participants,
+                        onTap: () {
+                          _showParticipantsList(context);
+                        },
+                        icon: Icons.people
+                        // child: getSvgIcon('vc_participants.svg'),
                         ),
-                        if (provider.memberList.isNotEmpty)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Container(
-                              padding: EdgeInsets.all(0.5.h),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.yellowAccent,
-                              ),
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                "${provider.memberList.length}",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 8.sp,
-                                    letterSpacing: .5,
-                                    color: Colors.black),
-                              ),
-                            ),
+                    if (provider.memberList.isNotEmpty)
+                      Positioned(
+                        right: 2.w,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(0.5.h),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.yellowAccent,
                           ),
-                      ],
-                    ),
-                  )),
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            "${provider.memberList.length}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 8.sp,
+                                letterSpacing: .5,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               _buildToolItem(
                 text: S.current.bmeet_tool_raisehand,
                 onTap: () {
@@ -917,7 +979,7 @@ class BMeetCallScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             );
           });
@@ -998,17 +1060,25 @@ class BMeetCallScreen extends StatelessWidget {
                                                               ? Colors.red
                                                               : Colors.white),
                                                     ),
-                                              provider.allMuted
-                                                  ? Image.asset(
-                                                      'assets/icons/svg/mic_off.png',
-                                                      height: 2.h,
-                                                      width: 2.h,
-                                                    )
-                                                  : SvgPicture.asset(
-                                                      'assets/icons/svg/mic_icon.svg',
-                                                      height: 2.h,
-                                                      width: 2.h,
-                                                    )
+
+                                              Icon(
+                                                provider.allMuted
+                                                    ? Icons.mic
+                                                    : Icons.mic_off,
+                                                color: Colors.white,
+                                                size: 6.w,
+                                              ),
+
+                                              // Image.asset(
+                                              //     'assets/icons/svg/mic_off.png',
+                                              //     height: 2.h,
+                                              //     width: 2.h,
+                                              //   )
+                                              // : SvgPicture.asset(
+                                              //     'assets/icons/svg/mic_icon.svg',
+                                              //     height: 2.h,
+                                              //     width: 2.h,
+                                              //   )
                                             ],
                                           ))),
                                 ),
@@ -1103,8 +1173,9 @@ class BMeetCallScreen extends StatelessWidget {
                                 ),
                                 onTap: () {
                                   setState(() {
-                                    EasyLoading.showInfo(
-                                        S.current.bmeet_call_msg_na_yet);
+                                    provider.sendLeaveApi();
+                                    // EasyLoading.showInfo(
+                                    //     S.current.bmeet_call_msg_na_yet);
                                     //  _onShareWithEmptyFields(context, widget.meetingid);
                                   });
                                 }),
@@ -1143,6 +1214,7 @@ class BMeetCallScreen extends StatelessWidget {
                                 ),
                                 onTap: () {
                                   setState(() {
+                                    provider.startRecording();
                                     EasyLoading.showInfo(
                                         S.current.bmeet_call_msg_na_yet);
                                     //  _onShareWithEmptyFields(context, widget.meetingid);
@@ -1187,273 +1259,223 @@ class BMeetCallScreen extends StatelessWidget {
   }
 
   // _showDetails(BuildContext context, BMeetProvider provider) {}
-  _showParticipantsList(BuildContext context, BMeetProvider provider) {
+  _showParticipantsList(BuildContext context) {
     showModalBottomSheet(
       context: context,
       // isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return MeetParticipantsDialog(
-            provider: provider, isHost: meeting.role == 'host');
-        //   return Container(
-        //     // margin: EdgeInsets.symmetric(horizontal: 3.w),
-        //     constraints: BoxConstraints(minHeight: 20.h),
-        //     margin: EdgeInsets.symmetric(horizontal: 3.w),
-        //     padding:
-        //         EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
-        //     decoration: const BoxDecoration(
-        //       borderRadius: BorderRadius.only(
-        //         topLeft: Radius.circular(20),
-        //         topRight: Radius.circular(20),
-        //       ),
-        //       color: Colors.black,
-        //     ),
-        //     child: Column(
-        //       mainAxisSize: MainAxisSize.max,
-        //       children: [
-        //         Stack(
-        //           children: [
-        //             IconButton(
-        //               onPressed: () {
-        //                 Navigator.pop(context);
-        //               },
-        //               icon: getSvgIcon('arrow_back.svg'),
-        //             ),
-        //             Center(
-        //               child: Text(
-        //                 S.current.grp_caption_participation,
-        //                 style: TextStyle(
-        //                   fontFamily: kFontFamily,
-        //                   color: Colors.white,
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //         SizedBox(height: 2.h),
-        //         ListView.separated(
-        //           physics: const NeverScrollableScrollPhysics(),
-        //           separatorBuilder: (context, index) =>
-        //               const Divider(color: Colors.grey),
-        //           itemCount: provider.memberList.length,
-        //           itemBuilder: (context, index) {
-        //             return _buildMember(
-        //                 context, provider, provider.memberList[index]);
-        //           },
-        //         )
-        //       ],
-        //     ),
-        //   );
+        return MeetParticipantsDialog(isHost: meeting.role == 'host');
       },
     );
   }
 
-  Widget _buildMember(
-      BuildContext context, BMeetProvider provider, AgoraRtmMember member) {
-    final split = member.userId.split(':');
-    String name = split[1];
-    String id = split[0];
-    final ConnectedUserInfo? info = provider.userList[id];
+  // Widget _buildMember(
+  //     BuildContext context, BMeetProvider provider, AgoraRtmMember member) {
+  //   final split = member.userId.split(':');
+  //   String name = split[1];
+  //   String id = split[0];
+  //   final ConnectedUserInfo? info = provider.userList[id];
 
-    return Container(
-      padding: EdgeInsets.all(2.w),
-      child: Row(
-        children: [
-          getCicleAvatar(info?.name ?? name, ''),
-          SizedBox(width: 3.w),
-          Text(
-            name,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: Colors.white,
-              fontSize: 9.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const Spacer(),
-          Visibility(
-            visible: meeting.role == 'host',
-            child: Row(
-              children: [
-                InkWell(
-                  onTap: () {
-                    provider.sendPeerMessage(id, 'content');
-                  },
-                  child: getSvgIcon(
-                    info?.muteAudio == true
-                        ? 'vc_mic_off.svg'
-                        : 'vc_mic_off.svg',
-                  ),
-                ),
-                SizedBox(width: 2.w),
-                InkWell(
-                  onTap: () {
-                    provider.sendPeerMessage(id, 'content');
-                  },
-                  child: getSvgIcon(
-                    info?.enabledVideo == true
-                        ? 'vc_video_off.svg'
-                        : 'vc_video_on.svg',
-                  ),
-                ),
-                ElevatedButton(
-                  style: elevatedButtonEndStyle,
-                  onPressed: () {
-                    provider.sendPeerMessage(id, 'remove');
-                  },
-                  child: Text(
-                    S.current.btn_remove,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     padding: EdgeInsets.all(2.w),
+  //     child: Row(
+  //       children: [
+  //         getCicleAvatar(info?.name ?? name, ''),
+  //         SizedBox(width: 3.w),
+  //         Text(
+  //           name,
+  //           style: TextStyle(
+  //             fontFamily: kFontFamily,
+  //             color: Colors.white,
+  //             fontSize: 9.sp,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //         const Spacer(),
+  //         Visibility(
+  //           visible: meeting.role == 'host',
+  //           child: Row(
+  //             children: [
+  //               InkWell(
+  //                 onTap: () {
+  //                   provider.sendPeerMessage(id, 'content');
+  //                 },
+  //                 child: getSvgIcon(
+  //                   info?.muteAudio == true
+  //                       ? 'vc_mic_off.svg'
+  //                       : 'vc_mic_off.svg',
+  //                 ),
+  //               ),
+  //               SizedBox(width: 2.w),
+  //               InkWell(
+  //                 onTap: () {
+  //                   provider.sendPeerMessage(id, 'content');
+  //                 },
+  //                 child: getSvgIcon(
+  //                   info?.enabledVideo == true
+  //                       ? 'vc_video_off.svg'
+  //                       : 'vc_video_on.svg',
+  //                 ),
+  //               ),
+  //               ElevatedButton(
+  //                 style: elevatedButtonEndStyle,
+  //                 onPressed: () {
+  //                   provider.sendPeerMessage(id, 'remove');
+  //                 },
+  //                 child: Text(
+  //                   S.current.btn_remove,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  /// ==========  Meeting Joiner Users ==============
-  _participantsList(BuildContext context, BMeetProvider provider) {
-    var userAudio = [], userVideo = [];
-    final List<AgoraRtmMember> members = provider.memberList;
-    for (int i = 0; i < members.length; i++) {
-      userAudio.add(false);
-      userVideo.add(false);
-    }
-    // debugPrint("Joiner $joiner");
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Container(
-            height: 100.h,
-            margin: EdgeInsets.symmetric(horizontal: 3.w),
-            padding:
-                EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(3.w),
-                topRight: Radius.circular(3.w),
-              ),
-              color: Color(0xff4d4d4d),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 1.h),
-                SizedBox(
-                  height: .7.h,
-                  child: Container(
-                    height: 3,
-                    width: 80,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20)),
-                  ),
-                ),
-                SizedBox(height: 1.5.h),
-                SizedBox(
-                  height: 48.h,
-                  child: SingleChildScrollView(
-                    child: ListView.separated(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          AgoraRtmMember member = members[index];
-                          return Card(
-                            color: const Color(0xff696969),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    member.userId.toString().split(":")[1],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13.sp,
-                                    ),
-                                  ),
-                                  meeting.role == 'host'
-                                      ? Row(
-                                          children: [
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (userVideo[index] ==
-                                                        false) {
-                                                      userVideo[index] = true;
-                                                      provider.sendPeerMessage(
-                                                          member.userId
-                                                              .toString(),
-                                                          'videocam_off');
-                                                    } else {
-                                                      userVideo[index] = false;
-                                                      provider.sendPeerMessage(
-                                                          member.userId
-                                                              .toString(),
-                                                          'videocam_on');
-                                                    }
-                                                  });
-                                                },
-                                                child: userVideo[index] == false
-                                                    ? SvgPicture.asset(
-                                                        'assets/icons/svg/video_camera.svg',
-                                                        height: 3.h,
-                                                        width: 3.h,
-                                                      )
-                                                    : Image.asset(
-                                                        'assets/icons/svg/video_camera.png',
-                                                        height: 3.h,
-                                                        width: 3.h,
-                                                      )),
-                                            const SizedBox(width: 10),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    provider.sendPeerMessage(
-                                                        member.userId,
-                                                        userAudio[index]
-                                                            ? 'mic_on'
-                                                            : 'mic_off');
-                                                    userAudio[index] =
-                                                        !userAudio[index];
-                                                  });
-                                                },
-                                                child: userAudio[index] == false
-                                                    ? SvgPicture.asset(
-                                                        'assets/icons/svg/mic_icon.svg',
-                                                        height: 3.h,
-                                                        width: 3.h,
-                                                      )
-                                                    : Image.asset(
-                                                        'assets/icons/svg/mic_off.png',
-                                                        height: 3.h,
-                                                        width: 3.h,
-                                                      )),
-                                          ],
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (_, __) => SizedBox(height: 1.h),
-                        itemCount: members.length),
-                  ),
-                )
-              ],
-            ),
-          );
-        });
-      },
-    );
-  }
+  // /// ==========  Meeting Joiner Users ==============
+  // _participantsList(BuildContext context, BMeetProvider provider) {
+  //   var userAudio = [], userVideo = [];
+  //   final List<AgoraRtmMember> members = provider.memberList;
+  //   for (int i = 0; i < members.length; i++) {
+  //     userAudio.add(false);
+  //     userVideo.add(false);
+  //   }
+  //   // debugPrint("Joiner $joiner");
+  //   showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //         return Container(
+  //           height: 100.h,
+  //           margin: EdgeInsets.symmetric(horizontal: 3.w),
+  //           padding:
+  //               EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(3.w),
+  //               topRight: Radius.circular(3.w),
+  //             ),
+  //             color: Color(0xff4d4d4d),
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               SizedBox(height: 1.h),
+  //               SizedBox(
+  //                 height: .7.h,
+  //                 child: Container(
+  //                   height: 3,
+  //                   width: 80,
+  //                   decoration: BoxDecoration(
+  //                       color: Colors.white,
+  //                       borderRadius: BorderRadius.circular(20)),
+  //                 ),
+  //               ),
+  //               SizedBox(height: 1.5.h),
+  //               SizedBox(
+  //                 height: 48.h,
+  //                 child: SingleChildScrollView(
+  //                   child: ListView.separated(
+  //                       scrollDirection: Axis.vertical,
+  //                       shrinkWrap: true,
+  //                       physics: const NeverScrollableScrollPhysics(),
+  //                       itemBuilder: (context, index) {
+  //                         AgoraRtmMember member = members[index];
+  //                         return Card(
+  //                           color: const Color(0xff696969),
+  //                           shape: RoundedRectangleBorder(
+  //                               borderRadius: BorderRadius.circular(10)),
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(10),
+  //                             child: Row(
+  //                               mainAxisAlignment:
+  //                                   MainAxisAlignment.spaceBetween,
+  //                               children: [
+  //                                 Text(
+  //                                   member.userId.toString().split(":")[1],
+  //                                   style: TextStyle(
+  //                                     color: Colors.white,
+  //                                     fontSize: 13.sp,
+  //                                   ),
+  //                                 ),
+  //                                 meeting.role == 'host'
+  //                                     ? Row(
+  //                                         children: [
+  //                                           GestureDetector(
+  //                                               onTap: () {
+  //                                                 setState(() {
+  //                                                   if (userVideo[index] ==
+  //                                                       false) {
+  //                                                     userVideo[index] = true;
+  //                                                     provider.sendPeerMessage(
+  //                                                         member.userId
+  //                                                             .toString(),
+  //                                                         'videocam_off');
+  //                                                   } else {
+  //                                                     userVideo[index] = false;
+  //                                                     provider.sendPeerMessage(
+  //                                                         member.userId
+  //                                                             .toString(),
+  //                                                         'videocam_on');
+  //                                                   }
+  //                                                 });
+  //                                               },
+  //                                               child: userVideo[index] == false
+  //                                                   ? SvgPicture.asset(
+  //                                                       'assets/icons/svg/video_camera.svg',
+  //                                                       height: 3.h,
+  //                                                       width: 3.h,
+  //                                                     )
+  //                                                   : Image.asset(
+  //                                                       'assets/icons/svg/video_camera.png',
+  //                                                       height: 3.h,
+  //                                                       width: 3.h,
+  //                                                     )),
+  //                                           const SizedBox(width: 10),
+  //                                           GestureDetector(
+  //                                               onTap: () {
+  //                                                 setState(() {
+  //                                                   provider.sendPeerMessage(
+  //                                                       member.userId,
+  //                                                       userAudio[index]
+  //                                                           ? 'mic_on'
+  //                                                           : 'mic_off');
+  //                                                   userAudio[index] =
+  //                                                       !userAudio[index];
+  //                                                 });
+  //                                               },
+  //                                               child: userAudio[index] == false
+  //                                                   ? SvgPicture.asset(
+  //                                                       'assets/icons/svg/mic_icon.svg',
+  //                                                       height: 3.h,
+  //                                                       width: 3.h,
+  //                                                     )
+  //                                                   : Image.asset(
+  //                                                       'assets/icons/svg/mic_off.png',
+  //                                                       height: 3.h,
+  //                                                       width: 3.h,
+  //                                                     )),
+  //                                         ],
+  //                                       )
+  //                                     : Container(),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         );
+  //                       },
+  //                       separatorBuilder: (_, __) => SizedBox(height: 1.h),
+  //                       itemCount: members.length),
+  //                 ),
+  //               )
+  //             ],
+  //           ),
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
 }

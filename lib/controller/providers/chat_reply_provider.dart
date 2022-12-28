@@ -10,9 +10,8 @@ class ChatScreenModel extends ChangeNotifier {
   ReplyModel? _replyOn;
   ReplyModel? get replyOn => _replyOn;
 
-  void setReplyOn(ChatMessage message, ChatUserInfo user) {
-    _replyOn = ReplyModel(
-        message: message, fromId: user.userId, fromName: user.nickName ?? '');
+  void setReplyOn(ChatMessage message, String fromName) {
+    _replyOn = ReplyModel(message: message, fromName: fromName);
     _isReplyBoxVisible = true;
     notifyListeners();
   }

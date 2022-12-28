@@ -77,6 +77,14 @@ class Routes {
         }
 
         break;
+
+      case RouteList.bChatVideoCall:
+        screen = const ChatVideoCall();
+        break;
+
+      case RouteList.bChatAudioCall:
+        screen = const ChatAudioCall();
+        break;
       case RouteList.recentCalls:
         screen = const RecentCallScreen();
         break;
@@ -86,7 +94,7 @@ class Routes {
       case RouteList.contactProfile:
         if (settings.arguments is Contacts) {
           screen = ContactProfileScreen(
-            currentUser: settings.arguments as Contacts,
+            contact: settings.arguments as Contacts,
           );
         } else {
           screen = _parameterMissing();

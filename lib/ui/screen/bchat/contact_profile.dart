@@ -1,3 +1,6 @@
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/bchat_helper.dart';
+
 import '/core/constants.dart';
 import '/core/constants/data.dart';
 import '/core/state.dart';
@@ -7,12 +10,50 @@ import '../../widgets.dart';
 
 final imageSize = 28.w;
 
-class ContactProfileScreen extends StatelessWidget {
-  final Contacts currentUser;
-  const ContactProfileScreen({super.key, required this.currentUser});
+// //Mute
+// final muteProvider = StateProvider.autoDispose.family<bool, String>(
+//   ((ref, id) {
+//     final result = ref
+//         .read(muteUserProvider(id))
+//         .whenData((value) => value == ChatPushRemindType.NONE);
+//     print('State = $result');
+//     return result.value ?? false;
+//   }),
+// );
+
+// //Mute
+final chatMuteProvider = StateProvider.autoDispose<bool>(
+  ((ref) {
+    return false;
+  }),
+);
+
+//Mute
+// final muteUserProvider =
+//     FutureProvider.autoDispose.family<ChatPushRemindType, String>(
+//   ((ref, id) async {
+//     try {
+//       final result = await ChatClient.getInstance.pushManager
+//           .fetchConversationSilentMode(
+//               conversationId: id, type: ChatConversationType.Chat);
+//       return result.remindType ?? ChatPushRemindType.ALL;
+//     } on ChatError catch (e) {
+//       print('Error: ${e.code}- ${e.description} ');
+//     }
+//     return ChatPushRemindType.ALL;
+//   }),
+// );
+
+class ContactProfileScreen extends HookConsumerWidget {
+  final Contacts contact;
+  const ContactProfileScreen({super.key, required this.contact});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      _loadMuteSetting(ref);
+      return () {};
+    }, const []);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ColouredBoxBar(
@@ -21,6 +62,20 @@ class ContactProfileScreen extends StatelessWidget {
         body: _buildBody(context),
       ),
     );
+  }
+
+  _updateSetting(bool mute) async {
+    await chageChatMuteStateFor(contact.userId.toString(), mute);
+  }
+
+  _loadMuteSetting(WidgetRef ref) async {
+    ChatPushRemindType remindType =
+        await fetchChatMuteStateFor(contact.userId.toString());
+    if (remindType == ChatPushRemindType.NONE) {
+      ref.read(chatMuteProvider.notifier).state = true;
+    } else {
+      ref.read(chatMuteProvider.notifier).state = false;
+    }
   }
 
   Widget _buildBody(BuildContext context) {
@@ -33,15 +88,15 @@ class ContactProfileScreen extends StatelessWidget {
             SizedBox(height: 2.h),
             _textCaption(S.current.pr_name),
             SizedBox(height: 0.4.h),
-            _textValue(currentUser.name),
+            _textValue(contact.name),
             SizedBox(height: 2.h),
             _textCaption(S.current.pr_email),
             SizedBox(height: 0.4.h),
-            _textValue(currentUser.email ?? ''),
+            _textValue(contact.email ?? ''),
             SizedBox(height: 2.h),
             _textCaption(S.current.pr_phone),
             SizedBox(height: 0.4.h),
-            _textValue(currentUser.phone ?? ''),
+            _textValue(contact.phone ?? ''),
             SizedBox(height: 3.h),
             _buildMuteSettings(),
             SizedBox(height: 3.h),
@@ -118,7 +173,7 @@ class ContactProfileScreen extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Icon(icon, color: const Color(0xFFB70000)),
+          Icon(icon, color: const Color(0xFFB70000), size: 5.w),
           SizedBox(width: 4.w),
           Text(
             text,
@@ -229,10 +284,20 @@ class ContactProfileScreen extends StatelessWidget {
   Widget _buildMuteSettings() {
     return Consumer(
       builder: (context, ref, child) {
-        final mute = ref.watch(muteProvider);
+        final mute = ref.watch(chatMuteProvider);
+
+        // ref.watch(muteProvider(contact.userId.toString()));
         return InkWell(
-          onTap: () {
-            ref.read(muteProvider.notifier).state = !mute;
+          onTap: () async {
+            _updateSetting(!mute);
+            ref.read(chatMuteProvider.notifier).state =
+                // ref.read(muteProvider(contact.userId.toString()).notifier).state =
+                !mute;
+
+            // final conv = await ChatClient.getInstance.chatManager
+            //     .getConversation(currentUser.userId.toString());
+//
+            // conv?.
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -246,8 +311,10 @@ class ContactProfileScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              mySwitch(mute, (value) {
-                ref.read(muteProvider.notifier).state = value;
+              mySwitch(mute, (value) async {
+                // ref.read(muteProvider(contact.userId.toString()).notifier)
+                _updateSetting(value);
+                ref.read(chatMuteProvider.notifier).state = value;
               })
             ],
           ),
@@ -303,13 +370,13 @@ class ContactProfileScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  getRectFAvatar(currentUser.name, currentUser.profileImage,
+                  getRectFAvatar(contact.name, contact.profileImage,
                       size: 20.w),
                   SizedBox(
                     height: 0.7.h,
                   ),
                   Text(
-                    currentUser.name,
+                    contact.name,
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 13.sp,
@@ -352,7 +419,7 @@ class ContactProfileScreen extends StatelessWidget {
     return CircleAvatar(
       radius: 6.w,
       backgroundColor: AppColors.yellowAccent,
-      child: getSvgIcon(icon),
+      child: getSvgIcon(icon, width: 5.w),
     );
   }
 }

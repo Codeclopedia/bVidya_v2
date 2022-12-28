@@ -14,7 +14,10 @@ class ChatMessageNotifier extends StateNotifier<List<ChatMessage>> {
   }
 
   void addChat(ChatMessage todo) {
-    state = [...state, todo];
+    int length = state.length;
+    if (length < 1 || state[length - 1].msgId != todo.msgId) {
+      state = [...state, todo];
+    }
   }
 
   void addChats(List<ChatMessage> chats, String? cur) {
@@ -23,5 +26,20 @@ class ChatMessageNotifier extends StateNotifier<List<ChatMessage>> {
     }
     _cursor = cur;
     // state = [chats.reversed, ...state];
+  }
+
+  void remove(ChatMessage message) {
+    List<ChatMessage> newState = [];
+    for (var c in state) {
+      if (c.msgId != message.msgId) {
+        newState.add(c);
+      }
+    }
+    state = newState;
+    // state = [...state, todo];
+  }
+
+  void clear() {
+    state = [];
   }
 }

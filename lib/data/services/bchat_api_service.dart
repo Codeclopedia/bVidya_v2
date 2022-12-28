@@ -17,7 +17,7 @@ class BChatApiService {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final response = await _dio.get('$baseUrlApi${ApiList.getChatToken}');
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return ChatTokenResponse.fromJson(response.data);
       } else {

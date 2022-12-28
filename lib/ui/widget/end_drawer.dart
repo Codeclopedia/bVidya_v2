@@ -76,7 +76,8 @@ class EndDrawer extends StatelessWidget {
                             .read(drawerPositionNotifierProvider.notifier)
                             .updatDrawerPositions(RouteList.settings);
 
-                        Navigator.pushNamed(context, RouteList.settings);
+                        Navigator.pushReplacementNamed(
+                            context, RouteList.settings);
                       }),
                       _buildIconPng(
                           S.current.drawer_profile,
@@ -92,10 +93,10 @@ class EndDrawer extends StatelessWidget {
 
                           // print('user role ${user.role}');
                           if (user.role == 'teacher' || user.role == 'admin') {
-                            Navigator.pushNamed(
+                            Navigator.pushReplacementNamed(
                                 context, RouteList.teacherProfile);
                           } else {
-                            Navigator.pushNamed(
+                            Navigator.pushReplacementNamed(
                                 context, RouteList.studentProfile);
                           }
                         }
@@ -152,7 +153,7 @@ class EndDrawer extends StatelessWidget {
                       }),
                       SizedBox(
                         width: 20.w,
-                        height: 8.h,
+                        height: 7.h,
                         child: Stack(children: [
                           _buildIconPng(
                               S.current.drawer_bchat,

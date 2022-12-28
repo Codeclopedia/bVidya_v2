@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/data/models/response/bchat/contacts_response.dart';
+import 'package:bvidya/ui/screen/bchat/dash/models/reply_model.dart';
+import 'package:bvidya/ui/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
@@ -40,7 +44,8 @@ class ChatMessageBubble extends StatelessWidget {
       padding: EdgeInsets.only(
           left: isOwnMessage ? 0 : 4.w,
           right: isOwnMessage ? 4.w : 0,
-          top: isPreviousSameAuthor ? 4 : 1.h),
+          top: isPreviousSameAuthor ? 2 : 1.h,
+          bottom: 2),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -160,11 +165,11 @@ class ChatMessageBubble extends StatelessWidget {
             : AppColors.chatBoxBackgroundOthers,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(
-              !isOwnMessage && !isPreviousSameAuthor ? 0.0 : 5.w),
+              !isOwnMessage && !isPreviousSameAuthor ? 0.0 : 3.w),
           topRight: Radius.circular(
-              isOwnMessage && !isPreviousSameAuthor ? 0.0 : 5.w),
-          bottomLeft: Radius.circular(5.w),
-          bottomRight: Radius.circular(5.w),
+              isOwnMessage && !isPreviousSameAuthor ? 0.0 : 3.w),
+          bottomLeft: Radius.circular(3.w),
+          bottomRight: Radius.circular(3.w),
         ));
   }
 
@@ -205,116 +210,113 @@ class ChatMessageBubble extends StatelessWidget {
   //       ),
   //     );
 
-  // replyTextBubbleDecoration() => BoxDecoration(
-  //       color: mine
-  //           ? AppColors.chatBoxBackgroundOthers
-  //           : AppColors.chatBoxBackgroundMine,
-  //       borderRadius: BorderRadius.all(Radius.circular(5.w)),
-  //     );
+  replyTextBubbleDecoration() => BoxDecoration(
+        color: isOwnMessage
+            ? AppColors.chatBoxBackgroundOthers
+            : AppColors.chatBoxBackgroundMine,
+        borderRadius: BorderRadius.all(Radius.circular(3.w)),
+      );
 
   Widget _buildTextMessage(ChatTextMessageBody body) {
+    bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
-        maxWidth: 50.w,
+        maxWidth: 60.w,
       ),
       margin: EdgeInsets.only(
           left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
-      decoration: _buildDecoration(), //textBubbleDecoration(),
+      decoration: _buildDecoration(),
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          if (hasReply) _replyText(),
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Wrap(
-              //   // alignment: WrapAlignment.start,
+              Flexible(child: _textMessage(body.content)),
+              // Flexible(
+              //     child: Wrap(
+              //   alignment: WrapAlignment.start,
               //   children: getMessage(body.content),
-              // ),
-              _textMessage(body.content),
+              // )),
+              // const Spacer(),
               SizedBox(width: 8.w)
-              // Expanded(
-              //   //   // child: _textMessage(body.content),
-              //   child: Wrap(
-              //     children: getMessage(body.content),
-              //   ),
-              // ),
             ],
           ),
-          _buildTime()
+          _buildTime(),
+          // Container(
+          //   width: 20.w,
+          //   alignment: Alignment.centerRight,
+          //   child: _buildTime(),
+          // )
+          // Row(
+          //   mainAxisSize: MainAxisSize.min,
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [const Spacer(), _buildTime()],
+          // )
+
+          // Align(alignment: Alignment.bottomRight, child: _buildTime())
         ],
       ),
-
-      // Column(
-      //   crossAxisAlignment: CrossAxisAlignment.end,
-      //   // mainAxisAlignment: MainAxisAlignment.start,
-      //   children: [
-      //     // if (replyOf != null) _replyText(),
-      //     Row(
-      //       mainAxisSize: MainAxisSize.min,
-      //       children: [
-      //         // Expanded(
-      //         //   child: Wrap(
-      //         //     children: getMessage(body.content),
-      //         //   ),
-      //         // ),
-      //         _textMessage(body.content),
-      //         SizedBox(
-      //           width: 6.w,
-      //         )
-      //       ],
-      //     ),
-      //     _buildTime(),
-      //   ],
-      // ),
     );
   }
 
-  // _replyText() {
-  //   String? replyOf = message.attributes?['reply_of'];
-  //   return Container(
-  //     height: message.replyOf!.type == 'text' ? 25.w : 36.w,
-  //     margin: EdgeInsets.only(bottom: 1.h),
-  //     decoration: replyTextBubbleDecoration(),
-  //     padding: const EdgeInsets.all(0.3),
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.max,
-  //       children: [
-  //         SizedBox(width: 2.w),
-  //         Expanded(
-  //           child: Container(
-  //             decoration: BoxDecoration(
-  //               color: mine
-  //                   ? const Color(0xFF6F3253)
-  //                   : const Color.fromARGB(255, 248, 213, 131),
-  //               borderRadius: BorderRadius.only(
-  //                 bottomRight: Radius.circular(5.w),
-  //                 bottomLeft: Radius.zero,
-  //                 topRight: Radius.circular(5.w),
-  //                 topLeft: Radius.zero,
-  //               ),
-  //             ),
-  //             margin: EdgeInsets.only(left: 2.w),
-  //             padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 _textUserName(),
-  //                 if (message.replyOf!.type == 'text')
-  //                   _textMessage(message.replyOf!.message),
-  //                 if (message.replyOf!.type == 'image')
-  //                   _replyImageContent(message.replyOf!.image!),
-  //               ],
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _replyText() {
+    final replyMap = message.attributes?['reply_of'];
+    // print('Reply : ${jsonEncode(replyMap)}');
+    final replyOf = ReplyModel.fromJson(replyMap);
+    return Container(
+      margin: EdgeInsets.only(bottom: 1.h),
+      decoration: replyTextBubbleDecoration(),
+      // padding: const EdgeInsets.all(0.1),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Container(
+              // constraints: BoxConstraints(
+              //   minWidth: 30.w,
+              //   maxWidth: 50.w,
+              // ),
+              width: 50.w,
+              decoration: BoxDecoration(
+                color: isOwnMessage
+                    ? const Color(0xFF6F3253)
+                    : const Color.fromARGB(255, 248, 213, 131),
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(3.w),
+                  bottomLeft: Radius.zero,
+                  topRight: Radius.circular(3.w),
+                  topLeft: Radius.zero,
+                ),
+              ),
+              margin: EdgeInsets.only(left: 2.w),
+              padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    replyOf.fromName,
+                    style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: isOwnMessage
+                            ? AppColors.chatBoxBackgroundOthers
+                            : AppColors.chatBoxBackgroundMine,
+                        fontSize: 7.sp),
+                  ),
+                  ChatMessageBodyWidget(
+                      message: replyOf.message, isOwnMessage: isOwnMessage)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   // _replyImageContent(String image) {
   //   return Container(
@@ -348,33 +350,39 @@ class ChatMessageBubble extends StatelessWidget {
 
   Widget _textMessage(String content) {
     // final bool isOwnMessage = message.from == currentUser.id;
-    return Expanded(
-      child: Text(
-        content,
-        style: TextStyle(
-          fontFamily: kFontFamily,
-          fontSize: 10.sp,
-          color: isOwnMessage
-              ? AppColors.chatBoxMessageMine
-              : AppColors.chatBoxMessageOthers,
-          fontWeight: FontWeight.w300,
-        ),
+    return Text(
+      content,
+      style: TextStyle(
+        fontFamily: kFontFamily,
+        fontSize: 10.sp,
+        color: isOwnMessage
+            ? AppColors.chatBoxMessageMine
+            : AppColors.chatBoxMessageOthers,
+        fontWeight: FontWeight.w300,
       ),
     );
   }
 
   Widget _buildTime() {
     // final bool isOwnMessage = message.from == currentUser.id;
-    return Text(
-      DateFormat('h:mm a')
-          .format(DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
-      style: TextStyle(
-        fontFamily: kFontFamily,
-        fontSize: 8.sp,
-        color: isOwnMessage
-            ? AppColors.chatBoxTimeMine
-            : AppColors.chatBoxTimeOthers,
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          DateFormat('h:mm a')
+              .format(DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+          style: TextStyle(
+            fontFamily: kFontFamily,
+            fontSize: 8.sp,
+            color: isOwnMessage
+                ? AppColors.chatBoxTimeMine
+                : AppColors.chatBoxTimeOthers,
+          ),
+        ),
+        if (isOwnMessage && message.hasReadAck || message.hasDeliverAck)
+          Icon(message.hasReadAck ? Icons.done_all : Icons.done)
+      ],
     );
   }
 
@@ -424,8 +432,8 @@ class ChatMessageBubble extends StatelessWidget {
         fontFamily: kFontFamily,
         fontSize: 10.sp,
         color: isOwnMessage
-            ? AppColors.chatBoxTimeMine
-            : AppColors.chatBoxTimeOthers,
+            ? AppColors.chatBoxMessageMine
+            : AppColors.chatBoxMessageOthers,
       ),
     );
   }
@@ -439,9 +447,10 @@ class ChatMessageBubble extends StatelessWidget {
           ..onTap =
               () => onPressMention != null ? onPressMention!(mention) : null,
         style: TextStyle(
+          fontSize: 10.sp,
           color: isOwnMessage
-              ? AppColors.chatBoxTimeMine
-              : AppColors.chatBoxTimeOthers,
+              ? AppColors.chatBoxMessageMine
+              : AppColors.chatBoxMessageOthers,
           decoration: TextDecoration.none,
           fontWeight: FontWeight.w600,
         ),

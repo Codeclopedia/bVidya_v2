@@ -1,21 +1,28 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swipe_to/swipe_to.dart';
 
+import 'dash/models/reply_model.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-import '/core/utils.dart';
 import '/core/utils/date_utils.dart';
 import '/data/models/models.dart';
-// import '/data/network/fcm_api_service.dart';
+
+import '../../../controller/providers/chat_messagelist_provider.dart';
+import '../../base_back_screen.dart';
 import '../../widgets.dart';
-import 'dash/models/reply_model.dart';
 import '../../widget/chat_input_box.dart';
 import 'widgets/chat_message_bubble.dart';
 import 'widgets/typing_indicator.dart';
 
+final selectedChatMessageListProvider =
+    StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
+        (ref) => ChatMessageNotifier());
+
+// ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
   // final int userId;
   final ConversationModel model;
@@ -26,19 +33,17 @@ class ChatScreen extends HookConsumerWidget {
 
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
-  User? _me;
+
+  // User? _me;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      // _initSDK();
-      // if(_scrollController.i)
-
       _scrollController = ScrollController();
-      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '24';
-      // _otherUserId = _myUserId == '24' ? '1' : '24';
+      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '';
+
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      _loadMe();
+      // _loadMe();
       _preLoadChat(ref);
 
       return disposeAll;
@@ -50,56 +55,29 @@ class ChatScreen extends HookConsumerWidget {
     ref.listen(chatHasMoreOldMessageProvider, (previous, next) {
       _hasMoreData = next;
     });
-    return Scaffold(
-      body: ColouredBoxBar(
-        topBar: _topBar(context),
-        body: _chatList(context),
+    final selectedItems = ref.watch(selectedChatMessageListProvider);
+    return BaseWilPopupScreen(
+      onBack: () async {
+        if (selectedItems.isNotEmpty) {
+          ref.read(selectedChatMessageListProvider.notifier).clear();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: ColouredBoxBar(
+          topBar: selectedItems.isNotEmpty
+              ? _menuBar(context, selectedItems, ref)
+              : _topBar(context),
+          body: _chatList(context),
+        ),
       ),
     );
   }
 
-  _loadMe() async {
-    _me = await getMeAsUser();
-  }
-
-  _preLoadChat(WidgetRef ref) async {
-    try {
-      if (model.badgeCount > 0) {
-        await model.conversation?.markAllMessagesAsRead();
-      }
-
-      final value = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(
-              conversationId: model.contact.peerId, pageSize: 20);
-
-      final chats = value.data;
-      if (chats.isNotEmpty) {
-        debugPrint('preLoadChat cursor : ${value.cursor}');
-        debugPrint('data list ${chats.length}');
-        // ref.read(chatChatCursorMessageProvider.notifier).state = value.cursor;
-        ref
-            .read(chatMessageListProvider.notifier)
-            .addChats(chats, value.cursor);
-      }
-      ChatClient.getInstance.chatManager.addEventHandler(
-        'chat_screen',
-        ChatEventHandler(
-          onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
-        ),
-      );
-    } on ChatError catch (e) {}
-  }
-
-  void disposeAll() {
-    ChatClient.getInstance.chatManager.removeEventHandler('chat_screen');
-  }
-
-  void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    for (var msg in messages) {
-      print('msg: ${msg.from}');
-      ref.read(chatMessageListProvider.notifier).addChat(msg);
-    }
-  }
+  // _loadMe() async {
+  //   _me = await getMeAsUser();
+  // }
 
   Widget _chatList(BuildContext context) {
     return Column(
@@ -149,7 +127,7 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        // _buildReplyBox(),
+        _buildReplyBox(),
         _buildChatInputBox(),
       ],
     );
@@ -204,7 +182,8 @@ class ChatScreen extends HookConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Chat content'),
+                            ChatMessageBodyWidget(message: replyOf.message)
+                            // Text(replyOf.),
                           ],
                         )),
                   ),
@@ -224,14 +203,16 @@ class ChatScreen extends HookConsumerWidget {
         return ChatInputBox(
           onSend: (input) async {
             final msg = ChatMessage.createTxtSendMessage(
-                targetId: model.contact.peerId, content: input)
-              ..from = _myChatPeerUserId;
+                targetId: model.contact.userId.toString(), content: input);
+            // ..from = _myChatPeerUserId;
 
-            // ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-            // if (replyOf != null) {
-            //   // msg.attributes.addAll(replyOf)
-            //   ref.read(chatModelProvider).clearReplyBox();
-            // }
+            msg.attributes = {"em_force_notification": true};
+
+            ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
+            if (replyOf != null) {
+              msg.attributes?.addAll({'reply_of': replyOf.toJson()});
+              ref.read(chatModelProvider).clearReplyBox();
+            }
             // ref.read(chatMessageListProvider.notifier).addChat(msg);
             return await _sendMessage(msg, ref);
           },
@@ -303,6 +284,8 @@ class ChatScreen extends HookConsumerWidget {
         if (nextMessage?.from == message.from) {
           isNextSameAuthor = true;
         }
+        final selectedItems = ref.watch(selectedChatMessageListProvider);
+        bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from == _myChatPeerUserId;
 
@@ -321,25 +304,35 @@ class ChatScreen extends HookConsumerWidget {
                   style: const TextStyle(color: Colors.grey),
                 ),
               ),
-            // SwipeTo(
-            //   onRightSwipe: () {
-            //     ref.read(chatModelProvider).setReplyOn(message, otherUser);
-            //     print('open replyBox');
-            //   },
-            //   child:
-            GestureDetector(
-              onLongPress: () {
-                _showMessageOption(message);
+            SwipeTo(
+              onRightSwipe: () {
+                ref.read(chatModelProvider.notifier).setReplyOn(
+                    message,
+                    isOwnMessage
+                        ? S.current.bmeet_user_you
+                        : model.contact.name);
+                print('open replyBox');
               },
-              child: ChatMessageBubble(
-                message: message,
-                isOwnMessage: message.from == _myChatPeerUserId,
-                senderUser: model.contact,
-                isPreviousSameAuthor: isPreviousSameAuthor,
-                isNextSameAuthor: isNextSameAuthor,
-                isAfterDateSeparator: isAfterDateSeparator,
-                isBeforeDateSeparator: isBeforeDateSeparator,
-                // ),
+              child: GestureDetector(
+                onLongPress: () =>
+                    _onMessageLongPress(message, isSelected, ref),
+                onTap: () => selectedItems.isNotEmpty
+                    ? _onMessageTap(message, isSelected, ref)
+                    : null,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 2, bottom: 4),
+                  width: double.infinity,
+                  color: isSelected ? Colors.grey.shade200 : Colors.transparent,
+                  child: ChatMessageBubble(
+                    message: message,
+                    isOwnMessage: message.from == _myChatPeerUserId,
+                    senderUser: model.contact,
+                    isPreviousSameAuthor: isPreviousSameAuthor,
+                    isNextSameAuthor: isNextSameAuthor,
+                    isAfterDateSeparator: isAfterDateSeparator,
+                    isBeforeDateSeparator: isBeforeDateSeparator,
+                  ),
+                ),
               ),
             ),
           ],
@@ -348,12 +341,25 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  _showMessageOption(ChatMessage message) {
+  _onMessageLongPress(ChatMessage message, bool selected, WidgetRef ref) {
     // ChatClient.getInstance.chatManager.a
+    if (selected) {
+      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+    } else {
+      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+    }
+  }
+
+  _onMessageTap(ChatMessage message, bool selected, WidgetRef ref) {
+    if (selected) {
+      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+    } else {
+      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+    }
   }
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
-    if (_me == null) return 'User details not loaded yet';
+    // if (_me == null) return 'User details not loaded yet';
     try {
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
@@ -370,9 +376,8 @@ class ChatScreen extends HookConsumerWidget {
           },
         ),
       );
-      ref
-          .read(chatMessageListProvider.notifier)
-          .addChat(await ChatClient.getInstance.chatManager.sendMessage(msg));
+      final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
+      ref.read(chatMessageListProvider.notifier).addChat(chat);
     } on ChatError catch (e) {
       print("send failed, code: ${e.code}, desc: ${e.description}");
       return e.description;
@@ -419,18 +424,17 @@ class ChatScreen extends HookConsumerWidget {
   // bool isLoadingMore = false;
 
   Future<void> onLoadEarlier(WidgetRef ref) async {
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
     try {
       final message = ref.read(chatMessageListProvider.notifier).getLast();
       if (message == null) return;
-      // ChatTextMessageBody body = message.body as ChatTextMessageBody;
-      // print('last message ${body.content}');
 
       String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
       if (cursor == null || cursor.isEmpty) return;
+
       final oldResult = await ChatClient.getInstance.chatManager
           .fetchHistoryMessages(
-              conversationId: model.contact.peerId,
+              conversationId: model.contact.userId.toString(),
               pageSize: 20,
               startMsgId: message.msgId);
 
@@ -458,6 +462,69 @@ class ChatScreen extends HookConsumerWidget {
     } catch (e) {}
 
     return;
+  }
+
+  _preLoadChat(WidgetRef ref) async {
+    try {
+      // ChatClient.getInstance.presenceManager
+      //     .subscribe(members: [model.contact.peerId], expiry: 100);
+
+      ChatClient.getInstance.presenceManager.addEventHandler(
+        "user_presence_home_screen",
+        ChatPresenceEventHandler(
+          onPresenceStatusChanged: (list) {
+            print('onPresenceStatusChanged: ${list.toList()}');
+          },
+        ),
+      );
+    } catch (e) {
+      print('Presence error $e');
+    }
+
+    try {
+      if (model.badgeCount > 0) {
+        await model.conversation?.markAllMessagesAsRead();
+      }
+
+      final value = await ChatClient.getInstance.chatManager
+          .fetchHistoryMessages(
+              conversationId: model.contact.userId.toString(), pageSize: 20);
+
+      final chats = value.data;
+      if (chats.isNotEmpty) {
+        debugPrint('preLoadChat cursor : ${value.cursor}');
+        debugPrint('data list ${chats.length}');
+        // ref.read(chatChatCursorMessageProvider.notifier).state = value.cursor;
+        ref
+            .read(chatMessageListProvider.notifier)
+            .addChats(chats, value.cursor);
+      } else {
+        // final list =
+        //     await ChatClient.getInstance.contactManager.getAllContactsFromDB();
+        // if (!list.contains(model.contact.userId.toString())) {
+        //   ChatClient.getInstance.contactManager
+        //       .addContact(model.contact.userId.toString(), reason: 'Hi');
+        // }
+      }
+      ChatClient.getInstance.chatManager.addEventHandler(
+        'chat_screen',
+        ChatEventHandler(
+          onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
+        ),
+      );
+    } on ChatError catch (e) {
+      debugPrint('error: ${e.code}- ${e.description}');
+    }
+  }
+
+  void disposeAll() {
+    ChatClient.getInstance.chatManager.removeEventHandler('chat_screen');
+  }
+
+  void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
+    for (var msg in messages) {
+      ref.read(chatMessageListProvider.notifier).addChat(msg);
+    }
   }
 
   Future<void> _onScroll(
@@ -531,6 +598,51 @@ class ChatScreen extends HookConsumerWidget {
 
   //   return ChatUserInfo.fromJson(map);
   // }
+  Widget _menuBar(BuildContext context, final List<ChatMessage> selectedItems,
+      WidgetRef ref) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+      // color: AppColors.primaryColor,
+      child: Row(
+        children: [
+          // SizedBox(width: 6.w,)
+          Text(
+            selectedItems.length > 1
+                ? '${selectedItems.length} Messages selected'
+                : '${selectedItems.length} Message selected',
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 14.sp,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+              onPressed: () async {
+                // print('conversation is NULL =${model.conversation == null} ');
+                for (var m in selectedItems) {
+                  try {
+                    await model.conversation?.deleteMessage(m.msgId);
+                    // ref
+                    //     .read(selectedChatMessageListProvider.notifier)
+                    //     .remove(m);
+                    ref.read(chatMessageListProvider.notifier).remove(m);
+                  } on ChatError catch (e) {
+                    print('Error- ${e.code} :${e.description}');
+                  }
+                }
+                ref.read(selectedChatMessageListProvider.notifier).clear();
+                // ChatClient.getInstance.chatManager.del
+              },
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.white,
+              ))
+        ],
+      ),
+    );
+  }
 
   Widget _topBar(BuildContext context) {
     // final Contacts otherUser = _getUser();
@@ -590,14 +702,18 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
           IconButton(
-            onPressed: (() {}),
+            onPressed: () {
+              Navigator.pushNamed(context, RouteList.bChatAudioCall);
+            },
             icon: getSvgIcon('icon_audio_call.svg'),
           ),
           SizedBox(
             width: 1.w,
           ),
           IconButton(
-            onPressed: (() {}),
+            onPressed: () {
+              Navigator.pushNamed(context, RouteList.bChatVideoCall);
+            },
             icon: getSvgIcon('icon_video_call.svg'),
           ),
         ],

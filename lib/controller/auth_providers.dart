@@ -61,10 +61,6 @@ final loadingStateProvider = StateProvider.autoDispose<bool>(
   (_) => false,
 );
 
-//Mute
-final muteProvider = StateProvider.autoDispose<bool>(
-  ((_) => true),
-);
 
 // //Drawer
 // final drawerOpenProvider = StateProvider.autoDispose<bool>(

@@ -3,7 +3,7 @@ import 'package:bvidya/data/repository/bchat_respository.dart';
 
 import '../core/state.dart';
 import '/data/models/models.dart';
-import '../data/repository/bchat_sdk_controller.dart';
+import 'providers/bchat_sdk_controller.dart';
 import '/data/services/bchat_api_service.dart';
 import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
@@ -43,6 +43,10 @@ final chatHasMoreOldMessageProvider = StateProvider.autoDispose<bool>(
 final chatMessageListProvider =
     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
         (ref) => ChatMessageNotifier());
+
+final loadingChatProvider = StateProvider<bool>(
+  (_) => true,
+);
 
 //Chat API CALLS
 

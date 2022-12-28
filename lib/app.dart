@@ -49,18 +49,20 @@ class _BVideyAppState extends State<BVideyApp> {
     super.initState();
     initLoading();
     _firebase();
-    _addChatListener();
+    // _addChatListener();
   }
 
   void onMessagesReceived(List<ChatMessage> messages) {
+    int i = 0;
     for (var msg in messages) {
+      i++;
       switch (msg.body.type) {
         case MessageType.TXT:
           {
             ChatTextMessageBody body = msg.body as ChatTextMessageBody;
 
             print(
-              "receive text message: ${body.content}, from: ${msg.from}",
+              "receive $i text message: ${body.content}, from: ${msg.from}",
             );
           }
           break;
@@ -121,6 +123,7 @@ class _BVideyAppState extends State<BVideyApp> {
   }
 
   void _addChatListener() {
+
     ChatClient.getInstance.chatManager.addEventHandler(
       "MAIN_HANDLER_ID",
       ChatEventHandler(onMessagesReceived: onMessagesReceived),
@@ -185,7 +188,7 @@ class _BVideyAppState extends State<BVideyApp> {
 
   @override
   void dispose() {
-    ChatClient.getInstance.chatManager.removeEventHandler("MAIN_HANDLER_ID");
+    // ChatClient.getInstance.chatManager.removeEventHandler("MAIN_HANDLER_ID");
     super.dispose();
   }
 }

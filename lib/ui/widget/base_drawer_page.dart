@@ -7,13 +7,26 @@ import 'end_drawer.dart';
 
 final drawerStateProvider = StateProvider<bool>((ref) => false);
 
-class BaseDrawerPage extends StatelessWidget {
+class BaseDrawerPage extends StatefulWidget {
   final Widget body;
   final String screenName;
-  BaseDrawerPage({Key? key, required this.body, required this.screenName})
+  const BaseDrawerPage({Key? key, required this.body, required this.screenName})
       : super(key: key);
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  State<BaseDrawerPage> createState() => _BaseDrawerPageState();
+}
+
+class _BaseDrawerPageState extends State<BaseDrawerPage> {
+  late GlobalKey<ScaffoldState> _scaffoldKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
+  }
+
+  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +40,13 @@ class BaseDrawerPage extends StatelessWidget {
         drawerEdgeDragWidth: 20.w,
         endDrawer: EndDrawer(
           scaffoldKey: _scaffoldKey,
-          myRouteName: screenName,
+          myRouteName: widget.screenName,
         ),
         onEndDrawerChanged: (isOpened) {
           // ref.read(drawerStateProvider.notifier).state = isOpened;
         },
         body: Stack(children: [
-          body,
+          widget.body,
           Visibility(
             visible: !isDrawerOpen,
             child: _toggler(_scaffoldKey),

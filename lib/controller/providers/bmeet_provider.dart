@@ -13,7 +13,7 @@ import '/data/models/models.dart';
 
 final raisedHandMeetingProvider = StateProvider<String>((ref) => '');
 
-final endedMeetingProvider = StateProvider<bool>((ref) => false);
+// final endedMeetingProvider = StateProvider<bool>((ref) => false);
 
 class BMeetProvider extends ChangeNotifier {
   final MethodChannel _iosScreenShareChannel =
@@ -25,6 +25,9 @@ class BMeetProvider extends ChangeNotifier {
 //
   bool _localUserJoined = false;
   bool get localUserJoined => _localUserJoined;
+
+  bool _kickOut = false;
+  bool get kickOut => _kickOut;
 
 //
   int _screenShareId = 0;
@@ -54,8 +57,8 @@ class BMeetProvider extends ChangeNotifier {
   bool get speakerOn => _speakerOn;
 
 //
-  bool _camera = false;
-  bool get camera => _camera;
+  bool _disableLocalCamera = true;
+  bool get disableLocalCamera => _disableLocalCamera;
 
 //
   int _indexValue = 0;
@@ -74,6 +77,8 @@ class BMeetProvider extends ChangeNotifier {
   List<AgoraRtmMember> get memberList => _memberList;
 
   bool _initialized = false;
+  bool _initializingScreenShare = false;
+  bool get initializingScreenShare => _initializingScreenShare;
 
   // bool _ended = false;
   // bool get ended => _ended;
@@ -105,16 +110,16 @@ class BMeetProvider extends ChangeNotifier {
   //     int min = (_meetingDuration ~/ 60);
   //     int sec = (_meetingDuration % 60).toInt();
 
-  //     _meetingDurationTxt = "$min:$sec";
+  //     _meetingDurationTxt = '$min:$sec';
 
   //     if (checkNoSignleDigit(min)) {
-  //       _meetingDurationTxt = "0$min:$sec";
+  //       _meetingDurationTxt = '0$min:$sec';
   //     }
   //     if (checkNoSignleDigit(sec)) {
   //       if (checkNoSignleDigit(min)) {
-  //         _meetingDurationTxt = "0$min:0$sec";
+  //         _meetingDurationTxt = '0$min:0$sec';
   //       } else {
-  //         _meetingDurationTxt = "$min:0$sec";
+  //         _meetingDurationTxt = '$min:0$sec';
   //       }
   //     }
   //     _meetingDuration = _meetingDuration + 1;
@@ -122,7 +127,7 @@ class BMeetProvider extends ChangeNotifier {
   // );
   // }
 
-  late WidgetRef _ref;
+  WidgetRef? _ref;
   void init(WidgetRef ref, Meeting meeting, bool enableVideo, String rtmToken,
       String rtmUser, int userid) {
     if (_initialized) return;
@@ -135,58 +140,60 @@ class BMeetProvider extends ChangeNotifier {
 
   void _createRTMClient(String rtmToken, String rtmUser, int userid) async {
     if (_meeting.appid.isEmpty) {
-      print('Meeting App ID is emply');
+      // print('Meeting App ID is emply');
       return;
     }
     _rtmClient = await AgoraRtmClient.createInstance(_meeting.appid);
     _rtmClient.onMessageReceived =
         (AgoraRtmMessage message, String peerId) async {
-      // debugPrint("Peer ID $peerId");
-      debugPrint("onMessageReceived=> Peer ID:$peerId - msg:${message.text}");
+      // debugPrint('Peer ID $peerId');
+      debugPrint('onMessageReceived=> msg: ${message.text}');
       if (message.text == 'remove') {
-        _ref.read(endedMeetingProvider.notifier).state = true;
+        // _ref?.read(endedMeetingProvider.notifier).state = true;
+        // print('Removing user');
+        _kickOut = true;
         // _ended = true;
         notifyListeners();
         return;
       }
 
-      if (message.text == "mic_off") {
+      if (message.text == 'mic_off') {
         _hostMute = true;
         notifyListeners();
 
         EasyLoading.showToast(
-          "You are muted by host.",
+          'You are muted by host.',
           duration: const Duration(seconds: 3),
           toastPosition: EasyLoadingToastPosition.bottom,
         );
         await _engine.muteLocalAudioStream(true);
-      } else if (message.text == "mic_on") {
+      } else if (message.text == 'mic_on') {
         _hostMute = false;
 
         notifyListeners();
         await _engine.muteLocalAudioStream(false);
         EasyLoading.showToast(
-          "Host un-muted you.\n Now you can enable your mic.",
+          'Host un-muted you.\n Now you can enable your mic.',
           duration: const Duration(seconds: 3),
           toastPosition: EasyLoadingToastPosition.bottom,
         );
-      } else if (message.text == "videocam_off") {
+      } else if (message.text == 'videocam_off') {
         _hostDisableCamera = true;
         notifyListeners();
 
         EasyLoading.showToast(
-          "Host disabled your camera",
+          'Host disabled your camera',
           duration: const Duration(seconds: 3),
           toastPosition: EasyLoadingToastPosition.bottom,
         );
         await _engine.muteLocalVideoStream(true);
-      } else if (message.text == "videocam_on") {
+      } else if (message.text == 'videocam_on') {
         _hostDisableCamera = false;
         notifyListeners();
 
         await _engine.muteLocalVideoStream(false);
         EasyLoading.showToast(
-          "You can enable your camera now",
+          'You can enable your camera now',
           duration: const Duration(seconds: 3),
           toastPosition: EasyLoadingToastPosition.bottom,
         );
@@ -194,14 +201,13 @@ class BMeetProvider extends ChangeNotifier {
     };
 
     try {
+      // print('User $rtmUser');
       await _rtmClient.login(rtmToken, rtmUser);
       await _initAgoraRTC(userid);
       await _createJoinRTMChannel();
 
       /// RTM
-    } catch (errorCode) {
-      print('Login error: $errorCode');
-    }
+    } catch (errorCode) {}
   }
 
   Future<void> _initAgoraRTC(int userid) async {
@@ -214,90 +220,68 @@ class BMeetProvider extends ChangeNotifier {
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onRejoinChannelSuccess: (connection, elapsed) {},
-        onError: (err, msg) {
-          print("onError :$err $msg");
-        },
+        onError: (err, msg) {},
+
+        onMediaDeviceChanged: (deviceType) {},
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          // print(
-          //     "local user ${connection.localUid} joined, since $elapsed seconds");
           _localUserJoined = true;
-          if (connection.localUid == 1000) {
-            _screenShareId = 1000;
-            _shareScreen = true;
-            _userRemoteIds.add(_screenShareId);
-            _userList.addAll({
-              _screenShareId:
-                  ConnectedUserInfo(_screenShareId, '', _localScreenView())
-            });
-          } else {
-            _localUid = connection.localUid ?? 0;
-            _userRemoteIds.add(_localUid);
-            _userList.addAll(
-                {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
-          }
+          _localUid = connection.localUid ?? 0;
+          _userRemoteIds.add(_localUid);
+          _userList.addAll(
+              {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
           _updateMemberList();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          // print("remote user $remoteUid joined, since $elapsed seconds");
-          _userRemoteIds.add(remoteUid);
-          if (remoteUid == 1000) {
-            _screenShareId = 1000;
-            _shareScreen = true;
-            _userList.addAll({
-              _screenShareId:
-                  ConnectedUserInfo(_screenShareId, '', _remoteScreenView())
-            });
-          } else {
-            _userList.addAll({
-              remoteUid:
-                  ConnectedUserInfo(remoteUid, '', _remoteView(remoteUid))
-            });
-          }
+          _userList.addAll({
+            remoteUid: ConnectedUserInfo(remoteUid, '', _remoteView(remoteUid))
+          });
           // notifyListeners();
           _updateMemberList();
         },
         onRemoteVideoStateChanged:
             (connection, remoteUid, state, reason, elapsed) {
-          // print(
-          //     "remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}");
+          print(
+              'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
         },
         onLeaveChannel: (connection, stats) {
-          int userId = connection.localUid ?? 0;
+          // int userId = connection.localUid ?? 0;
+          // if (userId < 1000000) {
+          //   _screenShareId = 0;
+          //   _shareScreen = false;
+          //   _userRemoteIds.remove(userid);
+          //   _userList.removeWhere((key, value) => key == userid);
+          //   _initializingScreenShare = false;
+          //   _userList.update(
+          //     _localUid,
+          //     (value) {
+          //       value.widget = _localView();
+          //       return value;
+          //     },
+          //   );
+          // _userList.addAll(
+          //     {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
+          // _updateMemberList();
           if (_localUserJoined) {
             _localUserJoined = false;
-            print('User Id:$userid');
+            // print('User Id:$userid');
             notifyListeners();
           }
-
-          // if (_userRemoteIds.contains(userId)) {
-          //   _userRemoteIds.remove(userId);
-          // }
-          // if (_userList.containsKey(userId)) {
-          //   _userList.removeWhere((key, value) => key == userId);
-          // }
-          // if (localUid != userid) {
-          //   _updateMemberList();
-          // } else {
-          //   // _userRemoteIds.clear();
-          // }
-          // _isPreviewReady = false;
-          // _userRemoteIds.clear();
-
-          // _speakingUsersMap.clear();
-          // notifyListeners();
         },
         onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
           _userRemoteIds.remove(remoteUid);
           _userList.removeWhere((key, value) => key == remoteUid);
-          print("remote user $remoteUid left channel,  reason:${reason.name}");
+
+          // if (remoteUid < 1000000) {
+          //   _screenShareId = 0;
+          //   _shareScreen = false;
+          //   _initializingScreenShare = false;
+          // }
+
           // _userRemoteIds.removeWhere((item) => item == remoteUid);
           // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
           _updateMemberList();
         },
-        onLocalVideoStateChanged: (source, state, error) {
-          // print(
-          //     "local video source:${source.name} state:${state.name}  err:${error.name}");
-        },
+
         onAudioVolumeIndication:
             (connection, speakers, speakerNumber, totalVolume) {
           for (var speaker in speakers) {
@@ -328,11 +312,10 @@ class BMeetProvider extends ChangeNotifier {
                 }
               });
             }
-            notifyListeners();
+            if (_localUserJoined) notifyListeners();
           }
         },
         onUserMuteAudio: (connection, remoteUid, muted) {
-          // print('[onUserMuteAudio] uid: $remoteUid, enabled: $muted');
           if (_userList.containsKey(remoteUid)) {
             _userList.update(remoteUid, (value) {
               value.muteAudio = muted;
@@ -342,7 +325,6 @@ class BMeetProvider extends ChangeNotifier {
           notifyListeners();
         },
         onUserEnableVideo: (connection, remoteUid, enabled) {
-          // print('[onUserEnableVideo] uid: $remoteUid, enabled: $enabled');
           if (_userList.containsKey(remoteUid)) {
             _userList.update(remoteUid, (value) {
               value.enabledVideo = enabled;
@@ -372,7 +354,7 @@ class BMeetProvider extends ChangeNotifier {
     await _engine.enableAudioVolumeIndication(
         interval: 250, smooth: 3, reportVad: true);
     await _engine.muteLocalAudioStream(_muted);
-    await _engine.muteLocalVideoStream(_camera);
+    await _engine.muteLocalVideoStream(_disableLocalCamera);
     // await _engine.enableVideo();
 // await _engine.setEnableSpeakerphone(speakerOn)
     await _engine.setVideoEncoderConfiguration(
@@ -391,21 +373,8 @@ class BMeetProvider extends ChangeNotifier {
         options: const ChannelMediaOptions(
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
-
-          // _meeting.role == 'host'
-          //     ? ClientRoleType.clientRoleBroadcaster
-          //     : ClientRoleType.clientRoleAudience,
           publishCameraTrack: true,
           publishScreenTrack: false,
-
-          // autoSubscribeVideo: true,
-          // autoSubscribeAudio: true,
-          // publishScreenTrack: true,
-          // defaultVideoStreamType: VideoStreamType.videoStreamLow,
-          // publishScreenCaptureVideo: true,
-          // publishSecondaryCameraTrack: true,
-          // token: _meeting.token,
-          // isInteractiveAudience: true,
         ));
     _isPreviewReady = true;
     _callTimerProvider.start();
@@ -422,18 +391,11 @@ class BMeetProvider extends ChangeNotifier {
         if (message.text == 'raise_hand') {
           //from id
           _timer?.cancel();
-          _ref.read(raisedHandMeetingProvider.notifier).state =
+          _ref?.read(raisedHandMeetingProvider.notifier).state =
               fromMember.userId.split(':')[1];
           _timer = Timer(const Duration(seconds: 2), () {
-            _ref.read(raisedHandMeetingProvider.notifier).state = '';
+            _ref?.read(raisedHandMeetingProvider.notifier).state = '';
           });
-
-          // Future.delayed(
-          //   const Duration(seconds: 2),
-          //   () {
-          //     _ref.read(raisedHandMeetingProvider.notifier).state = '';
-          //   },
-          // );
         } else if (message.text == 'mute_all') {
           _hostMute = true;
           notifyListeners();
@@ -441,15 +403,13 @@ class BMeetProvider extends ChangeNotifier {
           _hostMute = false;
           notifyListeners();
         } else if (message.text == 'leave') {
-          _ref.read(endedMeetingProvider.notifier).state = true;
+          _kickOut = true;
+          // _ref?.read(endedMeetingProvider.notifier).state = true;
           notifyListeners();
           return;
         }
       };
-      print('Join channel success.');
-    } catch (errorCode) {
-      print('Join channel error: $errorCode');
-    }
+    } catch (errorCode) {}
   }
 
   void onToggleAllMute() {
@@ -477,10 +437,15 @@ class BMeetProvider extends ChangeNotifier {
       notifyListeners();
       return;
     }
+
+    // for (var e in _userList.keys) {
+    //   print('_updateMemberList : $e');
+    // }
     _memberList.clear();
     _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
     for (var e in _memberList) {
       String user = e.userId;
+
       if (user.contains(':')) {
         int id = int.tryParse(user.split(':')[0]) ?? 0;
         String name = user.split(':')[1];
@@ -493,12 +458,12 @@ class BMeetProvider extends ChangeNotifier {
             },
           );
         } else {
-          if (id == _localUid) {
-            _userList.addAll({id: ConnectedUserInfo(id, name, _localView())});
-          } else if (id != _screenShareId) {
-            _userList
-                .addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
-          }
+          // if (id == _localUid) {
+          //   _userList.addAll({id: ConnectedUserInfo(id, name, _localView())});
+          // } else if (id != _screenShareId) {
+          //   _userList
+          //       .addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
+          // }
           // _userList.addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
         }
       }
@@ -507,12 +472,14 @@ class BMeetProvider extends ChangeNotifier {
     //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
     // }
     // _viewModels = getRenderViews();
-    notifyListeners();
+    if (_localUserJoined) notifyListeners();
   }
 
   void sendPeerMessage(String userId, String content) async {
     AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
-    await _rtmClient.sendMessageToPeer(userId, message, true, false);
+    try {
+      await _rtmClient.sendMessageToPeer(userId, message, false, false);
+    } catch (e) {}
   }
 
   void toggleVolume() async {
@@ -522,8 +489,8 @@ class BMeetProvider extends ChangeNotifier {
   }
 
   void toggleCamera() async {
-    _camera = !_camera;
-    await _engine.muteLocalVideoStream(_camera);
+    _disableLocalCamera = !_disableLocalCamera;
+    await _engine.muteLocalVideoStream(_disableLocalCamera);
     notifyListeners();
   }
 
@@ -533,24 +500,31 @@ class BMeetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleShareScreen() {
+  void toggleShareScreen() async {
+    if (_initializingScreenShare) return;
+
+    _initializingScreenShare = true;
     if (!_shareScreen) {
-      startScreenShare();
+      await startScreenShare();
     } else {
-      stopScreenShare();
+      await stopScreenShare();
     }
-    _shareScreen = _screenShareId == 1000;
+    // _shareScreen = _screenShareId == 1000;
     // _engine.muteLocalAudioStream(_muted);
     notifyListeners();
   }
 
-  void startScreenShare() async {
+  Future startScreenShare() async {
     // if (_shareScreen) return;
-    if (_screenShareId == 0) {
-      await _engine.joinChannelEx(
-        token: _meeting.token,
-        connection: RtcConnection(channelId: _meeting.channel, localUid: 1000),
-        options: const ChannelMediaOptions(
+    try {
+      await _engine.startScreenCapture(const ScreenCaptureParameters2(
+          captureAudio: true, captureVideo: true));
+      await _engine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
+      _showRPSystemBroadcastPickerViewIfNeed();
+      if (!_shareScreen) {
+        await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
+          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
           autoSubscribeVideo: true,
           autoSubscribeAudio: true,
           publishScreenTrack: true,
@@ -559,15 +533,20 @@ class BMeetProvider extends ChangeNotifier {
           publishMicrophoneTrack: false,
           publishScreenCaptureAudio: true,
           publishScreenCaptureVideo: true,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        ),
-      );
-      // _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
-    }
-    await _engine.startScreenCapture(
-        const ScreenCaptureParameters2(captureAudio: true, captureVideo: true));
-    await _engine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
-    _showRPSystemBroadcastPickerViewIfNeed();
+        ));
+        _shareScreen = true;
+        _initializingScreenShare = false;
+
+        _userList.update(
+          _localUid,
+          (value) {
+            value.widget = _localScreenView();
+            return value;
+          },
+        );
+        notifyListeners();
+      } else {}
+    } catch (e) {}
     // onStartScreenShared();
   }
 
@@ -590,11 +569,36 @@ class BMeetProvider extends ChangeNotifier {
   // }
 
   // @override
-  void stopScreenShare() async {
+  Future stopScreenShare() async {
     if (!_shareScreen) return;
-    await _engine.stopScreenCapture();
-    _screenShareId = 0;
-    notifyListeners();
+    try {
+      await _engine.stopScreenCapture();
+      // await _engine.leaveChannelEx(
+      //     RtcConnection(channelId: _meeting.channel, localUid: 1000));
+      await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
+        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+        clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        autoSubscribeVideo: true,
+        autoSubscribeAudio: true,
+        publishScreenTrack: false,
+        publishSecondaryScreenTrack: false,
+        publishCameraTrack: true,
+        publishMicrophoneTrack: true,
+        publishScreenCaptureAudio: false,
+        publishScreenCaptureVideo: false,
+      ));
+
+      _userList.update(
+        _localUid,
+        (value) {
+          value.widget = _localView();
+          return value;
+        },
+      );
+      _shareScreen = false;
+      _initializingScreenShare = false;
+      notifyListeners();
+    } catch (e) {}
   }
 
   Future<void> _showRPSystemBroadcastPickerViewIfNeed() async {
@@ -617,10 +621,10 @@ class BMeetProvider extends ChangeNotifier {
 
     _timer?.cancel();
 //Show to sender too
-    _ref.read(raisedHandMeetingProvider.notifier).state =
+    _ref?.read(raisedHandMeetingProvider.notifier).state =
         S.current.bmeet_user_you;
     _timer = Timer(const Duration(seconds: 2), () {
-      _ref.read(raisedHandMeetingProvider.notifier).state = '';
+      _ref?.read(raisedHandMeetingProvider.notifier).state = '';
     });
   }
 
@@ -629,20 +633,7 @@ class BMeetProvider extends ChangeNotifier {
   // }
 
   Future sendLeaveApi() async {
-    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave'));
-    // for (var m in _memberList) {
-    //   try {
-    //     int id = int.tryParse(m.userId.split(':')[0]) ?? 0;
-    //     if (id != _localUid) {
-    //       AgoraRtmMessage message = AgoraRtmMessage.fromText('leave');
-    //       await _rtmClient.sendMessageToPeer(
-    //           id.toString(), message, false, false);
-    //       print('send message to ${m.userId}');
-    //     }
-    //   } catch (e) {
-    //     print('Error: $e');
-    //   }
-    // }
+    await _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave'));
   }
 
   Future _leaveApi() async {
@@ -652,7 +643,7 @@ class BMeetProvider extends ChangeNotifier {
 
   Future disposeAgora() async {
     await _engine.stopPreview();
-    if (_meeting.role == "host") {
+    if (_meeting.role == 'host') {
       await _leaveApi();
     }
     await _engine.leaveChannel();
@@ -663,9 +654,8 @@ class BMeetProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _localUserJoined = true;
+    _localUserJoined = false;
 
-    print('Dispose Called');
     // _callTimerProvider.reset();
     // _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
     // clear users
@@ -711,7 +701,7 @@ class BMeetProvider extends ChangeNotifier {
         rtcEngine: engine,
         canvas: VideoCanvas(
           uid: uid,
-          renderMode: RenderModeType.renderModeHidden,
+          renderMode: RenderModeType.renderModeFit,
           isScreenView: false,
           sourceType: VideoSourceType.videoSourceRemote,
         ),
@@ -726,8 +716,9 @@ class BMeetProvider extends ChangeNotifier {
         rtcEngine: engine,
         // connection: RtcConnection(
         //     channelId: _meeting.channel, localUid: _screenShareId),
-        canvas: VideoCanvas(
-            uid: _screenShareId,
+        canvas: const VideoCanvas(
+            // uid: _localUid,
+
             renderMode: RenderModeType.renderModeFit,
             sourceType: VideoSourceType.videoSourceScreen,
             isScreenView: true),
@@ -735,20 +726,26 @@ class BMeetProvider extends ChangeNotifier {
     );
   }
 
-  StatefulWidget _remoteScreenView() {
-    return AgoraVideoView(
-      controller: VideoViewController.remote(
-        rtcEngine: engine,
-        connection: RtcConnection(
-            channelId: _meeting.channel, localUid: _screenShareId),
-        canvas: VideoCanvas(
-            uid: _screenShareId,
-            renderMode: RenderModeType.renderModeFit,
-            sourceType: VideoSourceType.videoSourceScreen,
-            isScreenView: true),
-      ),
-    );
+  void disconnectAll() {}
+
+  void startRecording() {
+    // _engine.startAudioRecording(config);
   }
+
+  // StatefulWidget _remoteScreenView() {
+  //   return AgoraVideoView(
+  //     controller: VideoViewController.remote(
+  //       rtcEngine: engine,
+  //       connection: RtcConnection(
+  //           channelId: _meeting.channel, localUid: _screenShareId),
+  //       canvas: VideoCanvas(
+  //           uid: _screenShareId,
+  //           renderMode: RenderModeType.renderModeFit,
+  //           sourceType: VideoSourceType.videoSourceScreen,
+  //           isScreenView: true),
+  //     ),
+  //   );
+  // }
 }
 
 // class SpeakingUser {
@@ -763,7 +760,7 @@ class BMeetProvider extends ChangeNotifier {
 
 class ConnectedUserInfo {
   final int uid;
-  final StatefulWidget widget;
+  StatefulWidget widget;
   String name;
   bool isSpeaking = false;
   bool muteAudio = false;

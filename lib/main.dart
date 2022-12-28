@@ -17,7 +17,11 @@ Future<void> main() async {
         options: DefaultFirebaseOptions.currentPlatform);
   }
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-  runApp(const ProviderScope(child: ResponsiveApp()));
+  runApp(
+    const ProviderScope(
+      child: ResponsiveApp(),
+    ),
+  );
 }
 
 @pragma('vm:entry-point')

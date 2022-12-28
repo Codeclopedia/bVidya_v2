@@ -272,7 +272,7 @@ class GroupChatScreen extends HookConsumerWidget {
                 message: message,
                 isOwnMessage: message.from == _myUserId,
                 senderUser:
-                    Contacts(name: '', userId: 1, peerId: '', profileImage: ''),
+                    Contacts(name: '', userId: 1,  profileImage: ''),
                 isPreviousSameAuthor: isPreviousSameAuthor,
                 isNextSameAuthor: isNextSameAuthor,
                 isAfterDateSeparator: isAfterDateSeparator,

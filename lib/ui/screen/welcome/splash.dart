@@ -1,5 +1,6 @@
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -11,21 +12,27 @@ class SplashScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(
       authLoadProvider,
-      (previous, next) {
-        // print('before: ${previous?.value?.toJson()}');
-        // print('after: ${next.value?.toJson()}');
+      (previous, next) async {
         if (next.value != null) {
-          Navigator.pushReplacementNamed(context, RouteList.home);
-        } else {
-          Navigator.pushReplacementNamed(context, RouteList.login);
+          await ref.read(bChatSDKControllerProvider).initChatSDK();
         }
+        Future.delayed(Duration(seconds: next.value != null ? 4 : 2), () {
+          if (next.value != null) {
+            Navigator.pushReplacementNamed(context, RouteList.home);
+          } else {
+            Navigator.pushReplacementNamed(context, RouteList.login);
+          }
+        });
       },
       onError: (error, stackTrace) {
         // print('Error: $error');
         Navigator.pushReplacementNamed(context, RouteList.login);
       },
     );
-    return _splashScreen;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: _splashScreen,
+    );
     // return const Scaffold(
     //   body: SafeArea(child: CustomCalendar()),
     // );

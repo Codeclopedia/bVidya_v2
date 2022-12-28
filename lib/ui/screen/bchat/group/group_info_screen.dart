@@ -1,11 +1,14 @@
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
 import '/core/constants.dart';
 import '/core/constants/data.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
+
+//Mute
+final groupMuteProvider = StateProvider.autoDispose<bool>(
+  ((_) => true),
+);
 
 class GroupInfoScreen extends StatelessWidget {
   final GroupModel currentGroup;
@@ -283,10 +286,10 @@ class GroupInfoScreen extends StatelessWidget {
   Widget _buildMuteSettings() {
     return Consumer(
       builder: (context, ref, child) {
-        final mute = ref.watch(muteProvider);
+        final mute = ref.watch(groupMuteProvider);
         return InkWell(
           onTap: () {
-            ref.read(muteProvider.notifier).state = !mute;
+            ref.read(groupMuteProvider.notifier).state = !mute;
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -301,7 +304,7 @@ class GroupInfoScreen extends StatelessWidget {
                 ),
               ),
               mySwitch(mute, (value) {
-                ref.read(muteProvider.notifier).state = value;
+                ref.read(groupMuteProvider.notifier).state = value;
               })
             ],
           ),

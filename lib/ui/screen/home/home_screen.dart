@@ -1,10 +1,10 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -21,8 +21,9 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      ref.read(bChatSDKControllerProvider).initChatSDK(ref);
+      ref.read(bChatSDKControllerProvider).loadChats(ref);
       // _loadConversations(ref);
+      // getContacts();
       _addHandler(ref);
       return _disposeAll;
     }, const []);
@@ -35,13 +36,53 @@ class HomeScreen extends HookConsumerWidget {
 
   void _addHandler(WidgetRef ref) {
     try {
-      ChatClient.getInstance.chatManager.addEventHandler(
-        'home_screen',
-        ChatEventHandler(
-          onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
+      // ChatClient.getInstance.
+      ChatClient.getInstance.contactManager.addEventHandler(
+        "contact_handler_home",
+        ContactEventHandler(
+          onContactInvited: (userId, reason) {
+            //
+          },
+          onContactAdded: (userId) {
+            //
+          },
+          onContactDeleted: (userId) {
+            //
+          },
+          onFriendRequestAccepted: (userId) {
+            //
+          },
+          onFriendRequestDeclined: (userId) {
+            //
+          },
         ),
       );
-    } on ChatError catch (_) {}
+    } on ChatError catch (e) {
+      debugPrint('Error ${e.code} - ${e.description}');
+    }
+
+    try {
+      ChatClient.getInstance.chatManager.addEventHandler(
+        'home_screen_chat',
+        ChatEventHandler(
+          onMessagesReceived: (msgs) {
+            ref.read(bChatSDKControllerProvider).reloadConversation(ref);
+          },
+        ),
+      );
+    } on ChatError catch (e) {
+      debugPrint('Error ${e.code} - ${e.description}');
+    }
+    // try {
+    //   ChatClient.getInstance.presenceManager.addEventHandler(
+    //     "user_presence_home_screen",
+    //     ChatPresenceEventHandler(
+    //       onPresenceStatusChanged: (list) {
+    //         ref.read(chatConversationListProvider.notifier).updateStatus(list);
+    //       },
+    //     ),
+    //   );
+    // } catch (_) {}
   }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
@@ -50,131 +91,31 @@ class HomeScreen extends HookConsumerWidget {
     // ref.read(chatMessageListProvider.notifier).addChat(msg);
     // }
     if (messages.isNotEmpty) {
-      ref.read(bChatSDKControllerProvider).loadConversations();
+      ref.read(bChatSDKControllerProvider).reloadConversation(ref);
       // _loadConversations(ref);
     }
   }
 
   void _disposeAll() {
-    ChatClient.getInstance.chatManager.removeEventHandler('home_screen');
+    try {
+      ChatClient.getInstance.contactManager
+          .removeEventHandler("contact_handler_home");
+      ChatClient.getInstance.chatManager.removeEventHandler('home_screen_chat');
+    } catch (e) {
+      debugPrint('Error $e');
+    }
+    //
     // _signOut();
   }
 
-  // void _loadConversations(WidgetRef ref) async {}
-  //   List<ConversationModel> conversations = [];
+  // Future _signOutAsync() async {
   //   try {
-  //     List<ChatConversation> list =
-  //         await ChatClient.getInstance.chatManager.loadAllConversations();
-
-  //     if (list.isEmpty) {
-  //       try {
-  //         list = await ChatClient.getInstance.chatManager
-  //             .getConversationsFromServer();
-  //       } on ChatError catch (_) {
-  //         // print(e);
-  //         // recall failed, code: e.code, reason: e.description
-  //       }
-  //     }
-  //     final myUserId = _currentUser?.id ?? 24;
-  //     if (myUserId == 1 || myUserId == 24) {
-  //       if (list.isNotEmpty) {
-  //         for (var conv in list) {
-  //           final unread = await conv.unreadCount();
-  //           final fromId = (await conv.lastReceivedMessage())?.from ??
-  //               (myUserId == 24 ? 1 : 24);
-
-  //           ChatMessage? message = await conv.latestMessage();
-  //           ConversationModel model = ConversationModel(
-  //             id: fromId.toString(),
-  //             badgeCount: unread,
-  //             user: usersMap[fromId.toString()]!,
-  //             conversation: conv,
-  //             lastMessage: message,
-  //           );
-  //           conversations.add(model);
-  //         }
-  //       } else {
-  //         // print('Conversation is blank');
-  //         final fromId = myUserId == 24 ? 1 : 24;
-  //         ConversationModel model = ConversationModel(
-  //           id: fromId.toString(),
-  //           badgeCount: 0,
-  //           user: usersMap[fromId.toString()]!,
-  //           conversation: null,
-  //           lastMessage: null,
-  //         );
-  //         conversations.add(model);
-  //       }
-  //     }
-  //   } on ChatError catch (e) {
-  //     print(e);
-  //     // recall failed, code: e.code, reason: e.description
-  //   }
-  //   if (conversations.isNotEmpty) {
-  //     try {
-  //       ref
-  //           .read(chatConversationListProvider.notifier)
-  //           .addConversations(conversations);
-  //     } catch (e) {
-  //       print(e);
-  //     }
-  //   }
-  // }
-
-  // void _initSDK(WidgetRef ref) async {
-  //   _currentUser = await getMeAsUser();
-  //   ChatOptions options = ChatOptions(
-  //     appKey: AgoraConfig.appKey,
-  //     autoLogin: false,
-  //   );
-  //   options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
-  //   await ChatClient.getInstance.init(options);
-
-  //   bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
-  //   if (alreadyLoggedIn) {
-  //     _loadConversations(ref);
-  //     return;
-  //   }
-  //   if (_currentUser != null && _currentUser?.id != null) {
-  //     String myUserId = _currentUser!.id.toString();
-  //     final agoraToken = userTokenMap[myUserId] ?? '';
-  //     _signIn(myUserId, agoraToken, ref);
-  //   }
-  // }
-
-  // void _signIn(String userId, String agoraToken, WidgetRef ref) async {
-  //   try {
-  //     await ChatClient.getInstance.loginWithAgoraToken(
-  //       userId,
-  //       agoraToken,
-  //     );
-  //     print("login succeed, userId: ${userId}");
-  //     _loadConversations(ref);
-  //   } on ChatError catch (e) {
-  //     if (e.code == 200) {
-  //       _loadConversations(ref);
-  //     }
-  //     print("login failed, code: ${e.code}, desc: ${e.description}");
-  //   }
-  // }
-
-  // void _signOut() async {
-  //   try {
-  //     await ChatClient.getInstance.logout(false);
+  //     await ChatClient.getInstance.logout(true);
   //     print("sign out succeed");
   //   } on ChatError catch (e) {
   //     print("sign out failed, code: ${e.code}, desc: ${e.description}");
   //   }
   // }
-
-  Future _signOutAsync() async {
-    try {
-      await ChatClient.getInstance.logout(true);
-      print("sign out succeed");
-    } on ChatError catch (e) {
-      print("sign out failed, code: ${e.code}, desc: ${e.description}");
-    }
-  }
 
   _chatListScreen(BuildContext context) {
     return Container(
@@ -191,23 +132,28 @@ class HomeScreen extends HookConsumerWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
+                final loading = ref.watch(loadingChatProvider);
+
                 final conversationList =
                     ref.watch(chatConversationListProvider);
+
                 // print('conversationList:${conversationList.length}');
-                return ListView.separated(
-                  shrinkWrap: false,
-                  itemCount: conversationList.length,
-                  separatorBuilder: (context, index) {
-                    return Container(
-                      height: 1,
-                      color: Colors.grey.shade300,
-                    );
-                  },
-                  itemBuilder: (context, index) {
-                    final model = conversationList[index];
-                    return _buildConversationItem(context, model, ref);
-                  },
-                );
+                return loading && conversationList.isEmpty
+                    ? buildLoading
+                    : ListView.separated(
+                        shrinkWrap: false,
+                        itemCount: conversationList.length,
+                        separatorBuilder: (context, index) {
+                          return Container(
+                            height: 1,
+                            color: Colors.grey.shade300,
+                          );
+                        },
+                        itemBuilder: (context, index) {
+                          final model = conversationList[index];
+                          return _buildConversationItem(context, model, ref);
+                        },
+                      );
               },
             ),
           ),
@@ -222,10 +168,8 @@ class HomeScreen extends HookConsumerWidget {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.chatScreen,
             arguments: model);
-        await Future.delayed(
-            const Duration(milliseconds: 500)); //delay to reset state
-        // ref.invalidate(chatConversationListProvider);
-        ref.read(bChatSDKControllerProvider).loadConversations();
+        await Future.delayed(const Duration(seconds: 1)); //delay to reset state
+        ref.read(bChatSDKControllerProvider).reloadOnlyConversation(ref, model);
       },
       onLongPress: (() {
         showDialog(
@@ -259,6 +203,7 @@ class HomeScreen extends HookConsumerWidget {
         textMessage = body.content;
       }
     }
+    // final online = model.isOnline?.statusDescription ?? ' Unknown';
 
     return Container(
       color: Colors.white,
@@ -382,44 +327,56 @@ class HomeScreen extends HookConsumerWidget {
   }
 
   Widget _newMessageButton(BuildContext context) {
-    return InkWell(
-      splashColor: AppColors.primaryColor,
-      onTap: () async {
-        await Navigator.pushNamed(context, RouteList.contactList);
+    return Consumer(builder: (context, ref, child) {
+      return InkWell(
+        splashColor: AppColors.primaryColor,
+        onTap: () async {
+          final model =
+              await Navigator.pushNamed(context, RouteList.contactList);
+          if (model != null) {
+            ref.read(bChatSDKControllerProvider).reloadConversation(ref);
 
-        // _loadConversations(ref);
-      },
-      child: Row(
-        children: [
-          DottedBorder(
-            // radius: Radius.circular(3.5.w),
-            borderType: BorderType.Circle,
-            dashPattern: const [10, 4],
-            strokeWidth: 3.0,
-            color: AppColors.newMessageBorderColor,
-            child: SizedBox(
-              width: 7.w,
-              height: 7.w,
-              child: const Icon(
-                Icons.add,
-                color: Colors.black,
+            // ref
+            //     .read(bChatSDKControllerProvider)
+            //     .reloadConversation(ref,reloadContacts: true);
+            // Navigator.pushNamed(context, RouteList.chatScreen,
+            //     arguments: model);
+          }
+
+          // _loadConversations(ref);
+        },
+        child: Row(
+          children: [
+            DottedBorder(
+              // radius: Radius.circular(3.5.w),
+              borderType: BorderType.Circle,
+              dashPattern: const [10, 4],
+              strokeWidth: 3.0,
+              color: AppColors.newMessageBorderColor,
+              child: SizedBox(
+                width: 7.w,
+                height: 7.w,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            width: 2.w,
-          ),
-          Text(
-            S.current.home_btx_new_message,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              fontSize: 10.sp,
-              color: AppColors.black,
+            SizedBox(
+              width: 2.w,
             ),
-          ),
-        ],
-      ),
-    );
+            Text(
+              S.current.home_btx_new_message,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 10.sp,
+                color: AppColors.black,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _recentCallButton(BuildContext context) {
@@ -533,7 +490,7 @@ class HomeScreen extends HookConsumerWidget {
                   final result =
                       await Navigator.pushNamed(context, RouteList.search);
                   if (result == true) {
-                    ref.read(bChatSDKControllerProvider).loadConversations();
+                    ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   }
                 },
                 child: Container(

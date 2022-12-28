@@ -30,10 +30,10 @@ class AuthRepository {
       _user = user;
       userToken = user.authToken;
       print(_user!.toJson());
-      await Future.delayed(const Duration(seconds: 2));
+      // await Future.delayed(const Duration(seconds: 2));
       return user;
     }
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
     return null;
   }
 

@@ -67,16 +67,24 @@ class ContactListScreen extends StatelessWidget {
                 return InkWell(
                     onTap: (() async {
                       final conv = await ChatClient.getInstance.chatManager
-                          .getConversation(element.peerId,
+                          .getConversation(element.userId.toString(),
                               type: ChatConversationType.Chat);
+                      // final isOnline = (await ChatClient
+                      //         .getInstance.presenceManager
+                      //         .fetchPresenceStatus(members: [element.peerId]))
+                      //     .first;
                       if (conv != null) {
                         ConversationModel model = ConversationModel(
-                          id: element.peerId,
-                          badgeCount: await conv.unreadCount(),
-                          contact: element,
-                          conversation: conv,
-                          lastMessage: await conv.latestMessage(),
-                        );
+                            id: element.userId.toString(),
+                            badgeCount: await conv.unreadCount(),
+                            contact: element,
+                            conversation: conv,
+                            lastMessage: await conv.latestMessage(),
+                            isOnline: null);
+                        // Navigator.pop(context,model);
+                        ref
+                            .read(bChatSDKControllerProvider)
+                            .loadConversations(ref);
                         Navigator.pushReplacementNamed(
                             context, RouteList.chatScreen,
                             arguments: model);

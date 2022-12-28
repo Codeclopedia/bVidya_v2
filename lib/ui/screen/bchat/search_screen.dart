@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/helpers/bchat_helper.dart';
+
 import '../../../controller/bchat_providers.dart';
 import '../../../data/models/models.dart';
 import '../../base_back_screen.dart';
@@ -123,9 +125,12 @@ class SearchScreen extends HookWidget {
                       itemBuilder: (context, index) {
                         return InkWell(
                             onTap: () async {
-                              final result = await ref
-                                  .read(bChatProvider)
-                                  .addContact(data[index]);
+                              // final result = await ref
+                              //     .read(bChatProvider)
+                              //     .addContact(data[index]);
+                              final result = await sendRequestToAddContact(
+                                  data[index].userId.toString());
+
                               if (result == null) {
                                 AppSnackbar.instance.message(context,
                                     '${data[index].name} added successfully into Contacts');

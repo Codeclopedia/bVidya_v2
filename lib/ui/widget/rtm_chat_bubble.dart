@@ -188,7 +188,7 @@ class RTMChatMessageBubble extends StatelessWidget {
 
   Widget _textMessage(String content) {
     // final bool isOwnMessage = message.from == currentUser.id;
-    return Expanded(
+    return Flexible(
       child: Text(
         content,
         style: TextStyle(

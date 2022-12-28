@@ -50,7 +50,7 @@ class Contacts {
   final String name;
   final String? email;
   final String? phone;
-  final String peerId;
+  // final String peerId;
   final String? fcmToken;
   final String profileImage;
   final String? bio;
@@ -58,7 +58,7 @@ class Contacts {
   Contacts(
       {required this.userId,
       required this.name,
-      required this.peerId,
+      // required this.peerId,
       required this.profileImage,
       this.email,
       this.phone,
@@ -70,7 +70,7 @@ class Contacts {
         name = json['name'],
         email = json['email'],
         phone = json['phone'],
-        peerId = json['peer_id'],
+        // peerId = json['peer_id'],
         fcmToken = json['fcm_token'],
         profileImage = json['profile_image'],
         bio = json['bio'];
@@ -81,7 +81,7 @@ class Contacts {
     data['name'] = name;
     data['email'] = email;
     data['phone'] = phone;
-    data['peer_id'] = peerId;
+    // data['peer_id'] = peerId;
     data['fcm_token'] = fcmToken;
     data['profile_image'] = profileImage;
     data['bio'] = bio;
