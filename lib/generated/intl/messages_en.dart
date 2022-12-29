@@ -470,6 +470,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "report_title": MessageLookupByLibrary.simpleMessage("Report an issue"),
         "reposrtDesc": MessageLookupByLibrary.simpleMessage(
             "Report an issue you are facing in app"),
+        "requestclass": MessageLookupByLibrary.simpleMessage("Request a class"),
         "resetDesc": MessageLookupByLibrary.simpleMessage(
             "Reset all notification setting"),
         "resetNoty":

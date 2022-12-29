@@ -19,6 +19,8 @@ export 'response/bchat/search_contact_response.dart';
 export 'response/bchat/contacts_response.dart';
 export 'response/bchat/chat_token_response.dart';
 
+export 'response/bchat/p2p_call_response.dart';
+
 export 'response/bmeet/schedule_response.dart';
 export 'response/bmeet/start_meeting_response.dart';
 export 'response/bmeet/join_meeting_response.dart';

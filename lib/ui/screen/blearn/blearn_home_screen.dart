@@ -212,7 +212,7 @@ class BLearnHomeScreen extends StatelessWidget {
           return Container(
             margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: Colors.grey[300],
               borderRadius: BorderRadius.all(Radius.circular(4.w)),
             ),
             child: Container(
@@ -240,22 +240,30 @@ class BLearnHomeScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Container(
-                    width: 9.w,
-                    height: 9.w,
-                    padding: EdgeInsets.all(3.w),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFFDDDDDD),
-                          offset: Offset(0, 0),
-                          blurRadius: 1,
-                        )
-                      ],
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(
+                        context, RouteList.bLearnSubCategories,
+                        arguments: Category(
+                            id: category.id,
+                            name: category.name,
+                            image: category.image)),
+                    child: Container(
+                      width: 9.w,
+                      height: 9.w,
+                      padding: EdgeInsets.all(3.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFFDDDDDD),
+                            offset: Offset(0, 0),
+                            blurRadius: 1,
+                          )
+                        ],
+                      ),
+                      child: getSvgIcon('icon_next.svg'),
                     ),
-                    child: getSvgIcon('icon_next.svg'),
                   ),
                 ],
               ),
@@ -331,24 +339,39 @@ class BLearnHomeScreen extends StatelessWidget {
     if (courses == null || courses.isEmpty) {
       return const SizedBox.shrink();
     }
-    return Container(
-      color: Colors.white,
-      child: ListView.builder(
-          padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
-          itemCount: 5,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index) {
-            Course course = courses[index];
-            return InkWell(
-              onTap: () => Navigator.pushNamed(
-                  context, RouteList.bLearnCourseDetail,
-                  arguments: course),
-              child: CourseListRow(course: course),
-            );
-          }),
-    );
+    return Consumer(builder: (context, ref, child) {
+      final selected = ref.watch(recommenedSelectedProvider);
+      courses.sort(
+        (a, b) {
+          if (selected == CourseType.trending) {
+            return a.numberOfLesson.compareTo(b.numberOfLesson);
+          } else if (selected == CourseType.mostViewed) {
+            return b.duration
+                .compareTo(a.duration); //TODO convert into minutes and compare
+          } else {
+            return b.ratingCount.compareTo(a.ratingCount);
+          }
+        },
+      );
+      return Container(
+        color: Colors.white,
+        child: ListView.builder(
+            padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
+            itemCount: 5,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            itemBuilder: (BuildContext context, int index) {
+              Course course = courses[index];
+              return InkWell(
+                onTap: () => Navigator.pushNamed(
+                    context, RouteList.bLearnCourseDetail,
+                    arguments: course),
+                child: CourseListRow(course: course),
+              );
+            }),
+      );
+    });
   }
 
   Widget _buildEnroll() {
@@ -389,11 +412,18 @@ class BLearnHomeScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            final instructor = instructors[index];
+            Instructor instructor = instructors[index];
             return Container(
               margin: EdgeInsets.only(top: 0.2.h, left: 4.w),
-              child: Center(
-                child: InstructorRowItem(instructor: instructor),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                      context, RouteList.bLearnteacherProfileDetail,
+                      arguments: instructor);
+                },
+                child: Center(
+                  child: InstructorRowItem(instructor: instructor),
+                ),
               ),
             );
           }),
@@ -517,20 +547,22 @@ class BLearnHomeScreen extends StatelessWidget {
                         instructor.name ?? 'AA', instructor.image ?? '',
                         radius: 8.w),
                     SizedBox(width: 4.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          instructor.name ?? '',
-                          style: TextStyle(
-                              fontSize: 11.sp,
-                              fontFamily: kFontFamily,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        buildRatingBar(4.0),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            instructor.name ?? '',
+                            style: TextStyle(
+                                fontSize: 11.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          buildRatingBar(4.0),
+                        ],
+                      ),
                     ),
                   ],
                 ),

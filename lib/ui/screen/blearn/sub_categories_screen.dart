@@ -25,7 +25,6 @@ class SubCategoriesScreen extends StatelessWidget {
                   if (data?.subcategories?.isNotEmpty == true) {
                     return _buildSubCategories(context, data!.subcategories!);
                   } else {
-                    print('data is Null ${data == null}');
                     return buildEmptyPlaceHolder('No Sub Categories Found!!');
                   }
                 },
@@ -48,7 +47,7 @@ class SubCategoriesScreen extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 5.0,
           mainAxisSpacing: 1.w,
-          childAspectRatio: 0.85),
+          childAspectRatio: 1),
       itemBuilder: (context, index) {
         SubCategory item = subCategories[index];
 
@@ -58,29 +57,46 @@ class SubCategoriesScreen extends StatelessWidget {
                 arguments: item);
           },
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // SizedBox(width: 18.w),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5.w)),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: AppColors.chatInputBackground,
+                  borderRadius: BorderRadius.circular(15)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // SizedBox(width: 18.w),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                    ),
+                    width: 40.w,
+                    height: 40.w,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Image(
+                            image: getImageProvider(item.image ??
+                                'assets/images/dummy_profile.png')),
+                      ),
+                    ),
                   ),
-                  width: 45.w,
-                  height: 45.w,
-                  child: Image(
-                      image: getImageProvider(
-                          item.image ?? 'assets/images/dummy_profile.png')),
-                ),
-                Text(
-                  item.name ?? '',
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    color: Colors.black,
-                    fontSize: 9.sp,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 1.w),
+                    child: Text(
+                      item.name ?? '',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 9.sp,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

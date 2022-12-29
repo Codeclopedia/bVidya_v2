@@ -12,7 +12,7 @@ export 'screen/bchat/contact_list_screen.dart';
 export 'screen/bchat/contact_profile.dart';
 export 'screen/bchat/search_screen.dart';
 export 'screen/bchat/chat_audio_call.dart';
-export 'screen/bchat/chat_video_call.dart';
+export 'screen/bchat/chat_call_screen.dart';
 
 export 'screen/bchat/group/groups_screen.dart';
 export 'screen/bchat/group/create_new_group_screen.dart';
@@ -59,3 +59,5 @@ export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
 export 'screen/profile/teacher/teacher_classrequest.dart';
 export 'screen/profile/teacher/teacher_schedule.dart';
+
+export 'screen/blearn/teacher_profile_detail_screen.dart';

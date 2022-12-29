@@ -46,11 +46,14 @@ class BChatApiService {
       return ContactListResponse(status: 'error', message: '$e');
     }
   }
-  Future<ContactListResponse> getContactsByIds(String token,String userIds) async {
+
+  Future<ContactListResponse> getContactsByIds(
+      String token, String userIds) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
       final data = {'user_ids': userIds};
-      final response = await _dio.post('$baseUrlApi${ApiList.allContacts}',data: data);
+      final response =
+          await _dio.post('$baseUrlApi${ApiList.contactsByIds}', data: data);
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return ContactListResponse.fromJson(response.data);
@@ -120,4 +123,58 @@ class BChatApiService {
       return BaseResponse(status: 'error', message: '$e');
     }
   }
+
+  Future<P2PCallResponse> makeCall(
+      String token, String calleeId, String calleeName) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      final data = {
+        'callee_id': calleeId,
+        'callee_name': calleeName,
+      };
+      final response =
+          await _dio.post('$baseUrlApi${ApiList.makeCall}', data: data);
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return P2PCallResponse.fromJson(response.data);
+      } else {
+        return P2PCallResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return P2PCallResponse(status: 'error', message: '$e');
+    }
+  }
+
+  Future<P2PCallResponse> receiveCall(String token, String callId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.receiveCall}$callId');
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return P2PCallResponse.fromJson(response.data);
+      } else {
+        return P2PCallResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return P2PCallResponse(status: 'error', message: '$e');
+    }
+  }
+
+  //dynamic data = {
+  //   'callee_id': id,
+  //   'callee_name': name,
+  // };
+  // var response = await _dio
+  //     .post(StringConstant.BASE_URL + 'messenger/start-call', data: data);
+  // if (response.statusCode == 200) {
+  //   return VideocallModal.fromJson(response.data);
+  // } else {
+  //   Helper.showMessage(response.statusMessage);
+  //   return null;
+  // }
 }

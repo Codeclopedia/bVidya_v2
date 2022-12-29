@@ -14,13 +14,13 @@ import '../utils.dart';
 
 Future joinMeeting(BuildContext context, WidgetRef ref, String meetingId,
     bool camOff, bool micOff) async {
-  if (!await _handleCameraAndMic(Permission.microphone)) {
+  if (!await handleCameraAndMic(Permission.microphone)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return;
     }
   }
-  if (!await _handleCameraAndMic(Permission.camera)) {
+  if (!await handleCameraAndMic(Permission.camera)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need camera permission');
       return;
@@ -48,13 +48,13 @@ Future joinMeeting(BuildContext context, WidgetRef ref, String meetingId,
 
 Future startMeeting(BuildContext context, WidgetRef ref,
     ScheduledMeeting scheduledMeeting, bool camOff, bool micOff) async {
-  if (!await _handleCameraAndMic(Permission.microphone)) {
+  if (!await handleCameraAndMic(Permission.microphone)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return;
     }
   }
-  if (!await _handleCameraAndMic(Permission.camera)) {
+  if (!await handleCameraAndMic(Permission.camera)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need camera permission');
       return;
@@ -136,7 +136,7 @@ Future _openMeetingScreen(BuildContext context, Meeting meeting,
 //   Navigator.pushNamed(context, RouteList.bMeetCall, arguments: args);
 // }
 
-Future<bool> _handleCameraAndMic(Permission permission) async {
+Future<bool> handleCameraAndMic(Permission permission) async {
   final status = await permission.request();
   debugPrint(status.name);
   return status == PermissionStatus.granted;

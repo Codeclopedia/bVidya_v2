@@ -315,6 +315,7 @@
   "noti_call": "Call",
   "noti_group": "Group",
   "meetingRem": "Meeting Reminder",
+  "requestclass":"Request a class",
   "confRem": "Conference Reminder",
   "messDesc": "Toggle to receive or block message notifications",
   "callDesc": "Toggle to receive or block call notifications",

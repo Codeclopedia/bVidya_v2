@@ -9,7 +9,7 @@ Widget buildEmptyPlaceHolder(String text) => Center(
         text,
         style: TextStyle(
           fontFamily: kFontFamily,
-          color: Colors.grey,
+          color: Colors.black,
           fontSize: 14.sp,
           fontWeight: FontWeight.w300,
         ),

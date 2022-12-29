@@ -14,8 +14,8 @@ final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
 final selectedIndexLessonProvider = StateProvider<int>((ref) => 0);
 
 class CourseDetailScreen extends ConsumerWidget {
-  final Course courses;
-  const CourseDetailScreen({Key? key, required this.courses}) : super(key: key);
+  final Course course;
+  const CourseDetailScreen({Key? key, required this.course}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,7 +47,7 @@ class CourseDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${courses.numberOfLesson} Lessons | ${courses.duration.replaceAll(":", ".")} Hours',
+              '${course.numberOfLesson} Lessons | ${course.duration.replaceAll(":", ".")} Hours',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 8.sp,
@@ -57,7 +57,7 @@ class CourseDetailScreen extends ConsumerWidget {
             ),
             Consumer(
               builder: (context, ref, child) {
-                return ref.watch(bLearnLessonsProvider(courses.id)).when(
+                return ref.watch(bLearnLessonsProvider(course.id)).when(
                     data: (data) {
                       if (data?.lessons?.isNotEmpty == true) {
                         return _buildLessons(ref, data!.lessons!);
@@ -85,19 +85,18 @@ class CourseDetailScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: (() {
+            ref.read(selectedIndexLessonProvider.notifier).state = index;
+
             Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                 arguments: {
                   "lesson": lessons[index],
-                  "course_id": courses.id,
+                  "course_id": course.id,
                 });
           }),
           child: LessonListRow(
             index: index + 1,
             openIndex: selectedIndex,
             lesson: lessons[index],
-            onExpand: (selected) {
-              ref.read(selectedIndexLessonProvider.notifier).state = selected;
-            },
           ),
         );
       },
@@ -119,13 +118,13 @@ class CourseDetailScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       _buildDetailItem(
-                          'Duration:', ' ${courses.duration}', Icons.history),
+                          'Duration:', ' ${course.duration}', Icons.history),
                       Container(
                         height: 0.5,
                         color: const Color(0xFFDBDBDB),
                       ),
-                      _buildDetailItem('Lectures:',
-                          ' ${courses.numberOfLesson}', Icons.description),
+                      _buildDetailItem('Lectures:', ' ${course.numberOfLesson}',
+                          Icons.description),
                     ],
                   ),
                 ),
@@ -134,7 +133,7 @@ class CourseDetailScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       _buildDetailItem(
-                          'Level:', ' ${courses.level}', Icons.sort),
+                          'Level:', ' ${course.level}', Icons.sort),
                       Container(
                         height: 0.5,
                         color: const Color(0xFFDBDBDB),
@@ -170,7 +169,7 @@ class CourseDetailScreen extends ConsumerWidget {
   }
 
   Widget _getText() {
-    return Text(courses.description);
+    return Text(course.description);
   }
 
   Widget _buildGridView() {
@@ -369,7 +368,7 @@ class CourseDetailScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  courses.name,
+                  course.name,
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 17.sp,
@@ -406,9 +405,9 @@ class CourseDetailScreen extends ConsumerWidget {
             children: [
               _buildIntructor(),
               const Spacer(),
-              _buildMeta('Launguage', courses.language, 'icon_language.svg'),
+              _buildMeta('Launguage', course.language, 'icon_language.svg'),
               const Spacer(),
-              _buildMeta('Category', courses.categoryId.toString(),
+              _buildMeta('Category', course.categoryId.toString(),
                   'icon_category.svg'),
             ],
           )
@@ -422,7 +421,7 @@ class CourseDetailScreen extends ConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        getCicleAvatar(courses.instructorName, courses.instructorImage,
+        getCicleAvatar(course.instructorName, course.instructorImage,
             radius: 4.w),
         SizedBox(width: 1.w),
         Column(
@@ -437,7 +436,7 @@ class CourseDetailScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              courses.instructorName,
+              course.instructorName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -495,7 +494,7 @@ class CourseDetailScreen extends ConsumerWidget {
           child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(2.w)),
               child: Image(
-                image: getImageProvider(courses.image),
+                image: getImageProvider(course.image),
                 fit: BoxFit.fitWidth,
               )),
         ),

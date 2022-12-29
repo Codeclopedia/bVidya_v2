@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:file_picker/file_picker.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
@@ -46,6 +46,7 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
+      print('useEffect Called');
       _scrollController = ScrollController();
       _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '1';
       _loadMe();
@@ -55,7 +56,7 @@ class ChatScreen extends HookConsumerWidget {
       _preLoadChat(ref);
 
       return disposeAll;
-    }, []);
+    }, const []);
 
     ref.listen(chatLoadingPreviousProvider, (previous, next) {
       _isLoadingMore = next;
@@ -77,7 +78,7 @@ class ChatScreen extends HookConsumerWidget {
         body: ColouredBoxBar(
           topBar: selectedItems.isNotEmpty
               ? _menuBar(context, selectedItems, ref)
-              : _topBar(context),
+              : _topBar(context, ref),
           body: _chatList(context),
         ),
       ),
@@ -695,82 +696,106 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _topBar(BuildContext context) {
+  Widget _topBar(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(onlineStatusProvier);
     // final Contacts otherUser = _getUser();
     // _otherUser = ChatUser(
     //   id: otherUser.id.toString(),
     //   firstName: otherUser.name,
     //   profileImage: otherUser.image,
     // );
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IconButton(
-            onPressed: (() => Navigator.pop(context)),
-            icon: getSvgIcon('arrow_back.svg'),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2.w),
-            child: getRectFAvatar(
-              model.contact.name,
-              model.contact.profileImage,
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IconButton(
+              onPressed: (() => Navigator.pop(context)),
+              icon: getSvgIcon('arrow_back.svg', width: 6.w),
             ),
-          ),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, RouteList.contactProfile,
-                    arguments: model.contact);
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    model.contact.name,
-                    style: TextStyle(
-                        fontFamily: kFontFamily,
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 0.3.h),
-                  Consumer(builder: (context, ref, child) {
-                    final value = ref.watch(onlineStatusProvier);
-                    return Text(
-                      parseChatPresenceToReadable(value),
-                      style: TextStyle(
-                        fontFamily: kFontFamily,
-                        color: AppColors.yellowAccent,
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w200,
+            // SizedBox(width: 2.w),
+
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 2.w),
+            //   child: ,
+            // ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteList.contactProfile,
+                      arguments: model.contact);
+                },
+                child: Row(
+                  children: [
+                    SizedBox(width: 2.w),
+                    getRectFAvatar(
+                      model.contact.name,
+                      model.contact.profileImage,
+                    ),
+                    SizedBox(width: 2.w),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            model.contact.name,
+                            style: TextStyle(
+                                fontFamily: kFontFamily,
+                                color: Colors.white,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 0.3.h),
+                          Text(
+                            parseChatPresenceToReadable(value),
+                            style: TextStyle(
+                              fontFamily: kFontFamily,
+                              color: AppColors.yellowAccent,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  }),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, RouteList.bChatAudioCall);
-            },
-            icon: getSvgIcon('icon_audio_call.svg'),
-          ),
-          SizedBox(
-            width: 1.w,
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, RouteList.bChatVideoCall);
-            },
-            icon: getSvgIcon('icon_video_call.svg'),
-          ),
-        ],
+            IconButton(
+              onPressed: () {
+                makeAudioCall(model.contact, ref, context);
+                // Navigator.pushNamed(context, RouteList.bChatAudioCall);
+              },
+              icon: getSvgIcon(
+                'icon_audio_call.svg',
+                width: 6.w,
+              ),
+            ),
+            SizedBox(width: 2.w),
+            IconButton(
+              onPressed: () {
+                receiveAudioCall(
+                  'YcJ5uHP31M8sMyAZ1msC',
+                  model.contact.profileImage,
+                  ref,
+                  context, 
+                );
+                // makeVideoCall(model.contact, ref, context);
+                // Navigator.pushNamed(context, RouteList.bChatVideoCall);
+              },
+              icon: getSvgIcon(
+                'icon_video_call.svg',
+                width: 6.w,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

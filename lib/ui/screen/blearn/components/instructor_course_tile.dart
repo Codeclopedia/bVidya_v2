@@ -2,10 +2,9 @@ import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
-class InstructorCourseRowItem extends StatelessWidget {
-  final InstructorCourse course;
-  // final Course course;
-  const InstructorCourseRowItem({Key? key, required this.course})
+class InstructorCourseTile extends StatelessWidget {
+  final Course course;
+  const InstructorCourseTile({Key? key, required this.course})
       : super(key: key);
 
   @override

@@ -63,6 +63,7 @@ class CourseListRow extends StatelessWidget {
               child: Icon(
                 Icons.play_arrow,
                 size: 4.w,
+                color: Colors.white,
               ),
             ),
           ],

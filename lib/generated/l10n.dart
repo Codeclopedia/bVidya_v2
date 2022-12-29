@@ -2710,6 +2710,16 @@ class S {
     );
   }
 
+  /// `Request a class`
+  String get requestclass {
+    return Intl.message(
+      'Request a class',
+      name: 'requestclass',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Conference Reminder`
   String get confRem {
     return Intl.message(

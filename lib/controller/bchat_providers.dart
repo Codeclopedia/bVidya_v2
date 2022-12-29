@@ -1,8 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/data/repository/bchat_respository.dart';
 
+import '../core/helpers/duration.dart';
 import '../core/state.dart';
 import '/data/models/models.dart';
+import 'providers/p2p_call_provider.dart';
 import 'providers/bchat_sdk_controller.dart';
 import '/data/services/bchat_api_service.dart';
 import 'providers/chat_conversations_provider.dart';
@@ -84,3 +86,12 @@ final chatContactsList =
   }
   return [];
 });
+
+final audioCallTimerProvider =
+    StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
+  (_) => DurationNotifier(),
+);
+
+final audioCallChangeProvider =
+    ChangeNotifierProvider.autoDispose<P2PCallProvider>(
+        (ref) => P2PCallProvider(ref.read(audioCallTimerProvider.notifier)));

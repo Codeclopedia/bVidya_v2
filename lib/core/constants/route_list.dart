@@ -74,6 +74,8 @@ class RouteList {
   static const String teacherSchedule = '/teacher_schedule';
   static const String teacherClassRequest = '/teacher_classrequest';
 
+  static const String bLearnteacherProfileDetail = '/teacher-profile-details';
+
   //
   static const String bForum = '/forum';
   static const String bDiscuss = '/discuss';

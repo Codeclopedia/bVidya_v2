@@ -96,32 +96,30 @@ class _BlearnVideoPlayerState extends State<BlearnVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          _chewieController != null &&
-                  _chewieController!.videoPlayerController.value.isInitialized
-              ? SizedBox(
-                  height: 30.h,
-                  width: 10.w,
-                  child: Chewie(
-                    controller: _chewieController!,
+      body: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            _chewieController != null &&
+                    _chewieController!.videoPlayerController.value.isInitialized
+                ? SizedBox(
+                    height: 30.h,
+                    child: Chewie(
+                      controller: _chewieController!,
+                    ),
+                  )
+                : SizedBox(
+                    height: 30.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 20),
+                        Text('Loading'),
+                      ],
+                    ),
                   ),
-                )
-              : SizedBox(
-                  height: 30.h,
-                  width: 10.w,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 20),
-                      Text('Loading'),
-                    ],
-                  ),
-                ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 3.h),
-            child: Consumer(
+            Consumer(
               builder: (context, ref, child) {
                 return ref.watch(bLearnLessonsProvider(widget.courseId)).when(
                     data: (data) {
@@ -136,41 +134,75 @@ class _BlearnVideoPlayerState extends State<BlearnVideoPlayer> {
                     loading: () => buildLoading);
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
     final selectedIndex = ref.watch(selectedIndexLessonProvider);
-    return ListView.builder(
-      itemCount: lessons.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: (() async {
-            _chewieController?.pause();
-            showLoading(ref);
-            _videoPlayerController1 = VideoPlayerController.network(
-                lessons[index].videoUrl.toString());
-            await Future.wait([
-              _videoPlayerController1.initialize(),
-            ]);
-            _createChewieController();
-            hideLoading(ref);
-            setState(() {
-              ref.read(selectedIndexLessonProvider.notifier).state = index;
-            });
-          }),
-          child: LessonListTile(
-            index: index,
-            openIndex: selectedIndex,
-            lesson: lessons[index],
-          ),
-        );
-      },
+
+    return Expanded(
+      child: ListView.builder(
+        itemCount: lessons.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: (() async {
+              _chewieController?.pause();
+              showLoading(ref);
+              _videoPlayerController1 = VideoPlayerController.network(
+                  lessons[index].videoUrl.toString());
+              await Future.wait([
+                _videoPlayerController1.initialize(),
+              ]);
+              _createChewieController();
+              hideLoading(ref);
+              setState(() {
+                ref.read(selectedIndexLessonProvider.notifier).state = index;
+              });
+            }),
+            child: LessonListTile(
+              index: index,
+              openIndex: selectedIndex,
+              lesson: lessons[index],
+            ),
+          );
+        },
+      ),
     );
   }
+
+  // Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
+  //   final selectedIndex = ref.watch(selectedIndexLessonProvider);
+  //   return ListView.builder(
+  //     itemCount: lessons.length,
+  //     shrinkWrap: true,
+  //     scrollDirection: Axis.vertical,
+  //     itemBuilder: (context, index) {
+  //       return GestureDetector(
+  //         onTap: (() async {
+  // _chewieController?.pause();
+  // showLoading(ref);
+  // _videoPlayerController1 = VideoPlayerController.network(
+  //     lessons[index].videoUrl.toString());
+  // await Future.wait([
+  //   _videoPlayerController1.initialize(),
+  // ]);
+  // _createChewieController();
+  // hideLoading(ref);
+  // setState(() {
+  //   ref.read(selectedIndexLessonProvider.notifier).state = index;
+  // });
+  //         }),
+  //         child: LessonListTile(
+  //           index: index,
+  //           openIndex: selectedIndex,
+  //           lesson: lessons[index],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

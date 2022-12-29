@@ -51,7 +51,7 @@ class CategoriesScreen extends StatelessWidget {
                 arguments: category);
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.5.h),
             child: Row(
               children: [
                 SizedBox(
@@ -60,12 +60,13 @@ class CategoriesScreen extends StatelessWidget {
                     image: getImageProvider(category.image ?? ''),
                   ),
                 ),
-                SizedBox(width: 2.w),
+                SizedBox(width: 4.w),
                 Text(
                   category.name ?? '',
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     color: Colors.black,
+                    fontWeight: FontWeight.w500,
                     fontSize: 13.sp,
                   ),
                 ),

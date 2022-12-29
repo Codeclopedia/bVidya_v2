@@ -1,6 +1,7 @@
 import '../data/models/models.dart';
 import '../ui/widget/base_drawer_page.dart';
 import 'constants.dart';
+import 'helpers/call_helper.dart';
 import 'ui_core.dart';
 import '../ui/screens.dart';
 
@@ -79,11 +80,43 @@ class Routes {
         break;
 
       case RouteList.bChatVideoCall:
-        screen = const ChatVideoCall();
+        // screen = const ChatVideoCall();
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          String name = args['name'];
+          String image = args['image'];
+          CallBody callInfo = args['call_info'];
+          CallDirectionType direction = args['call_direction_type'];
+          screen = ChatCallScreen(
+            name: name,
+            image: image,
+            callInfo: callInfo,
+            callDirection: direction,
+            callType: CallType.video,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
         break;
 
       case RouteList.bChatAudioCall:
-        screen = const ChatAudioCall();
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          String name = args['name'];
+          String image = args['image'];
+          CallBody callInfo = args['call_info'];
+          CallDirectionType direction = args['call_direction_type'];
+          screen = ChatCallScreen(
+            name: name,
+            image: image,
+            callInfo: callInfo,
+            callDirection: direction,
+            callType: CallType.audio,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        // screen = const ChatAudioCall();
         break;
       case RouteList.recentCalls:
         screen = const RecentCallScreen();
@@ -122,6 +155,7 @@ class Routes {
         screen = const JoinMeetScreen();
 
         break;
+
       case RouteList.bMeetCall:
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
@@ -216,7 +250,7 @@ class Routes {
         if (settings.arguments is Course) {
           Course course = settings.arguments as Course;
           screen = CourseDetailScreen(
-            courses: course,
+            course: course,
           );
         } else {
           screen = _parameterMissing();
@@ -236,6 +270,14 @@ class Routes {
           screen = _parameterMissing();
         }
         // screen = V
+        break;
+      case RouteList.bLearnteacherProfileDetail:
+        if (settings.arguments is Instructor) {
+          Instructor instructor = settings.arguments as Instructor;
+          screen = TeacherProfileDetailScreen(instructor: instructor);
+        } else {
+          screen = _parameterMissing();
+        }
         break;
       case RouteList.settings:
         screen = const SettingsScreen();

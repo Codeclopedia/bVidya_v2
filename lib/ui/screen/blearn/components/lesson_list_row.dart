@@ -6,15 +6,13 @@ class LessonListRow extends StatelessWidget {
   final int index;
   final int openIndex;
   final Lesson lesson;
-  final Function(int) onExpand;
 
-  const LessonListRow(
-      {Key? key,
-      required this.index,
-      required this.lesson,
-      required this.openIndex,
-      required this.onExpand})
-      : super(key: key);
+  const LessonListRow({
+    Key? key,
+    required this.index,
+    required this.lesson,
+    required this.openIndex,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,17 +53,12 @@ class LessonListRow extends StatelessWidget {
                   ],
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  openIndex == index ? onExpand(-1) : onExpand(index);
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(top: 2.h),
-                  child: Icon(
-                    openIndex == index
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
+              Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: Icon(
+                  openIndex == index
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                 ),
               ),
             ],

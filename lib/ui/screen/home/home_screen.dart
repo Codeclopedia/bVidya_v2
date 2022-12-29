@@ -367,14 +367,13 @@ class HomeScreen extends HookConsumerWidget {
               color: AppColors.black,
             ),
           ),
-          SizedBox(
-            width: 1.w,
-          ),
+          SizedBox(width: 1.w),
           CircleAvatar(
             backgroundColor: AppColors.yellowAccent,
             radius: 4.2.w,
-            child: const Icon(
+            child: Icon(
               Icons.call,
+              size: 4.w,
               color: Colors.white,
             ),
           )
