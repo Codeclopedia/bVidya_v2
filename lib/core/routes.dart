@@ -223,7 +223,20 @@ class Routes {
         }
 
         break;
-
+      case RouteList.bLearnLessionVideo:
+        if (settings.arguments is Map<String, dynamic>) {
+          final arg = settings.arguments as Map<String, dynamic>;
+          Lesson lesson = arg["lesson"];
+          int courseId = arg["course_id"];
+          screen = BlearnVideoPlayer(
+            lesson: lesson,
+            courseId: courseId,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        // screen = V
+        break;
       case RouteList.settings:
         screen = const SettingsScreen();
         hasDrawer = true;

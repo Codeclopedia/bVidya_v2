@@ -98,6 +98,7 @@
     "pr_btx_all":"View All",
     "pr_common_groups":"Common Groups",
     "pr_btx_block":"Block",
+    "pr_btx_unblock":"Unblock",
     "pr_btx_report":"Report Contact",
 
     "grp_btx_clear":"Clear Chat",

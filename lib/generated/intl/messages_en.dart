@@ -420,6 +420,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pr_btx_all": MessageLookupByLibrary.simpleMessage("View All"),
         "pr_btx_block": MessageLookupByLibrary.simpleMessage("Block"),
         "pr_btx_report": MessageLookupByLibrary.simpleMessage("Report Contact"),
+        "pr_btx_unblock": MessageLookupByLibrary.simpleMessage("Unblock"),
         "pr_common_groups":
             MessageLookupByLibrary.simpleMessage("Common Groups"),
         "pr_email": MessageLookupByLibrary.simpleMessage("Email Address"),

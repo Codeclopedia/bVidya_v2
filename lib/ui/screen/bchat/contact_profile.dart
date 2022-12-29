@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/bchat_helper.dart';
+import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
 import '/core/constants/data.dart';
@@ -28,6 +28,11 @@ final chatMuteProvider = StateProvider.autoDispose<bool>(
   }),
 );
 
+final blockProvider = StateProvider.autoDispose.family<Future<bool>, int>(
+  ((ref, id) {
+    return BChatContactManager.isUserBlocked(id.toString());
+  }),
+);
 //Mute
 // final muteUserProvider =
 //     FutureProvider.autoDispose.family<ChatPushRemindType, String>(
@@ -65,12 +70,14 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   _updateSetting(bool mute) async {
-    await chageChatMuteStateFor(contact.userId.toString(), mute);
+    await BChatContactManager.chageChatMuteStateFor(
+        contact.userId.toString(), mute);
   }
 
   _loadMuteSetting(WidgetRef ref) async {
     ChatPushRemindType remindType =
-        await fetchChatMuteStateFor(contact.userId.toString());
+        await BChatContactManager.fetchChatMuteStateFor(
+            contact.userId.toString());
     if (remindType == ChatPushRemindType.NONE) {
       ref.read(chatMuteProvider.notifier).state = true;
     } else {
@@ -104,7 +111,37 @@ class ContactProfileScreen extends HookConsumerWidget {
             SizedBox(height: 3.h),
             _buildGroups(),
             SizedBox(height: 3.h),
-            _buildButton(Icons.block, S.current.pr_btx_block, () {}),
+            Consumer(builder: (context, ref, child) {
+              final future = ref.watch(blockProvider(contact.userId));
+
+              return FutureBuilder(
+                future: future,
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    bool blocked = snapshot.data!;
+                    return _buildButton(
+                        Icons.block,
+                        blocked
+                            ? S.current.pr_btx_unblock
+                            : S.current.pr_btx_block, () async {
+                      if (blocked) {
+                        await BChatContactManager.unBlockUser(
+                            contact.userId.toString());
+                      } else {
+                        await BChatContactManager.blockUser(
+                            contact.userId.toString());
+                      }
+                      ref.refresh(blockProvider(contact.userId));
+                      // ref.read(blockProvider(contact.userId).notifier).state =
+                      //     BChatContactManager.isUserBlocked(
+                      //         contact.userId.toString());
+                    });
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              );
+            }),
             SizedBox(height: 1.h),
             _buildButton(Icons.thumb_down_off_alt_outlined,
                 S.current.pr_btx_report, () {}),

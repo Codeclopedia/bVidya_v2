@@ -28,7 +28,6 @@ class RouteList {
   static const String bChatVideoCall = '/chat_video_call';
   static const String bChatAudioCall = '/chat_audio_call';
 
-
   //BMeet
   static const String bMeet = '/b-meet';
   static const String bMeetStart = '/b-meet-start';
@@ -48,6 +47,7 @@ class RouteList {
   // static const String bLearnSubjects = '/b-learn-subjects';
   static const String bLearnCoursesList = '/b-learn-courses-lists';
   static const String bLearnCourseDetail = '/b-learn-course-detail';
+  static const String bLearnLessionVideo = '/blearn_video_player';
 
   //Settings
   static const String settings = '/settings';

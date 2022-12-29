@@ -16,6 +16,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
   }
+  
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   runApp(
     const ProviderScope(
@@ -27,6 +28,7 @@ Future<void> main() async {
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
   debugPrint('listen a terminate message ${message.data}');
+  
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {

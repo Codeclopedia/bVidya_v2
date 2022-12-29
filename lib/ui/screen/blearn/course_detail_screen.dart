@@ -6,6 +6,7 @@ import '/data/models/models.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
 import 'components/lesson_list_row.dart';
+// import 'components/lesson_list_row.dart';
 
 // int _selectedIndex = -1;
 
@@ -46,7 +47,7 @@ class CourseDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '8 Lessons | 8 Hours',
+              '${courses.numberOfLesson} Lessons | ${courses.duration.replaceAll(":", ".")} Hours',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 8.sp,
@@ -58,8 +59,8 @@ class CourseDetailScreen extends ConsumerWidget {
               builder: (context, ref, child) {
                 return ref.watch(bLearnLessonsProvider(courses.id)).when(
                     data: (data) {
-                      if (data?.lessons?.isNotEmpty==true) {
-                        return _buildLessons(ref,data!.lessons!);
+                      if (data?.lessons?.isNotEmpty == true) {
+                        return _buildLessons(ref, data!.lessons!);
                       } else {
                         return buildEmptyPlaceHolder('No Lessons');
                         // return _buildLessons();
@@ -84,7 +85,11 @@ class CourseDetailScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: (() {
-            
+            Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                arguments: {
+                  "lesson": lessons[index],
+                  "course_id": courses.id,
+                });
           }),
           child: LessonListRow(
             index: index + 1,

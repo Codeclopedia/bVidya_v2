@@ -910,6 +910,16 @@ class S {
     );
   }
 
+  /// `Unblock`
+  String get pr_btx_unblock {
+    return Intl.message(
+      'Unblock',
+      name: 'pr_btx_unblock',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Report Contact`
   String get pr_btx_report {
     return Intl.message(

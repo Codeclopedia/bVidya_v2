@@ -7,6 +7,7 @@ import '../state.dart';
 
 registerForContact(String key, WidgetRef ref) {
   try {
+    print('Registering $key');
     ChatClient.getInstance.contactManager.addEventHandler(
       key,
       ContactEventHandler(
@@ -39,11 +40,14 @@ registerForContact(String key, WidgetRef ref) {
     );
   } on ChatError catch (e) {
     print('Error registerForContact ${e.code} - ${e.description}');
+  } catch (e) {
+    print('Error2 registerForContact $e');
   }
 }
 
 unregisterForContact(String key) {
   try {
+    print('unregistering $key');
     ChatClient.getInstance.contactManager.removeEventHandler(key);
   } catch (_) {}
 }
@@ -68,3 +72,5 @@ unregisterForNewMessage(String key) {
     ChatClient.getInstance.chatManager.removeEventHandler(key);
   } catch (_) {}
 }
+
+

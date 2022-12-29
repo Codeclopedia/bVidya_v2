@@ -79,7 +79,7 @@ class ChatMessageBubble extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
                   child: Text(
-                    senderUser.name,
+                    S.current.bmeet_user_you,
                     style: const TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ),

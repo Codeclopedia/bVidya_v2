@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
-
+import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
+import 'package:collection/collection.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -118,7 +119,8 @@ class BChatSDKController {
         contact: m.contact,
         conversation: m.conversation,
         lastMessage: await m.conversation?.latestMessage(),
-        isOnline: null);
+        isOnline: null //await fetchOnlineStatus(m.contact.userId.toString()
+        );
     // conversations.add(model);
     try {
       ref.read(chatConversationListProvider.notifier).update(model);
@@ -139,13 +141,15 @@ class BChatSDKController {
             contact: m.contact,
             conversation: m.conversation,
             lastMessage: lastMessage,
-            isOnline: null);
+            isOnline:
+                null //await BChatContactManager.fetchOnlineStatus(m.contact.userId.toString())
+            );
         conversations.add(model);
       }
 
       if (conversations.isNotEmpty) {
-        conversations.sort((a, b) => (b.lastMessage?.serverTime ?? 1)
-            .compareTo(a.lastMessage?.serverTime ?? 0));
+        conversations.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
+            .compareTo(a.lastMessage?.serverTime ?? 1));
         try {
           ref
               .read(chatConversationListProvider.notifier)
@@ -182,21 +186,24 @@ class BChatSDKController {
         }
 
         final chatManager = ChatClient.getInstance.chatManager;
+        final ids = contacts.map((e) => e.userId.toString()).toList();
         // final List<ChatPresence> onlineUsers =
-        //     await ChatClient.getInstance.presenceManager.fetchPresenceStatus(
-        //         members: contacts.map((e) => e.peerId).toList());
+        //     await BChatContactManager.fetchOnlineStatuses(ids);
+
+        await ChatClient.getInstance.presenceManager.fetchPresenceStatus(
+            members: contacts.map((e) => e.userId.toString()).toList());
         for (var cont in contacts) {
           print('${cont.name} - ${cont.userId}');
           final conv = await chatManager.getConversation(cont.userId.toString(),
               type: ChatConversationType.Chat);
-          // final online = onlineUsers
-          //     .firstWhere((element) => element.publisher == cont.peerId);
+          // final online = onlineUsers.firstWhereOrNull(
+          //     (element) => element.publisher == cont.userId.toString());
           // final state = onlineUsers.retainWhere((e) => e.publisher== cont.peerId);
           print('Conversation is ${(conv == null) ? '' : 'Not'} Null');
 
           if (conv == null) continue;
           final lastMessage = await conv.latestMessage();
-          // if (lastMessage == null) continue;
+          if (lastMessage == null) continue;
 
           ConversationModel model = ConversationModel(
               id: cont.userId.toString(),
@@ -204,7 +211,7 @@ class BChatSDKController {
               contact: cont,
               conversation: conv,
               lastMessage: lastMessage,
-              isOnline: null);
+              isOnline: null); // online);
           conversations.add(model);
         }
       } else {

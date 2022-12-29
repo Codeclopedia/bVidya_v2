@@ -2,28 +2,30 @@ import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
-class LessonListRow extends StatelessWidget {
+class LessonListTile extends StatelessWidget {
   final int index;
   final int openIndex;
   final Lesson lesson;
-  final Function(int) onExpand;
 
-  const LessonListRow(
-      {Key? key,
-      required this.index,
-      required this.lesson,
-      required this.openIndex,
-      required this.onExpand})
-      : super(key: key);
+  const LessonListTile({
+    Key? key,
+    required this.index,
+    required this.lesson,
+    required this.openIndex,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 2.h),
       decoration: BoxDecoration(
-        color: AppColors.cardWhite,
-        borderRadius: BorderRadius.all(Radius.circular(3.w)),
-      ),
+          color: AppColors.cardWhite,
+          borderRadius: BorderRadius.all(Radius.circular(3.w)),
+          border: Border.all(
+              width: 0,
+              color: openIndex == index
+                  ? AppColors.primaryColor
+                  : Colors.transparent)),
       padding: EdgeInsets.only(top: 2.h, left: 4.w, bottom: 2.h, right: 4.w),
       child: Column(
         children: [
@@ -35,7 +37,7 @@ class LessonListRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Lesson $index',
+                      'Lesson ${index + 1}',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 8.sp,
@@ -52,41 +54,28 @@ class LessonListRow extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    openIndex == index
+                        ? Text(
+                            "Currently playing... ",
+                            style: TextStyle(
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 3.w),
+                          )
+                        : Container()
                   ],
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  openIndex == index ? onExpand(-1) : onExpand(index);
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(top: 2.h),
-                  child: Icon(
-                    openIndex == index
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
+              Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: Icon(
+                  openIndex == index
+                      ? Icons.play_circle_fill
+                      : Icons.play_arrow_rounded,
                 ),
               ),
             ],
           ),
-          if (openIndex == index)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.ondemand_video),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 1.h),
-                      child: Text(lesson.description),
-                    ),
-                  ),
-                  const Icon(Icons.play_circle)
-                ],
-              ),
-            )
         ],
       ),
     );

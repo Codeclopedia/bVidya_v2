@@ -43,13 +43,33 @@ class BVideyApp extends StatefulWidget {
   State<BVideyApp> createState() => _BVideyAppState();
 }
 
-class _BVideyAppState extends State<BVideyApp> {
+class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     initLoading();
     _firebase();
     // _addChatListener();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // AndroidForegroundService.stopForeground();
+    }
+    if (state == AppLifecycleState.paused) {
+      print('Hello I m here background');
+      // background = true;
+    }
+
+    if (state == AppLifecycleState.detached) {
+      print('Hello I m here in termination');
+
+      // background = false;
+    }
   }
 
   void onMessagesReceived(List<ChatMessage> messages) {
@@ -123,7 +143,6 @@ class _BVideyAppState extends State<BVideyApp> {
   }
 
   void _addChatListener() {
-
     ChatClient.getInstance.chatManager.addEventHandler(
       "MAIN_HANDLER_ID",
       ChatEventHandler(onMessagesReceived: onMessagesReceived),
@@ -188,6 +207,11 @@ class _BVideyAppState extends State<BVideyApp> {
 
   @override
   void dispose() {
+    try {
+      ChatClient.getInstance.logout(false);
+    } catch (e) {}
+    WidgetsBinding.instance.removeObserver(this);
+
     // ChatClient.getInstance.chatManager.removeEventHandler("MAIN_HANDLER_ID");
     super.dispose();
   }

@@ -3,6 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
+import '/core/helpers/bchat_handler.dart';
+import '/core/utils.dart';
+import '/core/utils/chat_utils.dart';
 import 'dash/models/reply_model.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
@@ -11,7 +14,7 @@ import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
 import '/data/models/models.dart';
 
-import '../../../controller/providers/chat_messagelist_provider.dart';
+import '/controller/providers/chat_messagelist_provider.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
@@ -22,17 +25,21 @@ final selectedChatMessageListProvider =
     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
         (ref) => ChatMessageNotifier());
 
+final onlineStatusProvier =
+    StateProvider.autoDispose<ChatPresence?>((_) => null);
+
 // ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
   // final int userId;
   final ConversationModel model;
   ChatScreen({Key? key, required this.model}) : super(key: key);
 
-  late final String _myChatPeerUserId;
+  late String _myChatPeerUserId;
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
+  late Contacts _me;
 
   // User? _me;
 
@@ -40,10 +47,11 @@ class ChatScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
       _scrollController = ScrollController();
-      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '';
+      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '1';
+      _loadMe();
 
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      // _loadMe();
+
       _preLoadChat(ref);
 
       return disposeAll;
@@ -55,6 +63,7 @@ class ChatScreen extends HookConsumerWidget {
     ref.listen(chatHasMoreOldMessageProvider, (previous, next) {
       _hasMoreData = next;
     });
+
     final selectedItems = ref.watch(selectedChatMessageListProvider);
     return BaseWilPopupScreen(
       onBack: () async {
@@ -75,9 +84,21 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  // _loadMe() async {
-  //   _me = await getMeAsUser();
-  // }
+  _loadMe() async {
+    final user = await getMeAsUser();
+    if (user != null) {
+      _me = Contacts(
+        name: user.name,
+        profileImage: user.image,
+        userId: user.id,
+        email: user.email,
+        fcmToken: user.fcmToken,
+        phone: user.phone,
+      );
+      _myChatPeerUserId =
+          ChatClient.getInstance.currentUserId ?? user.id.toString();
+    }
+  }
 
   Widget _chatList(BuildContext context) {
     return Column(
@@ -325,8 +346,8 @@ class ChatScreen extends HookConsumerWidget {
                   color: isSelected ? Colors.grey.shade200 : Colors.transparent,
                   child: ChatMessageBubble(
                     message: message,
-                    isOwnMessage: message.from == _myChatPeerUserId,
-                    senderUser: model.contact,
+                    isOwnMessage: isOwnMessage,
+                    senderUser: isOwnMessage ? _me : model.contact,
                     isPreviousSameAuthor: isPreviousSameAuthor,
                     isNextSameAuthor: isNextSameAuthor,
                     isAfterDateSeparator: isAfterDateSeparator,
@@ -424,55 +445,76 @@ class ChatScreen extends HookConsumerWidget {
   // bool isLoadingMore = false;
 
   Future<void> onLoadEarlier(WidgetRef ref) async {
-    // await Future.delayed(const Duration(seconds: 2));
     try {
       final message = ref.read(chatMessageListProvider.notifier).getLast();
       if (message == null) return;
 
-      String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
-      if (cursor == null || cursor.isEmpty) return;
-
-      final oldResult = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(
-              conversationId: model.contact.userId.toString(),
-              pageSize: 20,
-              startMsgId: message.msgId);
-
-      // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
-      if (oldResult.cursor == null ||
-          cursor == oldResult.cursor ||
-          oldResult.cursor?.isEmpty == true) {
-        // debugPrint('Not a new cursor : ${oldResult.cursor}');
-        ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      if (model.conversation != null) {
+        print('next_chat_id ${message.msgId}');
+        await Future.delayed(const Duration(seconds: 2));
+        final chats = await model.conversation
+            ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
+        ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
+        ref.read(chatHasMoreOldMessageProvider.notifier).state =
+            chats?.length == 20;
         return;
       }
-      // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
-      // debugPrint('old data list ${oldResult.data.length}');
-      if (oldResult.data.isNotEmpty) {
-        ref.read(chatHasMoreOldMessageProvider.notifier).state =
-            oldResult.data.length == 20;
-        // print('Set has More Data :${(oldResult.data.length == 20)})');
-        ref
-            .read(chatMessageListProvider.notifier)
-            .addChats(oldResult.data, oldResult.cursor);
-      } else {
-        ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-        // print('Set has More Data :false');
-      }
+
+      // String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
+      // if (cursor == null || cursor.isEmpty) return;
+
+      // final oldResult = await ChatClient.getInstance.chatManager
+      //     .fetchHistoryMessages(
+      //         conversationId: model.id.toString(),
+      //         pageSize: 20,
+      //         startMsgId: message.msgId);
+
+      // // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
+      // if (oldResult.cursor == null ||
+      //     cursor == oldResult.cursor ||
+      //     oldResult.cursor?.isEmpty == true) {
+      //   // debugPrint('Not a new cursor : ${oldResult.cursor}');
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      //   return;
+      // }
+      // // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
+      // // debugPrint('old data list ${oldResult.data.length}');
+      // if (oldResult.data.isNotEmpty) {
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state =
+      //       oldResult.data.length == 20;
+      //   ref
+      //       .read(chatMessageListProvider.notifier)
+      //       .addChats(oldResult.data, oldResult.cursor);
+      // } else {
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      //   // print('Set has More Data :false');
+      // }
     } catch (e) {}
 
     return;
   }
 
-  _preLoadChat(WidgetRef ref) async {
+  Future _loadPresence(WidgetRef ref) async {
     try {
-      // ChatClient.getInstance.presenceManager
-      //     .subscribe(members: [model.contact.peerId], expiry: 100);
+      ref.read(onlineStatusProvier.notifier).state =
+          await fetchOnlineStatus(model.contact.userId.toString());
+      // print(
+      //     'Online status =${model.isOnline?.statusDetails} ${model.isOnline?.lastTime} ${model.isOnline?.statusDescription}  ${model.isOnline?.expiryTime}');
+      ChatClient.getInstance.presenceManager
+          .subscribe(members: [model.contact.userId.toString()], expiry: 100);
 
       ChatClient.getInstance.presenceManager.addEventHandler(
         "user_presence_home_screen",
         ChatPresenceEventHandler(
           onPresenceStatusChanged: (list) {
+            for (var s in list) {
+              if (s.publisher == model.contact.userId.toString()) {
+                ref.read(onlineStatusProvier.notifier).state = s;
+                // print(
+                //     'Update status =${s.statusDetails} ${s.lastTime} ${s.statusDescription}  ${s.expiryTime}');
+                break;
+              }
+            }
             print('onPresenceStatusChanged: ${list.toList()}');
           },
         ),
@@ -480,41 +522,48 @@ class ChatScreen extends HookConsumerWidget {
     } catch (e) {
       print('Presence error $e');
     }
+  }
 
+  _preLoadChat(WidgetRef ref) async {
     try {
       if (model.badgeCount > 0) {
         await model.conversation?.markAllMessagesAsRead();
       }
+      registerForNewMessage('chat_screen', (msg) {
+        onMessagesReceived(msg, ref);
+      });
+      if (model.conversation != null) {
+        final chats = await model.conversation?.loadMessages(loadCount: 20);
+        print('next_chat_id ${chats![0].msgId}');
 
-      final value = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(
-              conversationId: model.contact.userId.toString(), pageSize: 20);
-
-      final chats = value.data;
-      if (chats.isNotEmpty) {
-        debugPrint('preLoadChat cursor : ${value.cursor}');
-        debugPrint('data list ${chats.length}');
-        // ref.read(chatChatCursorMessageProvider.notifier).state = value.cursor;
-        ref
-            .read(chatMessageListProvider.notifier)
-            .addChats(chats, value.cursor);
-      } else {
-        // final list =
-        //     await ChatClient.getInstance.contactManager.getAllContactsFromDB();
-        // if (!list.contains(model.contact.userId.toString())) {
-        //   ChatClient.getInstance.contactManager
-        //       .addContact(model.contact.userId.toString(), reason: 'Hi');
-        // }
+        ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
+        return;
       }
-      ChatClient.getInstance.chatManager.addEventHandler(
-        'chat_screen',
-        ChatEventHandler(
-          onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
-        ),
-      );
+
+      // final value = await ChatClient.getInstance.chatManager
+      //     .fetchHistoryMessages(
+      //         conversationId: model.id.toString(), pageSize: 20);
+
+      // final chats = value.data;
+      // if (chats.isNotEmpty) {
+      //   debugPrint('preLoadChat cursor : ${value.cursor}');
+      //   debugPrint('data list ${chats.length}');
+      //   ref
+      //       .read(chatMessageListProvider.notifier)
+      //       .addChats(chats, value.cursor);
+      // } else {
+      //   // final list =
+      //   //     await ChatClient.getInstance.contactManager.getAllContactsFromDB();
+      //   // if (!list.contains(model.contact.userId.toString())) {
+      //   //   ChatClient.getInstance.contactManager
+      //   //       .addContact(model.contact.userId.toString(), reason: 'Hi');
+      //   // }
+      // }
+
     } on ChatError catch (e) {
       debugPrint('error: ${e.code}- ${e.description}');
     }
+    await _loadPresence(ref);
   }
 
   void disposeAll() {
@@ -523,7 +572,9 @@ class ChatScreen extends HookConsumerWidget {
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
     for (var msg in messages) {
-      ref.read(chatMessageListProvider.notifier).addChat(msg);
+      if (msg.to == model.contact.userId.toString()) {
+        ref.read(chatMessageListProvider.notifier).addChat(msg);
+      }
     }
   }
 
@@ -688,15 +739,18 @@ class ChatScreen extends HookConsumerWidget {
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 0.3.h),
-                  Text(
-                    'Online',
-                    style: TextStyle(
-                      fontFamily: kFontFamily,
-                      color: AppColors.yellowAccent,
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w200,
-                    ),
-                  ),
+                  Consumer(builder: (context, ref, child) {
+                    final value = ref.watch(onlineStatusProvier);
+                    return Text(
+                      parseChatPresenceToReadable(value),
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: AppColors.yellowAccent,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),

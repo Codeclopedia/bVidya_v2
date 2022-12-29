@@ -39,6 +39,7 @@ export 'screen/blearn/sub_categories_screen.dart';
 export 'screen/blearn/subjects_screen.dart';
 export 'screen/blearn/course_list_screen.dart';
 export 'screen/blearn/course_detail_screen.dart';
+export 'screen/blearn/blearn_video_player.dart';
 
 export 'screen/profile/settings/settings_screen.dart';
 export 'screen/profile/settings/account_setting_screen.dart';

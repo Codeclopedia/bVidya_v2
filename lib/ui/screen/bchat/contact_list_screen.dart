@@ -69,10 +69,11 @@ class ContactListScreen extends StatelessWidget {
                       final conv = await ChatClient.getInstance.chatManager
                           .getConversation(element.userId.toString(),
                               type: ChatConversationType.Chat);
-                      // final isOnline = (await ChatClient
-                      //         .getInstance.presenceManager
-                      //         .fetchPresenceStatus(members: [element.peerId]))
-                      //     .first;
+                      final isOnline = (await ChatClient
+                              .getInstance.presenceManager
+                              .fetchPresenceStatus(
+                                  members: [element.userId.toString()]))
+                          .first;
                       if (conv != null) {
                         ConversationModel model = ConversationModel(
                             id: element.userId.toString(),
@@ -80,7 +81,7 @@ class ContactListScreen extends StatelessWidget {
                             contact: element,
                             conversation: conv,
                             lastMessage: await conv.latestMessage(),
-                            isOnline: null);
+                            isOnline: isOnline);
                         // Navigator.pop(context,model);
                         ref
                             .read(bChatSDKControllerProvider)
