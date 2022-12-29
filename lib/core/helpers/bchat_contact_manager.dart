@@ -9,8 +9,12 @@ class BChatContactManager {
       var list =
           await ChatClient.getInstance.contactManager.getAllContactsFromDB();
       if (list.isEmpty || fromServer) {
-        list = await ChatClient.getInstance.contactManager
-            .getAllContactsFromServer();
+        try {
+          list = await ChatClient.getInstance.contactManager
+              .getAllContactsFromServer();
+        } catch (e) {
+          //Avoid limitation error
+        }
       }
       return list;
     } on ChatError catch (e) {
@@ -165,5 +169,4 @@ class BChatContactManager {
       return false;
     }
   }
-
 }

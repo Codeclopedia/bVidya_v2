@@ -197,9 +197,7 @@ class LoginOtpScreen extends HookWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
+                      SizedBox(height: 2.h),
                     ],
                   ),
                 ),

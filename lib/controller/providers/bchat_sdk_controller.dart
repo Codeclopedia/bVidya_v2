@@ -1,8 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
-import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
-import 'package:collection/collection.dart';
+// import 'package:collection/collection.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,6 +70,7 @@ class BChatSDKController {
 
       if (shouldLogin || !alreadyLoggedIn) {
         await _signIn(token.body!.userId.toString(), token.body!.userToken);
+        
         await pref.setString('chat_body', jsonEncode(token.body!));
       }
 
@@ -90,6 +90,14 @@ class BChatSDKController {
           .updateFCMPushToken(_currentUser.fcmToken);
       // registerForPresence();
       // await loadConversations(ref);
+      await ChatClient.getInstance.userInfoManager.updateUserInfo(
+        avatarUrl: _currentUser.image,
+        ext: _currentUser.fcmToken,
+        nickname: _currentUser.name,
+        mail: _currentUser.email,
+        phone: _currentUser.phone,
+        
+      );
     } on ChatError catch (e) {
       print('Login Error: ${e.code}- ${e.description}');
       if (e.code == 200 || e.code == 202) {

@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
@@ -246,37 +246,37 @@ class ChatScreen extends HookConsumerWidget {
   final ImagePicker _picker = ImagePicker();
   _pickFiles(AttachType type) async {
     // print('Request Attach: $type');
-    var fileExts = ['jpg', 'pdf', 'doc'];
+    // var fileExts = ['jpg', 'pdf', 'doc'];
 
-    switch (type) {
-      case AttachType.camera:
-        final XFile? photo = await _picker.pickImage(
-            source: ImageSource.camera, requestFullMetadata: false);
-        return;
-      case AttachType.media:
-        fileExts = ['jpg', 'png', 'jpeg', 'mp4', 'mov'];
-        break;
-      // ;
-      case AttachType.audio:
-        fileExts = ['aac', 'mp3', 'wav'];
-        break;
-      case AttachType.docs:
-        fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-        break;
-    }
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'],
-    );
-    if (result != null) {
-      for (var file in result.files) {
-        print(file.name);
-        print(file.bytes);
-        print(file.size);
-        print(file.extension);
-        print(file.path);
-      }
-    }
+    // switch (type) {
+    //   case AttachType.camera:
+    //     final XFile? photo = await _picker.pickImage(
+    //         source: ImageSource.camera, requestFullMetadata: false);
+    //     return;
+    //   case AttachType.media:
+    //     fileExts = ['jpg', 'png', 'jpeg', 'mp4', 'mov'];
+    //     break;
+    //   // ;
+    //   case AttachType.audio:
+    //     fileExts = ['aac', 'mp3', 'wav'];
+    //     break;
+    //   case AttachType.docs:
+    //     fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
+    //     break;
+    // }
+    // FilePickerResult? result = await FilePicker.platform.pickFiles(
+    //   type: FileType.custom,
+    //   allowedExtensions: ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'],
+    // );
+    // if (result != null) {
+    //   for (var file in result.files) {
+    //     print(file.name);
+    //     print(file.bytes);
+    //     print(file.size);
+    //     print(file.extension);
+    //     print(file.path);
+    //   }
+    // }
   }
 
   Widget _buildMessageList(WidgetRef ref) {
@@ -526,18 +526,18 @@ class ChatScreen extends HookConsumerWidget {
 
   _preLoadChat(WidgetRef ref) async {
     try {
-      if (model.badgeCount > 0) {
-        await model.conversation?.markAllMessagesAsRead();
-      }
+      // if (model.badgeCount > 0) {
+      //   await model.conversation?.markAllMessagesAsRead();
+      // }
       registerForNewMessage('chat_screen', (msg) {
         onMessagesReceived(msg, ref);
       });
       if (model.conversation != null) {
+        await model.conversation?.markAllMessagesAsRead();
         final chats = await model.conversation?.loadMessages(loadCount: 20);
-        print('next_chat_id ${chats![0].msgId}');
-
+        // print('next_chat_id ${chats![0].msgId}');
         ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
-        return;
+        // return;
       }
 
       // final value = await ChatClient.getInstance.chatManager

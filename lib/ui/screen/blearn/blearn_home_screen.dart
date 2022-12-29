@@ -4,7 +4,7 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
-import '../../widget/user_top_bar.dart';
+// import '../../widget/user_top_bar.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
 import 'components/complemetry_course.dart';
@@ -57,11 +57,11 @@ class BLearnHomeScreen extends StatelessWidget {
           _buildRecommended(),
           _buildCriteriaCaption(),
           _buildCriteriaList(body.popularCourses),
-          _buildEnroll(),
           _buildLearnCaption(),
           _buildLearnList(body.popularInstructors),
           _buildComplementary(),
           _buildComplementaryList(),
+          _buildEnroll(),
           _buildRecentCaption(),
           _buildRecentList(body.featuredCourses),
           _buildTestimonialCaption(),
@@ -81,59 +81,75 @@ class BLearnHomeScreen extends StatelessWidget {
 
   Widget _buildOngoing() {
     return Container(
+      height: 21.h,
       width: double.infinity,
       margin: EdgeInsets.only(left: 5.w, right: 5.w),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(5.w)),
-        image: const DecorationImage(
-          image: AssetImage('assets/images/banner_image.png'),
-          fit: BoxFit.fitHeight,
-        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Text(
-            'Ongoing',
-            style: TextStyle(
-              fontSize: 11.sp,
-              color: Colors.black,
-              fontFamily: kFontFamily,
-            ),
+          Image.asset(
+            "assets/images/banner_image.png",
+            fit: BoxFit.cover,
           ),
-          SizedBox(height: 0.7.h),
-          Text(
-            'Photoshop Beginners:\nZero to Hero',
-            style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 15.sp,
-                color: Colors.black,
-                fontWeight: FontWeight.w800),
+          Container(
+            height: 21.h,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+                gradient:
+                    LinearGradient(colors: [Colors.white, Colors.transparent])),
           ),
-          SizedBox(height: 1.h),
-          Text(
-            '15/25 Lessons',
-            style: TextStyle(
-                fontFamily: kFontFamily, fontSize: 12.sp, color: Colors.black),
-          ),
-          SizedBox(height: 2.h),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              textStyle: TextStyle(
-                  fontFamily: kFontFamily,
-                  color: Colors.white,
-                  fontSize: 10.sp),
-              elevation: 0.0,
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.w)),
-              backgroundColor: const Color(0xFF65427A),
-            ),
-            onPressed: () {},
-            child: const Text(
-              'Continue',
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Ongoing',
+                  style: TextStyle(
+                    fontSize: 9.sp,
+                    color: Colors.black,
+                    fontFamily: kFontFamily,
+                  ),
+                ),
+                SizedBox(height: 0.4.h),
+                Text(
+                  'Photoshop Beginners:\nZero to Hero',
+                  style: TextStyle(
+                      fontFamily: kFontFamily,
+                      fontSize: 11.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800),
+                ),
+                Text(
+                  '15/25 Lessons',
+                  style: TextStyle(
+                      fontFamily: kFontFamily,
+                      fontSize: 8.sp,
+                      color: Colors.black),
+                ),
+                SizedBox(height: 1.h),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: Colors.white,
+                        fontSize: 8.sp),
+                    elevation: 0.0,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 5.w, vertical: 0.5.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.w)),
+                    backgroundColor: const Color(0xFF65427A),
+                  ),
+                  onPressed: () {},
+                  child: const Text(
+                    'Continue',
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -159,15 +175,21 @@ class BLearnHomeScreen extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(context, RouteList.bLearnCategories);
               },
-              child: Text(
-                S.current.blearn_btx_viewall,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                  color: AppColors.primaryColor,
-                ),
+              child: Row(
+                children: [
+                  Text(
+                    S.current.blearn_btx_viewall,
+                    style: TextStyle(
+                      fontFamily: kFontFamily,
+                      fontSize: 10.sp,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_right,
+                    color: AppColors.primaryColor,
+                  )
+                ],
               ),
             ),
           ],
@@ -179,7 +201,7 @@ class BLearnHomeScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Container(
-      height: 38.h,
+      height: 30.h,
       color: Colors.white,
       child: ListView.builder(
         padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
@@ -195,7 +217,7 @@ class BLearnHomeScreen extends StatelessWidget {
             ),
             child: Container(
               padding: EdgeInsets.all(3.w),
-              width: 25.h,
+              width: 20.h,
               height: 35.h,
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -219,8 +241,8 @@ class BLearnHomeScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    width: 12.w,
-                    height: 12.w,
+                    width: 9.w,
+                    height: 9.w,
                     padding: EdgeInsets.all(3.w),
                     decoration: const BoxDecoration(
                       color: Colors.white,
@@ -313,7 +335,7 @@ class BLearnHomeScreen extends StatelessWidget {
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
-          itemCount: courses.length,
+          itemCount: 5,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           scrollDirection: Axis.vertical,
@@ -359,7 +381,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 1.h),
-      height: 18.h,
+      height: 29.h,
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.all(0.5.h),
@@ -369,7 +391,6 @@ class BLearnHomeScreen extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             final instructor = instructors[index];
             return Container(
-              width: 70.w,
               margin: EdgeInsets.only(top: 0.2.h, left: 4.w),
               child: Center(
                 child: InstructorRowItem(instructor: instructor),

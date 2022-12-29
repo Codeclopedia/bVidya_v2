@@ -19,13 +19,13 @@ class SignUpScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // final formKey = ref.watch(formKeyProvider);
-    final fullNameTextController = useTextEditingController(text: 'Ravi');
+    final fullNameTextController = useTextEditingController(text: '');
     final emailTextController =
-        useTextEditingController(text: 'abc@example.com');
-    final mobileTextController = useTextEditingController(text: '1111111111');
-    final passwordTextController = useTextEditingController(text: '12345678');
+        useTextEditingController(text: '');
+    final mobileTextController = useTextEditingController(text: '');
+    final passwordTextController = useTextEditingController(text: '');
     final confirmPasswordTextController =
-        useTextEditingController(text: '12345678');
+        useTextEditingController(text: '');
 
     return BaseWilPopupScreen(
       onBack: () async {
@@ -212,7 +212,7 @@ class SignUpScreen extends HookWidget {
                       SizedBox(height: 2.h),
                       Consumer(
                         builder: (context, ref, child) {
-                          final otpSent = ref.read(signUpOTPGeneratedProvider);
+                          final otpSent = ref.watch(signUpOTPGeneratedProvider);
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -260,7 +260,7 @@ class SignUpScreen extends HookWidget {
                                   ..onTap = () {
                                     Navigator.pushReplacementNamed(
                                         context, RouteList.login);
-                                    print('Tap Here onTap');
+                                    // print('Tap Here onTap');
                                   },
                               )
                             ],

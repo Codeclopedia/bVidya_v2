@@ -45,8 +45,8 @@ class CourseRowItem extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
                         fontFamily: kFontFamily,
                         color: Colors.black),
                   ),
@@ -56,7 +56,7 @@ class CourseRowItem extends StatelessWidget {
                     maxLines: 1,
                     style: TextStyle(
                         fontFamily: kFontFamily,
-                        fontSize: 9.sp,
+                        fontSize: 7.sp,
                         color: Colors.black),
                   ),
                   // SizedBox(height: 0.5.h),
@@ -66,7 +66,7 @@ class CourseRowItem extends StatelessWidget {
                         course.rating,
                         style: TextStyle(
                             color: AppColors.yellowAccent,
-                            fontSize: 12.sp,
+                            fontSize: 10.sp,
                             fontFamily: kFontFamily,
                             fontWeight: FontWeight.bold),
                       ),
@@ -76,7 +76,7 @@ class CourseRowItem extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontFamily: kFontFamily,
-                          fontSize: 9.sp,
+                          fontSize: 7.sp,
                         ),
                       ),
                     ],
