@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/controller/bchat_providers.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../../controller/providers/user_auth_provider.dart';
@@ -210,7 +211,9 @@ class LoginScreen extends HookWidget {
 
     hideLoading(ref);
     if (error == null) {
-      // ref.read(userAuthChangeProvider.notifier).setUserSigned(true);
+      ref.read(userAuthChangeProvider).loadUser();
+      ref.read(bChatSDKControllerProvider).shouldLoadRemote = true;
+      // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);
     } else {
       AppSnackbar.instance.error(context, error);

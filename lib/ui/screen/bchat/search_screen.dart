@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/helpers/bchat_handler.dart';
 
 import '../../../controller/bchat_providers.dart';
 import '../../../data/models/models.dart';
@@ -18,9 +19,12 @@ class SearchScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // useEffect(() {
-    //   return (){};
-    // },const []);
+    useEffect(() {
+      registerForContact('search_screen', null);
+      return () {
+        unregisterForContact('search_screen');
+      };
+    }, const []);
 
     return BaseWilPopupScreen(
       onBack: () async => true,
@@ -128,12 +132,13 @@ class SearchScreen extends HookWidget {
                               // final result = await ref
                               //     .read(bChatProvider)
                               //     .addContact(data[index]);
-                              final result = await BChatContactManager.sendRequestToAddContact(
-                                  data[index].userId.toString());
+                              final result = await BChatContactManager
+                                  .sendRequestToAddContact(
+                                      data[index].userId.toString());
 
                               if (result == null) {
                                 AppSnackbar.instance.message(context,
-                                    '${data[index].name} added successfully into Contacts');
+                                    'Request sent to ${data[index].name} successfully');
                                 // Navigator.pop(context, true);
                               } else {
                                 AppSnackbar.instance

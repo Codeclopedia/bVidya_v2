@@ -19,12 +19,14 @@ class BChatSDKController {
   BChatSDKController(this._currentUser);
 
   bool _initialized = false;
+  bool shouldLoadRemote = false;
 
   loadChats(WidgetRef ref) async {
     print('loadinging chats $_initialized');
     if (!_initialized) {
       await initChatSDK();
     }
+    // _isFirstTimeLoading = true;
     await loadConversations(ref);
   }
 
@@ -49,6 +51,11 @@ class BChatSDKController {
             oldBody.userId != token.body!.userId ||
             oldBody.userToken != token.body!.userToken;
       }
+
+      print('shouldLogin -  $shouldLogin');
+      print('oldChatBody -  $oldChatBody');
+      print('newChatBody -  ${token.body!.toJson()}');
+      // ${oldChatBody.toString()}
       ChatOptions options = ChatOptions(
         appKey: token.body!.appKey,
         autoLogin: false,
@@ -70,7 +77,7 @@ class BChatSDKController {
 
       if (shouldLogin || !alreadyLoggedIn) {
         await _signIn(token.body!.userId.toString(), token.body!.userToken);
-        
+
         await pref.setString('chat_body', jsonEncode(token.body!));
       }
 
@@ -96,7 +103,6 @@ class BChatSDKController {
         nickname: _currentUser.name,
         mail: _currentUser.email,
         phone: _currentUser.phone,
-        
       );
     } on ChatError catch (e) {
       print('Login Error: ${e.code}- ${e.description}');
@@ -176,59 +182,67 @@ class BChatSDKController {
 
     print('Start Loading conversations');
     try {
-      final response =
-          await BChatApiService.instance.getContacts(_currentUser.authToken);
-      List<Contacts>? contacts = response.body?.contacts;
-      List<ChatConversation> list =
-          await ChatClient.getInstance.chatManager.loadAllConversations();
+      conversations = await ref
+          .read(bChatSDKProvider)
+          .loadContactsConversationsList(firstTime: shouldLoadRemote);
+      shouldLoadRemote = false;
+      print('conversations : ${conversations.length}');
+      // conversations = ref
+      //     .watch(bChatConvListProvider)
+      //     .maybeWhen(data: (data) => data, orElse: () => []);
+      // final response =
+      //     await BChatApiService.instance.getContacts(_currentUser.authToken);
+      // List<Contacts>? contacts = response.body?.contacts;
+      // List<ChatConversation> list =
+      //     await ChatClient.getInstance.chatManager.loadAllConversations();
 
-      if (contacts?.isNotEmpty == true) {
-        print('contacts size =${contacts!.length}');
-        if (list.isEmpty) {
-          try {
-            list = await ChatClient.getInstance.chatManager
-                .getConversationsFromServer();
-          } on ChatError catch (e) {
-            print('Error while fetching conversations from Server: $e');
-          }
-        }
+      // if (contacts?.isNotEmpty == true) {
+      //   print('contacts size =${contacts!.length}');
+      //   if (list.isEmpty) {
+      //     try {
+      //       list = await ChatClient.getInstance.chatManager
+      //           .getConversationsFromServer();
+      //     } on ChatError catch (e) {
+      //       print('Error while fetching conversations from Server: $e');
+      //     }
+      //   }
 
-        final chatManager = ChatClient.getInstance.chatManager;
-        final ids = contacts.map((e) => e.userId.toString()).toList();
-        // final List<ChatPresence> onlineUsers =
-        //     await BChatContactManager.fetchOnlineStatuses(ids);
+      //   final chatManager = ChatClient.getInstance.chatManager;
+      //   final ids = contacts.map((e) => e.userId.toString()).toList();
+      //   // final List<ChatPresence> onlineUsers =
+      //   //     await BChatContactManager.fetchOnlineStatuses(ids);
 
-        await ChatClient.getInstance.presenceManager.fetchPresenceStatus(
-            members: contacts.map((e) => e.userId.toString()).toList());
-        for (var cont in contacts) {
-          print('${cont.name} - ${cont.userId}');
-          final conv = await chatManager.getConversation(cont.userId.toString(),
-              type: ChatConversationType.Chat);
-          // final online = onlineUsers.firstWhereOrNull(
-          //     (element) => element.publisher == cont.userId.toString());
-          // final state = onlineUsers.retainWhere((e) => e.publisher== cont.peerId);
-          print('Conversation is ${(conv == null) ? '' : 'Not'} Null');
+      //   await ChatClient.getInstance.presenceManager.fetchPresenceStatus(
+      //       members: contacts.map((e) => e.userId.toString()).toList());
+      //   for (var cont in contacts) {
+      //     print('${cont.name} - ${cont.userId}');
+      //     final conv = await chatManager.getConversation(cont.userId.toString(),
+      //         type: ChatConversationType.Chat);
+      //     // final online = onlineUsers.firstWhereOrNull(
+      //     //     (element) => element.publisher == cont.userId.toString());
+      //     // final state = onlineUsers.retainWhere((e) => e.publisher== cont.peerId);
+      //     print('Conversation is ${(conv == null) ? '' : 'Not'} Null');
 
-          if (conv == null) continue;
-          final lastMessage = await conv.latestMessage();
-          if (lastMessage == null) continue;
+      //     if (conv == null) continue;
+      //     final lastMessage = await conv.latestMessage();
+      //     if (lastMessage == null) continue;
 
-          ConversationModel model = ConversationModel(
-              id: cont.userId.toString(),
-              badgeCount: await conv.unreadCount(),
-              contact: cont,
-              conversation: conv,
-              lastMessage: lastMessage,
-              isOnline: null); // online);
-          conversations.add(model);
-        }
-      } else {
-        print('contacts list is empty');
-        if (list.isNotEmpty) {
-          // Found some conversations
-        }
-      }
-    } on ChatError catch (e) {
+      //     ConversationModel model = ConversationModel(
+      //         id: cont.userId.toString(),
+      //         badgeCount: await conv.unreadCount(),
+      //         contact: cont,
+      //         conversation: conv,
+      //         lastMessage: lastMessage,
+      //         isOnline: null); // online);
+      //     conversations.add(model);
+      //   }
+      // } else {
+      //   print('contacts list is empty');
+      //   if (list.isNotEmpty) {
+      //     // Found some conversations
+      //   }
+      // }
+    } catch (e) {
       print('errorconversations : $e');
       // recall failed, code: e.code, reason: e.description
     }

@@ -5,9 +5,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../state.dart';
 
-registerForContact(String key, WidgetRef ref) {
+registerForContact(String key, WidgetRef? ref) {
   try {
     print('Registering $key');
+
     ChatClient.getInstance.contactManager.addEventHandler(
       key,
       ContactEventHandler(
@@ -72,5 +73,3 @@ unregisterForNewMessage(String key) {
     ChatClient.getInstance.chatManager.removeEventHandler(key);
   } catch (_) {}
 }
-
-

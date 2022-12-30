@@ -20,6 +20,7 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
+      print('useEffect called in HomeSreen');
       ref.read(bChatSDKControllerProvider).loadChats(ref);
       // _loadConversations(ref);
       // getContacts();

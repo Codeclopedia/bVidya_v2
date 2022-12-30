@@ -1,32 +1,40 @@
 import 'dart:convert';
-
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/core/ui_core.dart';
-import 'package:bvidya/data/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 
 final userAuthChangeProvider =
     ChangeNotifierProvider<UserAuthProvider>((ref) => UserAuthProvider());
 
 class UserAuthProvider extends ChangeNotifier {
   User? _user;
+
   String userToken = '';
+
   User? get user => _user;
 
   bool _isUserSinged = false;
+
   bool get isUserSigned => _isUserSinged;
 
+  bool _inInitialized = false;
+
   loadUser() async {
+    if (_inInitialized) {
+      return;
+    }
+    _inInitialized = true;
     final pref = await SharedPreferences.getInstance();
     final userStr = pref.getString("user");
     if (userStr != null) {
       final user = User.fromJson(jsonDecode(userStr) as Map<String, dynamic>);
       _user = user;
       userToken = user.authToken;
-      // print(_user!.toJson());
-      // await Future.delayed(const Duration(seconds: 2));
     }
-    // await Future.delayed(const Duration(seconds: 2));
+    _isUserSinged = user != null;
+    print(' User :$userStr');
     notifyListeners();
   }
 
@@ -40,5 +48,11 @@ class UserAuthProvider extends ChangeNotifier {
     await pref.clear();
     _user = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    print('Disposed app');
+    super.dispose();
   }
 }

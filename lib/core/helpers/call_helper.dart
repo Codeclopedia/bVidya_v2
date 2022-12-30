@@ -109,7 +109,6 @@ Future receiveAudioCall(
   final response =
       await ref.read(apiBChatProvider).receiveCall(user.authToken, callId);
   if (response.status == 'successfull' && response.body != null) {
-    // await ref.read(apiBChatProvider).getContactsByIds(user.authToken, [callBody.]);
 
     final CallBody callBody = response.body!;
     Map<String, dynamic> map = {

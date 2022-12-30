@@ -15,7 +15,8 @@ class SplashScreen extends ConsumerWidget {
       authLoadProvider,
       (previous, next) async {
         if (next.value != null) {
-          // ref.read(userAuthChangeProvider.notifier).setUserSigned(true);
+          ref.read(userAuthChangeProvider).loadUser();
+          // ref.read(userAuthChangeProvider).setUserSigned(true);
           await ref.read(bChatSDKControllerProvider).initChatSDK();
         }
         Future.delayed(Duration(seconds: next.value != null ? 4 : 2), () {

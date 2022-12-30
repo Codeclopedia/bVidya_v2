@@ -3,6 +3,7 @@ import 'package:bvidya/data/repository/bchat_respository.dart';
 
 import '../core/helpers/duration.dart';
 import '../core/state.dart';
+import '../data/repository/bchat_sdk_repository.dart';
 import '/data/models/models.dart';
 import 'providers/p2p_call_provider.dart';
 import 'providers/bchat_sdk_controller.dart';
@@ -19,6 +20,16 @@ final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
   User? user = ref.read(loginRepositoryProvider).user;
   return BChatSDKController(user!);
 });
+
+final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
+  User? user = ref.read(loginRepositoryProvider).user;
+  final api = ref.read(apiBChatProvider);
+  return BChatSDKRepository(api, user?.authToken ?? '');
+});
+
+// final bChatConvListProvider = FutureProvider<List<ConversationModel>>((ref) {
+//   return ref.read(bChatSDKProvider).getConversations();
+// });
 
 // final bChatListProvider = StateProvider<List<ConversationModel>>((ref) {
 //   return ref.watch(bChatRepositoryProvider).conversations;

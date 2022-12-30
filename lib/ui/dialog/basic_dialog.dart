@@ -2,8 +2,8 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-// import '../../controller/providers/user_auth_provider.dart';
-import '../../core/state.dart';
+import '/controller/providers/user_auth_provider.dart';
+import '/core/state.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 
@@ -14,7 +14,7 @@ showLogoutDialog(BuildContext context, WidgetRef ref,
     await ChatClient.getInstance.logout();
     // final pref = await SharedPreferences.getInstance();
     // await pref.clear();
-    // ref.read(userAuthChangeProvider).logout();
+    ref.read(userAuthChangeProvider).logout();
     if (callback != null) await callback();
   });
 }

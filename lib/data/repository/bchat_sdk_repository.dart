@@ -13,16 +13,18 @@ class BChatSDKRepository {
 
   BChatSDKRepository(this.api, this.token) : _client = ChatClient.getInstance;
 
-  Future<List<ConversationModel>> getConversations(
+  Future<List<ConversationModel>> loadContactsConversationsList(
       {bool firstTime = false}) async {
     List<String> userIds =
         await BChatContactManager.getContactList(fromServer: firstTime);
+    // print('');
     final usersMaps = await _client.userInfoManager.fetchUserInfoById(userIds);
 
     List<ConversationModel> conversations = [];
     List<Contacts> contacts = [];
 
     for (var user in usersMaps.values) {
+      print('userID: $user');
       if (user.avatarUrl?.isNotEmpty == true && !firstTime) {
         final contact = Contacts(
           userId: user.userId as int,
@@ -34,6 +36,7 @@ class BChatSDKRepository {
         );
         contacts.add(contact);
       } else {
+        print('NULL so: ${userIds.join(',')}');
         final response = await api.getContactsByIds(token, userIds.join(','));
         if (response.status == successfull &&
             response.body?.contacts?.isNotEmpty == true) {
@@ -44,6 +47,7 @@ class BChatSDKRepository {
         break;
       }
     }
+    print('contacts size: ${contacts.length}');
 
     for (var contact in contacts) {
       final ConversationModel model;
@@ -53,7 +57,7 @@ class BChatSDKRepository {
             type: ChatConversationType.Chat);
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
-        if (lastMessage == null) continue;
+        // if (lastMessage == null) continue;
 
         model = ConversationModel(
             id: contact.userId.toString(),

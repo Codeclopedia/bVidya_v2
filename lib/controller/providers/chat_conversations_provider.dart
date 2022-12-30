@@ -1,4 +1,4 @@
-import 'package:agora_chat_sdk/src/models/chat_presence.dart';
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:collection/collection.dart';
 
 import '/core/state.dart';

@@ -1,11 +1,11 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/state.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'controller/providers/user_auth_provider.dart';
 import 'core/constants/route_list.dart';
 import 'core/routes.dart';
+import 'core/state.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'ui/screen/welcome/splash.dart';
@@ -79,69 +79,67 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
     int i = 0;
     for (var msg in messages) {
       i++;
-      switch (msg.body.type) {
-        case MessageType.TXT:
-          {
-            ChatTextMessageBody body = msg.body as ChatTextMessageBody;
-
-            print(
-              "receive $i text message: ${body.content}, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.IMAGE:
-          {
-            ChatImageMessageBody body = msg.body as ChatImageMessageBody;
-
-            print(
-              "receive image message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.VIDEO:
-          {
-            ChatVideoMessageBody body = msg.body as ChatVideoMessageBody;
-            print(
-              "receive video message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.LOCATION:
-          {
-            ChatLocationMessageBody body = msg.body as ChatLocationMessageBody;
-            print(
-              "receive location message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.VOICE:
-          {
-            ChatVoiceMessageBody body = msg.body as ChatVoiceMessageBody;
-            print(
-              "receive voice message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.FILE:
-          {
-            ChatFileMessageBody body = msg.body as ChatFileMessageBody;
-            print(
-              "receive image message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.CUSTOM:
-          {
-            ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
-            print(
-              "receive custom message, from: ${msg.from}",
-            );
-          }
-          break;
-        case MessageType.CMD:
-          {}
-          break;
-      }
+      // switch (msg.body.type) {
+      //   case MessageType.TXT:
+      //     {
+      //       ChatTextMessageBody body = msg.body as ChatTextMessageBody;
+      //       print(
+      //         "receive $i text message: ${body.content}, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.IMAGE:
+      //     {
+      //       ChatImageMessageBody body = msg.body as ChatImageMessageBody;
+      //       print(
+      //         "receive image message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.VIDEO:
+      //     {
+      //       ChatVideoMessageBody body = msg.body as ChatVideoMessageBody;
+      //       print(
+      //         "receive video message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.LOCATION:
+      //     {
+      //       ChatLocationMessageBody body = msg.body as ChatLocationMessageBody;
+      //       print(
+      //         "receive location message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.VOICE:
+      //     {
+      //       ChatVoiceMessageBody body = msg.body as ChatVoiceMessageBody;
+      //       print(
+      //         "receive voice message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.FILE:
+      //     {
+      //       ChatFileMessageBody body = msg.body as ChatFileMessageBody;
+      //       print(
+      //         "receive image message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.CUSTOM:
+      //     {
+      //       ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
+      //       print(
+      //         "receive custom message, from: ${msg.from}",
+      //       );
+      //     }
+      //     break;
+      //   case MessageType.CMD:
+      //     {}
+      //     break;
+      // }
     }
   }
 
@@ -156,7 +154,7 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
     // FirebaseMessaging? messaging = FirebaseMessaging.instance;
     // if (messaging == null) return;
     // NotificationSettings settings =
-    //     await FirebaseMessaging.instance.requestPermission(
+    //  await FirebaseMessaging.instance.requestPermission(
     //   alert: true,
     //   announcement: false,
     //   badge: true,
@@ -165,8 +163,8 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
     //   provisional: false,
     //   sound: true,
     // );
-
     // print('User granted permission: ${settings.authorizationStatus}');
+
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
 
@@ -190,33 +188,37 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, ref, child) {
-      ref.listen(userAuthChangeProvider, ((previous, next) {
-        if (next.user == null && next.isUserSigned) {
-          ref.read(userAuthChangeProvider.notifier).setUserSigned(false);
-          print('User is null');
-          Navigator.pushNamedAndRemoveUntil(
-              context, RouteList.login, (route) => route.isFirst);
-        }
-      }));
+    print('OnBuild Called');
+    // return Consumer(builder: (_, ref, child) {
+    //   ref.read(userAuthChangeProvider).loadUser();
 
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.themeLight,
-        darkTheme: AppTheme.themeDark,
-        themeMode: ThemeMode.light,
-        builder: EasyLoading.init(),
-        onGenerateRoute: Routes.generateRoute,
-        home: const SplashScreen(),
-        localizationsDelegates: const [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-      );
-    });
+    //   ref.listen(userAuthChangeProvider, ((previous, next) {
+    //     print('listen called ${next.isUserSigned}');
+    //     if (next.user == null && next.isUserSigned) {
+    //       ref.read(userAuthChangeProvider).setUserSigned(false);
+    //       print('User is null');
+    //       Navigator.pushNamedAndRemoveUntil(
+    //           context, RouteList.login, (route) => route.isFirst);
+    //     }
+    //   }));
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.themeLight,
+      darkTheme: AppTheme.themeDark,
+      themeMode: ThemeMode.light,
+      builder: EasyLoading.init(),
+      onGenerateRoute: Routes.generateRoute,
+      home: const SplashScreen(),
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
+    );
+    // });
   }
 
   @override

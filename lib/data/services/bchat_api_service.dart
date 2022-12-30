@@ -54,7 +54,7 @@ class BChatApiService {
       final data = {'user_ids': userIds};
       final response =
           await _dio.post('$baseUrlApi${ApiList.contactsByIds}', data: data);
-      print('${jsonEncode(response.data)}');
+      print('contactsByIds ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return ContactListResponse.fromJson(response.data);
       } else {

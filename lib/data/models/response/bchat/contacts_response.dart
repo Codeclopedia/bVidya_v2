@@ -27,8 +27,8 @@ class ContactsBody {
   ContactsBody({this.contacts});
 
   ContactsBody.fromJson(Map<String, dynamic> json)
-      : contacts = json["contacts"] != null
-            ? List.from(json["contacts"].map((x) => Contacts.fromJson(x)))
+      : contacts = json["details"] != null
+            ? List.from(json["details"].map((x) => Contacts.fromJson(x)))
             : null;
   //   if (json['contacts'] != null) {
   //     contacts = <Contacts>[];
@@ -40,7 +40,7 @@ class ContactsBody {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['contacts'] = contacts?.map((v) => v.toJson()).toList();
+    data['details'] = contacts?.map((v) => v.toJson()).toList();
     return data;
   }
 }
