@@ -55,9 +55,8 @@ class BaseNoScrollSettings extends StatelessWidget {
                 },
                 icon: getSvgIcon('arrow_back.svg')),
 
-            Consumer(
-              builder: (context, ref, child) {
-                final user = ref.watch(loginRepositoryProvider).user;
+            UserConsumer(
+              builder: (context, user, ref) {
                 return _buildUser(user);
               },
             )

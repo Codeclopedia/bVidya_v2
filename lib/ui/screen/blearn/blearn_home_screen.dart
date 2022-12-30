@@ -344,12 +344,12 @@ class BLearnHomeScreen extends StatelessWidget {
       courses.sort(
         (a, b) {
           if (selected == CourseType.trending) {
-            return a.numberOfLesson.compareTo(b.numberOfLesson);
+            return (a.numberOfLesson??'').compareTo(b.numberOfLesson??'');
           } else if (selected == CourseType.mostViewed) {
-            return b.duration
-                .compareTo(a.duration); //TODO convert into minutes and compare
+            return (b.duration??'')
+                .compareTo(a.duration??''); //TODO convert into minutes and compare
           } else {
-            return b.ratingCount.compareTo(a.ratingCount);
+            return (b.ratingCount??0).compareTo(a.ratingCount??0);
           }
         },
       );

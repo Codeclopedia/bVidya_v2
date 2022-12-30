@@ -51,7 +51,6 @@
 //             ),
 //             Consumer(
 //               builder: (context, ref, child) {
-//                 final user = ref.watch(loginRepositoryProvider).user;
 //                 return Container(
 //                   alignment: Alignment.topCenter,
 //                   margin: EdgeInsets.only(top: 4.h),

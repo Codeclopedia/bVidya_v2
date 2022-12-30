@@ -284,15 +284,15 @@ class TeacherScheduleScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(top: 3.h, bottom: 2.h),
       child: Center(
-        child: Consumer(
-          builder: (context, ref, child) {
-            final user = ref.watch(loginRepositoryProvider).user;
+        child: UserConsumer(
+          builder: (context, user, ref) {
             return Column(
               children: [
-                getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
+                getRectFAvatar(size: 22.w, user.name, user.image),
                 SizedBox(height: 0.5.h),
-                Text(user?.name ?? '',
+                Text(user.name,
                     style: TextStyle(
+                        fontFamily: kFontFamily,
                         color: AppColors.cardWhite,
                         fontWeight: FontWeight.w500)),
               ],
@@ -392,15 +392,13 @@ class TeacherScheduleScreen extends StatelessWidget {
           ),
         ),
         Center(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final user = ref.watch(loginRepositoryProvider).user;
+          child: UserConsumer(
+            builder: (context, user, ref) {
               return Column(
                 children: [
-                  getRectFAvatar(
-                      size: 22.w, user?.name ?? '', user?.image ?? ''),
+                  getRectFAvatar(size: 22.w, user.name, user.image),
                   SizedBox(height: 0.5.h),
-                  Text(user?.name ?? '', style: textStyleBlack),
+                  Text(user.name, style: textStyleBlack),
                 ],
               );
             },

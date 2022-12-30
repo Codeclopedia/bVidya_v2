@@ -299,15 +299,13 @@ class BMeetHomeScreen extends StatelessWidget {
           ),
         ),
         Center(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final user = ref.watch(loginRepositoryProvider).user;
+          child: UserConsumer(
+            builder: (context, user, ref) {
               return Column(
                 children: [
-                  getRectFAvatar(
-                      size: 22.w, user?.name ?? '', user?.image ?? ''),
+                  getRectFAvatar(size: 22.w, user.name, user.image),
                   SizedBox(height: 0.5.h),
-                  Text(user?.name ?? '', style: textStyleBlack),
+                  Text(user.name, style: textStyleBlack),
                 ],
               );
             },

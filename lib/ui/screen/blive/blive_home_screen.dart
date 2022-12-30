@@ -132,10 +132,9 @@ class BLiveHomeScreen extends HookWidget {
                 Container(
                   padding: EdgeInsets.only(top: 1.h),
                   alignment: Alignment.topRight,
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final user = ref.watch(loginRepositoryProvider).user;
-                      return user?.role.toLowerCase() == 'teacher'
+                  child: UserConsumer(
+                    builder: (context,user, ref) {
+                      return user.role.toLowerCase() == 'teacher'
                           ? InkWell(
                               onTap: () {
                                 Navigator.pushNamed(
@@ -158,7 +157,6 @@ class BLiveHomeScreen extends HookWidget {
                 // Center(
                 //   child: Consumer(
                 //     builder: (context, ref, child) {
-                //       final user = ref.watch(loginRepositoryProvider).user;
                 //       return Text(user?.name ?? '', style: textStyleBlack);
                 //     },
                 //   ),
@@ -204,7 +202,6 @@ class BLiveHomeScreen extends HookWidget {
                     })
                     // Consumer(
                     //   builder: (context, ref, child) {
-                    //     final user = ref.watch(loginRepositoryProvider).user;
                     //     return user?.role.toLowerCase() != 'teacher'
                     //         ? InkWell(
                     //             onTap: () {
@@ -239,15 +236,14 @@ class BLiveHomeScreen extends HookWidget {
           ),
         ),
         Center(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final user = ref.watch(loginRepositoryProvider).user;
+          child: UserConsumer(
+            builder: (context, user, ref) {
               return Column(
                 children: [
                   getRectFAvatar(
-                      size: 22.w, user?.name ?? '', user?.image ?? ''),
+                      size: 22.w, user.name, user.image),
                   SizedBox(height: 0.5.h),
-                  Text(user?.name ?? '', style: textStyleBlack)
+                  Text(user.name, style: textStyleBlack)
                 ],
               );
             },

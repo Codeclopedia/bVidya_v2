@@ -19,7 +19,7 @@ final loginRepositoryProvider = Provider<AuthRepository>(
 );
 
 final authLoadProvider = FutureProvider.autoDispose(
-  (_) async => _.watch(loginRepositoryProvider).init(),
+  (ref) async => ref.watch(loginRepositoryProvider).init(),
 );
 
 final loginEnteredOTPProvider = StateProvider.autoDispose<String>(
@@ -60,7 +60,6 @@ final inputTextProvider = StateProvider.autoDispose<String>(
 final loadingStateProvider = StateProvider.autoDispose<bool>(
   (_) => false,
 );
-
 
 // //Drawer
 // final drawerOpenProvider = StateProvider.autoDispose<bool>(

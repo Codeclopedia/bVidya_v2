@@ -29,7 +29,7 @@ class InstructorCourseRowItem extends StatelessWidget {
                 topLeft: Radius.circular(2.3.w),
                 topRight: Radius.circular(2.3.w)),
             child: Image(
-              image: getImageProvider(course.image),
+              image: getImageProvider(course.image??''),
               height: 14.h,
               // width: 70.w,
               width: double.infinity,
@@ -45,7 +45,7 @@ class InstructorCourseRowItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    course.name,
+                    course.name??'',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -56,7 +56,7 @@ class InstructorCourseRowItem extends StatelessWidget {
                   ),
                   SizedBox(height: 0.5.h),
                   Text(
-                    course.description,
+                    course.description??'',
                     maxLines: 1,
                     style: TextStyle(
                         fontFamily: kFontFamily,
@@ -67,14 +67,14 @@ class InstructorCourseRowItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        course.rating,
+                        course.rating??'',
                         style: TextStyle(
                             color: AppColors.yellowAccent,
                             fontSize: 12.sp,
                             fontFamily: kFontFamily,
                             fontWeight: FontWeight.bold),
                       ),
-                      buildRatingBar(double.parse(course.rating)),
+                      buildRatingBar(double.parse(course.rating??'0.0')),
                       Text(
                         '(${course.ratingCount})',
                         style: TextStyle(

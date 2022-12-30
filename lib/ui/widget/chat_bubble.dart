@@ -30,7 +30,6 @@
 //       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
 //       child: Consumer(
 //         builder: (context, ref, child) {
-//           final user = ref.watch(loginRepositoryProvider).user;
 //           return Row(
 //             crossAxisAlignment: CrossAxisAlignment.start,
 //             mainAxisSize: MainAxisSize.max,

@@ -24,7 +24,6 @@ class StudentProfileScreen extends StatelessWidget {
             // Center(
             //   child: Consumer(
             //     builder: (context, ref, child) {
-            //       final user = ref.watch(loginRepositoryProvider).user;
             //       return Text(
             //         user?.email ?? '',
             //         style: TextStyle(
@@ -73,8 +72,16 @@ class StudentProfileScreen extends StatelessWidget {
             }),
             _buildContent(
                 S.current.profile_invite, "profile_invite.svg", () {}),
-            _buildContent(S.current.profile_logout, "profile_logout.svg", () {
-              showLogoutDialog(context);
+            Consumer(builder: (context, ref, child) {
+              return _buildContent(
+                  S.current.profile_logout, "profile_logout.svg", () {
+                showLogoutDialog(context, ref,callback: () async {
+                  
+                  // ref.watch(loginRepositoryProvider).loggedOut();
+                  // Navigator.pushNamedAndRemoveUntil(
+                  //     context, RouteList.login, (route) => route.isFirst);
+                });
+              });
             }),
             Container(
               width: 0.5.w,

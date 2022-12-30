@@ -89,7 +89,7 @@ class CourseListScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(3.w)),
                     image: DecorationImage(
-                      image: getImageProvider(course.image),
+                      image: getImageProvider(course.image??''),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -105,7 +105,7 @@ class CourseListScreen extends StatelessWidget {
                 SizedBox(width: 4.w),
                 Expanded(
                   child: Text(
-                    course.name,
+                    course.name??'',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       color: Colors.black,

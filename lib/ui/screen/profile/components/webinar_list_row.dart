@@ -25,7 +25,7 @@ class WebinarListRow extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(3.w),
               child: Image(
-                image: getImageProvider(webinar.image),
+                image: getImageProvider(webinar.image??''),
                 height: 7.5.h,
                 width: 7.5.h,
                 fit: BoxFit.fill,
@@ -38,7 +38,7 @@ class WebinarListRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    webinar.startsAt,
+                    webinar.startsAt??'',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 8.sp,
@@ -47,7 +47,7 @@ class WebinarListRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    webinar.name,
+                    webinar.name??'',
                     maxLines: 2,
                     style: TextStyle(
                         fontFamily: kFontFamily,

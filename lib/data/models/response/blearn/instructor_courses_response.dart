@@ -1,7 +1,9 @@
+import '../profile/instructor_profile_response.dart';
+
 import 'courses_response.dart';
 
 class InstructorCoursesResponse {
-  final List<Course>? body;
+  final List<InstructorCourse>? body;
   final String? status;
   final String? message;
 
@@ -12,7 +14,11 @@ class InstructorCoursesResponse {
   });
 
   InstructorCoursesResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body']!=null?List.from(json['body']).map((e) => Course.fromJson(e)).toList():null,
+      : body = json['body'] != null
+            ? List.from(json['body'])
+                .map((e) => InstructorCourse.fromJson(e))
+                .toList()
+            : null,
         status = json['status'],
         message = json['message'];
 

@@ -47,7 +47,7 @@ class CourseDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${course.numberOfLesson} Lessons | ${course.duration.replaceAll(":", ".")} Hours',
+              '${course.numberOfLesson} Lessons | ${course.duration!.replaceAll(":", ".")} Hours',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 8.sp,
@@ -57,7 +57,7 @@ class CourseDetailScreen extends ConsumerWidget {
             ),
             Consumer(
               builder: (context, ref, child) {
-                return ref.watch(bLearnLessonsProvider(course.id)).when(
+                return ref.watch(bLearnLessonsProvider(course.id!)).when(
                     data: (data) {
                       if (data?.lessons?.isNotEmpty == true) {
                         return _buildLessons(ref, data!.lessons!);
@@ -169,7 +169,7 @@ class CourseDetailScreen extends ConsumerWidget {
   }
 
   Widget _getText() {
-    return Text(course.description);
+    return Text(course.description ?? '');
   }
 
   Widget _buildGridView() {
@@ -368,7 +368,7 @@ class CourseDetailScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  course.name,
+                  course.name ?? '',
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 17.sp,
@@ -405,7 +405,8 @@ class CourseDetailScreen extends ConsumerWidget {
             children: [
               _buildIntructor(),
               const Spacer(),
-              _buildMeta('Launguage', course.language, 'icon_language.svg'),
+              _buildMeta(
+                  'Launguage', course.language ?? '', 'icon_language.svg'),
               const Spacer(),
               _buildMeta('Category', course.categoryId.toString(),
                   'icon_category.svg'),
@@ -421,7 +422,8 @@ class CourseDetailScreen extends ConsumerWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        getCicleAvatar(course.instructorName, course.instructorImage,
+        getCicleAvatar(
+            course.instructorName ?? '', course.instructorImage ?? '',
             radius: 4.w),
         SizedBox(width: 1.w),
         Column(
@@ -436,7 +438,7 @@ class CourseDetailScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              course.instructorName,
+              course.instructorName ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -494,7 +496,7 @@ class CourseDetailScreen extends ConsumerWidget {
           child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(2.w)),
               child: Image(
-                image: getImageProvider(course.image),
+                image: getImageProvider(course.image ?? ''),
                 fit: BoxFit.fitWidth,
               )),
         ),

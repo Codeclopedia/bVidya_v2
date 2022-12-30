@@ -81,7 +81,6 @@ class ScheduleMeetScreen extends HookWidget {
   // Widget buildScreen(BuildContext context) {
   //   return Consumer(
   //     builder: (context, ref, child) {
-  //       final user = ref.watch(loginRepositoryProvider).user;
   //       if (user == null) return const SizedBox.expand();
   //       return Container(
   //         decoration: const BoxDecoration(

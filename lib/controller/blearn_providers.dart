@@ -39,8 +39,8 @@ final bLearnInstructorsProvider = FutureProvider<Instructors?>((ref) {
   return ref.read(bLearnRepositoryProvider).getInstructors();
 });
 
-final bLearnInstructorCoursesProvider =
-    FutureProvider.autoDispose.family<List<Course>?, String>((ref, id) {
+final bLearnInstructorCoursesProvider = FutureProvider.autoDispose
+    .family<List<InstructorCourse>?, String>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getInstructorCourses(id);
 });
 

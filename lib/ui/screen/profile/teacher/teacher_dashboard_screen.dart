@@ -39,9 +39,7 @@ class TeacherDashboard extends StatelessWidget {
     return BaseSettings(
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-        child: Consumer(builder: (context, ref, child) {
-          final user = ref.watch(loginRepositoryProvider).user;
-          if (user == null) return const SizedBox.shrink();
+        child: UserConsumer(builder: (context, user,ref) {
           final data =
               ref.watch(bLearnInstructorProfileProvider(user.id.toString()));
           return data.when(
@@ -339,7 +337,6 @@ class TeacherDashboard extends StatelessWidget {
 
         // Consumer(
         //   builder: (context, ref, child) {
-        //     final user = ref.watch(loginRepositoryProvider).user;
         //     if (user == null) return const SizedBox.shrink();
         //     return ref
         //         .watch(bLearnInstructorCoursesProvider(user.id.toString()))

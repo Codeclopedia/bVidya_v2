@@ -407,10 +407,9 @@ class HomeScreen extends HookConsumerWidget {
   Widget _userAppBar(BuildContext context) {
     return SizedBox(
       height: 12.h,
-      child: Consumer(
-        builder: (context, ref, child) {
-          final user = ref.watch(loginRepositoryProvider).user;
-          if (user == null) return const SizedBox.shrink();
+      child: UserConsumer(
+        builder: (context, user, ref) {
+          // if (user == null) return const SizedBox.shrink();
           return Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,

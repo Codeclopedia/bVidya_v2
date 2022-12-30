@@ -54,9 +54,8 @@ class BaseDrawerSettingScreen extends StatelessWidget {
               //   ),
               // ),
             ),
-            Consumer(
-              builder: (context, ref, child) {
-                final user = ref.watch(loginRepositoryProvider).user;
+            UserConsumer(
+              builder: (context, user, ref) {
                 return _buildUser(user);
               },
             ),
@@ -66,7 +65,7 @@ class BaseDrawerSettingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUser(User? user) {
+  Widget _buildUser(User user) {
     return Container(
       alignment: Alignment.topCenter,
       margin: EdgeInsets.only(top: 4.h),
@@ -74,9 +73,9 @@ class BaseDrawerSettingScreen extends StatelessWidget {
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.max,
         children: [
-          getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
+          getRectFAvatar(size: 22.w, user.name, user.image),
           Text(
-            user?.name ?? '',
+            user.name,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12.sp,
@@ -84,7 +83,7 @@ class BaseDrawerSettingScreen extends StatelessWidget {
           ),
           if (showEmail)
             Text(
-              user?.email ?? '',
+              user.email,
               style: TextStyle(
                 fontSize: 8.sp,
                 fontWeight: FontWeight.w600,

@@ -159,12 +159,12 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     try {
       _dio.options.headers["X-Auth-Token"] = authToken;
-      // print('$authToken $instructorId');
+      print('$authToken $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
 
       if (response.statusCode == 200) {
-        // print('${jsonEncode(response.data)}');
+        print('${jsonEncode(response.data)}');
         return InstructorProfileResponse.fromJson(response.data);
       } else {
         return InstructorProfileResponse(
@@ -182,8 +182,10 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
+      print('$authToken $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsCourseByInstructor}$instructorId');
+      print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return InstructorCoursesResponse.fromJson(response.data);
       } else {

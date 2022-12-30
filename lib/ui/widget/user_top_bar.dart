@@ -6,10 +6,8 @@ class UserTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final user = ref.watch(loginRepositoryProvider).user;
-        if (user == null) return const SizedBox.shrink();
+    return UserConsumer(
+      builder: (context, user, ref) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,

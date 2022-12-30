@@ -1,7 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/state.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'controller/providers/user_auth_provider.dart';
+import 'core/constants/route_list.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
@@ -187,22 +190,33 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.themeLight,
-      darkTheme: AppTheme.themeDark,
-      themeMode: ThemeMode.light,
-      builder: EasyLoading.init(),
-      onGenerateRoute: Routes.generateRoute,
-      home: const SplashScreen(),
-      localizationsDelegates: const [
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: S.delegate.supportedLocales,
-    );
+    return Consumer(builder: (context, ref, child) {
+      ref.listen(userAuthChangeProvider, ((previous, next) {
+        if (next.user == null && next.isUserSigned) {
+          ref.read(userAuthChangeProvider.notifier).setUserSigned(false);
+          print('User is null');
+          Navigator.pushNamedAndRemoveUntil(
+              context, RouteList.login, (route) => route.isFirst);
+        }
+      }));
+
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.themeLight,
+        darkTheme: AppTheme.themeDark,
+        themeMode: ThemeMode.light,
+        builder: EasyLoading.init(),
+        onGenerateRoute: Routes.generateRoute,
+        home: const SplashScreen(),
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: S.delegate.supportedLocales,
+      );
+    });
   }
 
   @override

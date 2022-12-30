@@ -10,7 +10,7 @@ class CoursesResponse {
   });
 
   CoursesResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body']!=null?Courses.fromJson(json['body']):null,
+      : body = json['body'] != null ? Courses.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 
@@ -30,8 +30,9 @@ class Courses {
   });
 
   Courses.fromJson(Map<String, dynamic> json)
-      : courses =
-            List.from(json['courses']).map((e) => Course.fromJson(e)).toList();
+      : courses = json['courses'] != null
+            ? List.from(json['courses']).map((e) => Course.fromJson(e)).toList()
+            : null;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -41,54 +42,54 @@ class Courses {
 }
 
 class Course {
-  final int id;
-  final String name;
-  final int categoryId;
-  final int subcategoryId;
-  final int userId;
-  final String description;
-  final String objective;
-  final String benefit;
-  final String audience;
-  final String level;
-  final String language;
-  final String duration;
-  final String numberOfLesson;
-  final String image;
-  final String slug;
-  final String rating;
-  final int ratingCount;
-  final String views;
-  final String status;
-  final String createdAt;
-  final String updatedAt;
-  final String instructorName;
-  final String instructorImage;
+  final int? id;
+  final String? name;
+  final int? categoryId;
+  final int? subcategoryId;
+  final int? userId;
+  final String? description;
+  final String? objective;
+  final String? benefit;
+  final String? audience;
+  final String? level;
+  final String? language;
+  final String? duration;
+  final String? numberOfLesson;
+  final String? image;
+  final String? slug;
+  final String? rating;
+  final int? ratingCount;
+  final String? views;
+  final String? status;
+  final String? createdAt;
+  final String? updatedAt;
+  final String? instructorName;
+  final String? instructorImage;
 
   Course({
-    required this.id,
-    required this.name,
-    required this.categoryId,
-    required this.subcategoryId,
-    required this.userId,
-    required this.description,
-    required this.objective,
-    required this.benefit,
-    required this.audience,
-    required this.level,
-    required this.language,
-    required this.duration,
-    required this.numberOfLesson,
-    required this.image,
-    required this.slug,
-    required this.rating,
-    required this.ratingCount,
-    required this.views,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.instructorName,
-    required this.instructorImage,
+    this.id,
+    this.name,
+    this.categoryId,
+    this.subcategoryId,
+    this.userId,
+    this.description,
+    this.objective,
+    this.benefit,
+    this.audience,
+    this.level,
+    this.language,
+    this.duration,
+    this.numberOfLesson,
+    this.image,
+    this.slug,
+    this.rating,
+    this.ratingCount,
+    this.views,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.instructorName,
+    this.instructorImage,
   });
 
   Course.fromJson(Map<String, dynamic> json)

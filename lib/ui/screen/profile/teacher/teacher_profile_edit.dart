@@ -218,9 +218,8 @@ class TeacherProfileEdit extends HookWidget {
                 icon: getSvgIcon('arrow_back.svg', color: Colors.white),
               ),
               // _buildHeader(),
-              Consumer(
-                builder: (context, ref, child) {
-                  final user = ref.watch(loginRepositoryProvider).user;
+              UserConsumer(
+                builder: (context, user, ref) {
                   return Container(
                     alignment: Alignment.topCenter,
                     margin: EdgeInsets.only(top: 4.h),
@@ -228,8 +227,8 @@ class TeacherProfileEdit extends HookWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.all(2.w),
-                          child: getRectFAvatar(
-                              size: 22.w, user?.name ?? '', user?.image ?? ''),
+                          child:
+                              getRectFAvatar(size: 22.w, user.name, user.image),
                         ),
                         Positioned(
                             bottom: 0,

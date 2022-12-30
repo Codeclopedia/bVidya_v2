@@ -2,6 +2,7 @@
 
 import 'package:flutter/gestures.dart';
 
+import '../../../controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -206,8 +207,10 @@ class LoginScreen extends HookWidget {
   ) async {
     showLoading(ref);
     final error = await ref.read(loginRepositoryProvider).login(email, pass);
+
     hideLoading(ref);
     if (error == null) {
+      // ref.read(userAuthChangeProvider.notifier).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);
     } else {
       AppSnackbar.instance.error(context, error);

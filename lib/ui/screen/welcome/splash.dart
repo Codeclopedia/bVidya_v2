@@ -1,6 +1,7 @@
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../controller/bchat_providers.dart';
+import '../../../controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -14,6 +15,7 @@ class SplashScreen extends ConsumerWidget {
       authLoadProvider,
       (previous, next) async {
         if (next.value != null) {
+          // ref.read(userAuthChangeProvider.notifier).setUserSigned(true);
           await ref.read(bChatSDKControllerProvider).initChatSDK();
         }
         Future.delayed(Duration(seconds: next.value != null ? 4 : 2), () {

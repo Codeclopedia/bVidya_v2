@@ -149,7 +149,6 @@ class JoinMeetScreen extends HookWidget {
   // _buildCo() {
   //   return Consumer(
   //     builder: (context, ref, child) {
-  //       final user = ref.watch(loginRepositoryProvider).user;
   //       if (user == null) return const SizedBox.expand();
   //       return Container(
   //         // padding: EdgeInsets.only(top: 4.h),

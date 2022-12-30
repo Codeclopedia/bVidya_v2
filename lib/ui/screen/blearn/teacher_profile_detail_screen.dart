@@ -1,3 +1,5 @@
+import 'package:bvidya/ui/screen/profile/components/instructor_course_row.dart';
+
 import '/controller/blearn_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
@@ -277,7 +279,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                         shrinkWrap: false,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          return InstructorCourseTile(course: courses[index]);
+                          return InstructorCourseRowItem(
+                              course: courses[index]);
                         })
                     : buildEmptyPlaceHolder('No Cources uploaded yet'));
           },

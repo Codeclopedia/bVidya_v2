@@ -143,4 +143,8 @@ class AuthRepository {
       return 'Unknown error occurred!!';
     }
   }
+
+  void loggedOut() {
+    _user = null;
+  }
 }

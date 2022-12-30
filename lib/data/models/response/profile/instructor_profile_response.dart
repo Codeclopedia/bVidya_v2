@@ -12,7 +12,7 @@ class InstructorProfileResponse {
   });
 
   InstructorProfileResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body']!=null?ProfileBody.fromJson(json['body']):null,
+      : body = json['body'] != null ? ProfileBody.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 
@@ -133,26 +133,26 @@ class Profile {
   final String? websiteUrl;
 
   Profile(
-      {required this.name,
-      required this.phone,
-      required this.email,
-      required this.gender,
-      required this.age,
-      required this.language,
-      required this.bio,
-      required this.occupation,
-      required this.experience,
-      required this.specialization,
-      required this.city,
-      required this.state,
-      required this.country,
-      required this.address,
-      required this.image,
-      required this.twitterUrl,
-      required this.facebookUrl,
-      required this.instagramUrl,
-      required this.youtubeUrl,
-      required this.websiteUrl});
+      {this.name,
+      this.phone,
+      this.email,
+      this.gender,
+      this.age,
+      this.language,
+      this.bio,
+      this.occupation,
+      this.experience,
+      this.specialization,
+      this.city,
+      this.state,
+      this.country,
+      this.address,
+      this.image,
+      this.twitterUrl,
+      this.facebookUrl,
+      this.instagramUrl,
+      this.youtubeUrl,
+      this.websiteUrl});
 
   Profile.fromJson(Map<String, dynamic> json)
       : name = json['name'],
@@ -231,22 +231,22 @@ class Watchtime {
 }
 
 class Webinar {
-  final int id;
-  final String name;
-  final String description;
-  final String image;
-  final String status;
-  final String startsAt;
-  final String endsAt;
+  final int? id;
+  final String? name;
+  final String? description;
+  final String? image;
+  final String? status;
+  final String? startsAt;
+  final String? endsAt;
 
   Webinar(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.image,
-      required this.status,
-      required this.startsAt,
-      required this.endsAt});
+      {this.id,
+      this.name,
+      this.description,
+      this.image,
+      this.status,
+      this.startsAt,
+      this.endsAt});
 
   Webinar.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -271,36 +271,36 @@ class Webinar {
 }
 
 class Liked {
-  final int id;
-  final String name;
-  final int courseId;
-  final int userId;
-  final String description;
-  final String image;
-  final String videoId;
-  final String duration;
-  final String createdAt;
-  final String updatedAt;
+  final int? id;
+  final String? name;
+  final int? courseId;
+  final int? userId;
+  final String? description;
+  final String? image;
+  final String? videoId;
+  final String? duration;
+  final String? createdAt;
+  final String? updatedAt;
   final dynamic rating;
-  final String ratingCount;
-  final String videoTitle;
-  final String videoPath;
+  final String? ratingCount;
+  final String? videoTitle;
+  final String? videoPath;
 
   Liked(
-      {required this.id,
-      required this.name,
-      required this.courseId,
-      required this.userId,
-      required this.description,
-      required this.image,
-      required this.videoId,
-      required this.duration,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.rating,
-      required this.ratingCount,
-      required this.videoTitle,
-      required this.videoPath});
+      {this.id,
+      this.name,
+      this.courseId,
+      this.userId,
+      this.description,
+      this.image,
+      this.videoId,
+      this.duration,
+      this.createdAt,
+      this.updatedAt,
+      this.rating,
+      this.ratingCount,
+      this.videoTitle,
+      this.videoPath});
 
   Liked.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -340,50 +340,50 @@ class Liked {
 }
 
 class InstructorCourse {
-  final int id;
-  final String name;
-  final int categoryId;
-  final int subcategoryId;
-  final int userId;
-  final String description;
-  final String objective;
-  final String benefit;
-  final String audience;
-  final String level;
-  final String language;
-  final String duration;
-  final String numberOfLesson;
-  final String image;
-  final String slug;
-  final String rating;
-  final int ratingCount;
-  final String views;
-  final String status;
-  final String createdAt;
-  final String updatedAt;
+  final int? id;
+  final String? name;
+  final int? categoryId;
+  final int? subcategoryId;
+  final int? userId;
+  final String? description;
+  final String? objective;
+  final String? benefit;
+  final String? audience;
+  final String? level;
+  final String? language;
+  final String? duration;
+  final String? numberOfLesson;
+  final String? image;
+  final String? slug;
+  final String? rating;
+  final int? ratingCount;
+  final String? views;
+  final String? status;
+  final String? createdAt;
+  final String? updatedAt;
 
   InstructorCourse({
-    required this.id,
-    required this.name,
-    required this.categoryId,
-    required this.subcategoryId,
-    required this.userId,
-    required this.description,
-    required this.objective,
-    required this.benefit,
-    required this.audience,
-    required this.level,
-    required this.language,
-    required this.duration,
-    required this.numberOfLesson,
-    required this.image,
-    required this.slug,
-    required this.rating,
-    required this.ratingCount,
-    required this.views,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.name,
+    this.categoryId,
+    this.subcategoryId,
+    this.userId,
+    this.description,
+    this.objective,
+    this.benefit,
+    this.audience,
+    this.level,
+    this.language,
+    this.duration,
+    this.numberOfLesson,
+    this.image,
+    this.slug,
+    this.rating,
+    this.ratingCount,
+    this.views,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
   });
 
   InstructorCourse.fromJson(Map<String, dynamic> json)
