@@ -1,10 +1,10 @@
 import '/core/state.dart';
 import '/data/models/models.dart';
 
-class GroupChatConversationNotifier extends StateNotifier<List<GroupModel>> {
+class GroupChatConversationNotifier extends StateNotifier<List<GroupConversationModel>> {
   GroupChatConversationNotifier() : super([]);
 
-  GroupModel? getLast() {
+  GroupConversationModel? getLast() {
     if (state.isEmpty) return null;
     return state[0];
   }
@@ -13,11 +13,11 @@ class GroupChatConversationNotifier extends StateNotifier<List<GroupModel>> {
     state = [];
   }
 
-  void addConversation(GroupModel c) {
+  void addConversation(GroupConversationModel c) {
     state = [...state, c];
   }
 
-  void addConversations(List<GroupModel> chats) {
+  void addConversations(List<GroupConversationModel> chats) {
     state = [];
     for (var c in chats) {
       state = [...state, c];

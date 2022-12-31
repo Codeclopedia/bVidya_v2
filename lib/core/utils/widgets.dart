@@ -60,6 +60,7 @@ Widget buildRatingBar(double rating) => RatingBar.builder(
       direction: Axis.horizontal,
       allowHalfRating: true,
       itemCount: 5,
+      ignoreGestures: true,
       itemBuilder: (context, _) => const Icon(
         Icons.star,
         color: Color(0xFFF49C32),
@@ -75,7 +76,7 @@ ImageProvider getImageProvider(String url) {
   } else if (url.startsWith('assets')) {
     return AssetImage(url);
   } else {
-    print('$url');
+    // print('$url');
     return CachedNetworkImageProvider('$baseImageApi$url');
     // return FileImage(
     //   File(url),

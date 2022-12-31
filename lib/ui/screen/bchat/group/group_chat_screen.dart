@@ -16,7 +16,7 @@ import '../widgets/chat_message_bubble.dart';
 import '../widgets/typing_indicator.dart';
 
 class GroupChatScreen extends HookConsumerWidget {
-  final GroupModel model;
+  final GroupConversationModel model;
   GroupChatScreen({Key? key, required this.model}) : super(key: key);
 
   late final String _myUserId;
@@ -484,7 +484,7 @@ class GroupChatScreen extends HookConsumerWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.w),
             child: getRectFAvatar(
-              model.name,
+              model.groupInfo.name??'',
               model.image,
             ),
           ),
@@ -499,7 +499,7 @@ class GroupChatScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    model.name,
+                    model.groupInfo.name??'',
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         color: Colors.white,

@@ -3,6 +3,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 class BChatContactManager {
+
+
+
+  
   static Future<List<String>> getContactList({bool fromServer = false}) async {
     try {
       // final sd = ChatContactManager();

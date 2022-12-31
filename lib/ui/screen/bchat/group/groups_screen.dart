@@ -37,7 +37,7 @@ class GroupsScreen extends StatelessWidget {
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, RouteList.groupInfo,
-                                    arguments: GroupModel('Office Group', ''));
+                                    arguments: conversationList[index]);
                               },
                               child: _buildConversationItem(
                                   context, conversationList[index], ref),
@@ -56,7 +56,7 @@ class GroupsScreen extends StatelessWidget {
   }
 
   Widget _buildConversationItem(
-      BuildContext context, GroupModel model, WidgetRef ref) {
+      BuildContext context, GroupConversationModel model, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.groupChatScreen,
@@ -86,7 +86,7 @@ class GroupsScreen extends StatelessWidget {
     );
   }
 
-  Widget _conversationRow(GroupModel model) {
+  Widget _conversationRow(GroupConversationModel model) {
     final colorTimeBadge = model.badgeCount > 0
         ? AppColors.contactBadgeUnreadTextColor
         : AppColors.contactBadgeReadTextColor;
@@ -108,14 +108,14 @@ class GroupsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          getCicleAvatar(model.name, model.image),
+          getCicleAvatar(model.groupInfo.name??'', model.groupInfo.extension??''),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.name,
+                  model.groupInfo.name??'',
                   style: TextStyle(
                     fontWeight: model.badgeCount > 0
                         ? FontWeight.w700

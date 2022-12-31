@@ -56,6 +56,9 @@ class ApiList {
   static const String contactsByIds = 'chat-user/contact/details'; //POST
   static const String groupContactsByIds = 'chat-user/group/details'; //POST
   static const String deleteContact = 'chat-user/delete-contact'; //POST
+  
+  
+  static const String uploadImage = 'messenger/attachment'; //POST Todo change later
 
   //CALLING
   static const String makeCall = 'messenger/start-call'; //POST

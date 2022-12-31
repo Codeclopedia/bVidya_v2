@@ -3,6 +3,7 @@
 import 'dart:convert';
 // import 'package:collection/collection.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/bchat_api_service.dart';
@@ -16,7 +17,9 @@ class BChatSDKController {
   final User _currentUser;
 
   // WidgetRef? _ref;
-  BChatSDKController(this._currentUser);
+  BChatSDKController(this._currentUser) {
+    print('BChatSDKController initialized');
+  }
 
   bool _initialized = false;
   bool shouldLoadRemote = false;
@@ -24,6 +27,7 @@ class BChatSDKController {
   loadChats(WidgetRef ref) async {
     print('loadinging chats $_initialized');
     if (!_initialized) {
+      print('init from loadChats');
       await initChatSDK();
     }
     // _isFirstTimeLoading = true;
@@ -37,19 +41,23 @@ class BChatSDKController {
       return;
     }
     _initialized = true;
-
+    print('_initialized');
     final pref = await SharedPreferences.getInstance();
 
     final token =
         await BChatApiService.instance.fetchChatToken(_currentUser.authToken);
     String? oldChatBody = pref.getString('chat_body');
+
     if (token.body != null) {
       bool shouldLogin = true;
       if (oldChatBody != null) {
+        int? login = pref.getInt('last_login');
         ChatTokenBody oldBody = ChatTokenBody.fromJson(jsonDecode(oldChatBody));
         shouldLogin = oldBody.appKey != token.body!.appKey ||
             oldBody.userId != token.body!.userId ||
-            oldBody.userToken != token.body!.userToken;
+            (DateTime.now().millisecondsSinceEpoch - (login ?? 0)) >
+                60 * 60 * 1000;
+        // oldBody.userToken != token.body!.userToken;
       }
 
       print('shouldLogin -  $shouldLogin');
@@ -59,6 +67,10 @@ class BChatSDKController {
       ChatOptions options = ChatOptions(
         appKey: token.body!.appKey,
         autoLogin: false,
+        acceptInvitationAlways: true,
+        deleteMessagesAsExitGroup: false,
+        requireAck: true,
+        requireDeliveryAck: true,
       );
 
       options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
@@ -77,7 +89,7 @@ class BChatSDKController {
 
       if (shouldLogin || !alreadyLoggedIn) {
         await _signIn(token.body!.userId.toString(), token.body!.userToken);
-
+        await pref.setInt('last_login', DateTime.now().millisecondsSinceEpoch);
         await pref.setString('chat_body', jsonEncode(token.body!));
       }
 
@@ -274,60 +286,11 @@ class BChatSDKController {
   }
 
   void loadGroupConversations(WidgetRef ref) async {
-    List<GroupModel> conversations = [];
+    List<GroupConversationModel> conversations = [];
     // conversations.clear();
     try {
-      List<ChatConversation> list =
-          await ChatClient.getInstance.chatManager.loadAllConversations();
-
-      if (list.isEmpty) {
-        try {
-          list = await ChatClient.getInstance.chatManager
-              .getConversationsFromServer();
-        } on ChatError catch (_) {
-          // print(e);
-          // recall failed, code: e.code, reason: e.description
-        }
-      }
-      final myUserId = _currentUser.id;
-      if (myUserId == 1 || myUserId == 24) {
-        if (list.isNotEmpty) {
-          for (var conv in list) {
-            if (conv.type != ChatConversationType.GroupChat) {
-              continue;
-            }
-            final unread = await conv.unreadCount();
-            final fromId = (await conv.lastReceivedMessage())?.from;
-
-            ChatMessage? message = await conv.latestMessage();
-            GroupModel model = GroupModel(
-              '', '',
-              badgeCount: unread,
-              lastMessage: message,
-
-              // id: fromId.toString(),
-              // badgeCount: unread,
-              // user: usersMap[fromId.toString()]!,
-              // conversation: conv,
-              // lastMessage: message,
-            );
-            conversations.add(model);
-          }
-        } else {
-          // print('Conversation is blank');
-          final fromId = myUserId == 24 ? 1 : 24;
-          GroupModel model = GroupModel(
-            '', '',
-            // id: fromId.toString(),
-            // badgeCount: 0,
-            // user: usersMap[fromId.toString()]!,
-            // conversation: null,
-            // lastMessage: null,
-          );
-          conversations.add(model);
-        }
-      }
-    } on ChatError catch (e) {
+      conversations = await BchatGroupManager.loadGroupConversationsList();
+    } catch (e) {
       // recall failed, code: e.code, reason: e.description
     }
     if (conversations.isNotEmpty) {

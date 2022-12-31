@@ -2,10 +2,10 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'controller/providers/user_auth_provider.dart';
-import 'core/constants/route_list.dart';
+// import 'controller/providers/user_auth_provider.dart';
+// import 'core/constants/route_list.dart';
 import 'core/routes.dart';
-import 'core/state.dart';
+// import 'core/state.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'ui/screen/welcome/splash.dart';

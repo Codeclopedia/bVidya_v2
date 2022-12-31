@@ -11,11 +11,11 @@ final groupMuteProvider = StateProvider.autoDispose<bool>(
 );
 
 class GroupInfoScreen extends StatelessWidget {
-  final GroupModel currentGroup;
+  final GroupConversationModel currentGroup;
   final int contactId;
 
   static final imageSize = 28.w;
-  const GroupInfoScreen({Key? key, required GroupModel group, int? userId})
+  const GroupInfoScreen({Key? key, required GroupConversationModel group, int? userId})
       : currentGroup = group,
         contactId = userId ?? 1,
         super(key: key);
@@ -360,13 +360,13 @@ class GroupInfoScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  getRectFAvatar(currentGroup.name, currentGroup.image,
+                  getRectFAvatar(currentGroup.groupInfo.name??'', currentGroup.image,
                       size: 20.w),
                   SizedBox(
                     height: 0.7.h,
                   ),
                   Text(
-                    currentGroup.name,
+                    currentGroup.groupInfo.name??'',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 13.sp,

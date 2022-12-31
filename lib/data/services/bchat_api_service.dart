@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:bvidya/data/models/response/bchat/file_upload_response.dart';
 import 'package:dio/dio.dart';
 import '../../core/constants/api_list.dart';
 import '../models/models.dart';
@@ -162,6 +164,28 @@ class BChatApiService {
       }
     } catch (e) {
       return P2PCallResponse(status: 'error', message: '$e');
+    }
+  }
+
+  Future<FileUploadResponse> uploadImage(String token, File file) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      String fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(file.path, filename: fileName),
+      });
+      final response =
+          await _dio.post('$baseUrlApi${ApiList.uploadImage}', data: formData);
+      // print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return FileUploadResponse.fromJson(response.data);
+      } else {
+        return FileUploadResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return FileUploadResponse(status: 'error', message: '$e');
     }
   }
 

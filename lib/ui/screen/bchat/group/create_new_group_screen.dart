@@ -1,17 +1,31 @@
+import 'dart:io';
+
+import '/controller/providers/contacts_select_notifier.dart';
+import '../../../dialog/image_picker_dialog.dart';
+import '/core/helpers/bchat_group_manager.dart';
+import '../../../base_back_screen.dart';
+import '../../blearn/components/common.dart';
+import '/controller/bchat_providers.dart';
+import '/data/models/models.dart';
 import '/core/constants.dart';
-import '/core/constants/data.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../../widgets.dart';
+// import 'new_group_contact_screen.dart';
+
+final selectedGroupImageProvider =
+    StateProvider.autoDispose<File?>((ref) => null);
 
 class CreateNewGroupScreen extends HookWidget {
-  const CreateNewGroupScreen({Key? key}) : super(key: key);
+  CreateNewGroupScreen({Key? key}) : super(key: key);
+  late TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {
-    // useEffect(() {
-    //   return (){};
-    // },const []);
+    useEffect(() {
+      _controller = TextEditingController();
+      return () {};
+    }, const []);
 
     return Scaffold(
       body: ColouredBoxBar(
@@ -96,11 +110,16 @@ class CreateNewGroupScreen extends HookWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              ElevatedButton(
-                style: elevatedButtonYellowStyle,
-                onPressed: () {},
-                child: Text(S.current.btn_create),
-              )
+              Consumer(builder: (context, ref, child) {
+                return ElevatedButton(
+                  style: elevatedButtonYellowStyle,
+                  onPressed: () async {
+                    String name = _controller.text;
+                    createGroup(name, ref);
+                  },
+                  child: Text(S.current.btn_create),
+                );
+              })
             ],
           ),
           SizedBox(
@@ -113,38 +132,63 @@ class CreateNewGroupScreen extends HookWidget {
                 SizedBox(
                   width: 9.h,
                   height: 9.h,
-                  child: Stack(children: [
-                    Container(
-                      width: 8.h,
-                      height: 8.h,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.primaryColor,
-                          width: 1,
-                        ),
-                      ),
-                      child: const Icon(Icons.person),
-                    ),
-                    Positioned(
-                      bottom: 1.h,
-                      right: 1.w,
-                      child: Container(
-                        width: 6.w,
-                        height: 6.w,
-                        decoration: BoxDecoration(
-                          color: AppColors.yellowAccent,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 1,
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      File? image = ref.watch(selectedGroupImageProvider);
+                      return Stack(
+                        children: [
+                          Container(
+                            width: 8.h,
+                            height: 8.h,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.primaryColor,
+                                width: 1,
+                              ),
+                            ),
+                            child: image == null
+                                ? const Icon(Icons.person)
+                                : _buildImage(image, () {
+                                    ref
+                                        .read(
+                                            selectedGroupImageProvider.notifier)
+                                        .state = null;
+                                  }),
                           ),
-                        ),
-                        child: Icon(Icons.add, size: 4.w),
-                      ),
-                    ),
-                  ]),
+                          Positioned(
+                            bottom: 1.h,
+                            right: 1.w,
+                            child: InkWell(
+                              onTap: () async {
+                                final pickedFile =
+                                    await showImageFilePicker(context);
+                                if (pickedFile != null) {
+                                  ref
+                                      .read(selectedGroupImageProvider.notifier)
+                                      .state = pickedFile;
+                                }
+                              },
+                              child: Container(
+                                width: 6.w,
+                                height: 6.w,
+                                decoration: BoxDecoration(
+                                  color: AppColors.yellowAccent,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Icon(Icons.add, size: 4.w),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
                 SizedBox(width: 4.w),
                 Expanded(
@@ -154,10 +198,16 @@ class CreateNewGroupScreen extends HookWidget {
                     children: [
                       Text('Group Title', style: footerTextStyle),
                       SizedBox(height: 2.w),
-                      TextField(
-                        decoration: inputNewGroupStyle.copyWith(
-                            hintText: 'Enter group name'),
-                      )
+                      Consumer(builder: (context, ref, child) {
+                        return TextField(
+                          controller: _controller,
+                          onSubmitted: (value) {
+                            createGroup(value, ref);
+                          },
+                          decoration: inputNewGroupStyle.copyWith(
+                              hintText: 'Enter group name'),
+                        );
+                      })
                     ],
                   ),
                 )
@@ -175,12 +225,38 @@ class CreateNewGroupScreen extends HookWidget {
           ),
           SizedBox(height: 1.h),
           Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: 3,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return _contactRow(contacts[index]);
+            child: Consumer(
+              builder: (context, ref, child) {
+                final list = ref.watch(selectedContactProvider);
+                if (list.isEmpty) {
+                  return buildEmptyPlaceHolder('No Contacts');
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: list.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return _contactRow(list[index]);
+                  },
+                );
+                //
+                // return ref.watch(myContactsList).when(
+                //       data: (list) {
+                //         if (list.isEmpty) {
+                //           return buildEmptyPlaceHolder('No Contacts');
+                //         }
+                //         return ListView.builder(
+                //           shrinkWrap: true,
+                //           itemCount: list.length,
+                //           physics: const NeverScrollableScrollPhysics(),
+                //           itemBuilder: (context, index) {
+                //             return _contactRow(list[index]);
+                //           },
+                //         );
+                //       },
+                //       error: (e, t) => buildEmptyPlaceHolder('No Contacts'),
+                //       loading: () => buildLoading,
+                //     );
               },
             ),
             // child: GroupedListView(
@@ -203,12 +279,87 @@ class CreateNewGroupScreen extends HookWidget {
     );
   }
 
-  Widget _contactRow(ContactModel contact) {
+  Widget _buildImage(File image, Function() onTap) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(3.w)),
+          child: Image.file(
+            image,
+            width: 8.h,
+            height: 8.h,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton(
+            onPressed: () {
+              onTap();
+            },
+            icon: const Icon(Icons.close, color: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
+
+  createGroup(String name, WidgetRef ref) async {
+    showLoading(ref);
+    if (name.trim().isEmpty) {
+      EasyLoading.showError('Group Name can\'t be emply');
+      return;
+    }
+    if (name.length < 3) {
+      EasyLoading.showError('Group Name very short');
+      return;
+    }
+    final list = ref.read(selectedContactProvider);
+    final userIds = list.map((e) => e.userId.toString()).toList();
+
+    final file = ref.read(selectedGroupImageProvider);
+    final String url;
+    if (file != null) {
+      url = (await ref.read(bChatProvider).uploadImage(file)) ?? '';
+    } else {
+      url = '';
+    }
+    final group =
+        await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
+    hideLoading(ref);
+    if (group != null) {
+    } else {
+      EasyLoading.showError('Error in creating group');
+    }
+  }
+
+  // Widget _contactRow(ContactModel contact) {
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(vertical: 1.h),
+  //     child: Row(
+  //       children: [
+  //         getCicleAvatar(contact.name, contact.image),
+  //         SizedBox(width: 3.w),
+  //         Text(
+  //           contact.name,
+  //           style: TextStyle(
+  //             fontFamily: kFontFamily,
+  //             color: AppColors.contactNameTextColor,
+  //             fontSize: 11.sp,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _contactRow(Contacts contact) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name, contact.image),
+          getCicleAvatar(contact.name, contact.profileImage),
           SizedBox(width: 3.w),
           Text(
             contact.name,

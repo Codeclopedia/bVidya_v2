@@ -1,44 +1,15 @@
+// import 'package:bvidya/data/models/models.dart';
 import 'package:grouped_list/grouped_list.dart';
 
+import '../../../../controller/providers/contacts_select_notifier.dart';
+import '/controller/bchat_providers.dart';
+import '/data/models/models.dart';
+import '../../blearn/components/common.dart';
 import '/core/constants.dart';
-import '/core/constants/data.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../../widgets.dart';
 
-final selectedContactProvider =
-    StateNotifierProvider.autoDispose<GroupContactNotifier, List<ContactModel>>(
-        (ref) => GroupContactNotifier());
-
-class GroupContactNotifier extends StateNotifier<List<ContactModel>> {
-  GroupContactNotifier() : super([]);
-
-  ContactModel? getLast() {
-    if (state.isEmpty) return null;
-    return state[0];
-  }
-
-  void clear() {
-    state = [];
-  }
-
-  void addContact(ContactModel c) {
-    state = [...state, c];
-  }
-
-  void removeContact(ContactModel c) {
-    state = state.where((element) => c != element).toList();
-    // state = [...state, c];
-  }
-
-  // void addContacts(List<ContactModel> chats) {
-  //   state = [];
-  //   for (var c in chats) {
-  //     state = [...state, c];
-  //   }
-  //   // state = [chats.reversed, ...state];
-  // }
-}
 
 class NewGroupContactsScreen extends StatelessWidget {
   const NewGroupContactsScreen({Key? key}) : super(key: key);
@@ -97,20 +68,39 @@ class NewGroupContactsScreen extends StatelessWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final list = ref.watch(selectedContactProvider);
-                return GroupedListView(
-                  elements: contacts,
-                  groupBy: (element) => element.name[0],
-                  groupSeparatorBuilder: (String groupByValue) =>
-                      _groupHeader(groupByValue),
-                  itemBuilder: (context, ContactModel element) =>
-                      _contactRow(element, list.contains(element), ref),
-                  itemComparator: (item1, item2) =>
-                      item1.name.compareTo(item2.name), // optional
-                  useStickyGroupSeparators: false, // optional
-                  floatingHeader: false, // optional
-                  order: GroupedListOrder.ASC, // optional
-                );
+                return ref.watch(myContactsList).when(
+                      data: (list) {
+                        if (list.isEmpty) {
+                          return buildEmptyPlaceHolder('No Contacts');
+                        }
+                        final selectedList = ref.watch(selectedContactProvider);
+                        return GroupedListView(
+                          elements: list,
+                          groupBy: (element) => element.name[0],
+                          groupSeparatorBuilder: (String groupByValue) =>
+                              _groupHeader(groupByValue),
+                          itemBuilder: (context, Contacts element) =>
+                              _contactRow(
+                                  element, selectedList.contains(element), ref),
+                          itemComparator: (item1, item2) =>
+                              item1.name.compareTo(item2.name), // optional
+                          useStickyGroupSeparators: false, // optional
+                          floatingHeader: false, // optional
+                          order: GroupedListOrder.ASC, // optional
+                        );
+
+                        // return ListView.builder(
+                        //   shrinkWrap: true,
+                        //   itemCount: list.length,
+                        //   physics: const NeverScrollableScrollPhysics(),
+                        //   itemBuilder: (context, index) {
+                        //     // return _contactRow(list[index]);
+                        //   },
+                        // );
+                      },
+                      error: (e, t) => buildEmptyPlaceHolder('No Contacts'),
+                      loading: () => buildLoading,
+                    );
               },
             ),
           ),
@@ -119,7 +109,7 @@ class NewGroupContactsScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(ContactModel contact, bool selected, WidgetRef ref) {
+  Widget _contactRow(Contacts contact, bool selected, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
         if (selected) {
@@ -132,7 +122,7 @@ class NewGroupContactsScreen extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
         child: Row(
           children: [
-            getCicleAvatar(contact.name, contact.image),
+            getCicleAvatar(contact.name, contact.profileImage),
             SizedBox(width: 3.w),
             Expanded(
                 child: Text(

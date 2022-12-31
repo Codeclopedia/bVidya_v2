@@ -40,24 +40,24 @@ class Routes {
         screen = const GroupsScreen();
         break;
       case RouteList.createNewGroup:
-        screen = const CreateNewGroupScreen();
+        screen = CreateNewGroupScreen();
         break;
       case RouteList.newGroupContacts:
         screen = const NewGroupContactsScreen();
         break;
       case RouteList.groupChatScreen:
-        if (settings.arguments is GroupModel) {
+        if (settings.arguments is GroupConversationModel) {
           screen = GroupChatScreen(
-            model: settings.arguments as GroupModel,
+            model: settings.arguments as GroupConversationModel,
           );
         } else {
           screen = _parameterMissing();
         }
         break;
       case RouteList.groupInfo:
-        if (settings.arguments is GroupModel) {
+        if (settings.arguments is GroupConversationModel) {
           screen = GroupInfoScreen(
-            group: settings.arguments as GroupModel,
+            group: settings.arguments as GroupConversationModel,
           );
         } else {
           screen = _parameterMissing();
