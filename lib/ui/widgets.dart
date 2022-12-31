@@ -10,4 +10,5 @@ export 'widget/two_color_text.dart';
 export 'widget/user_top_bar.dart';
 export 'widget/tab_switcher.dart';
 export 'widget/chat_message_body.dart';
+export 'widget/shimmer_tile.dart';
 export '../core/utils/widgets.dart';

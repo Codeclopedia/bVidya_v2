@@ -1,15 +1,15 @@
-import 'package:bvidya/ui/screen/profile/components/instructor_course_row.dart';
-
+import '../../../controller/profile_providers.dart';
+import '../../base_back_screen.dart';
+import '../../widgets.dart';
+import '../profile/components/instructor_course_row.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/response/blearn/instructors_response.dart';
-import '../../widget/tab_switcher.dart';
 // import '../profile/components/instructor_course_row.dart';
 import '../profile/student/my_learning_screen.dart';
 import 'components/common.dart';
-import 'components/instructor_course_tile.dart';
 
 class TeacherProfileDetailScreen extends StatelessWidget {
   final Instructor instructor;
@@ -156,11 +156,16 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                               child: SlideTab(
                                   initialIndex: selectedIndex,
                                   containerWidth: 88.w,
-                                  onSelect: (index) {
+                                  onSelect: (index) async {
                                     ref
                                         .read(selectedTabLearningProvider
                                             .notifier)
                                         .state = index;
+                                    // showLoading(ref);
+                                    // final profile = await ref
+                                    //     .read(profileRepositoryProvider)
+                                    //     .getUserProfile();
+                                    // hideLoading(ref);
                                   },
                                   containerHeight: 6.h,
                                   direction: Axis.horizontal,
@@ -185,13 +190,9 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                     S.current.teacher_about,
                                   ]),
                             ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 6.w, vertical: 1.h),
-                              child: selectedIndex == 0
-                                  ? _buildCoursesList(instructor, ref)
-                                  : Text("About"),
-                            )
+                            selectedIndex == 0
+                                ? _buildCoursesList(instructor, ref)
+                                : _buildAboutList(instructor, ref)
                           ],
                         );
                       },
@@ -262,30 +263,401 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     //   builder: (context, ref, child) {
     // final data =
     //     ref.watch(bLearnInstructorCoursesProvider(instructor.id.toString()));
-    return ref
-        .watch(bLearnInstructorCoursesProvider(instructor.id.toString()))
-        .when(
-          data: (courses) {
-            if (courses == null) {
-              return const SizedBox.shrink();
-            }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 2.h),
+          child: Text(
+            S.current.teacher_all_courses,
+            style: TextStyle(
+                fontSize: 5.w,
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.w400),
+          ),
+        ),
+        ref
+            .watch(bLearnInstructorCoursesProvider(instructor.id.toString()))
+            .when(
+                data: (courses) {
+                  if (courses == null) {
+                    return const SizedBox.shrink();
+                  }
 
-            return Container(
-                height: 30.h,
-                margin: EdgeInsets.only(top: 0.5.h),
-                child: courses.isNotEmpty == true
-                    ? ListView.builder(
-                        itemCount: courses.length,
-                        shrinkWrap: false,
+                  return Container(
+                      height: 30.h,
+                      margin: EdgeInsets.only(top: 0.5.h),
+                      child: courses.isNotEmpty == true
+                          ? ListView.builder(
+                              itemCount: courses.length,
+                              shrinkWrap: false,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return InstructorCourseRowItem(
+                                    course: courses[index]);
+                              })
+                          : buildEmptyPlaceHolder('No Cources uploaded yet'));
+                },
+                error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
+                loading: () => SizedBox(
+                      height: 32.h,
+                      child: ListView(
                         scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return InstructorCourseRowItem(
-                              course: courses[index]);
-                        })
-                    : buildEmptyPlaceHolder('No Cources uploaded yet'));
-          },
-          error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
-          loading: () => buildLoading,
-        );
+                        shrinkWrap: true,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomizableShimmerTile(
+                                height: 30.h, width: 70.w),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomizableShimmerTile(
+                                height: 30.h, width: 70.w),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomizableShimmerTile(
+                                height: 30.h, width: 70.w),
+                          ),
+                        ],
+                      ),
+                    )),
+        _buildTestimonialCaption(),
+        ref.watch(bLearnInstructorsProvider).when(
+              data: (data) {
+                return _buildTestimonialList(data?.categories);
+              },
+              error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
+              loading: () => ListView.builder(
+                shrinkWrap: true,
+                itemCount: 10,
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.only(left: 2.w),
+                itemBuilder: (context, index) {
+                  return CustomizableShimmerTile(height: 22.h, width: 70.w);
+                },
+              ),
+            ),
+      ],
+    );
+  }
+
+  Widget _buildAboutList(Instructor instructor, WidgetRef ref) {
+    return ref.watch(profileUserProvider).when(
+        data: (data) {
+          if (data == null) {
+            return const SizedBox.shrink();
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 2.h),
+                child: Text(
+                  S.current.course_instructor_detail,
+                  style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 4.7.w,
+                      fontWeight: FontWeight.w400),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.h),
+                child: Row(
+                  children: [
+                    getSvgIcon("04.svg", width: 15.w),
+                    Padding(
+                      padding: EdgeInsets.only(left: 4.w),
+                      child: Text(
+                        "Worked as ${data.occupation}",
+                        style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 4.w,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.h),
+                child: Row(
+                  children: [
+                    getSvgIcon("03.svg", width: 15.w),
+                    Padding(
+                      padding: EdgeInsets.only(left: 4.w),
+                      child: Text(
+                        "Lives in ${data.city},${data.state}",
+                        style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 4.w,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.h),
+                child: Row(
+                  children: [
+                    getSvgIcon("02.svg", width: 15.w),
+                    SizedBox(
+                      width: 70.w,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 4.w),
+                        child: Text(
+                          "bvidya Educator since 1st January, 2022",
+                          style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 4.w,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.h),
+                child: Row(
+                  children: [
+                    getSvgIcon("01.svg", width: 15.w),
+                    Padding(
+                      padding: EdgeInsets.only(left: 4.w),
+                      child: Text(
+                        "Knows ${data.language}",
+                        style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 4.w,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              _buildTestimonialCaption(),
+              ref.watch(bLearnInstructorsProvider).when(
+                    data: (data) {
+                      return _buildTestimonialList(data?.categories);
+                    },
+                    error: (error, stackTrace) =>
+                        buildEmptyPlaceHolder("Error"),
+                    loading: () => ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 10,
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.only(left: 2.w),
+                      itemBuilder: (context, index) {
+                        return CustomizableShimmerTile(
+                            height: 22.h, width: 70.w);
+                      },
+                    ),
+                  ),
+            ],
+          );
+        },
+        error: (e, t) => buildEmptyPlaceHolder('text'),
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()));
+    //   builder: (context, snapshot) {
+    //     Widget widget = snapshot.hasData
+    //         ? Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             children: [
+    //               Padding(
+    //                 padding: EdgeInsets.symmetric(vertical: 2.h),
+    //                 child: Text(
+    //                   S.current.course_instructor_detail,
+    //                   style: TextStyle(
+    //                       color: AppColors.primaryColor,
+    //                       fontSize: 4.7.w,
+    //                       fontWeight: FontWeight.w400),
+    //                 ),
+    //               ),
+    //               Padding(
+    //                 padding: EdgeInsets.symmetric(vertical: 1.h),
+    //                 child: Row(
+    //                   children: [
+    //                     getSvgIcon("04.svg", width: 15.w),
+    //                     Padding(
+    //                       padding: EdgeInsets.only(left: 4.w),
+    //                       child: Text(
+    //                         "Worked as ${snapshot.data?.occupation}",
+    //                         style: TextStyle(
+    //                             color: AppColors.black,
+    //                             fontSize: 4.w,
+    //                             fontWeight: FontWeight.w400),
+    //                       ),
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //               Padding(
+    //                 padding: EdgeInsets.symmetric(vertical: 1.h),
+    //                 child: Row(
+    //                   children: [
+    //                     getSvgIcon("03.svg", width: 15.w),
+    //                     Padding(
+    //                       padding: EdgeInsets.only(left: 4.w),
+    //                       child: Text(
+    //                         "Lives in ${snapshot.data?.city},${snapshot.data?.state}",
+    //                         style: TextStyle(
+    //                             color: AppColors.black,
+    //                             fontSize: 4.w,
+    //                             fontWeight: FontWeight.w400),
+    //                       ),
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //               Padding(
+    //                 padding: EdgeInsets.symmetric(vertical: 1.h),
+    //                 child: Row(
+    //                   children: [
+    //                     getSvgIcon("02.svg", width: 15.w),
+    //                     SizedBox(
+    //                       width: 70.w,
+    //                       child: Padding(
+    //                         padding: EdgeInsets.only(left: 4.w),
+    //                         child: Text(
+    //                           "bvidya Educator since 1st January, 2022",
+    //                           style: TextStyle(
+    //                               color: AppColors.black,
+    //                               fontSize: 4.w,
+    //                               fontWeight: FontWeight.w400),
+    //                         ),
+    //                       ),
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //               Padding(
+    //                 padding: EdgeInsets.symmetric(vertical: 1.h),
+    //                 child: Row(
+    //                   children: [
+    //                     getSvgIcon("01.svg", width: 15.w),
+    //                     Padding(
+    //                       padding: EdgeInsets.only(left: 4.w),
+    //                       child: Text(
+    //                         "Knows ${snapshot.data?.language}",
+    //                         style: TextStyle(
+    //                             color: AppColors.black,
+    //                             fontSize: 4.w,
+    //                             fontWeight: FontWeight.w400),
+    //                       ),
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //               _buildTestimonialCaption(),
+    //               ref.watch(bLearnInstructorsProvider).when(
+    //                     data: (data) {
+    //                       return _buildTestimonialList(data?.categories);
+    //                     },
+    //                     error: (error, stackTrace) =>
+    //                         buildEmptyPlaceHolder("Error"),
+    //                     loading: () => ListView.builder(
+    //                       shrinkWrap: true,
+    //                       itemCount: 10,
+    //                       scrollDirection: Axis.horizontal,
+    //                       padding: EdgeInsets.only(left: 2.w),
+    //                       itemBuilder: (context, index) {
+    //                         return CustomizableShimmerTile(
+    //                             height: 22.h, width: 70.w);
+    //                       },
+    //                     ),
+    //                   ),
+    //             ],
+    //           )
+    //         : Center(child: CircularProgressIndicator.adaptive());
+    //     return widget;
+    //   },
+    // );
+  }
+
+  Widget _buildTestimonialCaption() {
+    return Padding(
+      padding: EdgeInsets.only(top: 2.3.h, right: 1.3.h, left: 2.3.h),
+      child: Text(
+        S.current.blearn_testimonial,
+        style: TextStyle(
+          fontSize: 16.sp,
+          color: AppColors.primaryColor,
+          fontFamily: kFontFamily,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTestimonialList(List<Instructor>? instructors) {
+    if (instructors == null || instructors.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      margin: EdgeInsets.only(top: 0.8.h),
+      height: 22.h,
+      color: Colors.white,
+      child: ListView.builder(
+        padding: EdgeInsets.all(0.5.h),
+        itemCount: instructors.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (BuildContext context, int index) {
+          final instructor = instructors[index];
+          return Container(
+            width: 70.w,
+            margin: EdgeInsets.only(right: 3.w, left: 2.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.all(Radius.circular(5.w)),
+              border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    getCicleAvatar(
+                        instructor.name ?? 'AA', instructor.image ?? '',
+                        radius: 8.w),
+                    SizedBox(width: 4.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            instructor.name ?? '',
+                            style: TextStyle(
+                                fontSize: 11.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          buildRatingBar(4.0),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2.w),
+                Text(
+                  instructor.specialization ?? '',
+                  maxLines: 4,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 10.sp,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }

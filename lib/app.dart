@@ -1,6 +1,8 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:callkeep/callkeep.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:bvidya/core/helpers/extensions.dart';
 
 // import 'controller/providers/user_auth_provider.dart';
 // import 'core/constants/route_list.dart';
@@ -54,6 +56,7 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
 
     initLoading();
     _firebase();
+    setupCallKeep(context);
     // _addChatListener();
   }
 
@@ -230,5 +233,97 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
 
     // ChatClient.getInstance.chatManager.removeEventHandler("MAIN_HANDLER_ID");
     super.dispose();
+  }
+}
+
+onCallAnswer(
+    String callerIdFrom, String callerName, String uuid, bool hasVideo) {}
+onHoldAnswer(
+    String callerIdFrom, String callerName, String uuid, bool hasVideo) {}
+
+onEndCall(String callerIdFrom, String callerName, String uuid, bool hasVideo) {}
+
+onMuteCall(
+    String callerIdFrom, String callerName, String uuid, bool hasVideo) {}
+
+Future<void> showIncomingCall(
+  BuildContext context,
+  RemoteMessage remoteMessage,
+  FlutterCallkeep callKeep,
+) async {
+  String uuid = remoteMessage.payload()["call_id"] as String;
+  String callerIdFrom = remoteMessage.payload()["caller_id"] as String;
+  String callerName = remoteMessage.payload()["caller_name"] as String;
+
+  bool hasVideo = remoteMessage.payload()["has_video"] == "true";
+
+  callKeep.on(CallKeepDidToggleHoldAction(),
+      onCallAnswer(callerIdFrom, callerName, uuid, hasVideo));
+  callKeep.on(CallKeepPerformAnswerCallAction(),
+      onHoldAnswer(callerIdFrom, callerName, uuid, hasVideo));
+  callKeep.on(CallKeepPerformEndCallAction(),
+      onEndCall(callerIdFrom, callerName, uuid, hasVideo));
+  callKeep.on(CallKeepDidPerformSetMutedCallAction(),
+      onMuteCall(callerIdFrom, callerName, uuid, hasVideo));
+
+  print('backgroundMessage: displayIncomingCall ($uuid)');
+
+  bool hasPhoneAccount = await callKeep.hasPhoneAccount();
+  if (!hasPhoneAccount) {
+    hasPhoneAccount =
+        await callKeep.hasDefaultPhoneAccount(context, callSetup["android"]);
+  }
+
+  if (!hasPhoneAccount) {
+    return;
+  }
+  await callKeep.displayIncomingCall(uuid, callerIdFrom,
+      localizedCallerName: callerName, hasVideo: hasVideo);
+  callKeep.backToForeground();
+}
+
+Future<void> closeIncomingCall(
+  RemoteMessage remoteMessage,
+  FlutterCallkeep callKeep,
+) async {
+  String uuid = remoteMessage.payload()['call_id'] as String;
+  print('backgroundMessage: closeIncomingCall ($uuid)');
+  bool hasPhoneAccount = await callKeep.hasPhoneAccount();
+  if (!hasPhoneAccount) {
+    return;
+  }
+  await callKeep.endAllCalls();
+}
+
+final FlutterCallkeep callKeep = FlutterCallkeep();
+bool _callKeepStarted = false;
+
+final callSetup = <String, dynamic>{
+  'ios': {
+    'appName': 'bVidyaDemo',
+  },
+  'android': {
+    'alertTitle': 'Permissions required',
+    'alertDescription': 'This application needs to access your phone accounts',
+    'cancelButton': 'Cancel',
+    'okButton': 'ok',
+    // Required to get audio in background when using Android 11
+    'foregroundService': {
+      'channelId': 'com.company.my',
+      'channelName': 'Foreground service for my app',
+      'notificationTitle': 'My app is running on background',
+      'notificationIcon': 'mipmap/ic_notification_launcher',
+    },
+  },
+};
+
+setupCallKeep(BuildContext context) async {
+  if (!_callKeepStarted) {
+    try {
+      await callKeep.setup(context, callSetup, backgroundMode: true);
+      _callKeepStarted = true;
+    } catch (e) {
+      print(e);
+    }
   }
 }
