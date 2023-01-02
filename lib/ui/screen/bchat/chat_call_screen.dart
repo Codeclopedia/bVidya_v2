@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
 import 'package:provider/provider.dart' as pr;
 
-
+import '../../../core/utils.dart';
+import '../../../data/services/fcm_api_service.dart';
 import '/controller/providers/call_end_provider.dart';
 import '/controller/providers/p2p_call_provider.dart';
 import '/controller/bchat_providers.dart';
@@ -16,8 +17,9 @@ import '/data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../home/home_screen.dart';
 
-class ChatCallScreen extends ConsumerWidget {
+class ChatCallScreen extends HookConsumerWidget {
   // const ChatVideoCall({super.key});
+  final String fcmToken;
   final String name;
   final String image;
   final CallBody callInfo;
@@ -26,6 +28,7 @@ class ChatCallScreen extends ConsumerWidget {
 
   const ChatCallScreen(
       {super.key,
+      required this.fcmToken,
       required this.name,
       required this.image,
       required this.callInfo,
@@ -35,28 +38,35 @@ class ChatCallScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(audioCallChangeProvider);
-
-    provider.init(callInfo, callDirection, callType);
-
     final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
-    valu.addListener(() {
-      if (valu.isCallEnd) {
-        print('is Call End by other declined the call');
-        Navigator.pop(context);
-      }
-    });
+    useEffect(() {
+      provider.init(callInfo, callDirection, callType);
+      ref.listen(audioCallChangeProvider, (previous, next) {
+        if (next.isCallEnded) {
+          Navigator.pop(context);
+        }
+      });
 
-    ref.listen(audioCallChangeProvider, (previous, next) {
-      if (next.isCallEnded) {
-        Navigator.pop(context);
-      }
-    });
+      valu.addListener(() {
+        if (valu.isCallEnd) {
+          print('is Call End by other declined the call');
+          Navigator.pop(context);
+        }
+      });
+
+      return () {
+        // valu.removeListener(neame);
+      };
+    }, const []);
+
+    final connectionStatus = ref.watch(audioCallChangeProvider).status;
+
     final call = ref.watch(audioCallTimerProvider);
     final String status;
     if (call.running) {
       status = durationString(call.duration);
     } else {
-      status = ref.watch(audioCallChangeProvider).status;
+      status = connectionStatus.name;
     }
 
     return PIPView(builder: (context, isFloating) {
@@ -344,7 +354,17 @@ class ChatCallScreen extends ConsumerWidget {
             //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
 
             InkWell(
-              onTap: () {
+              onTap: () async {
+                // final connectionStatus = provider.status;
+                if (provider.status == CallConnectionStatus.ringing ||
+                    provider.status == CallConnectionStatus.connecting) {
+                  User? user = await getMeAsUser();
+                  if (user == null) {
+                    return;
+                  }
+                  FCMApiService.instance.sendCallEndPush(fcmToken, 'END_CALL',
+                      callInfo.callId, user.id.toString(), user.name);
+                }
                 Navigator.pop(context);
               },
               child: Container(

@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/core/constants.dart';
-import 'package:flutter_callkit_incoming/entities/call_event.dart';
+// import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:provider/provider.dart' as pr;
 // import 'package:flutter_callkit_incoming/entities/entities.dart';
@@ -78,12 +78,11 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
     _firebase();
     setupCallKit();
     getCurrentCall();
-    
   }
 
   getCurrentCall() async {
     final list = await FlutterCallkitIncoming.activeCalls();
-    
+
     print('List-> ${list[0]}');
   }
 
@@ -208,11 +207,13 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
       // onNewFireabseMessage(message, true);
       if (message.data['type'] == 'p2p_call') {
         final String? action = message.data['action'];
-        //print('action: $action');
+        print('action: $action');
         if (action == 'START_CALL') {
           showIncomingCall(message);
         } else if (action == 'END_CALL') {
           closeIncomingCall(message);
+        } else if (action == 'DECLINE_CALL') {
+          declineOutgoingCall(message);
         }
       }
     });
@@ -276,7 +277,7 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
   }
 }
 
-onCallAccept(String callerIdFrom, String callerName, String callerImage,
+onCallAccept(String callerIdFrom,String fcmToken, String callerName, String callerImage,
     CallBody body, bool hasVideo) async {
   User? user = await getMeAsUser();
   if (user == null) {
@@ -289,6 +290,7 @@ onCallAccept(String callerIdFrom, String callerName, String callerImage,
   }
   Map<String, dynamic> map = {
     'name': callerName,
+    'fcm_token':fcmToken,
     'image': callerImage,
     'call_info': body,
     'call_direction_type': CallDirectionType.incoming
@@ -310,40 +312,42 @@ onCallAccept(String callerIdFrom, String callerName, String callerImage,
 
 onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     String image, CallBody body, bool hasVideo) async {
+  print('declining call');
   User? user = await getMeAsUser();
   if (user == null) {
     return;
   }
-  FCMApiService.instance.sendCallPush(senderFCM, '', 'END_CALL', body,
-      body.callId, user.id.toString(), user.name, image, true);
+  FCMApiService.instance.sendCallEndPush(
+      senderFCM, 'DECLINE_CALL', body.callId, user.id.toString(), user.name);
 }
 
 setupCallKit() {
-  FlutterCallkitIncoming.onEvent.listen((event) {
+  FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
     if (event == null) {
       print('onCall Event Null');
       return;
     }
-    final map = event.body;
+    final map = event.body['extra'];
     if (map == null) {
       return;
     }
     String? fromId = map['from_id'];
     if (fromId == null) {
+      print('from_id is null so-> $map');
       return;
     }
 
     String fromName = map['from_name'];
     String callerFCM = map['caller_fcm'];
     String image = map['image'];
-    CallBody body = CallBody.fromJson(jsonDecode(map['caller_fcm']));
+    CallBody body = CallBody.fromJson(jsonDecode(map['body']));
     bool hasVideo = map['has_video'];
 
     print('onCall Event ${event.event}  - ${event.body}');
 
     switch (event.event) {
       case Event.ACTION_CALL_ACCEPT:
-        onCallAccept(fromId, fromName, image, body, hasVideo);
+        onCallAccept(fromId,callerFCM, fromName,image, body, hasVideo);
         break;
       case Event.ACTION_CALL_DECLINE:
         onDeclineCall(callerFCM, fromId, fromName, image, body, hasVideo);
@@ -425,6 +429,12 @@ Future<void> showIncomingCall(
 // }
 
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
+  // BuildContext? context = navigatorKey.currentContext;
+  // if (context != null) {
+  //   print('call Declined');
+  //   pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
+  // }
+
   CallBody? body = remoteMessage.payload();
   if (body == null) {
     await FlutterCallkitIncoming.endAllCalls();
@@ -433,12 +443,25 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
 
   await FlutterCallkitIncoming.endCall(body.callId);
 // await FlutterCallkitIncoming.startCall(Calll)
+  // context.watch(callEndProvier(body.callId)).
+  // context.read();
+}
+
+Future<void> declineOutgoingCall(RemoteMessage remoteMessage) async {
   BuildContext? context = navigatorKey.currentContext;
-  if (context == null) {
-    print('Build Context is NULL');
-    return;
+  if (context != null) {
+    print('call Declined');
+    pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
   }
-  pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
+
+  // CallBody? body = remoteMessage.payload();
+  // if (body == null) {
+  //   await FlutterCallkitIncoming.endAllCalls();
+  //   return;
+  // }
+
+  // await FlutterCallkitIncoming.endCall(body.callId);
+// await FlutterCallkitIncoming.startCall(Calll)
   // context.watch(callEndProvier(body.callId)).
   // context.read();
 }
@@ -571,8 +594,8 @@ showIncomingCallScreen(CallBody callBody, String callerName, String callerId,
     handle: callerName,
   );
   try {
-    final result = await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
-    print(' showing UI : $result');
+    await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
+    // print(' showing UI : $result');
     BuildContext? context = navigatorKey.currentContext;
     if (context == null) {
       print('Build Context is NULL');

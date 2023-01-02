@@ -3,8 +3,10 @@
 import 'package:bvidya/data/services/fcm_api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart' as pr;
 
 import '../../controller/bchat_providers.dart';
+import '../../controller/providers/call_end_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/services/bchat_api_service.dart';
 import '../../ui/base_back_screen.dart';
@@ -33,6 +35,8 @@ Future makeAudioCall(
       return;
     }
   }
+  pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
+
   showLoading(ref);
   final response = await ref
       .read(apiBChatProvider)
@@ -42,6 +46,7 @@ Future makeAudioCall(
     Map<String, dynamic> map = {
       'name': contact.name,
       'image': contact.profileImage,
+      'fcm_token':contact.fcmToken,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing
     };
@@ -50,9 +55,7 @@ Future makeAudioCall(
       FCMApiService.instance.sendCallPush(
           contact.fcmToken ?? '',
           user.fcmToken,
-          'START_CALL',
           callBody,
-          callBody.callId,
           user.id.toString(),
           user.name,
           user.image,
@@ -87,6 +90,8 @@ Future makeVideoCall(
     }
   }
   showLoading(ref);
+  pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
+
   final response = await ref
       .read(apiBChatProvider)
       .makeCall(user.authToken, contact.userId.toString(), contact.name);
@@ -94,6 +99,7 @@ Future makeVideoCall(
     final CallBody callBody = response.body!;
     Map<String, dynamic> map = {
       'name': contact.name,
+      'fcm_token':contact.fcmToken,
       'image': contact.profileImage,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing
@@ -102,9 +108,7 @@ Future makeVideoCall(
       FCMApiService.instance.sendCallPush(
           contact.fcmToken ?? '',
           user.fcmToken,
-          'START_CALL',
           callBody,
-          callBody.callId,
           user.id.toString(),
           user.name,
           user.image,
@@ -120,13 +124,14 @@ Future makeVideoCall(
   //     .sendChatPush(chat, toToken, fromUserId, senderName, type);
 }
 
-Future receiveCall(String authToken, String callId, String image, bool hasVideo,
+Future receiveCall(String authToken,String fcmToken, String callId, String image, bool hasVideo,
     BuildContext context) async {
   final response =
       await BChatApiService.instance.receiveCall(authToken, callId);
   if (response.status == 'successfull' && response.body != null) {
     final CallBody callBody = response.body!;
     Map<String, dynamic> map = {
+      'fcm_token':fcmToken,
       'name': callBody.callerName,
       'image': image,
       'call_info': callBody,
@@ -137,13 +142,6 @@ Future receiveCall(String authToken, String callId, String image, bool hasVideo,
         context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
         arguments: map);
   }
-}
-
-Future receiveCallWithBody(String authToken, CallBody callBody, String image,
-    bool hasVideo, BuildContext context) async {
-  // final response =
-  //     await BChatApiService.instance.receiveCall(authToken, callId);
-
 }
 
 // Future receiveAudioCall(

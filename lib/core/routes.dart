@@ -83,11 +83,13 @@ class Routes {
         // screen = const ChatVideoCall();
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
+          String fcmToken = args['fcm_token'];
           String name = args['name'];
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
           screen = ChatCallScreen(
+            fcmToken: fcmToken,
             name: name,
             image: image,
             callInfo: callInfo,
@@ -102,11 +104,13 @@ class Routes {
       case RouteList.bChatAudioCall:
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
+          String fcmToken = args['fcm_token'];
           String name = args['name'];
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
           screen = ChatCallScreen(
+            fcmToken: fcmToken,
             name: name,
             image: image,
             callInfo: callInfo,

@@ -1,14 +1,12 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:bvidya/app.dart';
-// import 'package:bvidya/core/helpers/call_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
-import '../../../core/helpers/call_helper.dart';
+import '/core/helpers/call_helper.dart';
 import '/core/helpers/bchat_handler.dart';
 import '/core/utils.dart';
 import '/core/utils/chat_utils.dart';
-import 'dash/models/reply_model.dart';
+
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -20,6 +18,7 @@ import '/controller/providers/chat_messagelist_provider.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
+import 'dash/models/reply_model.dart';
 import 'widgets/chat_message_bubble.dart';
 import 'widgets/typing_indicator.dart';
 
@@ -163,56 +162,49 @@ class ChatScreen extends HookConsumerWidget {
         bool show = ref.watch(chatModelProvider).isReplyBoxVisible;
         if (show) {
           ReplyModel replyOf = ref.watch(chatModelProvider).replyOn!;
-          return Center(
-            child: Container(
-              height: 12.h,
-              width: 90.w,
-              padding: EdgeInsets.all(2.w),
-              decoration: BoxDecoration(
-                color: AppColors.chatBoxBackgroundMine,
-                borderRadius: BorderRadius.all(Radius.circular(4.w)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // SizedBox(
-                      //   width: 1.w,
-                      // ),
-                      Text(
-                        'Replying to ${replyOf.fromName}',
-                        style: textStyleWhite,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          ref.read(chatModelProvider).clearReplyBox();
-                        },
-                        child: const Icon(Icons.close, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 1.h),
-                  Expanded(
-                    child: Container(
-                        padding: EdgeInsets.all(2.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.chatBoxBackgroundOthers,
-                          borderRadius: BorderRadius.all(Radius.circular(4.w)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ChatMessageBodyWidget(message: replyOf.message)
-                            // Text(replyOf.),
-                          ],
-                        )),
-                  ),
-                ],
-              ),
+          return Container(
+            width: 90.w,
+            margin: EdgeInsets.only(bottom: 1.h),
+            padding: EdgeInsets.all(2.w),
+            decoration: BoxDecoration(
+              color: AppColors.chatBoxBackgroundMine,
+              borderRadius: BorderRadius.all(Radius.circular(3.w)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Replying to ${replyOf.fromName}',
+                      style: textStyleWhite,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        ref.read(chatModelProvider).clearReplyBox();
+                      },
+                      child: const Icon(Icons.close, color: Colors.white),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 1.h),
+                Container(
+                    padding: EdgeInsets.all(2.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.chatBoxBackgroundOthers,
+                      borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                    ),
+                    child: ChatMessageBodyWidget(message: replyOf.message)
+                    //  Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     ChatMessageBodyWidget(message: replyOf.message)
+                    //   ],
+                    // ),
+                    ),
+              ],
             ),
           );
         }
@@ -230,7 +222,7 @@ class ChatScreen extends HookConsumerWidget {
                 targetId: model.contact.userId.toString(), content: input);
             // ..from = _myChatPeerUserId;
 
-            msg.attributes = {"em_force_notification": true};
+            msg.attributes?.addAll({"em_force_notification": true});
 
             ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
             if (replyOf != null) {
@@ -314,10 +306,9 @@ class ChatScreen extends HookConsumerWidget {
         bool isOwnMessage = message.from == _myChatPeerUserId;
         if (!isOwnMessage) _markRead(message);
 
-        // ChatUserInfo otherUser = _getUser();
         return Column(
-          crossAxisAlignment:
-              isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          // crossAxisAlignment:
+          //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             if (isAfterDateSeparator)
               Container(
@@ -326,7 +317,11 @@ class ChatScreen extends HookConsumerWidget {
                 child: Text(
                   formatDateSeparator(
                       DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
-                  style: const TextStyle(color: Colors.grey),
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: Colors.grey,
+                    fontSize: 8.sp,
+                  ),
                 ),
               ),
             SwipeTo(
@@ -389,14 +384,17 @@ class ChatScreen extends HookConsumerWidget {
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {
+            hideLoading(ref);
             // FCMApiService.instance.sendChatPush(
             //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
             // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
           },
           onError: (error) {
+            hideLoading(ref);
             // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
           },
           onProgress: (progress) {
+            showLoading(ref);
             // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
           },
         ),
@@ -576,8 +574,8 @@ class ChatScreen extends HookConsumerWidget {
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
     for (var msg in messages) {
-      print('msg id :${msg.to}');
-      if (msg.to == model.contact.userId.toString()) {
+      print('msg id :${msg.to} ${model.contact.userId.toString()}');
+      if (msg.from == model.contact.userId.toString()) {
         print('msg id :${msg.msgId}');
         ref.read(chatMessageListProvider.notifier).addChat(msg);
       }

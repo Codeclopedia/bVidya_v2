@@ -89,9 +89,15 @@ class BLearnHomeScreen extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Image.asset(
-            "assets/images/banner_image.png",
-            fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: SizedBox(
+              height: 21.h,
+              child: Image.asset(
+                "assets/images/banner_image.png",
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Container(
             height: 21.h,
@@ -344,12 +350,12 @@ class BLearnHomeScreen extends StatelessWidget {
       courses.sort(
         (a, b) {
           if (selected == CourseType.trending) {
-            return (a.numberOfLesson??'').compareTo(b.numberOfLesson??'');
+            return (a.numberOfLesson ?? '').compareTo(b.numberOfLesson ?? '');
           } else if (selected == CourseType.mostViewed) {
-            return (b.duration??'')
-                .compareTo(a.duration??''); //TODO convert into minutes and compare
+            return (b.duration ?? '').compareTo(
+                a.duration ?? ''); //TODO convert into minutes and compare
           } else {
-            return (b.ratingCount??0).compareTo(a.ratingCount??0);
+            return (b.ratingCount ?? 0).compareTo(a.ratingCount ?? 0);
           }
         },
       );

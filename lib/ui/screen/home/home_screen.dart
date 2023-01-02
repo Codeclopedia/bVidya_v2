@@ -143,7 +143,11 @@ class HomeScreen extends HookConsumerWidget {
         await Navigator.pushNamed(context, RouteList.chatScreen,
             arguments: model);
         await Future.delayed(const Duration(seconds: 1)); //delay to reset state
-        ref.read(bChatSDKControllerProvider).reloadOnlyConversation(ref, model);
+        try {
+          ref
+              .read(bChatSDKControllerProvider)
+              .reloadOnlyConversation(ref, model);
+        } catch (_) {}
       },
       onLongPress: (() {
         showDialog(

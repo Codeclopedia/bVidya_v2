@@ -2,11 +2,11 @@
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../core/constants.dart';
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
-import '../../core/utils.dart';
-import '../../core/helpers/drag_position.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
+import '/core/helpers/drag_position.dart';
 
 class EndDrawer extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

@@ -13,6 +13,8 @@ import '/core/ui_core.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
 
+enum CallConnectionStatus { connecting, ringing, connected, ended }
+
 class P2PCallProvider extends ChangeNotifier {
   final DurationNotifier _read;
   P2PCallProvider(this._read);
@@ -42,9 +44,11 @@ class P2PCallProvider extends ChangeNotifier {
   bool _endCall = false;
   bool get isCallEnded => _endCall;
 
-  String _status = 'Calling...';
+  CallConnectionStatus _status = CallConnectionStatus.connecting;
+  CallConnectionStatus get status => _status;
+  // String _status = 'Calling...';
 
-  String get status => _status;
+  // String get status => _status;
 
   CallType _currentCallType = CallType.audio;
 
@@ -123,7 +127,8 @@ class P2PCallProvider extends ChangeNotifier {
         onJoinChannelSuccess: (connection, elapsed) {
           _localId = connection.localUid ?? 0;
           if (_callDirection == CallDirectionType.outgoing) {
-            _status = 'Ringing';
+            // _status = 'Ringing';
+            _status = CallConnectionStatus.ringing;
             _outgoingTimer();
           }
           notifyListeners();
@@ -134,12 +139,14 @@ class P2PCallProvider extends ChangeNotifier {
             _timer?.cancel();
             _player?.stop();
           }
-          _status = 'Connected';
+          _status = CallConnectionStatus.connected;
+          // _status = 'Connected';
           notifyListeners();
           _read.start();
         },
         onUserOffline: (connection, remoteUid, reason) {
           _endCall = true;
+          _status = CallConnectionStatus.ended;
           notifyListeners();
         },
         onRemoteAudioStateChanged:

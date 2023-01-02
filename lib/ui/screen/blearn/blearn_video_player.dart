@@ -72,7 +72,7 @@ class _BlearnVideoPlayerState extends State<BlearnVideoPlayer> {
 
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController1,
-      autoPlay: true,
+      autoPlay: false,
       looping: true,
       progressIndicatorDelay:
           bufferDelay != null ? Duration(milliseconds: bufferDelay!) : null,
