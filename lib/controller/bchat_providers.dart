@@ -20,8 +20,8 @@ final apiBChatProvider = Provider<BChatApiService>(
 );
 
 final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
-  User? user = ref.read(loginRepositoryProvider).user;
-  return BChatSDKController(user!);
+  // User? user = ref.read(loginRepositoryProvider).user;
+  return BChatSDKController();
 });
 
 final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {

@@ -211,7 +211,9 @@ class LoginScreen extends HookWidget {
 
     hideLoading(ref);
     if (error == null) {
+      final user = await getMeAsUser();
       ref.read(userAuthChangeProvider).loadUser();
+      ref.read(bChatSDKControllerProvider).initChatSDK(user!);
       ref.read(bChatSDKControllerProvider).shouldLoadRemote = true;
       // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);

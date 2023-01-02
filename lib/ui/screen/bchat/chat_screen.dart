@@ -1,8 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
+// import 'package:bvidya/app.dart';
+// import 'package:bvidya/core/helpers/call_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
+import '../../../core/helpers/call_helper.dart';
 import '/core/helpers/bchat_handler.dart';
 import '/core/utils.dart';
 import '/core/utils/chat_utils.dart';
@@ -310,6 +312,7 @@ class ChatScreen extends HookConsumerWidget {
         bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from == _myChatPeerUserId;
+        if (!isOwnMessage) _markRead(message);
 
         // ChatUserInfo otherUser = _getUser();
         return Column(
@@ -333,7 +336,7 @@ class ChatScreen extends HookConsumerWidget {
                     isOwnMessage
                         ? S.current.bmeet_user_you
                         : model.contact.name);
-                print('open replyBox');
+                // print('open replyBox');
               },
               child: GestureDetector(
                 onLongPress: () =>
@@ -573,7 +576,9 @@ class ChatScreen extends HookConsumerWidget {
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
     for (var msg in messages) {
+      print('msg id :${msg.to}');
       if (msg.to == model.contact.userId.toString()) {
+        print('msg id :${msg.msgId}');
         ref.read(chatMessageListProvider.notifier).addChat(msg);
       }
     }
@@ -780,14 +785,15 @@ class ChatScreen extends HookConsumerWidget {
             SizedBox(width: 2.w),
             IconButton(
               onPressed: () {
-                receiveAudioCall(
-                  'YcJ5uHP31M8sMyAZ1msC',
-                  model.contact.profileImage,
-                  ref,
-                  context, 
-                );
-                // makeVideoCall(model.contact, ref, context);
+                // receiveAudioCall(
+                //   'YcJ5uHP31M8sMyAZ1msC',
+                //   model.contact.profileImage,
+                //   ref,
+                //   context,
+                // );
+                makeVideoCall(model.contact, ref, context);
                 // Navigator.pushNamed(context, RouteList.bChatVideoCall);
+                // makeFakeCallInComing();
               },
               icon: getSvgIcon(
                 'icon_video_call.svg',
@@ -798,5 +804,11 @@ class ChatScreen extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _markRead(ChatMessage message) async {
+    if (!message.hasRead) {
+      await model.conversation?.markMessageAsRead(message.msgId);
+    }
   }
 }

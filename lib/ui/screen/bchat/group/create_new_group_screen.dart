@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import '/controller/providers/contacts_select_notifier.dart';
@@ -115,7 +117,7 @@ class CreateNewGroupScreen extends HookWidget {
                   style: elevatedButtonYellowStyle,
                   onPressed: () async {
                     String name = _controller.text;
-                    createGroup(name, ref);
+                    createGroup(context, name, ref);
                   },
                   child: Text(S.current.btn_create),
                 );
@@ -202,7 +204,7 @@ class CreateNewGroupScreen extends HookWidget {
                         return TextField(
                           controller: _controller,
                           onSubmitted: (value) {
-                            createGroup(value, ref);
+                            createGroup(context, value, ref);
                           },
                           decoration: inputNewGroupStyle.copyWith(
                               hintText: 'Enter group name'),
@@ -305,7 +307,7 @@ class CreateNewGroupScreen extends HookWidget {
     );
   }
 
-  createGroup(String name, WidgetRef ref) async {
+  createGroup(BuildContext context, String name, WidgetRef ref) async {
     showLoading(ref);
     if (name.trim().isEmpty) {
       EasyLoading.showError('Group Name can\'t be emply');
@@ -328,9 +330,13 @@ class CreateNewGroupScreen extends HookWidget {
     final group =
         await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
     hideLoading(ref);
+
     if (group != null) {
+      // ref.read(groupl)
+      Navigator.pop(context, group);
     } else {
-      EasyLoading.showError('Error in creating group');
+      AppSnackbar.instance.error(context, 'Error in creating group');
+      // EasyLoading.showError('Error in creating group');
     }
   }
 

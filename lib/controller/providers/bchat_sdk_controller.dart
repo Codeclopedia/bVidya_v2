@@ -1,23 +1,25 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 // import 'package:collection/collection.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/bchat_group_manager.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/services/bchat_api_service.dart';
+import '/core/helpers/bchat_group_manager.dart';
+import '/core/utils.dart';
+import '/core/state.dart';
+
+import '/data/services/bchat_api_service.dart';
 import '/controller/bchat_providers.dart';
 
-import '/core/state.dart';
-import '../../firebase_options.dart';
-import '../../data/models/models.dart';
+import '/firebase_options.dart';
+import '/data/models/models.dart';
 
 class BChatSDKController {
-  final User _currentUser;
-
   // WidgetRef? _ref;
-  BChatSDKController(this._currentUser) {
+  BChatSDKController() {
     print('BChatSDKController initialized');
   }
 
@@ -27,14 +29,18 @@ class BChatSDKController {
   loadChats(WidgetRef ref) async {
     print('loadinging chats $_initialized');
     if (!_initialized) {
+      User? currentUser = await getMeAsUser();
+      if (currentUser == null) {
+        return;
+      }
       print('init from loadChats');
-      await initChatSDK();
+      await initChatSDK(currentUser);
     }
     // _isFirstTimeLoading = true;
     await loadConversations(ref);
   }
 
-  Future initChatSDK() async {
+  Future initChatSDK(User currentUser) async {
     // _ref = ref;
     print('initChatSDK $_initialized');
     if (_initialized) {
@@ -42,63 +48,87 @@ class BChatSDKController {
     }
     _initialized = true;
     print('_initialized');
+
+    // User? currentUser = await getMeAsUser();
+    // if (currentUser == null) {
+    //   return;
+    // }
+
     final pref = await SharedPreferences.getInstance();
 
-    final token =
-        await BChatApiService.instance.fetchChatToken(_currentUser.authToken);
-    String? oldChatBody = pref.getString('chat_body');
-
-    if (token.body != null) {
-      bool shouldLogin = true;
-      if (oldChatBody != null) {
-        int? login = pref.getInt('last_login');
-        ChatTokenBody oldBody = ChatTokenBody.fromJson(jsonDecode(oldChatBody));
-        shouldLogin = oldBody.appKey != token.body!.appKey ||
-            oldBody.userId != token.body!.userId ||
-            (DateTime.now().millisecondsSinceEpoch - (login ?? 0)) >
-                60 * 60 * 1000;
-        // oldBody.userToken != token.body!.userToken;
-      }
-
-      print('shouldLogin -  $shouldLogin');
-      print('oldChatBody -  $oldChatBody');
-      print('newChatBody -  ${token.body!.toJson()}');
-      // ${oldChatBody.toString()}
-      ChatOptions options = ChatOptions(
-        appKey: token.body!.appKey,
-        autoLogin: false,
-        acceptInvitationAlways: true,
-        deleteMessagesAsExitGroup: false,
-        requireAck: true,
-        requireDeliveryAck: true,
-      );
-
-      options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
-      await ChatClient.getInstance.init(options);
-      // showLoading(ref);
-      bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
-
-      if (alreadyLoggedIn) {
-        if (!shouldLogin) {
-          return;
-        }
-        try {
-          await ChatClient.getInstance.logout(false);
-        } catch (e) {}
-      }
-
-      if (shouldLogin || !alreadyLoggedIn) {
-        await _signIn(token.body!.userId.toString(), token.body!.userToken);
-        await pref.setInt('last_login', DateTime.now().millisecondsSinceEpoch);
-        await pref.setString('chat_body', jsonEncode(token.body!));
-      }
-
-      // print('token - ${token.body!.userId}');
-
+    int? login = pref.getInt('last_login');
+    String? oldChatBodyStr = pref.getString('chat_body');
+    bool shouldFetchNewToken =
+        (DateTime.now().millisecondsSinceEpoch - (login ?? 0)) > 60 * 60 * 1000;
+    bool shouldLogin = false;
+    // String appKey;
+    ChatTokenBody? keyBody;
+    if (oldChatBodyStr != null) {
+      keyBody = ChatTokenBody.fromJson(jsonDecode(oldChatBodyStr));
     }
+    if (shouldFetchNewToken || keyBody == null) {
+      final token =
+          await BChatApiService.instance.fetchChatToken(currentUser.authToken);
+      if (token.body != null) {
+        shouldLogin = true;
+        if (keyBody != null) {
+          shouldLogin = keyBody.appKey != token.body!.appKey ||
+              keyBody.userId != token.body!.userId;
+          await pref.setString('chat_body', jsonEncode(token.body!));
+        } else {
+          keyBody = token.body!;
+        }
+
+        print('shouldLogin -  $shouldLogin');
+        print('oldChatBody -  $oldChatBodyStr');
+        print('newChatBody -  ${token.body!.toJson()}');
+        // appKey = token.body!.appKey;
+      }
+    }
+    if (keyBody == null) {
+      return;
+    }
+    // ${oldChatBody.toString()}
+    ChatOptions options = ChatOptions(
+      appKey: keyBody.appKey,
+      autoLogin: false,
+      acceptInvitationAlways: true,
+      deleteMessagesAsExitGroup: false,
+      requireAck: true,
+      requireDeliveryAck: true,
+    );
+
+    // if (Platform.isIOS) {
+    //   String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
+    //   if (aPNStoken != null) {
+    //     options.enableAPNs(aPNStoken);
+    //   }
+    //   // options.enableAPNs(certName)
+    // }
+
+    options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
+    await ChatClient.getInstance.init(options);
+    // showLoading(ref);
+    bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
+
+    if (alreadyLoggedIn) {
+      if (!shouldLogin) {
+        return;
+      }
+      try {
+        await ChatClient.getInstance.logout(false);
+      } catch (e) {}
+    }
+
+    if (shouldLogin || !alreadyLoggedIn) {
+      await _signIn(keyBody.userId.toString(), keyBody.userToken, currentUser);
+      await pref.setInt('last_login', DateTime.now().millisecondsSinceEpoch);
+    }
+
+    // print('token - ${token.body!.userId}');
   }
 
-  Future _signIn(String userId, String agoraToken) async {
+  Future _signIn(String userId, String agoraToken, User currentUser) async {
     try {
       await ChatClient.getInstance.loginWithAgoraToken(
         userId,
@@ -106,16 +136,29 @@ class BChatSDKController {
       );
 
       await ChatClient.getInstance.pushManager
-          .updateFCMPushToken(_currentUser.fcmToken);
+          .updateFCMPushToken(currentUser.fcmToken);
+
+      if (Platform.isIOS) {
+        String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
+        if (aPNStoken != null) {
+          await ChatClient.getInstance.pushManager
+              .updateAPNsDeviceToken(agoraToken);
+          // options.enableAPNs(aPNStoken);
+        }
+        // options.enableAPNs(certName)
+      }
+
+      await ChatClient.getInstance.userInfoManager.updateUserInfo(
+        avatarUrl: currentUser.image,
+        ext: currentUser.fcmToken,
+        nickname: currentUser.name,
+        mail: currentUser.email,
+        phone: currentUser.phone,
+      );
+
       // registerForPresence();
       // await loadConversations(ref);
-      await ChatClient.getInstance.userInfoManager.updateUserInfo(
-        avatarUrl: _currentUser.image,
-        ext: _currentUser.fcmToken,
-        nickname: _currentUser.name,
-        mail: _currentUser.email,
-        phone: _currentUser.phone,
-      );
+
     } on ChatError catch (e) {
       print('Login Error: ${e.code}- ${e.description}');
       if (e.code == 200 || e.code == 202) {

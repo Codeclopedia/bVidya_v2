@@ -34,7 +34,6 @@ class BchatGroupManager {
     for (ChatGroup group in groups) {
       GroupConversationModel model;
 
-
       try {
         final conv = await ChatClient.getInstance.chatManager.getConversation(
             group.groupId,
@@ -42,25 +41,28 @@ class BchatGroupManager {
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
 
-        final ext = group.extension;
-        String? image;
-        if(ext?.isNotEmpty==true){
-          final map = jsonDecode(ext!);
-          image= map['image'];
-        }
         model = GroupConversationModel(
             id: group.groupId,
             badgeCount: await conv.unreadCount(),
             groupInfo: group,
             conversation: conv,
             lastMessage: lastMessage,
-            image: image??'',
-            isOnline: null);
+            image: getGroupImage(group));
       } catch (e) {
         continue;
       }
       conversations.add(model);
     }
     return conversations;
+  }
+
+  static String getGroupImage(ChatGroup group) {
+    final ext = group.extension;
+    String? image;
+    if (ext?.isNotEmpty == true) {
+      final map = jsonDecode(ext!);
+      image = map['image'];
+    }
+    return image??'';
   }
 }

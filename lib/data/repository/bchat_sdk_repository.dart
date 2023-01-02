@@ -14,7 +14,6 @@ class BChatSDKRepository {
 
   BChatSDKRepository(this.api, this.token) : _client = ChatClient.getInstance;
 
-
   Future<List<ConversationModel>> loadContactsConversationsList(
       {bool firstTime = false}) async {
     List<ConversationModel> conversations = [];
@@ -28,10 +27,10 @@ class BChatSDKRepository {
       List<Contacts> contacts = [];
 
       for (ChatUserInfo user in usersMaps.values) {
-        // print('userID: ${user.toJson()}');
+        print('userID: ${user.toJson()} $firstTime');
         if (user.avatarUrl?.isNotEmpty == true && !firstTime) {
           final contact = Contacts(
-            userId: user.userId as int,
+            userId: int.parse(user.userId),
             name: user.nickName ?? '',
             profileImage: user.avatarUrl ?? '',
             email: user.mail,
@@ -40,7 +39,7 @@ class BChatSDKRepository {
           );
           contacts.add(contact);
         } else {
-          //   print('NULL so: ${userIds.join(',')}');
+          print('NULL so: ${userIds.join(',')}');
           final response = await api.getContactsByIds(token, userIds.join(','));
           if (response.status == successfull &&
               response.body?.contacts?.isNotEmpty == true) {
@@ -49,7 +48,7 @@ class BChatSDKRepository {
           break;
         }
       }
-      //   print('contacts size: ${contacts.length}');
+      print('contacts size: ${contacts.length}');
 
       for (Contacts contact in contacts) {
         final ConversationModel model;

@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 
@@ -65,7 +66,7 @@ class GroupsScreen extends StatelessWidget {
           const Duration(milliseconds: 500),
         ); //delay to reset state
         // ref.invalidate(chatConversationListProvider);
-        ref.read(bChatSDKControllerProvider).loadConversations(ref);
+        // ref.read(bChatSDKControllerProvider).loadConversations(ref);
       },
       // onLongPress: (() {
       //   showDialog(
@@ -108,14 +109,15 @@ class GroupsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          getCicleAvatar(model.groupInfo.name??'', model.groupInfo.extension??''),
+          getCicleAvatar(
+              model.groupInfo.name ?? '', model.groupInfo.extension ?? ''),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.groupInfo.name??'',
+                  model.groupInfo.name ?? '',
                   style: TextStyle(
                     fontWeight: model.badgeCount > 0
                         ? FontWeight.w700
@@ -223,40 +225,62 @@ class GroupsScreen extends StatelessWidget {
   }
 
   Widget _newGroupButton(BuildContext context) {
-    return InkWell(
-      splashColor: AppColors.primaryColor,
-      onTap: () async {
-        await Navigator.pushNamed(context, RouteList.newGroupContacts);
-      },
-      child: Row(
-        children: [
-          DottedBorder(
-            // radius: Radius.circular(3.5.w),
-            borderType: BorderType.Circle,
-            dashPattern: const [10, 4],
-            strokeWidth: 3.0,
-            color: AppColors.newMessageBorderColor,
-            child: SizedBox(
-              width: 7.w,
-              height: 7.w,
-              child: const Icon(
-                Icons.add,
-                color: Colors.black,
+    return Consumer(builder: (context, ref, child) {
+      return InkWell(
+        splashColor: AppColors.primaryColor,
+        onTap: () async {
+          final result =
+              await Navigator.pushNamed(context, RouteList.newGroupContacts);
+          if (result != null && result is ChatGroup) {
+            ChatGroup group = result;
+            // group.extension.
+            ChatConversation? conv = await ChatClient.getInstance.chatManager
+                .getConversation(group.groupId,
+                    type: ChatConversationType.GroupChat);
+
+            final model = GroupConversationModel(
+              id: group.groupId,
+              groupInfo: group,
+              badgeCount: await conv?.unreadCount() ?? 0,
+              conversation: conv,
+              lastMessage: await conv?.latestMessage(),
+              image: BchatGroupManager.getGroupImage(group),
+            );
+            ref
+                .read(groupChatConversationListProvider.notifier)
+                .addConversation(model);
+          }
+        },
+        child: Row(
+          children: [
+            DottedBorder(
+              // radius: Radius.circular(3.5.w),
+              borderType: BorderType.Circle,
+              dashPattern: const [10, 4],
+              strokeWidth: 3.0,
+              color: AppColors.newMessageBorderColor,
+              child: SizedBox(
+                width: 7.w,
+                height: 7.w,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 2.w),
-          Text(
-            S.current.home_btx_new_group,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              fontSize: 10.sp,
-              color: AppColors.black,
+            SizedBox(width: 2.w),
+            Text(
+              S.current.home_btx_new_group,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 10.sp,
+                color: AppColors.black,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _recentCallButton(BuildContext context) {

@@ -30,7 +30,7 @@ class GroupConversationModel {
   final int badgeCount;
   final ChatConversation? conversation;
   final bool mute;
-  final ChatPresence? isOnline;
+  // final ChatPresence? isOnline;
 
   const GroupConversationModel(
       {required this.id,
@@ -39,6 +39,6 @@ class GroupConversationModel {
       required this.conversation,
       required this.lastMessage,
       required this.image,
-      required this.isOnline,
+      // required this.isOnline,
       this.mute = false});
 }

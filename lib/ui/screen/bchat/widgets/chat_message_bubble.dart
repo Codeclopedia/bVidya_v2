@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/data/models/response/bchat/contacts_response.dart';
@@ -365,25 +364,43 @@ class ChatMessageBubble extends StatelessWidget {
 
   Widget _buildTime() {
     // final bool isOwnMessage = message.from == currentUser.id;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          DateFormat('h:mm a')
-              .format(DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            fontSize: 8.sp,
-            color: isOwnMessage
-                ? AppColors.chatBoxTimeMine
-                : AppColors.chatBoxTimeOthers,
-          ),
-        ),
-        if (isOwnMessage && message.hasReadAck || message.hasDeliverAck)
-          Icon(message.hasReadAck ? Icons.done_all : Icons.done)
-      ],
-    );
+    bool showTick =
+        (isOwnMessage && (message.hasReadAck || message.hasDeliverAck));
+    return showTick
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                DateFormat('h:mm a').format(
+                    DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  fontSize: 8.sp,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxTimeMine
+                      : AppColors.chatBoxTimeOthers,
+                ),
+              ),
+              SizedBox(width: 2.w),
+              Icon(
+                message.hasReadAck ? Icons.done_all : Icons.done,
+                color: Colors.white,
+                size: 4.w,
+              )
+            ],
+          )
+        : Text(
+            DateFormat('h:mm a').format(
+                DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 8.sp,
+              color: isOwnMessage
+                  ? AppColors.chatBoxTimeMine
+                  : AppColors.chatBoxTimeOthers,
+            ),
+          );
   }
 
   List<Widget> getMessage(String content) {

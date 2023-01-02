@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bvidya/data/models/response/bchat/p2p_call_response.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 extension RemoteMessageExt on RemoteMessage {
@@ -7,7 +8,7 @@ extension RemoteMessageExt on RemoteMessage {
     return jsonDecode(data["content"]);
   }
 
-  Map<String, dynamic> payload() {
-    return getContent()["payload"];
+  CallBody? payload() {
+    return CallBody?.fromJson(getContent());
   }
 }

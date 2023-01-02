@@ -1,7 +1,10 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
+import 'package:provider/provider.dart' as pr;
 
+
+import '/controller/providers/call_end_provider.dart';
 import '/controller/providers/p2p_call_provider.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants/colors.dart';
@@ -34,6 +37,14 @@ class ChatCallScreen extends ConsumerWidget {
     final provider = ref.watch(audioCallChangeProvider);
 
     provider.init(callInfo, callDirection, callType);
+
+    final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
+    valu.addListener(() {
+      if (valu.isCallEnd) {
+        print('is Call End by other declined the call');
+        Navigator.pop(context);
+      }
+    });
 
     ref.listen(audioCallChangeProvider, (previous, next) {
       if (next.isCallEnded) {

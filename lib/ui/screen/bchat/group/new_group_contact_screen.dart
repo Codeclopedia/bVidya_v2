@@ -1,4 +1,7 @@
 // import 'package:bvidya/data/models/models.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 import '../../../../controller/providers/contacts_select_notifier.dart';
@@ -9,7 +12,6 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../../widgets.dart';
-
 
 class NewGroupContactsScreen extends StatelessWidget {
   const NewGroupContactsScreen({Key? key}) : super(key: key);
@@ -55,9 +57,12 @@ class NewGroupContactsScreen extends StatelessWidget {
                       const Spacer(),
                       ElevatedButton(
                         style: elevatedButtonYellowStyle,
-                        onPressed: () {
-                          Navigator.pushNamed(
+                        onPressed: () async {
+                          final added = await Navigator.pushNamed(
                               context, RouteList.createNewGroup);
+                          if (added != null && added is ChatGroup) {
+                            Navigator.pop(context, added);
+                          }
                         },
                         child: Text(S.current.btn_create),
                       )

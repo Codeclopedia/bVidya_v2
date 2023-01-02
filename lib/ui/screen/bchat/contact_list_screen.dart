@@ -23,7 +23,7 @@ class ContactListScreen extends StatelessWidget {
         topBar: const BAppBar(title: 'Add New People'),
         body: Consumer(
           builder: (context, ref, child) {
-            return ref.watch(chatContactsList).when(
+            return ref.watch(myContactsList).when(
                 data: (data) {
                   if (data.isNotEmpty) {
                     return _buildList(context, ref, data);

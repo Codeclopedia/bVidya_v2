@@ -22,25 +22,26 @@ class EndDrawer extends StatelessWidget {
       width: 30.w,
       child: Stack(
         children: [
-          Consumer(
-            builder: (context, ref, child) {
-              final drag = ref.watch(drawerPositionNotifierProvider);
-              return Positioned(
-                top: 86.85.h,
-                right: 17.5.w,
-                child: InkWell(
-                  onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
-                  child: SvgPicture.asset(
-                    'assets/icons/svgs/arc_type1.svg',
-                    color: myRouteName == RouteList.home
-                        ? AppColors.yellowAccent
-                        : AppColors.drawerBackgroundColor,
-                    width: 8.w,
-                    height: 12.h,
-                  ),
-                ),
-              );
-            },
+          // Consumer(
+          //   builder: (context, ref, child) {
+          //     // final drag = ref.watch(drawerPositionNotifierProvider);
+          //     return
+          Positioned(
+            top: 86.85.h,
+            right: 17.5.w,
+            child: InkWell(
+              onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
+              child: SvgPicture.asset(
+                'assets/icons/svgs/arc_type1.svg',
+                color: myRouteName == RouteList.home
+                    ? AppColors.yellowAccent
+                    : AppColors.drawerBackgroundColor,
+                width: 8.w,
+                height: 12.h,
+              ),
+            ),
+            //     );
+            //   },
           ),
           Align(
             alignment: Alignment.centerRight,
@@ -153,7 +154,7 @@ class EndDrawer extends StatelessWidget {
                       }),
                       SizedBox(
                         width: 20.w,
-                        height: 7.h,
+                        height: 9.h,
                         child: Stack(children: [
                           _buildIconPng(
                               S.current.drawer_bchat,

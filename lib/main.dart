@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:bvidya/core/helpers/extensions.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+// import '/core/helpers/extensions.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
 import 'firebase_options.dart';
@@ -19,6 +20,27 @@ Future<void> main() async {
   }
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelKey: 'chat_channel',
+            channelName: 'chat_channel',
+            groupKey: 'call_key',
+            channelDescription: 'Show Chat Notification'),
+        NotificationChannel(
+            channelKey: 'call_channel',
+            channelName: 'call_channel',
+            groupKey: 'call_key',
+            channelDescription: 'Show Call Notification'),
+      ],
+      channelGroups: [
+        NotificationChannelGroup(
+          channelGroupKey: 'call_key',
+          channelGroupName: 'bChat Call',
+        ),
+      ],
+      debug: true);
   runApp(
     const ProviderScope(
       child: ResponsiveApp(),
@@ -37,14 +59,30 @@ Future<void> backgroundHandler(RemoteMessage message) async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
-  // if (message.data.containsKey('p2p_call')) {
-  //   final String? action = message.payload()['action'];
-  //   if (action == 'START_CALL') {
-  //     showIncomingCall(context, remoteMessage, callKeep);
-  //   }
-  // }
+  // setupCallKeep();
+  setupCallKit();
+  onNewFireabseMessage(message, false);
 }
 
+onNewFireabseMessage(RemoteMessage message, bool foreground) {
+  try {
+    print('onNewFirebaseMessage: ${message.data} $foreground');
+
+    if (message.data['type'] == 'p2p_call') {
+      final String? action = message.data['action'];
+
+      print('action: $action');
+      if (action == 'START_CALL') {
+        showIncomingCall(message);
+      } else if (action == 'END_CALL') {
+        closeIncomingCall(message);
+      }
+    }
+  } catch (e) {
+    print('error $e');
+  }
+  ;
+}
 
   // setupCall(BuildContext context) {
   //   final FlutterCallkeep callKeep = FlutterCallkeep();

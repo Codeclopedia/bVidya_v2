@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bvidya/app.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -67,6 +68,7 @@ class P2PCallProvider extends ChangeNotifier {
     if (_isInitialized) {
       return;
     }
+    showOutGoingCall(body, callType == CallType.video);
     _isInitialized = true;
     _callType = callType;
     _currentCallType = callType;
@@ -288,6 +290,9 @@ class P2PCallProvider extends ChangeNotifier {
     }
     _disconnected = true;
     try {
+      if (_timer?.isActive == true) {
+        _timer?.cancel();
+      }
       await _player?.stop();
       await _player?.release();
 
