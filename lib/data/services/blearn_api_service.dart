@@ -159,12 +159,12 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     try {
       _dio.options.headers["X-Auth-Token"] = authToken;
-      print('$authToken $instructorId');
+      // print('$authToken - $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
 
       if (response.statusCode == 200) {
-        print('${jsonEncode(response.data)}');
+        // print('${jsonEncode(response.data)}');
         return InstructorProfileResponse.fromJson(response.data);
       } else {
         return InstructorProfileResponse(
@@ -174,7 +174,7 @@ class BLearnApiService {
     } catch (e) {
       print('error: $e');
       return InstructorProfileResponse(
-          status: 'error', message: 'Unknown error -$e');
+          status: 'error', message: 'Unknown error - $e');
     }
   }
 
@@ -195,6 +195,28 @@ class BLearnApiService {
       }
     } catch (e) {
       return InstructorCoursesResponse(
+          status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+
+  Future<FollowInstructorResponse> followInstructor(
+      String authToken, String instructorId) async {
+    _dio.options.headers["X-Auth-Token"] = authToken;
+    try {
+      print('$authToken $instructorId');
+      final response = await _dio
+          .get('$baseUrlApi${ApiList.lmsFollowInstructor}$instructorId');
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return FollowInstructorResponse.fromJson(response.data);
+      } else {
+        return FollowInstructorResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return FollowInstructorResponse(
           status: 'error', message: 'Unknown error -$e');
     }
   }

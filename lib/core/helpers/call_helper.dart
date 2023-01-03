@@ -35,7 +35,7 @@ Future makeAudioCall(
       return;
     }
   }
-  pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
+  // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
 
   showLoading(ref);
   final response = await ref
@@ -90,7 +90,7 @@ Future makeVideoCall(
     }
   }
   showLoading(ref);
-  pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
+  // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
 
   final response = await ref
       .read(apiBChatProvider)

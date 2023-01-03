@@ -164,9 +164,9 @@ class BLearnHomeScreen extends StatelessWidget {
 
   Widget _buildOngoing() {
     return Container(
-      height: 21.h,
+      height: 42.w,
       width: double.infinity,
-      margin: EdgeInsets.only(left: 5.w, right: 5.w),
+      margin: EdgeInsets.only(left: 6.w, right: 6.w),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(5.w)),
       ),
@@ -175,7 +175,8 @@ class BLearnHomeScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: SizedBox(
-              height: 21.h,
+              height: 42.w,
+              width: double.infinity,
               child: Image.asset(
                 "assets/images/banner_image.png",
                 fit: BoxFit.cover,
@@ -183,14 +184,16 @@ class BLearnHomeScreen extends StatelessWidget {
             ),
           ),
           Container(
-            height: 21.h,
+            height: 42.w,
             width: double.infinity,
-            decoration: const BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Colors.white, Colors.transparent])),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+              Colors.white.withOpacity(0.5),
+              Colors.transparent
+            ])),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -219,16 +222,16 @@ class BLearnHomeScreen extends StatelessWidget {
                       fontSize: 8.sp,
                       color: Colors.black),
                 ),
-                SizedBox(height: 1.h),
+                SizedBox(height: 2.w),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     textStyle: TextStyle(
                         fontFamily: kFontFamily,
                         color: Colors.white,
                         fontSize: 8.sp),
-                    elevation: 0.0,
+                    // elevation: 0.0,
                     padding:
-                        EdgeInsets.symmetric(horizontal: 5.w, vertical: 0.5.h),
+                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.w),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4.w)),
                     backgroundColor: const Color(0xFF65427A),
@@ -493,7 +496,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 1.h),
-      height: 29.h,
+      height: 55.w,
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.all(0.5.h),
@@ -503,7 +506,7 @@ class BLearnHomeScreen extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             Instructor instructor = instructors[index];
             return Container(
-              margin: EdgeInsets.only(top: 0.2.h, left: 4.w),
+              margin: EdgeInsets.only(left: 4.w),
               child: GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(
@@ -565,11 +568,11 @@ class BLearnHomeScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Container(
-      margin: EdgeInsets.only(top: 1.5.h),
-      height: 29.h,
+      margin: EdgeInsets.only(top: 1.5.w),
+      height: 50.w,
       color: Colors.white,
       child: ListView.builder(
-          padding: EdgeInsets.all(0.5.h),
+          padding: EdgeInsets.all(2.w),
           itemCount: courses.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
@@ -580,7 +583,7 @@ class BLearnHomeScreen extends StatelessWidget {
                     arguments: course);
               },
               child: Container(
-                width: 45.w,
+                // width: 45.w,
                 margin: EdgeInsets.only(right: 3.w, left: 2.w),
                 child: CourseRowItem(course: course),
               ),
@@ -609,7 +612,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 0.8.h),
-      height: 22.h,
+      height: 45.w,
       color: Colors.white,
       child: ListView.builder(
         padding: EdgeInsets.all(0.5.h),

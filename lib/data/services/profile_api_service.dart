@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 import '/core/constants.dart';
@@ -51,6 +53,27 @@ class ProfileApiService {
       }
     } catch (e) {
       return UserProfileResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+
+  Future<FollowInstructorResponse> followedInstructor(
+      String authToken) async {
+    _dio.options.headers["X-Auth-Token"] = authToken;
+    try {
+      final response = await _dio
+          .get('$baseUrlApi${ApiList.instructorFollowed}');
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return FollowInstructorResponse.fromJson(response.data);
+      } else {
+        return FollowInstructorResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return FollowInstructorResponse(
+          status: 'error', message: 'Unknown error -$e');
     }
   }
 }

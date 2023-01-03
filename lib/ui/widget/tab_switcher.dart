@@ -78,21 +78,27 @@ class _SlideTabState extends State<SlideTab>
   late int index;
   int lastIndex = -1;
 
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 250),
-    vsync: this,
-  );
-  late Animation<Offset> offsetAnimation = Tween<Offset>(
-    begin: Offset(widget.initialIndex.toDouble(), 0.0),
-    end: widget.direction == Axis.horizontal
-        ? const Offset(1.0, 0.0)
-        : const Offset(0.0, 1.0),
-  ).animate(
-    CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    ),
-  );
+  late final AnimationController _controller;
+  // late Animation _colorTween;
+
+  // late Animation _selectedColorTween;
+  //  = AnimationController(
+  //   duration: const Duration(milliseconds: 250),
+  //   vsync: this,
+  // );
+  late Animation<Offset> offsetAnimation;
+
+  // = Tween<Offset>(
+  //   begin: Offset(widget.initialIndex.toDouble(), 0.0),
+  //   end: widget.direction == Axis.horizontal
+  //       ? const Offset(1.0, 0.0)
+  //       : const Offset(0.0, 1.0),
+  // ).animate(
+  //   CurvedAnimation(
+  //     parent: _controller,
+  //     curve: Curves.linear,
+  //   ),
+  // );
 
   @override
   void initState() {
@@ -107,6 +113,28 @@ class _SlideTabState extends State<SlideTab>
 
     double containerBorderWidth = 2.w;
     // widget.containerBorder.left.width + widget.containerBorder.right.width;
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+
+    // _colorTween =
+    //     ColorTween(begin: Colors.white, end: Colors.black).animate(_controller);
+
+    // _selectedColorTween =
+    //     ColorTween(begin: Colors.white, end: Colors.black).animate(_controller);
+    offsetAnimation = Tween<Offset>(
+      begin: Offset(widget.initialIndex.toDouble(), 0.0),
+      end: widget.direction == Axis.horizontal
+          ? const Offset(1.0, 0.0)
+          : const Offset(0.0, 1.0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+      ),
+    );
 
     // sliderBorderRadius =
     //     (widget.containerHeight - widget.indents - containerBorderWight) *
@@ -199,6 +227,26 @@ class _SlideTabState extends State<SlideTab>
                           style: slidersIndex == index
                               ? widget.activeTextStyle
                               : widget.inactiveTextStyle),
+                      // child: AnimatedBuilder(
+                      //     animation: index == slidersIndex
+                      //         ? _selectedColorTween
+                      //         : _colorTween,
+                      //     builder: (context, child) {
+                      //       return Text(
+                      //         widget.texts[slidersIndex],
+                      //         style: TextStyle(
+                      //           fontSize: 9.sp,
+                      //           fontWeight: FontWeight.w600,
+                      //           fontFamily: kFontFamily,
+                      //           color: index == slidersIndex
+                      //               ? _selectedColorTween.value
+                      //               : _colorTween.value,
+                      //         ),
+                      //         // style: slidersIndex == index
+                      //         //     ? widget.activeTextStyle
+                      //         //     : widget.inactiveTextStyle
+                      //       );
+                      //     }),
                     ),
                   ),
                 ),
@@ -232,35 +280,37 @@ class _SlideTabState extends State<SlideTab>
 
   void _slidersOnTap(int slidersIndex) {
     lastIndex = index;
-    index = slidersIndex;
-    setState(() {});
-    widget.onSelect(index);
+    setState(() {
+      index = slidersIndex;
+      widget.onSelect(index);
+    });
+
     if (widget.texts.length == 2) {
-      index == 1 ? _controller.forward() : _controller.reverse();
+      slidersIndex == 1 ? _controller.forward() : _controller.reverse();
     } else {
-      if (widget.direction == Axis.horizontal) {
-        offsetAnimation = Tween<Offset>(
-          begin: Offset(lastIndex.toDouble(), 0.0),
-          end: Offset(index.toDouble(), 0.0),
-        ).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.linear,
-          ),
-        );
-      } else {
-        offsetAnimation = Tween<Offset>(
-          begin: Offset(0.0, lastIndex.toDouble()),
-          end: Offset(0.0, index.toDouble()),
-        ).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.linear,
-          ),
-        );
-      }
-      _controller.reset();
-      _controller.forward();
+      // if (widget.direction == Axis.horizontal) {
+      //   offsetAnimation = Tween<Offset>(
+      //     begin: Offset(lastIndex.toDouble(), 0.0),
+      //     end: Offset(slidersIndex.toDouble(), 0.0),
+      //   ).animate(
+      //     CurvedAnimation(
+      //       parent: _controller,
+      //       curve: Curves.linear,
+      //     ),
+      //   );
+      // } else {
+      //   offsetAnimation = Tween<Offset>(
+      //     begin: Offset(0.0, lastIndex.toDouble()),
+      //     end: Offset(0.0, slidersIndex.toDouble()),
+      //   ).animate(
+      //     CurvedAnimation(
+      //       parent: _controller,
+      //       curve: Curves.linear,
+      //     ),
+      //   );
+      // }
+      // _controller.reset();
+      // _controller.forward();
     }
   }
 

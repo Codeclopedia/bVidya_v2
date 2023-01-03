@@ -43,10 +43,12 @@ class ApiList {
   static const String lmsSearch = 'search'; //POST
   static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET
   static const String lmsInstructorProfile = 'instructor/'; //GET
+  static const String lmsFollowInstructor = 'follow/'; //GET
 
   //Settings
   static const String reportProblem = 'report'; //POST
   static const String userProfile = 'profile'; //POST
+  static const String instructorFollowed = 'followed'; //GET
 
   //bChat
   static const String getChatToken = 'chat-user/token'; //GET
@@ -56,9 +58,9 @@ class ApiList {
   static const String contactsByIds = 'chat-user/contact/details'; //POST
   static const String groupContactsByIds = 'chat-user/group/details'; //POST
   static const String deleteContact = 'chat-user/delete-contact'; //POST
-  
-  
-  static const String uploadImage = 'messenger/attachment'; //POST Todo change later
+
+  static const String uploadImage =
+      'messenger/attachment'; //POST Todo change later
 
   //CALLING
   static const String makeCall = 'messenger/start-call'; //POST

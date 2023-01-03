@@ -4,17 +4,13 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/core/constants.dart';
-// import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
-import 'package:provider/provider.dart' as pr;
-// import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:uuid/uuid.dart';
 
-import 'controller/providers/call_end_provider.dart';
 import 'core/helpers/call_helper.dart';
 import 'core/utils.dart';
 import 'core/helpers/extensions.dart';
@@ -25,8 +21,6 @@ import 'data/models/models.dart';
 import 'data/services/fcm_api_service.dart';
 import 'ui/screen/welcome/splash.dart';
 
-// final callEndProvier = StateProvider.family<bool, String>((ref, id) => false);
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class ResponsiveApp extends StatelessWidget {
@@ -36,10 +30,11 @@ class ResponsiveApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Sizer(
       builder: (context, orientation, deviceType) {
-        return pr.ChangeNotifierProvider(
-          create: (context) => ClassEndProvider(),
-          child: const BVideyApp(),
-        );
+        return const BVidyaApp();
+        // pr.ChangeNotifierProvider(
+        //   create: (context) => ClassEndProvider(),
+        //   child: const BVideyApp(),
+        // );
       },
     );
   }
@@ -61,14 +56,14 @@ initLoading() {
     ..dismissOnTap = false;
 }
 
-class BVideyApp extends StatefulWidget {
-  const BVideyApp({Key? key}) : super(key: key);
+class BVidyaApp extends StatefulWidget {
+  const BVidyaApp({Key? key}) : super(key: key);
 
   @override
-  State<BVideyApp> createState() => _BVideyAppState();
+  State<BVidyaApp> createState() => _BVidyaAppState();
 }
 
-class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
+class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -77,13 +72,13 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
     initLoading();
     _firebase();
     setupCallKit();
-    getCurrentCall();
+    // getCurrentCall();
   }
 
   getCurrentCall() async {
-    final list = await FlutterCallkitIncoming.activeCalls();
+    // final list = await FlutterCallkitIncoming.activeCalls();
 
-    print('List-> ${list[0]}');
+    // print('List-> ${list[0]}');
   }
 
   @override
@@ -212,9 +207,10 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
           showIncomingCall(message);
         } else if (action == 'END_CALL') {
           closeIncomingCall(message);
-        } else if (action == 'DECLINE_CALL') {
-          declineOutgoingCall(message);
         }
+        // else if (action == 'DECLINE_CALL') {
+        //   declineOutgoingCall(message);
+        // }
       }
     });
 
@@ -281,11 +277,13 @@ onCallAccept(String callerIdFrom, String fcmToken, String callerName,
     String callerImage, CallBody body, bool hasVideo) async {
   User? user = await getMeAsUser();
   if (user == null) {
+    print('User is NULL');
+
     return;
   }
   BuildContext? context = navigatorKey.currentContext;
   if (context == null) {
-    print('Build Context is NULL');
+    print(' Context is NULL');
     return;
   }
   Map<String, dynamic> map = {
@@ -318,7 +316,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     return;
   }
   FCMApiService.instance.sendCallEndPush(
-      senderFCM, 'DECLINE_CALL', body, user.id.toString(), user.name,hasVideo);
+      senderFCM, 'DECLINE_CALL', body, user.id.toString(), user.name, hasVideo);
 }
 
 setupCallKit() {
@@ -490,24 +488,24 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   // context.read();
 }
 
-Future<void> declineOutgoingCall(RemoteMessage remoteMessage) async {
-  BuildContext? context = navigatorKey.currentContext;
-  if (context != null) {
-    print('call Declined');
-    pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
-  }
+// Future<void> declineOutgoingCall(RemoteMessage remoteMessage) async {
+//   BuildContext? context = navigatorKey.currentContext;
+//   if (context != null) {
+//     print('call Declined');
+//     pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
+//   }
 
-  // CallBody? body = remoteMessage.payload();
-  // if (body == null) {
-  //   await FlutterCallkitIncoming.endAllCalls();
-  //   return;
-  // }
+//   // CallBody? body = remoteMessage.payload();
+//   // if (body == null) {
+//   //   await FlutterCallkitIncoming.endAllCalls();
+//   //   return;
+//   // }
 
-  // await FlutterCallkitIncoming.endCall(body.callId);
-// await FlutterCallkitIncoming.startCall(Calll)
-  // context.watch(callEndProvier(body.callId)).
-  // context.read();
-}
+//   // await FlutterCallkitIncoming.endCall(body.callId);
+// // await FlutterCallkitIncoming.startCall(Calll)
+//   // context.watch(callEndProvier(body.callId)).
+//   // context.read();
+// }
 
 // final FlutterCallkeep callKeep = FlutterCallkeep();
 // bool _callKeepStarted = false;
@@ -644,7 +642,7 @@ showIncomingCallScreen(CallBody callBody, String callerName, String callerId,
       print('Build Context is NULL');
       return;
     }
-    pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
+    // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
   } catch (e) {
     print('error showing UI : $e');
   }

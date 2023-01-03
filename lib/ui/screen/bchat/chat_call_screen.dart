@@ -47,20 +47,19 @@ class ChatCallScreen extends ConsumerWidget {
     // }, const []);
 
     provider.init(callInfo, callDirection, callType);
-    final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
-
+    // final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
     ref.listen(audioCallChangeProvider, (previous, next) {
       if (next.isCallEnded && !provider.disconnected) {
         Navigator.pop(context);
       }
     });
-    valu.addListener(() {
-      if (valu.isCallEnd && !provider.disconnected) {
-        print('Is Call End by other declined the call');
-        provider.setCallEnded();
-        // Navigator.pop(context);
-      }
-    });
+    // valu.addListener(() {
+    //   if (valu.isCallEnd && !provider.disconnected) {
+    //     print('Is Call End by other declined the call');
+    //     provider.setCallEnded();
+    //     // Navigator.pop(context);
+    //   }
+    // });
 
     final connectionStatus = ref.watch(audioCallChangeProvider).status;
 

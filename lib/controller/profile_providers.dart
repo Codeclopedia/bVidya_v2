@@ -15,3 +15,8 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
 final profileUserProvider = FutureProvider.autoDispose<Profile?>((ref) {
   return ref.read(profileRepositoryProvider).getUserProfile();
 });
+
+final follwedInstructorsProvider =
+    FutureProvider.autoDispose<List<FollowedInstructor>?>((ref) {
+  return ref.read(profileRepositoryProvider).followedInstructor();
+});

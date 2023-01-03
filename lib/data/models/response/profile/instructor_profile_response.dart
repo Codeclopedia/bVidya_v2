@@ -217,7 +217,7 @@ class Followers {
 }
 
 class Watchtime {
-  final int? total;
+  final String? total;
 
   Watchtime({this.total});
 

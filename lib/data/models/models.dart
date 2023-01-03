@@ -12,6 +12,8 @@ export 'response/blearn/recorded_classes_response.dart';
 export 'response/blearn/instructors_response.dart';
 export 'response/blearn/search_response.dart';
 export 'response/blearn/instructor_courses_response.dart';
+export 'response/blearn/follow_response.dart';
+
 export 'response/profile/instructor_profile_response.dart';
 export 'response/profile/user_profile_response.dart';
 

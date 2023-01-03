@@ -39,7 +39,7 @@ class CourseDetailScreen extends ConsumerWidget {
             ),
             // _toggleItems(),
             SizedBox(height: 2.h),
-            selectedIndex == 1 ? _buildDescView() : _builCurriculumView()
+            selectedIndex == 0 ? _buildDescView() : _builCurriculumView()
           ],
         ),
       ),

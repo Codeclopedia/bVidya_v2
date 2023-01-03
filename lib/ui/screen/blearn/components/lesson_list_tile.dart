@@ -19,13 +19,10 @@ class LessonListTile extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(top: 2.h),
       decoration: BoxDecoration(
-          color: AppColors.cardWhite,
-          borderRadius: BorderRadius.all(Radius.circular(3.w)),
-          border: Border.all(
-              width: 0,
-              color: openIndex == index
-                  ? AppColors.primaryColor
-                  : Colors.transparent)),
+        color:
+            openIndex == index ? AppColors.primaryColor : AppColors.cardWhite,
+        borderRadius: BorderRadius.all(Radius.circular(3.w)),
+      ),
       padding: EdgeInsets.only(top: 2.h, left: 4.w, bottom: 2.h, right: 4.w),
       child: Column(
         children: [
@@ -39,7 +36,7 @@ class LessonListTile extends StatelessWidget {
                     Text(
                       'Lesson ${index + 1}',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: openIndex == index ? Colors.white : Colors.black,
                         fontSize: 8.sp,
                         fontFamily: kFontFamily,
                         fontWeight: FontWeight.w300,
@@ -48,7 +45,7 @@ class LessonListTile extends StatelessWidget {
                     Text(
                       lesson.name,
                       style: TextStyle(
-                        color: Colors.black,
+                        color: openIndex == index ? Colors.white : Colors.black,
                         fontSize: 11.sp,
                         fontFamily: kFontFamily,
                         fontWeight: FontWeight.bold,
@@ -58,7 +55,7 @@ class LessonListTile extends StatelessWidget {
                         ? Text(
                             "Currently playing... ",
                             style: TextStyle(
-                                color: AppColors.primaryColor,
+                                color: AppColors.cardWhite,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 3.w),
                           )
@@ -68,11 +65,15 @@ class LessonListTile extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 2.h),
-                child: Icon(
-                  openIndex == index
-                      ? Icons.play_circle_fill
-                      : Icons.play_arrow_rounded,
-                ),
+                child: openIndex == index
+                    ? const Icon(
+                        Icons.play_circle_sharp,
+                        color: AppColors.cardWhite,
+                      )
+                    : const Icon(
+                        Icons.play_arrow,
+                        color: AppColors.primaryColor,
+                      ),
               ),
             ],
           ),

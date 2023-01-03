@@ -48,158 +48,25 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                       topLeft: Radius.circular(10.w)),
                 ),
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                "2k",
-                                style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 5.w),
-                              ),
-                              Text(
-                                S.current.teacher_followers,
-                                style: TextStyle(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 3.w),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "100",
-                                style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 5.w),
-                              ),
-                              Text(
-                                S.current.teacher_watch,
-                                style: TextStyle(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 3.w),
-                              )
-                            ],
-                          ),
-                          ElevatedButton(
-                              onPressed: () {},
-                              child: Text(S.current.teacher_follow))
-                        ],
-                      ),
-                      SizedBox(height: 2.h),
-                      SizedBox(
-                        height: 10.h,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CircleAvatar(
-                              radius: 6.w,
-                              backgroundColor:
-                                  AppColors.iconGreyColor.withOpacity(0.2),
-                              child: Center(
-                                child: Icon(
-                                  Icons.message,
-                                  color: AppColors.primaryColor,
-                                  size: 6.w,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 3.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    S.current.requestclass,
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontFamily: kFontFamily,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  Text(
-                                    S.current.t_schedule_class_msg,
-                                    style: TextStyle(
-                                        fontSize: 9.sp,
-                                        fontFamily: kFontFamily,
-                                        fontWeight: FontWeight.w200,
-                                        color: AppColors.iconGreyColor),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // const Spacer(),
-                            Icon(
-                              Icons.keyboard_arrow_right,
-                              size: 7.w,
-                              color: AppColors.iconGreyColor,
-                            )
-                          ],
-                        ),
-                      ),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final selectedIndex =
-                              ref.watch(selectedTabLearningProvider);
-
-                          return Column(
-                            children: [
-                              Center(
-                                child: SlideTab(
-                                    initialIndex: selectedIndex,
-                                    containerWidth: 88.w,
-                                    onSelect: (index) async {
-                                      ref
-                                          .read(selectedTabLearningProvider
-                                              .notifier)
-                                          .state = index;
-                                      // showLoading(ref);
-                                      // final profile = await ref
-                                      //     .read(profileRepositoryProvider)
-                                      //     .getUserProfile();
-                                      // hideLoading(ref);
-                                    },
-                                    containerHeight: 6.h,
-                                    direction: Axis.horizontal,
-                                    sliderColor: AppColors.primaryColor,
-                                    containerBorderRadius: 2.w,
-                                    sliderBorderRadius: 2.6.w,
-                                    containerColor: AppColors.cardWhite,
-                                    activeTextStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9.sp,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: kFontFamily,
-                                    ),
-                                    inactiveTextStyle: TextStyle(
-                                      fontSize: 9.sp,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: kFontFamily,
-                                      color: Colors.black,
-                                    ),
-                                    texts: [
-                                      S.current.sp_tab_course,
-                                      S.current.teacher_about,
-                                    ]),
-                              ),
-                              selectedIndex == 0
-                                  ? _buildCoursesList(instructor, ref)
-                                  : _buildAboutList(instructor)
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  child: Consumer(builder: (context, ref, child) {
+                    return ref
+                        .watch(bLearnInstructorProfileProvider(
+                            instructor.id.toString()))
+                        .when(
+                          data: (data) {
+                            if (data == null) {
+                              return SizedBox(
+                                height: 20.h,
+                                child: buildEmptyPlaceHolder('No Data'),
+                              );
+                            }
+                            return _buildContent(data);
+                          },
+                          error: (error, stackTrace) =>
+                              buildEmptyPlaceHolder('error in loading data'),
+                          loading: () => _loading(),
+                        );
+                  }),
                 ),
               ),
               IconButton(
@@ -260,152 +127,299 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCoursesList(Instructor instructor, WidgetRef ref) {
+  Widget _buildContent(ProfileBody body) {
+    String follwersCount = '0';
+    if (body.followers?.isNotEmpty == true) {
+      follwersCount = (body.followers?[0].count ?? 0).toString();
+    }
+
+    String watchTotal = '0';
+    if (body.watchtime?.isNotEmpty == true) {
+      follwersCount = (body.watchtime?[0].total ?? '');
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ref
-            .watch(bLearnInstructorCoursesProvider(instructor.id.toString()))
-            .when(
-              data: (courses) {
-                if (courses?.isNotEmpty == true) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: 6.w, right: 6.w, top: 2.h, bottom: 2.h),
-                        child: Text(
-                          S.current.teacher_all_courses,
-                          style: TextStyle(
-                              fontSize: 5.w,
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      _buildAllCourseList(courses),
-                      buildmostViewedTitle(),
-                      _buildCriteriaList(courses)
-                    ],
-                  );
-                } else {
-                  return buildEmptyPlaceHolder('No Cources uploaded yet');
-                }
-              },
-              error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
-              loading: () => SizedBox(
-                height: 32.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
+        Padding(
+          padding: EdgeInsets.only(right: 6.w, left: 6.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    follwersCount,
+                    style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 5.w),
+                  ),
+                  Text(
+                    S.current.teacher_followers,
+                    style: TextStyle(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 3.w),
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    watchTotal,
+                    style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 5.w),
+                  ),
+                  Text(
+                    S.current.teacher_watch,
+                    style: TextStyle(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 3.w),
+                  )
+                ],
+              ),
+              Consumer(builder: (context, ref, child) {
+                return ElevatedButton(
+                    onPressed: () async {
+                       ref.read(bLearnFollowInstructorProvider(instructor.id.toString()));
+                    },
+                    child: Text(S.current.teacher_follow));
+              })
+            ],
+          ),
+        ),
+        SizedBox(height: 2.h),
+        Container(
+          padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
+          height: 10.h,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CircleAvatar(
+                radius: 6.w,
+                backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
+                child: Center(
+                  child: Icon(
+                    Icons.message,
+                    color: AppColors.primaryColor,
+                    size: 6.w,
+                  ),
+                ),
+              ),
+              SizedBox(width: 3.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+                    Text(
+                      S.current.requestclass,
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          fontFamily: kFontFamily,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w800),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomizableShimmerTile(height: 30.h, width: 70.w),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+                    Text(
+                      S.current.t_schedule_class_msg,
+                      style: TextStyle(
+                          fontSize: 9.sp,
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.w200,
+                          color: AppColors.iconGreyColor),
                     ),
                   ],
                 ),
               ),
-            ),
+              // const Spacer(),
+              Icon(
+                Icons.keyboard_arrow_right,
+                size: 7.w,
+                color: AppColors.iconGreyColor,
+              )
+            ],
+          ),
+        ),
+        Consumer(
+          builder: (context, ref, child) {
+            final selectedIndex = ref.watch(selectedTabLearningProvider);
+
+            return Column(
+              children: [
+                Center(
+                  child: SlideTab(
+                      initialIndex: selectedIndex,
+                      containerWidth: 88.w,
+                      onSelect: (index) async {
+                        ref.read(selectedTabLearningProvider.notifier).state =
+                            index;
+                      },
+                      containerHeight: 6.h,
+                      direction: Axis.horizontal,
+                      sliderColor: AppColors.primaryColor,
+                      containerBorderRadius: 2.w,
+                      sliderBorderRadius: 2.6.w,
+                      containerColor: AppColors.cardWhite,
+                      activeTextStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: kFontFamily,
+                      ),
+                      inactiveTextStyle: TextStyle(
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: kFontFamily,
+                        color: Colors.black,
+                      ),
+                      texts: [
+                        S.current.sp_tab_course,
+                        S.current.teacher_about,
+                      ]),
+                ),
+                selectedIndex == 0
+                    ? _buildCoursesList(body.courses)
+                    : _buildAboutList(body.profile)
+              ],
+            );
+          },
+        ),
+        SizedBox(height: 3.h),
       ],
     );
   }
 
-  Widget _buildInstructorDetail(String id) {
-    return Consumer(builder: (context, ref, child) {
-      return ref.watch(bLearnInstructorProfileProvider(id)).when(
-          data: (data) {
-            final profile = data?.profile;
-            if (profile == null) {
-              return const SizedBox();
-            }
-
-            return Column(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    getSvgIcon("04.svg", width: 15.w),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: Text(
-                        "Worked as ${profile.occupation}",
-                        style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 4.w,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 2.h),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    getSvgIcon("03.svg", width: 15.w),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: Text(
-                        "Lives in ${profile.city},${profile.state}",
-                        style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 4.w,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 2.h),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    getSvgIcon("02.svg", width: 15.w),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: Text(
-                        "bvidya Educator since 1st January, 2022",
-                        style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 4.w,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 2.h),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    getSvgIcon("01.svg", width: 15.w),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: Text(
-                        "Knows ${profile.language}",
-                        style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 4.w,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            );
-          },
-          error: (error, t) => const SizedBox.shrink(),
-          loading: () => SizedBox(height: 12.h, child: buildLoading));
-    });
+  Widget _buildCoursesList(List<InstructorCourse>? courses) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding:
+              EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h, bottom: 2.h),
+          child: Text(
+            S.current.teacher_all_courses,
+            style: textStyleCaption,
+          ),
+        ),
+        _buildAllCourseList(courses),
+        buildmostViewedTitle(),
+        _buildCriteriaList(courses)
+      ],
+    );
   }
 
-  Widget _buildAboutList(Instructor instructor) {
+  Widget _loading() {
+    return SizedBox(
+      height: 32.h,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructorDetail(Profile? profile) {
+    if (profile == null) {
+      return SizedBox(
+        height: 12.h,
+        child: const Text('No Data'),
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(left: 6.w, right: 6.w),
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              getSvgIcon("04.svg", width: 15.w),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Text(
+                  "Worked as ${profile.occupation}",
+                  style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 4.w,
+                      fontWeight: FontWeight.w400),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 2.h),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              getSvgIcon("03.svg", width: 15.w),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Text(
+                  "Lives in ${profile.city},${profile.state}",
+                  style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 4.w,
+                      fontWeight: FontWeight.w400),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 2.h),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              getSvgIcon("02.svg", width: 15.w),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Text(
+                  "bvidya Educator since 1st January, 2022",
+                  style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 4.w,
+                      fontWeight: FontWeight.w400),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 2.h),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              getSvgIcon("01.svg", width: 15.w),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Text(
+                  "Knows ${profile.language}",
+                  style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 4.w,
+                      fontWeight: FontWeight.w400),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutList(Profile? profile) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -421,7 +435,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 2.h),
-        _buildInstructorDetail(instructor.id.toString()),
+        _buildInstructorDetail(profile),
         SizedBox(height: 1.h),
         _buildTestimonialCaption(),
         Consumer(builder: (context, ref, child) {
@@ -536,13 +550,7 @@ Widget buildmostViewedTitle() {
   return Padding(
     padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h, bottom: 2.h),
     // padding: EdgeInsets.symmetric(vertical: 2.h),
-    child: Text(
-      S.current.teacher_most_viewed,
-      style: TextStyle(
-          fontSize: 14.sp,
-          color: AppColors.primaryColor,
-          fontWeight: FontWeight.w400),
-    ),
+    child: Text(S.current.teacher_most_viewed, style: textStyleCaption),
   );
 }
 

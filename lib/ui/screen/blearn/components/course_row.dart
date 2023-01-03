@@ -9,8 +9,8 @@ class CourseRowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70.w,
-      height: 30.h,
+      width: 45.w,
+      height: 50.w,
 
       // width: double.infinity,
       decoration: BoxDecoration(
@@ -27,8 +27,8 @@ class CourseRowItem extends StatelessWidget {
                 topLeft: Radius.circular(2.3.h),
                 topRight: Radius.circular(2.3.h)),
             child: Image(
-              image: getImageProvider(course.image??''),
-              height: 14.h,
+              image: getImageProvider(course.image ?? ''),
+              height: 20.w,
               width: double.infinity,
               fit: BoxFit.fill,
             ),
@@ -41,7 +41,7 @@ class CourseRowItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    course.name??'',
+                    course.name ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -52,7 +52,7 @@ class CourseRowItem extends StatelessWidget {
                   ),
                   // SizedBox(height: 0.5.h),
                   Text(
-                    course.instructorName??'',
+                    course.instructorName ?? '',
                     maxLines: 1,
                     style: TextStyle(
                         fontFamily: kFontFamily,
@@ -63,14 +63,14 @@ class CourseRowItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        course.rating??'',
+                        course.rating ?? '',
                         style: TextStyle(
                             color: AppColors.yellowAccent,
                             fontSize: 10.sp,
                             fontFamily: kFontFamily,
                             fontWeight: FontWeight.bold),
                       ),
-                      buildRatingBar(double.parse(course.rating??'0.0')),
+                      buildRatingBar(double.parse(course.rating ?? '0.0')),
                       Text(
                         '(${course.ratingCount})',
                         style: TextStyle(

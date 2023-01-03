@@ -95,4 +95,16 @@ class BLearnRepository {
       return null;
     }
   }
+
+  Future<List<FollowedInstructor>?> followInstructor(
+      String instructorId) async {
+    final result = await _api.followInstructor(_authToken, instructorId);
+    print('message ${result.message}  ${result.body}');
+    if (result.status == successfull && result.body != null) {
+      return result.body!;
+    } else {
+      print('Error ${result.message ?? 'Error'} ');
+      return null;
+    }
+  }
 }
