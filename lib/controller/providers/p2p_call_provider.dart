@@ -20,6 +20,7 @@ class P2PCallProvider extends ChangeNotifier {
   P2PCallProvider(this._read);
 
   RtcEngine? _engine;
+
   RtcEngine? get engine => _engine;
 
   bool _remoteMute = false;
@@ -29,8 +30,8 @@ class P2PCallProvider extends ChangeNotifier {
   bool get remoteVideoOn => _remoteVideoOn;
 
   bool _isInitialized = false;
-  bool _speakerOn = false;
 
+  bool _speakerOn = false;
   bool get speakerOn => _speakerOn;
 
   bool _mute = false;
@@ -41,14 +42,13 @@ class P2PCallProvider extends ChangeNotifier {
 
   bool _disconnected = false;
 
+  bool get disconnected => _disconnected;
   bool _endCall = false;
   bool get isCallEnded => _endCall;
 
   CallConnectionStatus _status = CallConnectionStatus.connecting;
-  CallConnectionStatus get status => _status;
-  // String _status = 'Calling...';
 
-  // String get status => _status;
+  CallConnectionStatus get status => _status;
 
   CallType _currentCallType = CallType.audio;
 
@@ -94,7 +94,6 @@ class P2PCallProvider extends ChangeNotifier {
       notifyListeners();
     });
     try {
-      // _player?.repe
       await _player?.play(AssetSource('audio/Basic.mp3'));
     } catch (e) {
       print('$e');
@@ -112,16 +111,16 @@ class P2PCallProvider extends ChangeNotifier {
         ),
       );
       engine.registerEventHandler(RtcEngineEventHandler(
-        onUserEnableVideo: (connection, remoteUid, enabled) {
-          if (remoteId == _remoteId) {
-            _remoteVideoOn = enabled;
-            if (_remoteVideoOn && _currentCallType == CallType.audio) {
-              _switchToVideoCall();
-            }
-            notifyListeners();
-            print('remote video state: $enabled ');
-          }
-        },
+        // onUserEnableVideo: (connection, remoteUid, enabled) {
+        //   if (remoteId == _remoteId) {
+        //     _remoteVideoOn = enabled;
+        //     if (_remoteVideoOn && _currentCallType == CallType.audio) {
+        //       _switchToVideoCall();
+        //     }
+        //     notifyListeners();
+        //     print('remote video state: $enabled ');
+        //   }
+        // },
         onUserMuteAudio: (connection, remoteUid, muted) {},
         onUserMuteVideo: (connection, remoteUid, muted) {},
         onJoinChannelSuccess: (connection, elapsed) {
@@ -206,6 +205,11 @@ class P2PCallProvider extends ChangeNotifier {
     }
   }
 
+  void setCallEnded() {
+    _endCall = true;
+    notifyListeners();
+  }
+
   _switchToVideoCall() async {
     try {
       // await _engine?.updateChannelMediaOptions(
@@ -229,33 +233,33 @@ class P2PCallProvider extends ChangeNotifier {
 
   toggleVideo(BuildContext context) async {
     try {
-      if (_currentCallType == CallType.audio) {
-        if (!await handleCameraAndMic(Permission.camera)) {
-          // if (defaultTargetPlatform == TargetPlatform.android) {
-          AppSnackbar.instance.error(context, 'Need camera permission');
-          return;
-          // }
-        }
-        // try {
-        //   await _engine?.updateChannelMediaOptions(
-        //     ChannelMediaOptions(
-        //       channelProfile: ChannelProfileType.channelProfileCommunication1v1,
-        //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        //       autoSubscribeAudio: true,
-        //       autoSubscribeVideo: true,
-        //       publishCameraTrack: true,
-        //       publishMicrophoneTrack: true,
-        //       publishScreenTrack: false,
-        //       token: _body.callToken,
-        //     ),
-        //   );
-        // } catch (e) {
-        //   print('error in switching mode: $e');
-        //   return;
-        // }
-        _currentCallType = CallType.video;
-        _remoteVideoOn = true;
-      }
+      // if (_currentCallType == CallType.audio) {
+      //   if (!await handleCameraAndMic(Permission.camera)) {
+      //     // if (defaultTargetPlatform == TargetPlatform.android) {
+      //     AppSnackbar.instance.error(context, 'Need camera permission');
+      //     return;
+      //     // }
+      //   }
+      //   // try {
+      //   //   await _engine?.updateChannelMediaOptions(
+      //   //     ChannelMediaOptions(
+      //   //       channelProfile: ChannelProfileType.channelProfileCommunication1v1,
+      //   //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
+      //   //       autoSubscribeAudio: true,
+      //   //       autoSubscribeVideo: true,
+      //   //       publishCameraTrack: true,
+      //   //       publishMicrophoneTrack: true,
+      //   //       publishScreenTrack: false,
+      //   //       token: _body.callToken,
+      //   //     ),
+      //   //   );
+      //   // } catch (e) {
+      //   //   print('error in switching mode: $e');
+      //   //   return;
+      //   // }
+      //   _currentCallType = CallType.video;
+      //   _remoteVideoOn = true;
+      // }
       if (_videoOn) {
         await _engine?.disableVideo();
       } else {
@@ -311,6 +315,7 @@ class P2PCallProvider extends ChangeNotifier {
   @override
   void dispose() {
     disconnect();
+    print('Dispose call screen');
     super.dispose();
   }
 }

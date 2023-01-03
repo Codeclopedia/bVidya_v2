@@ -277,8 +277,8 @@ class _BVideyAppState extends State<BVideyApp> with WidgetsBindingObserver {
   }
 }
 
-onCallAccept(String callerIdFrom,String fcmToken, String callerName, String callerImage,
-    CallBody body, bool hasVideo) async {
+onCallAccept(String callerIdFrom, String fcmToken, String callerName,
+    String callerImage, CallBody body, bool hasVideo) async {
   User? user = await getMeAsUser();
   if (user == null) {
     return;
@@ -290,7 +290,7 @@ onCallAccept(String callerIdFrom,String fcmToken, String callerName, String call
   }
   Map<String, dynamic> map = {
     'name': callerName,
-    'fcm_token':fcmToken,
+    'fcm_token': fcmToken,
     'image': callerImage,
     'call_info': body,
     'call_direction_type': CallDirectionType.incoming
@@ -318,7 +318,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     return;
   }
   FCMApiService.instance.sendCallEndPush(
-      senderFCM, 'DECLINE_CALL', body.callId, user.id.toString(), user.name);
+      senderFCM, 'DECLINE_CALL', body, user.id.toString(), user.name,hasVideo);
 }
 
 setupCallKit() {
@@ -347,7 +347,7 @@ setupCallKit() {
 
     switch (event.event) {
       case Event.ACTION_CALL_ACCEPT:
-        onCallAccept(fromId,callerFCM, fromName,image, body, hasVideo);
+        onCallAccept(fromId, callerFCM, fromName, image, body, hasVideo);
         break;
       case Event.ACTION_CALL_DECLINE:
         onDeclineCall(callerFCM, fromId, fromName, image, body, hasVideo);
@@ -435,13 +435,56 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   //   pr.Provider.of<ClassEndProvider>(context, listen: false).setCallEnd();
   // }
 
-  CallBody? body = remoteMessage.payload();
-  if (body == null) {
+  CallBody? callBody = remoteMessage.payload();
+  if (callBody == null) {
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }
 
-  await FlutterCallkitIncoming.endCall(body.callId);
+  String callerId = remoteMessage.data["from_id"];
+  String callerName = remoteMessage.data["from_name"];
+  // String callerFCM = remoteMessage.data['caller_fcm'];
+  String callerImage = remoteMessage.data['image'];
+  bool hasVideo = remoteMessage.data['has_video'] == 'true';
+
+  await FlutterCallkitIncoming.endCall(callBody.callId);
+  final kitParam = CallKitParams(
+    appName: 'bVidya',
+    avatar: '$baseImageApi$callerImage',
+    id: callBody.callId,
+    nameCaller: callerName,
+    textAccept: 'Accept',
+    textDecline: 'Decline',
+    textCallback: 'Call back',
+    extra: {
+      'no_listen': false,
+      'from_id': callerId,
+      'from_name': callerName,
+      'caller_fcm': '',
+      'image': callerImage,
+      'has_video': hasVideo,
+      'body': jsonEncode(callBody.toJson())
+    },
+    android: const AndroidParams(
+      // backgroundUrl: '$baseImageApi$callerImage',
+      isShowLogo: true,
+      incomingCallNotificationChannelName: 'call_channel',
+      missedCallNotificationChannelName: 'call_channel',
+      ringtonePath: 'system_ringtone_default',
+      isShowCallback: false,
+      isCustomNotification: false,
+
+      isShowMissedCallNotification: true,
+      // actionColor: AppColors.primaryColor,
+    ),
+    ios: IOSParams(
+      ringtonePath: 'system_ringtone_default',
+      supportsVideo: hasVideo,
+    ),
+    type: hasVideo ? 1 : 0,
+    handle: callerName,
+  );
+  FlutterCallkitIncoming.showMissCallNotification(kitParam);
 // await FlutterCallkitIncoming.startCall(Calll)
   // context.watch(callEndProvier(body.callId)).
   // context.read();

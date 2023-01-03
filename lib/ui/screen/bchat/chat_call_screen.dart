@@ -1,10 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
 import 'package:provider/provider.dart' as pr;
 
-import '../../../core/utils.dart';
-import '../../../data/services/fcm_api_service.dart';
+import '/core/utils.dart';
+import '/data/services/fcm_api_service.dart';
 import '/controller/providers/call_end_provider.dart';
 import '/controller/providers/p2p_call_provider.dart';
 import '/controller/bchat_providers.dart';
@@ -17,8 +19,7 @@ import '/data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../home/home_screen.dart';
 
-class ChatCallScreen extends HookConsumerWidget {
-  // const ChatVideoCall({super.key});
+class ChatCallScreen extends ConsumerWidget {
   final String fcmToken;
   final String name;
   final String image;
@@ -26,38 +27,40 @@ class ChatCallScreen extends HookConsumerWidget {
   final CallDirectionType callDirection;
   final CallType callType;
 
-  const ChatCallScreen(
-      {super.key,
-      required this.fcmToken,
-      required this.name,
-      required this.image,
-      required this.callInfo,
-      required this.callType,
-      required this.callDirection});
+  const ChatCallScreen({
+    super.key,
+    required this.fcmToken,
+    required this.name,
+    required this.image,
+    required this.callInfo,
+    required this.callType,
+    required this.callDirection,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(audioCallChangeProvider);
+    // useEffect(() {
+    //   return () {
+    //     // valu.removeListener(neame);
+    //   };
+    // }, const []);
+
+    provider.init(callInfo, callDirection, callType);
     final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
-    useEffect(() {
-      provider.init(callInfo, callDirection, callType);
-      ref.listen(audioCallChangeProvider, (previous, next) {
-        if (next.isCallEnded) {
-          Navigator.pop(context);
-        }
-      });
 
-      valu.addListener(() {
-        if (valu.isCallEnd) {
-          print('is Call End by other declined the call');
-          Navigator.pop(context);
-        }
-      });
-
-      return () {
-        // valu.removeListener(neame);
-      };
-    }, const []);
+    ref.listen(audioCallChangeProvider, (previous, next) {
+      if (next.isCallEnded && !provider.disconnected) {
+        Navigator.pop(context);
+      }
+    });
+    valu.addListener(() {
+      if (valu.isCallEnd && !provider.disconnected) {
+        print('Is Call End by other declined the call');
+        provider.setCallEnded();
+        // Navigator.pop(context);
+      }
+    });
 
     final connectionStatus = ref.watch(audioCallChangeProvider).status;
 
@@ -94,12 +97,6 @@ class ChatCallScreen extends HookConsumerWidget {
                     child: Column(
                       children: [
                         getCicleAvatar(name, image, radius: 20.w),
-                        // CircleAvatar(
-                        //     radius: 20.w, backgroundImage: getImageProvider(image)
-                        //     //  const AssetImage(
-                        //     //   "assets/images/pexels-pixabay-220453.jpg",
-                        //     // ),
-                        //     ),
                         Text(
                           status,
                           style: TextStyle(
@@ -236,17 +233,13 @@ class ChatCallScreen extends HookConsumerWidget {
       height: double.infinity,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 0, 0, 0),
+        color: Colors.black,
         image: DecorationImage(
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.3), BlendMode.dstATop),
-            image: getImageProvider(image)
-
-            // const AssetImage(
-            //   'assets/images/pexels-pixabay-220453.jpg',
-            // ),
-            ),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.3), BlendMode.dstATop),
+          image: getImageProvider(image),
+        ),
       ),
     );
   }
@@ -254,9 +247,9 @@ class ChatCallScreen extends HookConsumerWidget {
   Widget _toolbar(BuildContext context, P2PCallProvider provider) {
     return SizedBox(
         // padding: EdgeInsets.only(left: 6.w, right: 5.w),
+        // alignment: Alignment.center,
         width: 85.w,
         height: 12.h,
-        // alignment: Alignment.center,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -289,24 +282,27 @@ class ChatCallScreen extends HookConsumerWidget {
               //     width: 8.w,
               //     provider.mute ? 'vc_mic_off.svg' : 'vc_mic_on.svg'),
             ),
-            GestureDetector(
-              onTap: () {
-                //
-                provider.toggleVideo(context);
-              },
-              child: Icon(
-                provider.videoOn
-                    ? Icons.videocam_rounded
-                    : Icons.videocam_off_rounded,
-                color: Colors.white,
-                size: 10.w,
+            Visibility(
+              visible: provider.updateCallType == CallType.video,
+              child: GestureDetector(
+                onTap: () {
+                  //
+                  provider.toggleVideo(context);
+                },
+                child: Icon(
+                  provider.videoOn
+                      ? Icons.videocam_rounded
+                      : Icons.videocam_off_rounded,
+                  color: Colors.white,
+                  size: 10.w,
+                ),
+                // child: getSvgIcon(
+                //     width: 8.w,
+                //     provider.videoOn ? 'vc_video_off.svg' : 'vc_video_on.svg'),
               ),
-              // child: getSvgIcon(
-              //     width: 8.w,
-              //     provider.videoOn ? 'vc_video_off.svg' : 'vc_video_on.svg'),
             ),
             Visibility(
-              // visible: provider.updateCallType == CallType.audio,
+              visible: provider.updateCallType == CallType.audio,
               child: GestureDetector(
                 onTap: () {
                   provider.toggleSpeaker();
@@ -318,52 +314,23 @@ class ChatCallScreen extends HookConsumerWidget {
                   color: Colors.white,
                   size: 10.w,
                 ),
-                // child: getSvgIcon(
-                //     width: 8.w,
-                //     provider.speakerOn
-                //         ? 'vc_sound_off.svg'
-                //         : 'vc_sound_on.svg'),
               ),
             ),
-            // getSvgIcon('vc_camera_flip.svg'),
-            // getSvgIcon('vc_mic_off.svg'),
-            // getSvgIcon('vc_video_off.svg'),
-
-            // provider.muted
-            //     ? Image.asset(
-            //         'assets/icons/svg/mic_off.png',
-            //         height: 3.h,
-            //         width: 3.h,
-            //       )
-            //     : SvgPicture.asset(
-            //         'assets/icons/svg/mic_icon.svg',
-            //         height: 3.h,
-            //         width: 3.h,
-            //       )),
-            // GestureDetector(
-            //     onTap: () {
-            //       _onShareWithEmptyFields(context, meetingId, 'Meeting');
-            //     },
-            //     child: SvgPicture.asset(
-            //       'assets/icons/svgs/ic_set_share.svg',
-            //       height: 3.h,
-            //       width: 3.h,
-            //       color: Colors.white,
-            //     )),
-            // SizedBox(
-            //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
-
             InkWell(
               onTap: () async {
-                // final connectionStatus = provider.status;
                 if (provider.status == CallConnectionStatus.ringing ||
                     provider.status == CallConnectionStatus.connecting) {
                   User? user = await getMeAsUser();
                   if (user == null) {
                     return;
                   }
-                  FCMApiService.instance.sendCallEndPush(fcmToken, 'END_CALL',
-                      callInfo.callId, user.id.toString(), user.name);
+                  FCMApiService.instance.sendCallEndPush(
+                      fcmToken,
+                      'END_CALL',
+                      callInfo,
+                      user.id.toString(),
+                      user.name,
+                      callType == CallType.video);
                 }
                 Navigator.pop(context);
               },

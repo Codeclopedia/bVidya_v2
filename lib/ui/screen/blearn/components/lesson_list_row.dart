@@ -6,12 +6,16 @@ class LessonListRow extends StatelessWidget {
   final int index;
   final int openIndex;
   final Lesson lesson;
+  final Function(int) onExpand;
+  final int? courseId;
 
   const LessonListRow({
     Key? key,
     required this.index,
     required this.lesson,
     required this.openIndex,
+    required this.onExpand,
+    this.courseId,
   }) : super(key: key);
 
   @override
@@ -25,59 +29,77 @@ class LessonListRow extends StatelessWidget {
       padding: EdgeInsets.only(top: 2.h, left: 4.w, bottom: 2.h, right: 4.w),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Lesson $index',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 8.sp,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w300,
+          GestureDetector(
+            onTap: () {
+              onExpand(openIndex == index ? -1 : index);
+              // openIndex == index
+              //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
+              //     : ref.read(selectedIndexLessonProvider.notifier).state =
+              //         index;
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Lesson $index',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 8.sp,
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
-                    ),
-                    Text(
-                      lesson.name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 11.sp,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        lesson.name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11.sp,
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 2.h),
-                child: Icon(
-                  openIndex == index
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
+                Padding(
+                  padding: EdgeInsets.only(top: 2.h),
+                  child: Icon(
+                    openIndex == index
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           if (openIndex == index)
             Padding(
               padding: EdgeInsets.symmetric(vertical: 2.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.ondemand_video),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 1.h),
-                      child: Text(lesson.description),
+              child: GestureDetector(
+                onTap: () {
+                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                      arguments: {
+                        "lesson": lesson,
+                        "course_id": courseId,
+                      });
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.ondemand_video),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 1.h),
+                        child: Text(lesson.description),
+                      ),
                     ),
-                  ),
-                  const Icon(Icons.play_circle)
-                ],
+                    const Icon(Icons.play_circle)
+                  ],
+                ),
               ),
             )
         ],

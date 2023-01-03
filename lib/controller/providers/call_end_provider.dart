@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 
 class ClassEndProvider extends ChangeNotifier {
@@ -6,13 +5,17 @@ class ClassEndProvider extends ChangeNotifier {
   bool get isCallEnd => _isCallEnd;
 
   setCallEnd() {
+    if (_isCallEnd) {
+      return;
+    }
     _isCallEnd = true;
     notifyListeners();
   }
 
   setCallStart() {
-    _isCallEnd = false;
-    notifyListeners();
+    if (_isCallEnd) {
+      _isCallEnd = false;
+      notifyListeners();
+    }
   }
-  
 }

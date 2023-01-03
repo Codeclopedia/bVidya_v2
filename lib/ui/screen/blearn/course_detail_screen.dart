@@ -1,12 +1,12 @@
+import '/ui/widget/sliding_tab.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
-import '../../widgets.dart';
 import 'components/common.dart';
 import 'components/lesson_list_row.dart';
-// import 'components/lesson_list_row.dart';
+import '../../widgets.dart';
 
 // int _selectedIndex = -1;
 
@@ -28,9 +28,18 @@ class CourseDetailScreen extends ConsumerWidget {
           children: [
             _topImage(context),
             _subjectDetail(),
-            _buildTab(ref, selectedIndex),
+            SlidingTab(
+              label1: 'Description',
+              label2: 'Curriculum',
+              selectedIndex: selectedIndex,
+              callback: (index) {
+                ref.read(selectedTabCourseDetailProvider.notifier).state =
+                    index;
+              },
+            ),
             // _toggleItems(),
-            selectedIndex == 0 ? _buildDescView() : _builCurriculumView()
+            SizedBox(height: 2.h),
+            selectedIndex == 1 ? _buildDescView() : _builCurriculumView()
           ],
         ),
       ),
@@ -83,21 +92,15 @@ class CourseDetailScreen extends ConsumerWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: (() {
+        return LessonListRow(
+          index: index + 1,
+          openIndex: selectedIndex,
+          lesson: lessons[index],
+          courseId: course.id,
+          onExpand: (index) {
             ref.read(selectedIndexLessonProvider.notifier).state = index;
-
-            Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                arguments: {
-                  "lesson": lessons[index],
-                  "course_id": course.id,
-                });
-          }),
-          child: LessonListRow(
-            index: index + 1,
-            openIndex: selectedIndex,
-            lesson: lessons[index],
-          ),
+          },
+          // ref: ref
         );
       },
     );
@@ -119,9 +122,9 @@ class CourseDetailScreen extends ConsumerWidget {
                     children: [
                       _buildDetailItem(
                           'Duration:', ' ${course.duration}', Icons.history),
-                      Container(
+                      const Divider(
                         height: 0.5,
-                        color: const Color(0xFFDBDBDB),
+                        color: Color(0xFFDBDBDB),
                       ),
                       _buildDetailItem('Lectures:', ' ${course.numberOfLesson}',
                           Icons.description),
@@ -134,9 +137,9 @@ class CourseDetailScreen extends ConsumerWidget {
                     children: [
                       _buildDetailItem(
                           'Level:', ' ${course.level}', Icons.sort),
-                      Container(
+                      const Divider(
                         height: 0.5,
-                        color: const Color(0xFFDBDBDB),
+                        color: Color(0xFFDBDBDB),
                       ),
                       _buildDetailItem(
                           '', 'Full lifetime Access ', Icons.hourglass_bottom),
@@ -220,105 +223,6 @@ class CourseDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTab(WidgetRef ref, int selectedIndex) {
-    // return Consumer(
-    //   builder: (context, ref, child) {
-    //     int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
-    return Center(
-      child: SlideTab(
-          initialIndex: selectedIndex,
-          containerWidth: 80.w,
-          onSelect: (index) {
-            ref.read(selectedTabCourseDetailProvider.notifier).state = index;
-          },
-          containerHeight: 6.h,
-          sliderColor: AppColors.primaryColor,
-          containerBorderRadius: 2.5.w,
-          sliderBorderRadius: 2.6.w,
-          containerColor: AppColors.cardWhite,
-          activeTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: kFontFamily,
-          ),
-          inactiveTextStyle: TextStyle(
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w400,
-            fontFamily: kFontFamily,
-            color: Colors.black,
-          ),
-          texts: const [
-            'Description',
-            'Curriculum',
-          ]),
-    );
-    //   },
-    // );
-  }
-
-  // Widget _toggleItems() {
-  //   return Padding(
-  //     padding: EdgeInsets.symmetric(horizontal: 6.w),
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.max,
-  //       children: [
-  //         Expanded(
-  //             child: InkWell(
-  //           onTap: (() {
-  //             setState(() {
-  //               _selectedDesc = true;
-  //             });
-  //           }),
-  //           child: Container(
-  //             padding: EdgeInsets.all(3.w),
-  //             decoration: BoxDecoration(
-  //               color: _selectedDesc
-  //                   ? AppColors.primaryColor
-  //                   : AppColors.cardWhite,
-  //               borderRadius: BorderRadius.only(
-  //                 topLeft: Radius.circular(3.w),
-  //                 bottomLeft: Radius.circular(3.w),
-  //               ),
-  //             ),
-  //             child: Center(
-  //               child: Text(
-  //                 'Description',
-  //                 style: _selectedDesc ? textStyleSelect : textStyleUnselect,
-  //               ),
-  //             ),
-  //           ),
-  //         )),
-  //         Expanded(
-  //           child: InkWell(
-  //             onTap: (() {
-  //               setState(() {
-  //                 _selectedDesc = false;
-  //               });
-  //             }),
-  //             child: Container(
-  //               padding: EdgeInsets.all(3.w),
-  //               decoration: BoxDecoration(
-  //                 color: !_selectedDesc ? colorSelect : colorUnSelect,
-  //                 borderRadius: BorderRadius.only(
-  //                   topRight: Radius.circular(3.w),
-  //                   bottomRight: Radius.circular(3.w),
-  //                 ),
-  //               ),
-  //               child: Center(
-  //                 child: Text(
-  //                   'Curriculum',
-  //                   style: !_selectedDesc ? textStyleSelect : textStyleUnselect,
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildDetailItem(String title, String value, IconData icon) {
     return Padding(
       padding: EdgeInsets.only(top: 0.5.h, bottom: 0.5.h),
@@ -371,7 +275,7 @@ class CourseDetailScreen extends ConsumerWidget {
                   course.name ?? '',
                   style: TextStyle(
                       fontFamily: kFontFamily,
-                      fontSize: 17.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.black),
                 ),
@@ -408,8 +312,8 @@ class CourseDetailScreen extends ConsumerWidget {
               _buildMeta(
                   'Launguage', course.language ?? '', 'icon_language.svg'),
               const Spacer(),
-              _buildMeta('Category', course.categoryId.toString(),
-                  'icon_category.svg'),
+              _buildMeta(
+                  'Category', course.level.toString(), 'icon_category.svg'),
             ],
           )
         ],

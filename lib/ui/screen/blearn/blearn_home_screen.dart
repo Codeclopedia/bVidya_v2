@@ -57,6 +57,8 @@ class BLearnHomeScreen extends StatelessWidget {
           _buildRecommended(),
           _buildCriteriaCaption(),
           _buildCriteriaList(body.popularCourses),
+          _buildWebinarTitle(),
+          _buildWebinarContent(),
           _buildLearnCaption(),
           _buildLearnList(body.popularInstructors),
           _buildComplementary(),
@@ -70,6 +72,87 @@ class BLearnHomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildWebinarTitle() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.h),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 4.w,
+          ),
+          const TwoColorText(first: "Upcoming", second: "Webinars"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWebinarContent() {
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 1.h),
+        child: SizedBox(
+          height: 20.h,
+          child: ListView.builder(
+            itemCount: 30,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(left: 4.w),
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                child: Container(
+                  width: 45.w,
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
+                  decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 13.h,
+                          width: 40.w,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                  image: getImageProviderFile(
+                                      "https://www.cvent.com/sites/default/files/image/2022-02/webinars_news_0.jpg"),
+                                  fit: BoxFit.cover)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 1.h,
+                      ),
+                      Text(
+                        "One Shot Revision Batch:",
+                        style: TextStyle(fontSize: 10.sp),
+                      ),
+                      SizedBox(
+                        height: 0.5.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "One Shot Revision Batch:",
+                            style: TextStyle(fontSize: 5.sp),
+                          ),
+                          Text("Starts in: 00:03:00",
+                              style: TextStyle(
+                                  fontSize: 5.sp,
+                                  color: AppColors.primaryColor))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ));
   }
 
   Widget _buildUser() {

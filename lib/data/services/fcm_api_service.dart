@@ -101,13 +101,14 @@ class FCMApiService {
     }
   }
 
-
   Future sendCallEndPush(
-      String toToken,
-      String action,
-      String callId,
-      String fromId,
-      String fromName) async {
+    String toToken,
+    String action,
+    CallBody callBody,
+    String fromId,
+    String fromName,
+    bool hasVideo,
+  ) async {
     //p2p_call
     _dio.options.headers['Authorization'] =
         'key=  ${' AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR'}';
@@ -119,9 +120,12 @@ class FCMApiService {
       'data': {
         'type': 'p2p_call',
         'action': action,
-        'call_id':callId,
+        'content': jsonEncode(callBody.toJson()),
         'from_id': fromId,
         'from_name': fromName,
+        'image': '',
+        'has_video': hasVideo ? 'true' : 'false',
+        'caller_fcm': '',
       },
       // 'ttl': '30s',
       'android': {'priority': 'normal'},
