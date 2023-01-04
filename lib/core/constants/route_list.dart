@@ -62,9 +62,10 @@ class RouteList {
 //Profiles
   //*student
   static const String studentProfile = '/student-profile';
-  static const String editStudentProfile = '/edit-student-profile';
+  // static const String editStudentProfile = '/edit-student-profile';
   static const String studentLearnings = '/student-learnings';
   static const String studentProfileDetail = '/student_profile_detail';
+  // static const String studentProfileCouses = '/student_profile_courses';
 
   //*teacher
   static const String teacherProfile = '/teacher-profile';

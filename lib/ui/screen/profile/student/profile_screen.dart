@@ -46,17 +46,14 @@ class StudentProfileScreen extends StatelessWidget {
             ),
             SizedBox(height: 1.h),
             _buildContent(S.current.profile_details, "profile_user.svg", () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const AccountSettingScreen()),
-              // );
+              Navigator.pushNamed(context, RouteList.studentProfileDetail);
             }),
             _buildContent(S.current.profile_learning, "profile_learning.svg",
                 () {
               Navigator.pushNamed(context, RouteList.studentLearnings);
             }),
             _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
+              Navigator.pushNamed(context, RouteList.notificationSetting);
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(
@@ -75,8 +72,7 @@ class StudentProfileScreen extends StatelessWidget {
             Consumer(builder: (context, ref, child) {
               return _buildContent(
                   S.current.profile_logout, "profile_logout.svg", () {
-                showLogoutDialog(context, ref,callback: () async {
-                  
+                showLogoutDialog(context, ref, callback: () async {
                   // ref.watch(loginRepositoryProvider).loggedOut();
                   // Navigator.pushNamedAndRemoveUntil(
                   //     context, RouteList.login, (route) => route.isFirst);

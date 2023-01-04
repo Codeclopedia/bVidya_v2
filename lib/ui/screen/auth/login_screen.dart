@@ -218,7 +218,7 @@ class LoginScreen extends HookWidget {
             .error(context, 'Error occurred, Please restart app');
         return;
       }
-      await ref.read(bChatSDKControllerProvider).initChatSDK(user!);
+      await ref.read(bChatSDKControllerProvider).initChatSDK(user);
       await ref.read(bChatSDKControllerProvider).loadAllContactsGroup();
       hideLoading(ref);
       // ref.read(userAuthChangeProvider).setUserSigned(true);

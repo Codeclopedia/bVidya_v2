@@ -313,6 +313,11 @@ class Routes {
         screen = const StudentProfileScreen();
         hasDrawer = true;
         break;
+        
+      case RouteList.studentProfileDetail:
+        screen = const StudentProfileScreen();
+        break;
+
       case RouteList.studentLearnings:
         screen = const MyLearningScreen();
         break;
