@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/data/models/models.dart';
 import 'package:dio/dio.dart';
 
+import '/data/models/models.dart';
 import '/core/constants.dart';
 
 class FCMApiService {

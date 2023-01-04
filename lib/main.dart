@@ -4,9 +4,9 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-// import '/core/helpers/extensions.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
+import 'core/utils/call_utils.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 
@@ -67,10 +67,8 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 onNewFireabseMessage(RemoteMessage message, bool foreground) {
   try {
     print('onNewFirebaseMessage: ${message.data} $foreground');
-
     if (message.data['type'] == 'p2p_call') {
       final String? action = message.data['action'];
-
       print('action: $action');
       if (action == 'START_CALL') {
         showIncomingCall(message);
@@ -81,7 +79,6 @@ onNewFireabseMessage(RemoteMessage message, bool foreground) {
   } catch (e) {
     print('error $e');
   }
-  ;
 }
 
   // setupCall(BuildContext context) {

@@ -29,7 +29,7 @@ class ProfileRepository {
   Future<List<FollowedInstructor>?> followedInstructor() async {
     final result = await _api.followedInstructor(_authToken);
     print('message ${result.message}  ${result.body}');
-    if (result.status == successfull && result.body != null) {
+    if (result.status == 'successfully' && result.body != null) {
       return result.body!;
     } else {
       print('Error ${result.message ?? 'Error'} ');

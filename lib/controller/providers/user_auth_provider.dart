@@ -21,9 +21,9 @@ class UserAuthProvider extends ChangeNotifier {
 
   bool _inInitialized = false;
 
-  loadUser() async {
-    if (_inInitialized) {
-      return;
+  Future<User?> loadUser() async {
+    if (_inInitialized && _user != null) {
+      return _user;
     }
     _inInitialized = true;
     final pref = await SharedPreferences.getInstance();
@@ -36,6 +36,7 @@ class UserAuthProvider extends ChangeNotifier {
     _isUserSinged = user != null;
     print(' User :$userStr');
     notifyListeners();
+    return _user;
   }
 
   setUserSigned(bool value) {

@@ -1,3 +1,4 @@
+import '../../../controller/profile_providers.dart';
 import '/data/models/models.dart';
 import '/core/constants/route_list.dart';
 // import '/data/models/response/profile/instructor_profile_response.dart';
@@ -182,11 +183,34 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                 ],
               ),
               Consumer(builder: (context, ref, child) {
-                return ElevatedButton(
-                    onPressed: () async {
-                       ref.read(bLearnFollowInstructorProvider(instructor.id.toString()));
-                    },
-                    child: Text(S.current.teacher_follow));
+                return ref
+                    .watch(isFollowedInstructor(instructor.id.toString()))
+                    .when(
+                      data: (data) {
+                        return ElevatedButton(
+                            onPressed: data
+                                ? null
+                                : () async {
+                                    ref.read(bLearnFollowInstructorProvider(
+                                        instructor.id.toString()));
+                                  },
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(data
+                                        ? AppColors.iconGreyColor
+                                        : AppColors.primaryColor)),
+                            child: data ? Text(S.current.teacher_followed) : Text(S.current.teacher_follow));
+                      },
+                      error: (error, stackTrace) =>
+                          buildEmptyPlaceHolder('error in loading data'),
+                      loading: () => buildLoading,
+                    );
+
+                // return ElevatedButton(
+                //     onPressed: () async {
+                //        ref.read(bLearnFollowInstructorProvider(instructor.id.toString()));
+                //     },
+                //     child: Text(S.current.teacher_follow));
               })
             ],
           ),

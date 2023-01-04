@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+// import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/state.dart';
+// import 'package:bvidya/data/services/bchat_api_service.dart';
 
 import '../../data/models/conversation_model.dart';
 
 class BchatGroupManager {
+  BchatGroupManager._();
   static Future<ChatGroup?> createNewGroup(
       String name, String? desc, List<String> ids, String image) async {
     try {
@@ -33,7 +37,6 @@ class BchatGroupManager {
     final groups = await ChatClient.getInstance.groupManager.getJoinedGroups();
     for (ChatGroup group in groups) {
       GroupConversationModel model;
-
       try {
         final conv = await ChatClient.getInstance.chatManager.getConversation(
             group.groupId,
@@ -63,6 +66,16 @@ class BchatGroupManager {
       final map = jsonDecode(ext!);
       image = map['image'];
     }
-    return image??'';
+    return image ?? '';
+  }
+
+  static void loadGroupMemebers(ChatGroup groupInfo,WidgetRef ref) async {
+    final groups =  groupInfo.memberList ?? [];
+    if(groups.isNotEmpty){
+        // BChatApiService.instance.getContactsByIds(token, userIds)
+      for(String id in groups){
+
+      }
+    }
   }
 }

@@ -86,7 +86,7 @@ class _SlideTabState extends State<SlideTab>
   //   duration: const Duration(milliseconds: 250),
   //   vsync: this,
   // );
-  late Animation<Offset> offsetAnimation;
+  late final Animation<Offset> offsetAnimation;
 
   // = Tween<Offset>(
   //   begin: Offset(widget.initialIndex.toDouble(), 0.0),
@@ -201,7 +201,7 @@ class _SlideTabState extends State<SlideTab>
               children: List.generate(
                 widget.texts.length,
                 (slidersIndex) => GestureDetector(
-                  behavior: HitTestBehavior.translucent,
+                  // behavior: HitTestBehavior.translucent,
                   onTap: () {
                     _slidersOnTap(
                       widget.isAllContainerTap && widget.texts.length == 2
@@ -227,26 +227,6 @@ class _SlideTabState extends State<SlideTab>
                           style: slidersIndex == index
                               ? widget.activeTextStyle
                               : widget.inactiveTextStyle),
-                      // child: AnimatedBuilder(
-                      //     animation: index == slidersIndex
-                      //         ? _selectedColorTween
-                      //         : _colorTween,
-                      //     builder: (context, child) {
-                      //       return Text(
-                      //         widget.texts[slidersIndex],
-                      //         style: TextStyle(
-                      //           fontSize: 9.sp,
-                      //           fontWeight: FontWeight.w600,
-                      //           fontFamily: kFontFamily,
-                      //           color: index == slidersIndex
-                      //               ? _selectedColorTween.value
-                      //               : _colorTween.value,
-                      //         ),
-                      //         // style: slidersIndex == index
-                      //         //     ? widget.activeTextStyle
-                      //         //     : widget.inactiveTextStyle
-                      //       );
-                      //     }),
                     ),
                   ),
                 ),

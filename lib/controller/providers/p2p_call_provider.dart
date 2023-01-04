@@ -73,7 +73,7 @@ class P2PCallProvider extends ChangeNotifier {
     if (_isInitialized) {
       return;
     }
-    showOutGoingCall(body, callType == CallType.video);
+    // showOutGoingCall(body, callType == CallType.video);
     _isInitialized = true;
     _callType = callType;
     _currentCallType = callType;

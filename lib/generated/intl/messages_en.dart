@@ -574,6 +574,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "teacher_exp":
             MessageLookupByLibrary.simpleMessage("7 Years of Experience"),
         "teacher_follow": MessageLookupByLibrary.simpleMessage("Follow"),
+        "teacher_followed": MessageLookupByLibrary.simpleMessage("Followed"),
         "teacher_followers": MessageLookupByLibrary.simpleMessage("Followers"),
         "teacher_folowers_no": MessageLookupByLibrary.simpleMessage("2K"),
         "teacher_most_viewed":

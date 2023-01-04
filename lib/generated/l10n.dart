@@ -3180,6 +3180,16 @@ class S {
     );
   }
 
+  /// `Followed`
+  String get teacher_followed {
+    return Intl.message(
+      'Followed',
+      name: 'teacher_followed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `About`
   String get teacher_about {
     return Intl.message(

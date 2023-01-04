@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import '../../../../core/helpers/video_helper.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
@@ -81,7 +84,7 @@ class LessonListRow extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 2.h),
               child: GestureDetector(
                 onTap: () {
-                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                  Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       arguments: {
                         "lesson": lesson,
                         "course_id": courseId,

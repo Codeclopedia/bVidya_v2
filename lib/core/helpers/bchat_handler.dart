@@ -88,14 +88,8 @@ unregisterForContact(String key) {
 
 registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
   try {
-    ChatClient.getInstance.chatManager.addEventHandler(
-      key,
-      ChatEventHandler(
-        onMessagesReceived: (msgs) {
-          onNewMessages(msgs);
-        },
-      ),
-    );
+    ChatClient.getInstance.chatManager.addEventHandler(key,
+        ChatEventHandler(onMessagesReceived: (msgs) => onNewMessages(msgs)));
   } on ChatError catch (e) {
     print('Error ${e.code} - ${e.description}');
   } catch (_) {}

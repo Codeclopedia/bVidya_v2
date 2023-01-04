@@ -209,15 +209,22 @@ class LoginScreen extends HookWidget {
     showLoading(ref);
     final error = await ref.read(loginRepositoryProvider).login(email, pass);
 
-    hideLoading(ref);
     if (error == null) {
-      final user = await getMeAsUser();
-      ref.read(userAuthChangeProvider).loadUser();
-      ref.read(bChatSDKControllerProvider).initChatSDK(user!);
-      ref.read(bChatSDKControllerProvider).shouldLoadRemote = true;
+      // final user = await getMeAsUser();
+      final user = await ref.read(userAuthChangeProvider).loadUser();
+      if (user == null) {
+        hideLoading(ref);
+        AppSnackbar.instance
+            .error(context, 'Error occurred, Please restart app');
+        return;
+      }
+      await ref.read(bChatSDKControllerProvider).initChatSDK(user!);
+      await ref.read(bChatSDKControllerProvider).loadAllContactsGroup();
+      hideLoading(ref);
       // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);
     } else {
+      hideLoading(ref);
       AppSnackbar.instance.error(context, error);
     }
   }

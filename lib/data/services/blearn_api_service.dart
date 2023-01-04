@@ -199,7 +199,6 @@ class BLearnApiService {
     }
   }
 
-
   Future<FollowInstructorResponse> followInstructor(
       String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
@@ -218,6 +217,27 @@ class BLearnApiService {
     } catch (e) {
       return FollowInstructorResponse(
           status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future recordVideoPlayback(
+      String authToken, String userId, String videoId) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = authToken;
+      final data = {
+        'user_id': userId,
+        'video_id': videoId,
+      };
+      final response = await _dio
+          .post('$baseUrlApi${ApiList.lmsRecordVideoPlayback}', data: data);
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
     }
   }
 }

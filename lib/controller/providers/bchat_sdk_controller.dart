@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'dart:io';
-// import 'package:collection/collection.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,20 +23,37 @@ class BChatSDKController {
   }
 
   bool _initialized = false;
-  bool shouldLoadRemote = false;
+  // bool shouldLoadRemote = false;
 
   loadChats(WidgetRef ref) async {
-    print('loadinging chats $_initialized');
+    // print('loadinging chats $_initialized');
     if (!_initialized) {
       User? currentUser = await getMeAsUser();
       if (currentUser == null) {
         return;
       }
-      print('init from loadChats');
+      // print('init from loadChats');
       await initChatSDK(currentUser);
     }
     // _isFirstTimeLoading = true;
     await loadConversations(ref);
+  }
+
+  Future loadAllContactsGroup() async {
+    try {
+      final list = await ChatClient.getInstance.contactManager
+          .getAllContactsFromServer();
+      print('Loaded contacts  = ${list.length}');
+    } catch (e) {
+      print('error contacts  = $e');
+    }
+    try {
+      final list = await ChatClient.getInstance.groupManager
+          .fetchJoinedGroupsFromServer();
+      print('Loaded groups  = ${list.length}');
+    } catch (e) {
+      print('error groups  = $e');
+    }
   }
 
   Future initChatSDK(User currentUser) async {
@@ -55,12 +71,13 @@ class BChatSDKController {
     // }
 
     final pref = await SharedPreferences.getInstance();
-
     int? login = pref.getInt('last_login');
+
     String? oldChatBodyStr = pref.getString('chat_body');
     bool shouldFetchNewToken =
         (DateTime.now().millisecondsSinceEpoch - (login ?? 0)) > 60 * 60 * 1000;
     bool shouldLogin = false;
+
     // String appKey;
     ChatTokenBody? keyBody;
     if (oldChatBodyStr != null) {
@@ -79,9 +96,9 @@ class BChatSDKController {
           keyBody = token.body!;
         }
 
-        print('shouldLogin -  $shouldLogin');
-        print('oldChatBody -  $oldChatBodyStr');
-        print('newChatBody -  ${token.body!.toJson()}');
+        print('should Login -  $shouldLogin');
+        print('old Chat Body -  $oldChatBodyStr');
+        print('new Chat Body -  ${token.body?.toJson()}');
         // appKey = token.body!.appKey;
       }
     }
@@ -92,7 +109,7 @@ class BChatSDKController {
     ChatOptions options = ChatOptions(
       appKey: keyBody.appKey,
       autoLogin: false,
-      acceptInvitationAlways: true,
+      acceptInvitationAlways: false,
       deleteMessagesAsExitGroup: false,
       requireAck: true,
       requireDeliveryAck: true,
@@ -117,7 +134,9 @@ class BChatSDKController {
       }
       try {
         await ChatClient.getInstance.logout(false);
-      } catch (e) {}
+      } catch (e) {
+        print('$e');
+      }
     }
 
     if (shouldLogin || !alreadyLoggedIn) {
@@ -148,6 +167,7 @@ class BChatSDKController {
         // options.enableAPNs(certName)
       }
 
+      // final info = ChatClient.getInstance.userInfoManager.fetchOwnInfo();
       await ChatClient.getInstance.userInfoManager.updateUserInfo(
         avatarUrl: currentUser.image,
         ext: currentUser.fcmToken,
@@ -237,10 +257,9 @@ class BChatSDKController {
 
     print('Start Loading conversations');
     try {
-      conversations = await ref
-          .read(bChatSDKProvider)
-          .loadContactsConversationsList(firstTime: shouldLoadRemote);
-      shouldLoadRemote = false;
+      conversations =
+          await ref.read(bChatSDKProvider).loadContactsConversationsList();
+      // shouldLoadRemote = false;
       print('conversations : ${conversations.length}');
       // conversations = ref
       //     .watch(bChatConvListProvider)

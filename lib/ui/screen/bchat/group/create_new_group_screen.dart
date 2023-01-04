@@ -313,7 +313,7 @@ class CreateNewGroupScreen extends HookWidget {
       EasyLoading.showError('Group Name can\'t be emply');
       return;
     }
-    if (name.length < 3) {
+    if (name.trim().length < 3) {
       EasyLoading.showError('Group Name very short');
       return;
     }
@@ -327,11 +327,14 @@ class CreateNewGroupScreen extends HookWidget {
     } else {
       url = '';
     }
+    print('url : $url');
     final group =
         await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
+
     hideLoading(ref);
 
     if (group != null) {
+      print('group : ${group.toJson()}');
       // ref.read(groupl)
       Navigator.pop(context, group);
     } else {

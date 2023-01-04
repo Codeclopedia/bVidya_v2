@@ -1,7 +1,8 @@
-import '../core/state.dart';
+import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/blearn_repository.dart';
 import '/data/services/blearn_api_service.dart';
+import 'profile_providers.dart';
 
 final apiBLearnProvider = Provider<BLearnApiService>(
   (_) => BLearnApiService.instance,
@@ -49,6 +50,8 @@ final bLearnInstructorProfileProvider =
 });
 
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose
-    .family<List<FollowedInstructor>?, String>((ref, id) {
-  return ref.read(bLearnRepositoryProvider).followInstructor(id);
+    .family<List<FollowedInstructor>, String>((ref, id) async {
+  final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
+  ref.read(isFollowedInstructor(id));
+  return result ?? [];
 });

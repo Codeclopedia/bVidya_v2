@@ -1,7 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swipe_to/swipe_to.dart';
 
+import '/core/helpers/bchat_handler.dart';
+import '../chat_screen.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -20,12 +23,14 @@ class GroupChatScreen extends HookConsumerWidget {
   GroupChatScreen({Key? key, required this.model}) : super(key: key);
 
   late final String _myUserId;
-  late final String _otherUserId;
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
-  User? _me;
+  // User? _me;
+  late Contacts _me;
+
+  final List<Contacts> _memberList = [];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,10 +39,11 @@ class GroupChatScreen extends HookConsumerWidget {
       // if(_scrollController.i)
 
       _scrollController = ScrollController();
-      _myUserId = ChatClient.getInstance.currentUserId ?? '24';
-      _otherUserId = model.conversation?.id ?? (_myUserId == '24' ? '1' : '24');
+      _myUserId = ChatClient.getInstance.currentUserId ?? '';
+      // _otherUserId = model.conversation?.id ?? (_myUserId == '24' ? '1' : '24');
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
+      // BchatGroupManager.loadGroupMemebers(model.groupInfo);
       _preLoadChat(ref);
 
       return disposeAll;
@@ -58,33 +64,53 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   _loadMe() async {
-    _me = await getMeAsUser();
+    final user = await getMeAsUser();
+    if (user != null) {
+      _me = Contacts(
+        name: user.name,
+        profileImage: user.image,
+        userId: user.id,
+        email: user.email,
+        fcmToken: user.fcmToken,
+        phone: user.phone,
+      );
+      _myUserId = _me.userId.toString();
+    }
   }
 
   _preLoadChat(WidgetRef ref) async {
     try {
-      if (model.badgeCount > 0) {
+      registerForNewMessage('group_chat_screen', (msg) {
+        onMessagesReceived(msg, ref);
+      });
+      if (model.conversation != null) {
         await model.conversation?.markAllMessagesAsRead();
+        final chats = await model.conversation?.loadMessages(loadCount: 20);
+        ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
       }
 
-      final value = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(conversationId: _otherUserId, pageSize: 20);
+      // if (model.badgeCount > 0) {
+      //   await model.conversation?.markAllMessagesAsRead();
+      // }
 
-      final chats = value.data;
-      if (chats.isNotEmpty) {
-        debugPrint('preLoadChat cursor : ${value.cursor}');
-        debugPrint('data list ${chats.length}');
-        // ref.read(chatChatCursorMessageProvider.notifier).state = value.cursor;
-        ref
-            .read(chatMessageListProvider.notifier)
-            .addChats(chats, value.cursor);
-      }
-      ChatClient.getInstance.chatManager.addEventHandler(
-        'group_chat_screen',
-        ChatEventHandler(
-          onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
-        ),
-      );
+      // final value = await ChatClient.getInstance.chatManager
+      //     .fetchHistoryMessages(conversationId: _otherUserId, pageSize: 20);
+
+      // final chats = value.data;
+      // if (chats.isNotEmpty) {
+      //   debugPrint('preLoadChat cursor : ${value.cursor}');
+      //   debugPrint('data list ${chats.length}');
+      //   // ref.read(chatChatCursorMessageProvider.notifier).state = value.cursor;
+      //   ref
+      //       .read(chatMessageListProvider.notifier)
+      //       .addChats(chats, value.cursor);
+      // }
+      // ChatClient.getInstance.chatManager.addEventHandler(
+      //   'group_chat_screen',
+      //   ChatEventHandler(
+      //     onMessagesReceived: (msgs) => onMessagesReceived(msgs, ref),
+      //   ),
+      // );
     } on ChatError catch (e) {}
   }
 
@@ -147,7 +173,7 @@ class GroupChatScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        // _buildReplyBox(),
+        _buildReplyBox(),
         _buildChatInputBox(),
       ],
     );
@@ -159,17 +185,17 @@ class GroupChatScreen extends HookConsumerWidget {
         return ChatInputBox(
           onSend: (input) async {
             final msg = ChatMessage.createTxtSendMessage(
-                targetId: _otherUserId,
+                targetId: model.id,
                 content: input,
-                chatType: ChatType.GroupChat)
-              ..from = _myUserId;
+                chatType: ChatType.GroupChat);
+            // ..from = _myUserId;
 
-            // ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-            // if (replyOf != null) {
-            //   // msg.attributes.addAll(replyOf)
-            //   ref.read(chatModelProvider).clearReplyBox();
-            // }
-            // ref.read(chatMessageListProvider.notifier).addChat(msg);
+            ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
+            if (replyOf != null) {
+              msg.attributes?.addAll({'reply_of': replyOf.toJson()});
+              ref.read(chatModelProvider).clearReplyBox();
+            }
+
             return await _sendMessage(msg, ref);
           },
           onAttach: _pickFiles,
@@ -180,38 +206,38 @@ class GroupChatScreen extends HookConsumerWidget {
 
   final ImagePicker _picker = ImagePicker();
   _pickFiles(AttachType type) async {
-    print('Request Attach: $type');
-    var fileExts = ['jpg', 'pdf', 'doc'];
+    // print('Request Attach: $type');
+    // var fileExts = ['jpg', 'pdf', 'doc'];
 
-    switch (type) {
-      case AttachType.camera:
-        final XFile? photo = await _picker.pickImage(
-            source: ImageSource.camera, requestFullMetadata: false);
-        return;
-      case AttachType.media:
-        fileExts = ['jpg', 'png', 'jpeg', 'mp4', 'mov'];
-        break;
-      // ;
-      case AttachType.audio:
-        fileExts = ['aac', 'mp3', 'wav'];
-        break;
-      case AttachType.docs:
-        fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-        break;
-    }
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'],
-    );
-    if (result != null) {
-      for (var file in result.files) {
-        print(file.name);
-        print(file.bytes);
-        print(file.size);
-        print(file.extension);
-        print(file.path);
-      }
-    }
+    // switch (type) {
+    //   case AttachType.camera:
+    //     final XFile? photo = await _picker.pickImage(
+    //         source: ImageSource.camera, requestFullMetadata: false);
+    //     return;
+    //   case AttachType.media:
+    //     fileExts = ['jpg', 'png', 'jpeg', 'mp4', 'mov'];
+    //     break;
+    //   // ;
+    //   case AttachType.audio:
+    //     fileExts = ['aac', 'mp3', 'wav'];
+    //     break;
+    //   case AttachType.docs:
+    //     fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
+    //     break;
+    // }
+    // FilePickerResult? result = await FilePicker.platform.pickFiles(
+    //   type: FileType.custom,
+    //   allowedExtensions: ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'],
+    // );
+    // if (result != null) {
+    //   for (var file in result.files) {
+    //     print(file.name);
+    //     print(file.bytes);
+    //     print(file.size);
+    //     print(file.extension);
+    //     print(file.path);
+    //   }
+    // }
   }
 
   Widget _buildMessageList(WidgetRef ref) {
@@ -240,13 +266,20 @@ class GroupChatScreen extends HookConsumerWidget {
         if (nextMessage?.from == message.from) {
           isNextSameAuthor = true;
         }
+        final selectedItems = ref.watch(selectedChatMessageListProvider);
+        bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from == _myUserId;
+        if (!isOwnMessage) _markRead(message);
 
-        // ChatUserInfo otherUser = _getUser();
+        String name = message.attributes?['from_name'] ?? '';
+        String image = message.attributes?['from_image'] ?? '';
+        Contacts contact = Contacts(
+            userId: int.parse(message.from!), name: name, profileImage: image);
+
         return Column(
-          crossAxisAlignment:
-              isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          // crossAxisAlignment:
+          //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             if (isAfterDateSeparator)
               Container(
@@ -255,30 +288,39 @@ class GroupChatScreen extends HookConsumerWidget {
                 child: Text(
                   formatDateSeparator(
                       DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
-                  style: const TextStyle(color: Colors.grey),
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: Colors.grey,
+                    fontSize: 8.sp,
+                  ),
                 ),
               ),
-            // SwipeTo(
-            //   onRightSwipe: () {
-            //     ref.read(chatModelProvider).setReplyOn(message, otherUser);
-            //     print('open replyBox');
-            //   },
-            //   child:
-            GestureDetector(
-              onLongPress: () {
-                _showMessageOption(message);
+            SwipeTo(
+              onRightSwipe: () {
+                ref.read(chatModelProvider.notifier).setReplyOn(message,
+                    isOwnMessage ? S.current.bmeet_user_you : contact.name);
+                // print('open replyBox');
               },
-              child: ChatMessageBubble(
-                message: message,
-                isOwnMessage: message.from == _myUserId,
-                senderUser:
-                    Contacts(name: '', userId: 1,  profileImage: ''),
-                isPreviousSameAuthor: isPreviousSameAuthor,
-                isNextSameAuthor: isNextSameAuthor,
-                isAfterDateSeparator: isAfterDateSeparator,
-                isBeforeDateSeparator: isBeforeDateSeparator,
-                showOtherUserName: true,
-                // ),
+              child: GestureDetector(
+                onLongPress: () =>
+                    _onMessageLongPress(message, isSelected, ref),
+                onTap: () => selectedItems.isNotEmpty
+                    ? _onMessageTap(message, isSelected, ref)
+                    : null,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 2, bottom: 4),
+                  width: double.infinity,
+                  color: isSelected ? Colors.grey.shade200 : Colors.transparent,
+                  child: ChatMessageBubble(
+                    message: message,
+                    isOwnMessage: isOwnMessage,
+                    senderUser: isOwnMessage ? _me : contact,
+                    isPreviousSameAuthor: isPreviousSameAuthor,
+                    isNextSameAuthor: isNextSameAuthor,
+                    isAfterDateSeparator: isAfterDateSeparator,
+                    isBeforeDateSeparator: isBeforeDateSeparator,
+                  ),
+                ),
               ),
             ),
           ],
@@ -287,14 +329,33 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
+  _onMessageLongPress(ChatMessage message, bool selected, WidgetRef ref) {
+    // ChatClient.getInstance.chatManager.a
+    if (selected) {
+      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+    } else {
+      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+    }
+  }
+
+  _onMessageTap(ChatMessage message, bool selected, WidgetRef ref) {
+    if (selected) {
+      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+    } else {
+      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+    }
+  }
+
   _showMessageOption(ChatMessage message) {
     // ChatClient.getInstance.chatManager.a
   }
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
-    if (_me == null) return 'User details not loaded yet';
-
     try {
+      msg.attributes?.addAll({'from_name': _me.name});
+      msg.attributes?.addAll({'from_image': _me.profileImage});
+      msg.attributes?.addAll({"em_force_notification": true});
+
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {
@@ -357,45 +418,56 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  // bool isLoadingMore = false;
-
   Future<void> onLoadEarlier(WidgetRef ref) async {
     await Future.delayed(const Duration(seconds: 2));
     try {
       final message = ref.read(chatMessageListProvider.notifier).getLast();
       if (message == null) return;
-      // ChatTextMessageBody body = message.body as ChatTextMessageBody;
-      // print('last message ${body.content}');
-
-      String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
-      if (cursor == null || cursor.isEmpty) return;
-      final oldResult = await ChatClient.getInstance.chatManager
-          .fetchHistoryMessages(
-              conversationId: _otherUserId,
-              pageSize: 20,
-              startMsgId: message.msgId);
-
-      debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
-      if (oldResult.cursor == null ||
-          cursor == oldResult.cursor ||
-          oldResult.cursor?.isEmpty == true) {
-        debugPrint('Not a new cursor : ${oldResult.cursor}');
-        ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      if (model.conversation != null) {
+        print('next_chat_id ${message.msgId}');
+        await Future.delayed(const Duration(seconds: 2));
+        final chats = await model.conversation
+            ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
+        ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
+        ref.read(chatHasMoreOldMessageProvider.notifier).state =
+            chats?.length == 20;
         return;
       }
-      // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
-      debugPrint('old data list ${oldResult.data.length}');
-      if (oldResult.data.isNotEmpty) {
-        ref.read(chatHasMoreOldMessageProvider.notifier).state =
-            oldResult.data.length == 20;
-        print('Set has More Data :${(oldResult.data.length == 20)})');
-        ref
-            .read(chatMessageListProvider.notifier)
-            .addChats(oldResult.data, oldResult.cursor);
-      } else {
-        ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-        print('Set has More Data :false');
-      }
+
+      // final message = ref.read(chatMessageListProvider.notifier).getLast();
+      // if (message == null) return;
+      // // ChatTextMessageBody body = message.body as ChatTextMessageBody;
+      // // print('last message ${body.content}');
+
+      // String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
+      // if (cursor == null || cursor.isEmpty) return;
+      // final oldResult = await ChatClient.getInstance.chatManager
+      //     .fetchHistoryMessages(
+      //         conversationId: _otherUserId,
+      //         pageSize: 20,
+      //         startMsgId: message.msgId);
+
+      // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
+      // if (oldResult.cursor == null ||
+      //     cursor == oldResult.cursor ||
+      //     oldResult.cursor?.isEmpty == true) {
+      //   debugPrint('Not a new cursor : ${oldResult.cursor}');
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      //   return;
+      // }
+      // // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
+      // debugPrint('old data list ${oldResult.data.length}');
+      // if (oldResult.data.isNotEmpty) {
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state =
+      //       oldResult.data.length == 20;
+      //   print('Set has More Data :${(oldResult.data.length == 20)})');
+      //   ref
+      //       .read(chatMessageListProvider.notifier)
+      //       .addChats(oldResult.data, oldResult.cursor);
+      // } else {
+      //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
+      //   print('Set has More Data :false');
+      // }
     } catch (e) {}
 
     return;
@@ -449,28 +521,7 @@ class GroupChatScreen extends HookConsumerWidget {
     // }
   }
 
-  // _navigateBack(BuildContext context) {
-  //   Navigator.pop(context);
-  // }
-
-  // ChatUserInfo _getUser() {
-  //   Map map = {'userId': '1', 'nickName': model.name, 'avatarUrl': model.image};
-
-  //   //map["userId"],
-  //   // nickName: map.getStringValue("nickName"),
-  //   // avatarUrl: map.getStringValue("avatarUrl"),
-  //   // mail: map.getStringValue("mail"),
-  //   // phone: map.getStringValue("phone"),
-  //   // gender: map.getIntValue("gender", defaultValue: 0)!,
-  //   // sign: map.getStringValue("sign"),
-  //   // birth: map.getStringValue("birth"),
-  //   // ext: map.getStringValue("ext"),
-
-  //   return ChatUserInfo.fromJson(map);
-  // }
-
   Widget _topBar(BuildContext context) {
-    // final ChatUserInfo otherUser = _getUser();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
       child: Row(
@@ -484,7 +535,7 @@ class GroupChatScreen extends HookConsumerWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.w),
             child: getRectFAvatar(
-              model.groupInfo.name??'',
+              model.groupInfo.name ?? '',
               model.image,
             ),
           ),
@@ -499,7 +550,7 @@ class GroupChatScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    model.groupInfo.name??'',
+                    model.groupInfo.name ?? '',
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         color: Colors.white,
@@ -508,7 +559,7 @@ class GroupChatScreen extends HookConsumerWidget {
                   ),
                   SizedBox(height: 0.3.h),
                   Text(
-                    '5 Members',
+                    '${model.groupInfo.memberCount} Members',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       color: AppColors.yellowAccent,
@@ -542,60 +593,60 @@ class GroupChatScreen extends HookConsumerWidget {
         bool show = ref.watch(chatModelProvider).isReplyBoxVisible;
         if (show) {
           ReplyModel replyOf = ref.watch(chatModelProvider).replyOn!;
-          return Center(
-            child: Container(
-              height: 12.h,
-              width: 90.w,
-              padding: EdgeInsets.all(2.w),
-              decoration: BoxDecoration(
-                color: AppColors.chatBoxBackgroundMine,
-                borderRadius: BorderRadius.all(Radius.circular(4.w)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // SizedBox(
-                      //   width: 1.w,
-                      // ),
-                      Text(
-                        'Replying to ${replyOf.fromName}',
-                        style: textStyleWhite,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          ref.read(chatModelProvider).clearReplyBox();
-                        },
-                        child: const Icon(Icons.close, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 1.h),
-                  Expanded(
-                    child: Container(
-                        padding: EdgeInsets.all(2.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.chatBoxBackgroundOthers,
-                          borderRadius: BorderRadius.all(Radius.circular(4.w)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Chat content'),
-                          ],
-                        )),
-                  ),
-                ],
-              ),
+          return Container(
+            width: 90.w,
+            margin: EdgeInsets.only(bottom: 1.h),
+            padding: EdgeInsets.all(2.w),
+            decoration: BoxDecoration(
+              color: AppColors.chatBoxBackgroundMine,
+              borderRadius: BorderRadius.all(Radius.circular(3.w)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Replying to ${replyOf.fromName}',
+                      style: textStyleWhite,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        ref.read(chatModelProvider).clearReplyBox();
+                      },
+                      child: const Icon(Icons.close, color: Colors.white),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 1.h),
+                Container(
+                    padding: EdgeInsets.all(2.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.chatBoxBackgroundOthers,
+                      borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                    ),
+                    child: ChatMessageBodyWidget(message: replyOf.message)
+                    //  Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     ChatMessageBodyWidget(message: replyOf.message)
+                    //   ],
+                    // ),
+                    ),
+              ],
             ),
           );
         }
         return const SizedBox.shrink();
       },
     );
+  }
+
+  void _markRead(ChatMessage message) async {
+    if (!message.hasRead) {
+      await model.conversation?.markMessageAsRead(message.msgId);
+    }
   }
 }

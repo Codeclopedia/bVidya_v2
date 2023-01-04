@@ -701,12 +701,6 @@ class ChatScreen extends HookConsumerWidget {
 
   Widget _topBar(BuildContext context, WidgetRef ref) {
     final value = ref.watch(onlineStatusProvier);
-    // final Contacts otherUser = _getUser();
-    // _otherUser = ChatUser(
-    //   id: otherUser.id.toString(),
-    //   firstName: otherUser.name,
-    //   profileImage: otherUser.image,
-    // );
     return Material(
       color: Colors.transparent,
       child: Padding(
