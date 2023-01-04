@@ -950,6 +950,16 @@ class S {
     );
   }
 
+  /// `Report Group`
+  String get grp_btx_report {
+    return Intl.message(
+      'Report Group',
+      name: 'grp_btx_report',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Share Content`
   String get atc_content {
     return Intl.message(
@@ -2360,6 +2370,106 @@ class S {
     );
   }
 
+  /// `New Group`
+  String get groups_create_title {
+    return Intl.message(
+      'New Group',
+      name: 'groups_create_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Subject`
+  String get groups_create_subject {
+    return Intl.message(
+      'Add Subject',
+      name: 'groups_create_subject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group Title`
+  String get groups_create_caption {
+    return Intl.message(
+      'Group Title',
+      name: 'groups_create_caption',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter group name`
+  String get groups_create_hint_name {
+    return Intl.message(
+      'Enter group name',
+      name: 'groups_create_hint_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Contacts`
+  String get group_empty_no_contacts {
+    return Intl.message(
+      'No Contacts',
+      name: 'group_empty_no_contacts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group Name can't be emply`
+  String get group_error_empty {
+    return Intl.message(
+      'Group Name can\'t be emply',
+      name: 'group_error_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group Name very short`
+  String get group_error_invalid {
+    return Intl.message(
+      'Group Name very short',
+      name: 'group_error_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error in creating group`
+  String get group_error_creating {
+    return Intl.message(
+      'Error in creating group',
+      name: 'group_error_creating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} Memebers`
+  String grp_chat_members(Object count) {
+    return Intl.message(
+      '$count Memebers',
+      name: 'grp_chat_members',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Replying to {name}`
+  String chat_replying(Object name) {
+    return Intl.message(
+      'Replying to $name',
+      name: 'chat_replying',
+      desc: '',
+      args: [name],
+    );
+  }
+
   /// `Account`
   String get Account {
     return Intl.message(
@@ -3167,6 +3277,16 @@ class S {
       name: 'teacher_exp',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `{year} Years of Experience`
+  String teacher_exp_value(Object year) {
+    return Intl.message(
+      '$year Years of Experience',
+      name: 'teacher_exp_value',
+      desc: '',
+      args: [year],
     );
   }
 

@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import '/core/helpers/bchat_contact_manager.dart';
-import '/core/state.dart';
-// import '/data/services/bchat_api_service.dart';
 
-import '/data/models/conversation_model.dart';
+import '/controller/bchat_providers.dart';
+import '/core/state.dart';
+import '../../data/models/models.dart';
 
 class BchatGroupManager {
   BchatGroupManager._();
@@ -16,12 +15,10 @@ class BchatGroupManager {
           groupName: name,
           desc: desc,
           inviteMembers: ids,
-          options: ChatGroupOptions());
+          options:
+              ChatGroupOptions(style: ChatGroupStyle.PrivateOnlyOwnerInvite));
 
-      Map<String, dynamic> ext = {
-        'image': image,
-      };
-
+      Map<String, dynamic> ext = {'image': image};
       await ChatClient.getInstance.groupManager
           .updateGroupExtension(group.groupId, jsonEncode(ext));
       return group;
@@ -34,23 +31,48 @@ class BchatGroupManager {
   static Future<List<GroupConversationModel>> loadGroupConversationsList(
       {bool firstTime = false}) async {
     List<GroupConversationModel> conversations = [];
-    final groups = await ChatClient.getInstance.groupManager.getJoinedGroups();
+    List<ChatGroup> groups = [];
+    try {
+      // groups = await ChatClient.getInstance.groupManager.getJoinedGroups();
+      // if (groups.isEmpty) {
+      groups = await ChatClient.getInstance.groupManager
+          .fetchJoinedGroupsFromServer();
+      // }
+    } catch (e) {
+      print('Error: $e');
+    }
+    // if (groups.isEmpty) {
+    //   final list = ['202732014206977', '202468308877313'];
+    //   for (String id in list) {
+    //     try {
+    //       final grp = await ChatClient.getInstance.groupManager
+    //           .fetchGroupInfoFromServer(id, fetchMembers: true);
+    //       groups.add(grp);
+    //     } catch (e) {
+    //       print('Error group id $id : $e');
+    //     }
+    //   }
+    //   // await ChatClient.getInstance.groupManager.getGroupWithId(groupId)
+    // }
+
     for (ChatGroup group in groups) {
       GroupConversationModel model;
       try {
-        final conv = await ChatClient.getInstance.chatManager.getConversation(
-            group.groupId,
-            type: ChatConversationType.GroupChat);
+        final grp = await ChatClient.getInstance.groupManager
+            .fetchGroupInfoFromServer(group.groupId, fetchMembers: true);
+
+        final conv = await ChatClient.getInstance.chatManager
+            .getConversation(grp.groupId, type: ChatConversationType.GroupChat);
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
 
         model = GroupConversationModel(
-            id: group.groupId,
+            id: grp.groupId,
             badgeCount: await conv.unreadCount(),
-            groupInfo: group,
+            groupInfo: grp,
             conversation: conv,
             lastMessage: lastMessage,
-            image: getGroupImage(group));
+            image: getGroupImage(grp));
       } catch (e) {
         continue;
       }
@@ -69,11 +91,16 @@ class BchatGroupManager {
     return image ?? '';
   }
 
-  static void loadGroupMemebers(ChatGroup groupInfo, WidgetRef ref) async {
-    final groups = groupInfo.memberList ?? [];
-    if (groups.isNotEmpty) {
-      // BChatApiService.instance.getContactsByIds(token, userIds)
-      for (String id in groups) {}
-    }
-  }
+  // static Future<List<Contacts>> loadGroupMemebers(
+  //     ChatGroup groupInfo, WidgetRef ref) async {
+  //   final groups = groupInfo.memberList ?? [];
+  //   if (groups.isNotEmpty) {
+  //     final List<Contacts> empty = [];
+  //     final list = ref
+  //         .read(groupMembersList(groups.join(',')))
+  //         .maybeWhen(orElse: () => empty);
+  //     return list;
+  //   }
+  //   return [];
+  // }
 }

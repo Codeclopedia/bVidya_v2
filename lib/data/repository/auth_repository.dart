@@ -144,6 +144,14 @@ class AuthRepository {
     }
   }
 
+  Future<String?> forgetPassword(String email) async {
+    final result = await api.requestForgotPassword(email);
+    if (result.status != null && result.status == successfull) {
+      return null;
+    }
+    return result.message ?? 'Unknown error occurred!!';
+  }
+
   void loggedOut() {
     _user = null;
   }

@@ -59,6 +59,8 @@ class RouteList {
   static const String contactUs = '/contact-us';
   static const String reportProblem = '/report-problem';
 
+  static const String webview = '/webview';
+
 //Profiles
   //*student
   static const String studentProfile = '/student-profile';

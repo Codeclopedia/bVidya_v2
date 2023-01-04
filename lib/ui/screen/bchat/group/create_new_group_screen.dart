@@ -3,15 +3,15 @@
 import 'dart:io';
 
 import '/controller/providers/contacts_select_notifier.dart';
-import '../../../dialog/image_picker_dialog.dart';
-import '/core/helpers/bchat_group_manager.dart';
-import '../../../base_back_screen.dart';
-import '../../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
+import '/core/helpers/bchat_group_manager.dart';
+import '../../blearn/components/common.dart';
+import '../../../base_back_screen.dart';
+import '../../../dialog/image_picker_dialog.dart';
 import '../../../widgets.dart';
 // import 'new_group_contact_screen.dart';
 
@@ -32,64 +32,11 @@ class CreateNewGroupScreen extends HookWidget {
     return Scaffold(
       body: ColouredBoxBar(
         topSize: 25.h,
-        topBar: const BAppBar(title: 'New Group'),
+        topBar: BAppBar(title: S.current.groups_create_title),
         body: _buildList(context),
       ),
     );
   }
-
-  // Widget _buildSearchBody(BuildContext context) {
-  //   return Padding(
-  //     padding: EdgeInsets.only(left: 5.w, right: 5.w, bottom: 2.h),
-  //     child: SingleChildScrollView(
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           SizedBox(height: 2.h),
-  //           Row(
-  //             mainAxisSize: MainAxisSize.max,
-  //             children: [
-  //               Text(
-  //                 'Add Subject',
-  //                 style: TextStyle(
-  //                   fontFamily: kFontFamily,
-  //                   color: Colors.black,
-  //                   fontSize: 10.sp,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //               ElevatedButton(
-  //                 style: elevatedButtonYellowStyle,
-  //                 onPressed: () {},
-  //                 child: Text(
-  //                   S.current.btn_create.toUpperCase(),
-  //                 ),
-  //               )
-  //             ],
-  //           ),
-  //           SizedBox(height: 1.h),
-  //           Text(
-  //             'Participants',
-  //             style: TextStyle(
-  //               fontFamily: kFontFamily,
-  //               color: Colors.black,
-  //               fontSize: 10.sp,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           ),
-  //           ListView.builder(
-  //             shrinkWrap: true,
-  //             itemCount: 3,
-  //             physics: const NeverScrollableScrollPhysics(),
-  //             itemBuilder: (context, index) {
-  //               return _contactRow(contacts[index]);
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildList(BuildContext context) {
     return Padding(
@@ -104,7 +51,7 @@ class CreateNewGroupScreen extends HookWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add Subject',
+                S.current.groups_create_subject,
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: Colors.black,
@@ -198,7 +145,8 @@ class CreateNewGroupScreen extends HookWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Group Title', style: footerTextStyle),
+                      Text(S.current.groups_create_caption,
+                          style: footerTextStyle),
                       SizedBox(height: 2.w),
                       Consumer(builder: (context, ref, child) {
                         return TextField(
@@ -207,7 +155,7 @@ class CreateNewGroupScreen extends HookWidget {
                             createGroup(context, value, ref);
                           },
                           decoration: inputNewGroupStyle.copyWith(
-                              hintText: 'Enter group name'),
+                              hintText: S.current.groups_create_hint_name),
                         );
                       })
                     ],
@@ -217,7 +165,7 @@ class CreateNewGroupScreen extends HookWidget {
             ),
           ),
           Text(
-            'Participants',
+            S.current.grp_caption_participation,
             style: TextStyle(
               fontFamily: kFontFamily,
               color: Colors.black,
@@ -231,7 +179,8 @@ class CreateNewGroupScreen extends HookWidget {
               builder: (context, ref, child) {
                 final list = ref.watch(selectedContactProvider);
                 if (list.isEmpty) {
-                  return buildEmptyPlaceHolder('No Contacts');
+                  return buildEmptyPlaceHolder(
+                      S.current.group_empty_no_contacts);
                 }
                 return ListView.builder(
                   shrinkWrap: true,
@@ -284,8 +233,9 @@ class CreateNewGroupScreen extends HookWidget {
   Widget _buildImage(File image, Function() onTap) {
     return Stack(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(3.w)),
+        CircleAvatar(
+          radius: 4.h,
+          // borderRadius: BorderRadius.all(Radius.circular(3.w)),
           child: Image.file(
             image,
             width: 8.h,
@@ -310,11 +260,11 @@ class CreateNewGroupScreen extends HookWidget {
   createGroup(BuildContext context, String name, WidgetRef ref) async {
     showLoading(ref);
     if (name.trim().isEmpty) {
-      EasyLoading.showError('Group Name can\'t be emply');
+      EasyLoading.showError(S.current.group_error_empty);
       return;
     }
     if (name.trim().length < 3) {
-      EasyLoading.showError('Group Name very short');
+      EasyLoading.showError(S.current.group_error_invalid);
       return;
     }
     final list = ref.read(selectedContactProvider);
@@ -327,7 +277,7 @@ class CreateNewGroupScreen extends HookWidget {
     } else {
       url = '';
     }
-    print('url : $url');
+    // print('url : $url');
     final group =
         await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
 
@@ -338,7 +288,7 @@ class CreateNewGroupScreen extends HookWidget {
       // ref.read(groupl)
       Navigator.pop(context, group);
     } else {
-      AppSnackbar.instance.error(context, 'Error in creating group');
+      AppSnackbar.instance.error(context, S.current.group_error_creating);
       // EasyLoading.showError('Error in creating group');
     }
   }

@@ -24,7 +24,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(date) => "${date} Meeting";
 
-  static String m2(time) => "Resend OTP in ${time} seconds";
+  static String m2(name) => "Replying to ${name}";
+
+  static String m3(count) => "${count} Memebers";
+
+  static String m4(time) => "Resend OTP in ${time} seconds";
+
+  static String m5(year) => "${year} Years of Experience";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -254,6 +260,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Chat history,themes,wallpapers"),
         "chat_input_hint":
             MessageLookupByLibrary.simpleMessage("Write your message"),
+        "chat_replying": m2,
         "confDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block conference reminder notifications"),
         "confRem": MessageLookupByLibrary.simpleMessage("Conference Reminder"),
@@ -332,10 +339,28 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forgot Password"),
         "groupDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block group notifications"),
+        "group_empty_no_contacts":
+            MessageLookupByLibrary.simpleMessage("No Contacts"),
+        "group_error_creating":
+            MessageLookupByLibrary.simpleMessage("Error in creating group"),
+        "group_error_empty":
+            MessageLookupByLibrary.simpleMessage("Group Name can\'t be emply"),
+        "group_error_invalid":
+            MessageLookupByLibrary.simpleMessage("Group Name very short"),
+        "groups_create_caption":
+            MessageLookupByLibrary.simpleMessage("Group Title"),
+        "groups_create_hint_name":
+            MessageLookupByLibrary.simpleMessage("Enter group name"),
+        "groups_create_subject":
+            MessageLookupByLibrary.simpleMessage("Add Subject"),
+        "groups_create_title":
+            MessageLookupByLibrary.simpleMessage("New Group"),
         "grp_btx_clear": MessageLookupByLibrary.simpleMessage("Clear Chat"),
         "grp_btx_exit": MessageLookupByLibrary.simpleMessage("Exit Group"),
+        "grp_btx_report": MessageLookupByLibrary.simpleMessage("Report Group"),
         "grp_caption_participation":
             MessageLookupByLibrary.simpleMessage("Participants"),
+        "grp_chat_members": m3,
         "grp_txt_add_participant":
             MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
@@ -414,7 +439,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter OTP"),
         "otp_login_txt_in_second":
             MessageLookupByLibrary.simpleMessage("Resend OTP in 59 seconds"),
-        "otp_login_txt_in_seconds": m2,
+        "otp_login_txt_in_seconds": m4,
         "passReset": MessageLookupByLibrary.simpleMessage(
             "Reset password, delete account"),
         "pr_btx_all": MessageLookupByLibrary.simpleMessage("View All"),
@@ -573,6 +598,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("All Courses"),
         "teacher_exp":
             MessageLookupByLibrary.simpleMessage("7 Years of Experience"),
+        "teacher_exp_value": m5,
         "teacher_follow": MessageLookupByLibrary.simpleMessage("Follow"),
         "teacher_followed": MessageLookupByLibrary.simpleMessage("Followed"),
         "teacher_followers": MessageLookupByLibrary.simpleMessage("Followers"),

@@ -2,7 +2,7 @@ import '/core/state.dart';
 import '/data/models/models.dart';
 
 class GroupChatConversationNotifier extends StateNotifier<List<GroupConversationModel>> {
-  GroupChatConversationNotifier() : super([]);
+  GroupChatConversationNotifier(List<GroupConversationModel> initial) : super(initial);
 
   GroupConversationModel? getLast() {
     if (state.isEmpty) return null;

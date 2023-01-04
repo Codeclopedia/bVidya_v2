@@ -1,9 +1,8 @@
+import '/ui/widget/sliding_tab.dart';
 import '/controller/profile_providers.dart';
 import '/data/models/models.dart';
 import '/core/constants/route_list.dart';
-// import '/data/models/response/profile/instructor_profile_response.dart';
 
-import '../../screens.dart';
 import '../../widgets.dart';
 
 import '/controller/blearn_providers.dart';
@@ -12,9 +11,8 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import 'components/common.dart';
 
-// final recommenedDetailSelectedProvider = StateProvider.autoDispose<CourseType>(
-//   (_) => CourseType.trending,
-// );
+final selectedTabTeacherDetailsProvider =
+    StateProvider.autoDispose<int>((ref) => 0);
 
 class TeacherProfileDetailScreen extends StatelessWidget {
   final Instructor instructor;
@@ -61,7 +59,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                 child: buildEmptyPlaceHolder('No Data'),
                               );
                             }
-                            return _buildContent(data);
+                            return _buildContent(data, context);
                           },
                           error: (error, stackTrace) =>
                               buildEmptyPlaceHolder('error in loading data'),
@@ -88,8 +86,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
-                                image: getImageProvider(
-                                    instructor.image.toString()),
+                                image: getImageProvider(instructor.image ?? ''),
                                 fit: BoxFit.cover)),
                       ),
                       Text(
@@ -102,7 +99,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(top: 0.5.h),
                         child: Text(
-                          instructor.occupation.toString(),
+                          instructor.occupation ?? '',
                           style: TextStyle(
                               color: AppColors.black,
                               fontSize: 2.5.w,
@@ -110,7 +107,9 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${instructor.experience.toString()}${S.current.teacher_exp.replaceAll("7", "")}",
+                        S.current
+                            .teacher_exp_value(instructor.experience ?? '0'),
+                        // "${instructor.experience??''}${S.current.teacher_exp.replaceAll("7", "")}",
                         style: TextStyle(
                             color: AppColors.black,
                             fontSize: 2.5.w,
@@ -128,7 +127,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(ProfileBody body) {
+  Widget _buildContent(ProfileBody body, BuildContext context) {
     String follwersCount = '0';
     if (body.followers?.isNotEmpty == true) {
       follwersCount = (body.followers?[0].count ?? 0).toString();
@@ -218,94 +217,110 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 2.h),
-        Container(
-          padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
-          height: 10.h,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CircleAvatar(
-                radius: 6.w,
-                backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
-                child: Center(
-                  child: Icon(
-                    Icons.message,
-                    color: AppColors.primaryColor,
-                    size: 6.w,
+        InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, RouteList.teacherClassRequest);
+          },
+          child: Container(
+            padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
+            height: 10.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 6.w,
+                  backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
+                  child: Center(
+                    child: Icon(
+                      Icons.message,
+                      color: AppColors.primaryColor,
+                      size: 6.w,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 3.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      S.current.requestclass,
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          fontFamily: kFontFamily,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w800),
-                    ),
-                    Text(
-                      S.current.t_schedule_class_msg,
-                      style: TextStyle(
-                          fontSize: 9.sp,
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.w200,
-                          color: AppColors.iconGreyColor),
-                    ),
-                  ],
+                SizedBox(width: 3.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        S.current.requestclass,
+                        style: TextStyle(
+                            fontSize: 12.sp,
+                            fontFamily: kFontFamily,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w800),
+                      ),
+                      Text(
+                        S.current.t_schedule_class_msg,
+                        style: TextStyle(
+                            fontSize: 9.sp,
+                            fontFamily: kFontFamily,
+                            fontWeight: FontWeight.w200,
+                            color: AppColors.iconGreyColor),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // const Spacer(),
-              Icon(
-                Icons.keyboard_arrow_right,
-                size: 7.w,
-                color: AppColors.iconGreyColor,
-              )
-            ],
+                // const Spacer(),
+                Icon(
+                  Icons.keyboard_arrow_right,
+                  size: 7.w,
+                  color: AppColors.iconGreyColor,
+                )
+              ],
+            ),
           ),
         ),
         Consumer(
           builder: (context, ref, child) {
-            final selectedIndex = ref.watch(selectedTabLearningProvider);
+            final selectedIndex = ref.watch(selectedTabTeacherDetailsProvider);
 
             return Column(
               children: [
                 Center(
-                  child: SlideTab(
-                      initialIndex: selectedIndex,
-                      containerWidth: 88.w,
-                      onSelect: (index) async {
-                        ref.read(selectedTabLearningProvider.notifier).state =
-                            index;
-                      },
-                      containerHeight: 6.h,
-                      direction: Axis.horizontal,
-                      sliderColor: AppColors.primaryColor,
-                      containerBorderRadius: 2.w,
-                      sliderBorderRadius: 2.6.w,
-                      containerColor: AppColors.cardWhite,
-                      activeTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9.sp,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: kFontFamily,
-                      ),
-                      inactiveTextStyle: TextStyle(
-                        fontSize: 9.sp,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: kFontFamily,
-                        color: Colors.black,
-                      ),
-                      texts: [
-                        S.current.sp_tab_course,
-                        S.current.teacher_about,
-                      ]),
-                ),
+                    child: SlidingTab(
+                  label1: S.current.sp_tab_course,
+                  label2: S.current.teacher_about,
+                  selectedIndex: selectedIndex,
+                  callback: (index) {
+                    ref.read(selectedTabTeacherDetailsProvider.notifier).state =
+                        index;
+                  },
+                )
+
+                    // child: SlideTab(
+                    //     initialIndex: selectedIndex,
+                    //     containerWidth: 88.w,
+                    //     onSelect: (index) async {
+                    //       ref
+                    //           .read(selectedTabTeacherDetailsProvider.notifier)
+                    //           .state = index;
+                    //     },
+                    //     containerHeight: 6.h,
+                    //     direction: Axis.horizontal,
+                    //     sliderColor: AppColors.primaryColor,
+                    //     containerBorderRadius: 2.w,
+                    //     sliderBorderRadius: 2.6.w,
+                    //     containerColor: AppColors.cardWhite,
+                    //     activeTextStyle: TextStyle(
+                    //       color: Colors.white,
+                    //       fontSize: 9.sp,
+                    //       fontWeight: FontWeight.w600,
+                    //       fontFamily: kFontFamily,
+                    //     ),
+                    //     inactiveTextStyle: TextStyle(
+                    //       fontSize: 9.sp,
+                    //       fontWeight: FontWeight.w600,
+                    //       fontFamily: kFontFamily,
+                    //       color: Colors.black,
+                    //     ),
+                    //     texts: [
+                    //       S.current.sp_tab_course,
+                    //       S.current.teacher_about,
+                    //     ]),
+                    ),
                 selectedIndex == 0
                     ? _buildCoursesList(body.courses)
                     : _buildAboutList(body.profile)
@@ -320,7 +335,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
 
   Widget _buildCoursesList(List<InstructorCourse>? courses) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding:
@@ -331,8 +346,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           ),
         ),
         _buildAllCourseList(courses),
-        buildmostViewedTitle(),
-        _buildCriteriaList(courses)
+        if (courses?.isNotEmpty == true) buildmostViewedTitle(),
+        if (courses?.isNotEmpty == true) _buildCriteriaList(courses)
       ],
     );
   }
@@ -380,7 +395,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               SizedBox(width: 4.w),
               Expanded(
                 child: Text(
-                  "Worked as ${profile.occupation}",
+                  "Worked as ${profile.occupation ?? '(Unknown)'}",
                   style: TextStyle(
                       color: AppColors.black,
                       fontSize: 4.w,
@@ -397,7 +412,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               SizedBox(width: 4.w),
               Expanded(
                 child: Text(
-                  "Lives in ${profile.city},${profile.state}",
+                  "Lives in ${profile.city ?? '(Unknown)'},${profile.state ?? ''}",
                   style: TextStyle(
                       color: AppColors.black,
                       fontSize: 4.w,
@@ -431,7 +446,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               SizedBox(width: 4.w),
               Expanded(
                 child: Text(
-                  "Knows ${profile.language}",
+                  "Knows ${profile.language ?? '(Unknown)'}",
                   style: TextStyle(
                       color: AppColors.black,
                       fontSize: 4.w,
@@ -470,15 +485,18 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                   return _buildTestimonialList(data?.categories);
                 },
                 error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
-                loading: () => ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  physics: const NeverScrollableScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(left: 2.w),
-                  itemBuilder: (context, index) {
-                    return CustomizableShimmerTile(height: 22.h, width: 40.w);
-                  },
+                loading: () => SizedBox(
+                  height: 22.h,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 3,
+                    physics: const NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.only(left: 2.w),
+                    itemBuilder: (context, index) {
+                      return CustomizableShimmerTile(height: 22.h, width: 40.w);
+                    },
+                  ),
                 ),
               );
         }),
@@ -606,7 +624,7 @@ Widget buildAllCoursesShimmer() {
 
 Widget _buildAllCourseList(List<InstructorCourse>? courses) {
   if (courses == null || courses.isEmpty) {
-    return const SizedBox.shrink();
+    return buildEmptyPlaceHolder('No Courses');
   }
   return SizedBox(
     height: 28.h,

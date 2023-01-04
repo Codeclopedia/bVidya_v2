@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
+import '/ui/dialog/basic_dialog.dart';
+import '/ui/screen/blearn/components/common.dart';
+import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
-import '/core/constants/data.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
@@ -11,14 +17,10 @@ final groupMuteProvider = StateProvider.autoDispose<bool>(
 );
 
 class GroupInfoScreen extends StatelessWidget {
-  final GroupConversationModel currentGroup;
-  final int contactId;
-
+  final GroupConversationModel group;
   static final imageSize = 28.w;
-  const GroupInfoScreen({Key? key, required GroupConversationModel group, int? userId})
-      : currentGroup = group,
-        contactId = userId ?? 1,
-        super(key: key);
+
+  const GroupInfoScreen({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -33,29 +35,57 @@ class GroupInfoScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 5.w, right: 5.w, bottom: 3.h),
+    return Material(
+      color: Colors.transparent,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 5.h),
+            SizedBox(height: 3.h),
             _buildMuteSettings(),
-            SizedBox(height: 3.h),
+            // SizedBox(height: 3.h),
             _mediaSection(),
-            SizedBox(height: 3.h),
+            // SizedBox(height: 3.h),
             _buildGroups(),
-            SizedBox(height: 5.h),
+            SizedBox(height: 4.h),
+            _buildButton(Icons.delete_outline_rounded, S.current.grp_btx_clear,
+                () {
+              showBasicDialog(
+                  context, S.current.grp_btx_clear, 'Are you sure?', 'Yes',
+                  () async {
+                await group.conversation?.deleteAllMessages();
+              });
+            }),
+            // SizedBox(height: 1.h),
+            _buildButton(Icons.exit_to_app, S.current.grp_btx_exit, () {
+              showBasicDialog(
+                  context, S.current.grp_btx_exit, 'Are you sure?', 'Yes',
+                  () async {
+                await ChatClient.getInstance.groupManager
+                    .leaveGroup(group.groupInfo.groupId);
+              });
+            }),
+            // SizedBox(height: 1.h),
+            _buildButton(Icons.block, S.current.pr_btx_block, () {
+              showBasicDialog(
+                  context, S.current.pr_btx_block, 'Are you sure?', 'Yes',
+                  () async {
+                await ChatClient.getInstance.groupManager
+                    .blockGroup(group.groupInfo.groupId);
+              });
+            }),
+            // SizedBox(height: 1.h),
             _buildButton(
-                Icons.delete_outline_rounded, S.current.grp_btx_clear, () {}),
-            SizedBox(height: 1.h),
-            _buildButton(Icons.exit_to_app, S.current.grp_btx_exit, () {}),
-            SizedBox(height: 1.h),
-            _buildButton(Icons.block, S.current.pr_btx_block, () {}),
-            SizedBox(height: 1.h),
-            _buildButton(Icons.thumb_down_off_alt_outlined,
-                S.current.pr_btx_report, () {}),
-            SizedBox(height: 1.h),
+                Icons.thumb_down_off_alt_outlined, S.current.grp_btx_report,
+                () {
+              //     showBasicDialog(
+              //     context, S.current.pr_btx_report, 'Are you sure?', 'Yes',
+              //     () async {
+              //   await ChatClient.getInstance.groupManager
+              //       .reportGroup(group.groupInfo.groupId);
+              // });
+            }),
+            // SizedBox(height: 1.h),
             SizedBox(height: 4.h),
           ],
         ),
@@ -67,27 +97,59 @@ class GroupInfoScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          S.current.grp_caption_participation,
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            fontSize: 11.sp,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+          child: Text(
+            S.current.grp_caption_participation,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 11.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _addParticipationRow(context);
-            } else {
-              return _contactRow(contacts[index - 1]);
-            }
-          },
-          itemCount: 3 + 1,
-        ),
+        Consumer(builder: (context, ref, child) {
+          return ref.watch(groupMembersInfo(group.groupInfo.groupId)).when(
+              data: (grpInfo) {
+                if (grpInfo == null) {
+                  return buildEmptyPlaceHolder('No Member loaded');
+                }
+                final data = grpInfo.members;
+                final grp = grpInfo.group;
+                bool canAddMember =
+                    (grp.adminList ?? []).contains(grpInfo.userId) ||
+                        (grp.owner ?? '') != grpInfo.userId;
+
+                print(
+                    'Group Owner ${grp.owner} =  ${grp.adminList}  $canAddMember ${grpInfo.userId}');
+
+                // (grp.permissionType == ChatGroupPermissionType.Owner ||
+                //     grp.permissionType == ChatGroupPermissionType.Admin);
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  // separatorBuilder: (context, index) => const Divider(),
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    if (canAddMember) {
+                      if (index == 0) {
+                        return _addParticipationRow(context);
+                      } else {
+                        return _contactRow(
+                            data[index - 1], true, grpInfo.userId);
+                      }
+                    } else {
+                      return _contactRow(data[index], false, grpInfo.userId);
+                    }
+                  },
+                  itemCount: data.length + (canAddMember ? 1 : 0),
+                );
+              },
+              error: (error, stackTrace) => buildEmptyPlaceHolder(''),
+              loading: () => buildLoading);
+        }),
       ],
     );
   }
@@ -98,7 +160,7 @@ class GroupInfoScreen extends StatelessWidget {
         await Navigator.pushNamed(context, RouteList.newGroupContacts);
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 1.h),
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
         child: Row(
           children: [
             CircleAvatar(
@@ -126,118 +188,168 @@ class GroupInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(ContactModel contact) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 1.h),
-      child: Row(
-        children: [
-          getCicleAvatar(contact.name, contact.image, radius: 6.w),
-          SizedBox(width: 3.w),
-          Expanded(
-            child: Text(
-              contact.name,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: AppColors.contactNameTextColor,
-                fontSize: 11.sp,
+  Widget _contactRow(Contacts contact, bool hasPermission, String userId) {
+    return InkWell(
+      onLongPress: () {},
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 1.h),
+        padding: EdgeInsets.symmetric(horizontal: 4.w),
+        child: Row(
+          children: [
+            getCicleAvatar(contact.name, contact.profileImage, radius: 6.w),
+            SizedBox(width: 3.w),
+            Expanded(
+              child: Text(
+                contact.name,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: AppColors.contactNameTextColor,
+                  fontSize: 11.sp,
+                ),
               ),
             ),
-          ),
-          if (contact.name.contains('Anil'))
-            const Icon(
-              Icons.person_outline,
-              color: AppColors.primaryColor,
-            ),
-          if (contact.name.contains('Anil'))
-            Text(
-              'Admin',
-              style: TextStyle(
-                fontFamily: kFontFamily,
+            if (hasPermission)
+              const Icon(
+                Icons.person_outline,
                 color: AppColors.primaryColor,
-                fontSize: 8.sp,
               ),
-            ),
-        ],
+            if (hasPermission)
+              Text(
+                'Admin',
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: AppColors.primaryColor,
+                  fontSize: 8.sp,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildButton(IconData icon, String text, Function() onTap) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        padding: EdgeInsets.all(1.5.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2.w),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 0.5.h, horizontal: 6.w),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.all(1.5.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2.w),
+          ),
+          backgroundColor: const Color(0xFFF5F5F5),
         ),
-        backgroundColor: const Color(0xFFF5F5F5),
-      ),
-      onPressed: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Icon(icon, color: const Color(0xFFB70000)),
-          SizedBox(width: 4.w),
-          Text(
-            text,
-            style: TextStyle(
-              color: const Color(0xFFB70000),
-              fontSize: 12.sp,
-              fontFamily: kFontFamily,
-            ),
-          )
-        ],
+        onPressed: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Icon(icon, color: const Color(0xFFB70000)),
+            SizedBox(width: 4.w),
+            Text(
+              text,
+              style: TextStyle(
+                color: const Color(0xFFB70000),
+                fontSize: 12.sp,
+                fontFamily: kFontFamily,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget _mediaSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer(builder: (context, ref, child) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+        child: Column(
           children: [
-            Text(
-              S.current.pr_media_shared,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 11.sp,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextButton(
-              onPressed: (() {}),
-              child: Text(
-                S.current.pr_btx_all,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  fontSize: 8.sp,
-                  color: AppColors.primaryColor,
-                  fontWeight: FontWeight.w600,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.current.pr_media_shared,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 11.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+                ref.watch(groupMediaProvier(group.groupInfo.groupId)).when(
+                      data: (items) {
+                        return Visibility(
+                          visible: items.isNotEmpty,
+                          child: TextButton(
+                            onPressed: (() {}),
+                            child: Text(
+                              S.current.pr_btx_all,
+                              style: TextStyle(
+                                fontFamily: kFontFamily,
+                                fontSize: 8.sp,
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (error, stackTrace) => const SizedBox.shrink(),
+                    ),
+              ],
             ),
+            // Consumer(
+            //   builder: (context, ref, child) {
+            // return
+            ref.watch(groupMediaProvier(group.groupInfo.groupId)).when(
+                  data: (items) {
+                    if (items.isEmpty) {
+                      return SizedBox(
+                          height: 12.h,
+                          child: buildEmptyPlaceHolder('No media shared'));
+                    }
+                    return ListView.separated(
+                      separatorBuilder: (context, index) {
+                        return SizedBox(width: 4.w);
+                      },
+                      itemCount: items.length > 3 ? 3 : items.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return _rowFileImage(
+                            image: item.filePath,
+                            counter: items.length - 3,
+                            last: index == 2);
+                      },
+                    );
+                  },
+                  error: (error, stackTrace) =>
+                      buildEmptyPlaceHolder('Error in loading media'),
+                  loading: () => buildLoading,
+                ),
+            // Row(
+            //   mainAxisSize: MainAxisSize.max,
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
+            //         last: true,
+            //         counter: 4),
+            //   ],
+            // )
           ],
         ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
-                last: true,
-                counter: 4),
-          ],
-        )
-      ],
-    );
+      );
+    });
   }
 
   Widget _rowImage({String? image, bool last = false, int counter = 0}) {
@@ -283,6 +395,37 @@ class GroupInfoScreen extends StatelessWidget {
           );
   }
 
+  Widget _rowFileImage({File? image, bool last = false, int counter = 0}) {
+    return image == null
+        ? SizedBox(width: imageSize)
+        : SizedBox(
+            height: imageSize,
+            width: imageSize,
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(4.w)),
+              child: Stack(
+                children: [
+                  Image(image: getImageProviderFile(image.absolute.path)),
+                  if (last && counter > 0)
+                    Container(
+                      color: Colors.black38,
+                      child: Center(
+                        child: Text(
+                          '$counter+',
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.white,
+                            fontSize: 15.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+  }
+
   Widget _buildMuteSettings() {
     return Consumer(
       builder: (context, ref, child) {
@@ -291,22 +434,25 @@ class GroupInfoScreen extends StatelessWidget {
           onTap: () {
             ref.read(groupMuteProvider.notifier).state = !mute;
           },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                S.current.pr_mute_notification,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  fontSize: 11.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.current.pr_mute_notification,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 11.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              mySwitch(mute, (value) {
-                ref.read(groupMuteProvider.notifier).state = value;
-              })
-            ],
+                mySwitch(mute, (value) {
+                  ref.read(groupMuteProvider.notifier).state = value;
+                })
+              ],
+            ),
           ),
         );
       },
@@ -360,13 +506,13 @@ class GroupInfoScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  getRectFAvatar(currentGroup.groupInfo.name??'', currentGroup.image,
+                  getRectFAvatar(group.groupInfo.name ?? '', group.image,
                       size: 20.w),
                   SizedBox(
                     height: 0.7.h,
                   ),
                   Text(
-                    currentGroup.groupInfo.name??'',
+                    group.groupInfo.name ?? '',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 13.sp,

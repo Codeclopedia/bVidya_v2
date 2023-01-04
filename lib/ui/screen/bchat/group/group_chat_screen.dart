@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/bchat_group_manager.dart';
+import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
@@ -22,7 +22,7 @@ class GroupChatScreen extends HookConsumerWidget {
   final GroupConversationModel model;
   GroupChatScreen({Key? key, required this.model}) : super(key: key);
 
-  late final String _myUserId;
+  String _myUserId = '';
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
@@ -43,7 +43,7 @@ class GroupChatScreen extends HookConsumerWidget {
       // _otherUserId = model.conversation?.id ?? (_myUserId == '24' ? '1' : '24');
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
-      // BchatGroupManager.loadGroupMemebers(model.groupInfo);
+      _loadMembers(ref);
       _preLoadChat(ref);
 
       return disposeAll;
@@ -75,7 +75,16 @@ class GroupChatScreen extends HookConsumerWidget {
         phone: user.phone,
       );
       _myUserId = _me.userId.toString();
+      // _memberList =
+
     }
+  }
+
+  _loadMembers(WidgetRef ref) async {
+    // _memberList.clear();
+    // final list =
+    //     await BchatGroupManager.loadGroupMemebers(model.groupInfo, ref);
+    // _memberList.addAll(list);
   }
 
   _preLoadChat(WidgetRef ref) async {
@@ -542,7 +551,8 @@ class GroupChatScreen extends HookConsumerWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(context, RouteList.groupInfo);
+                Navigator.pushNamed(context, RouteList.groupInfo,
+                    arguments: model);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -559,7 +569,9 @@ class GroupChatScreen extends HookConsumerWidget {
                   ),
                   SizedBox(height: 0.3.h),
                   Text(
-                    '${model.groupInfo.memberCount} Members',
+                    S.current.grp_chat_members(
+                        model.groupInfo.memberCount.toString()),
+                    // '${model.groupInfo.memberCount} Members',
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       color: AppColors.yellowAccent,
@@ -609,7 +621,8 @@ class GroupChatScreen extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Replying to ${replyOf.fromName}',
+                      S.current.chat_replying(replyOf.fromName),
+                      // 'Replying to ${replyOf.fromName}',
                       style: textStyleWhite,
                     ),
                     InkWell(

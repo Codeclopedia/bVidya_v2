@@ -1,16 +1,19 @@
+// import 'package:bvidya/ui/widget/webView.dart';
+
+import '/core/helpers/blive_helper.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
-// import '../../widget/user_top_bar.dart';
 import '../../widgets.dart';
 import 'components/common.dart';
 import 'components/complemetry_course.dart';
 import 'components/course_list_row.dart';
 import 'components/course_row.dart';
 import 'components/instructor_row.dart';
+import 'components/webinar_detail_tile.dart';
 
 final recommenedSelectedProvider = StateProvider.autoDispose<CourseType>(
   (_) => CourseType.trending,
@@ -31,7 +34,7 @@ class BLearnHomeScreen extends StatelessWidget {
             return ref.watch(bLearnHomeProvider).when(
                   data: (data) {
                     if (data != null) {
-                      return _buildContent(context, data);
+                      return _buildContent(context, data, ref);
                     } else {
                       return buildEmptyPlaceHolder('No Data');
                     }
@@ -45,7 +48,7 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, HomeBody body) {
+  Widget _buildContent(BuildContext context, HomeBody body, WidgetRef ref) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,12 +61,12 @@ class BLearnHomeScreen extends StatelessWidget {
           _buildCriteriaCaption(),
           _buildCriteriaList(body.popularCourses),
           _buildWebinarTitle(),
-          _buildWebinarContent(),
+          _buildWebinarContent(body.liveClasses, ref),
           _buildLearnCaption(),
           _buildLearnList(body.popularInstructors),
           _buildComplementary(),
           _buildComplementaryList(),
-          _buildEnroll(),
+          _buildEnroll(context),
           _buildRecentCaption(),
           _buildRecentList(body.featuredCourses),
           _buildTestimonialCaption(),
@@ -88,68 +91,28 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWebinarContent() {
+  Widget _buildWebinarContent(
+      List<LMSLiveClass>? broadcastData, WidgetRef ref) {
+    if (broadcastData == null) {
+      return SizedBox.shrink();
+    }
     return Padding(
         padding: EdgeInsets.symmetric(vertical: 1.h),
         child: SizedBox(
-          height: 20.h,
+          height: 58.w,
           child: ListView.builder(
-            itemCount: 30,
+            itemCount: broadcastData.length,
             shrinkWrap: true,
-            padding: EdgeInsets.only(left: 4.w),
+            padding: EdgeInsets.only(left: 4.w, right: 10.w),
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                child: Container(
-                  width: 45.w,
-                  padding: EdgeInsets.symmetric(horizontal: 2.w),
-                  decoration: BoxDecoration(
-                      color: AppColors.cardBackground,
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          height: 13.h,
-                          width: 40.w,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: getImageProviderFile(
-                                      "https://www.cvent.com/sites/default/files/image/2022-02/webinars_news_0.jpg"),
-                                  fit: BoxFit.cover)),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 1.h,
-                      ),
-                      Text(
-                        "One Shot Revision Batch:",
-                        style: TextStyle(fontSize: 10.sp),
-                      ),
-                      SizedBox(
-                        height: 0.5.h,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "One Shot Revision Batch:",
-                            style: TextStyle(fontSize: 5.sp),
-                          ),
-                          Text("Starts in: 00:03:00",
-                              style: TextStyle(
-                                  fontSize: 5.sp,
-                                  color: AppColors.primaryColor))
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              return GestureDetector(
+                  onTap: () {
+                    joinBroadcast(
+                        context, ref, broadcastData[index].streamId ?? '');
+                  },
+                  child:
+                      WebinarDetailTile(broadcastData: broadcastData[index]));
             },
           ),
         ));
@@ -466,15 +429,27 @@ class BLearnHomeScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildEnroll() {
-    return Container(
-      height: 26.h,
-      margin: EdgeInsets.only(top: 2.h),
-      decoration: const BoxDecoration(
-        // borderRadius: BorderRadius.all(Radius.circular(3.w)),
-        image: DecorationImage(
-          image: AssetImage('assets/images/Become-instructor.png'),
-          fit: BoxFit.fill,
+  Widget _buildEnroll(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        Navigator.pushNamed(context, RouteList.webview, arguments: {
+          'url': "https://www.app.bvidya.com/",
+        });
+        // Navigator.push(context, MaterialPageRoute(
+        //   builder: (context) {
+        //     return WebView(url: "https://www.bvidya.com/");
+        //   },
+        // ));
+      },
+      child: Container(
+        height: 26.h,
+        margin: EdgeInsets.only(top: 2.h),
+        decoration: const BoxDecoration(
+          // borderRadius: BorderRadius.all(Radius.circular(3.w)),
+          image: DecorationImage(
+            image: AssetImage('assets/images/Become-instructor.png'),
+            fit: BoxFit.fill,
+          ),
         ),
       ),
     );

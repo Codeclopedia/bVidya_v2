@@ -1,3 +1,4 @@
+import '../../../widget/sliding_tab.dart';
 import '../base_settings_noscroll.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
@@ -136,34 +137,41 @@ class CoursesTeachersUi extends ConsumerWidget {
 
   Widget _buildTab(WidgetRef ref, int selectedIndex) {
     return Center(
-      child: SlideTab(
-          initialIndex: selectedIndex,
-          containerWidth: 80.w,
-          onSelect: (index) {
-            ref.read(selectedTabTeacherCourseProvider.notifier).state = index;
-          },
-          containerHeight: 6.h,
-          sliderColor: AppColors.primaryColor,
-          containerBorderRadius: 2.5.w,
-          sliderBorderRadius: 2.6.w,
-          containerColor: AppColors.cardWhite,
-          activeTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w500,
-            fontFamily: kFontFamily,
-          ),
-          inactiveTextStyle: TextStyle(
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w400,
-            fontFamily: kFontFamily,
-            color: Colors.black,
-          ),
-          texts: [
-            S.current.course_header,
-            S.current.teacher_about,
-          ]),
-    );
+        child: SlidingTab(
+            label1: S.current.course_header,
+            label2: S.current.teacher_about,
+            selectedIndex: selectedIndex,
+            callback: (index) {
+              ref.read(selectedTabTeacherCourseProvider.notifier).state = index;
+            })
+        // child: SlideTab(
+        //     initialIndex: selectedIndex,
+        //     containerWidth: 80.w,
+        //     onSelect: (index) {
+        //       ref.read(selectedTabTeacherCourseProvider.notifier).state = index;
+        //     },
+        //     containerHeight: 6.h,
+        //     sliderColor: AppColors.primaryColor,
+        //     containerBorderRadius: 2.5.w,
+        //     sliderBorderRadius: 2.6.w,
+        //     containerColor: AppColors.cardWhite,
+        //     activeTextStyle: TextStyle(
+        //       color: Colors.white,
+        //       fontSize: 9.sp,
+        //       fontWeight: FontWeight.w500,
+        //       fontFamily: kFontFamily,
+        //     ),
+        //     inactiveTextStyle: TextStyle(
+        //       fontSize: 9.sp,
+        //       fontWeight: FontWeight.w400,
+        //       fontFamily: kFontFamily,
+        //       color: Colors.black,
+        //     ),
+        //     texts: [
+        //       S.current.course_header,
+        //       S.current.teacher_about,
+        //     ]),
+        );
   }
   // Widget _buildTabs(Function(bool) onclick) {
   //   return Container(

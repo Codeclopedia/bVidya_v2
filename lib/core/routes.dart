@@ -1,3 +1,5 @@
+import 'package:bvidya/ui/screen/profile/settings/webview_screen.dart';
+
 import '/data/models/models.dart';
 import '/ui/widget/base_drawer_page.dart';
 import 'constants.dart';
@@ -355,6 +357,17 @@ class Routes {
         // } else {
         //   screen = _parameterMissing();
         // }
+        break;
+
+      case RouteList.webview:
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          String url = args['url'];
+          String title = args['title'] ?? 'bVidya';
+          screen = WebViewScreen(url: url, title: title);
+        } else {
+          screen = _parameterMissing();
+        }
         break;
 
       default:

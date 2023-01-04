@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/ui/screen/blearn/components/common.dart';
 import '/core/helpers/bchat_group_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
@@ -10,11 +11,15 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
 
-class GroupsScreen extends StatelessWidget {
+class GroupsScreen extends HookConsumerWidget {
   const GroupsScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      // loadGroupConversations(ref);
+      return () {};
+    }, const []);
     return Scaffold(
       body: ColouredBoxBar(
           topBar: _buildTopBar(context),
@@ -25,35 +30,45 @@ class GroupsScreen extends StatelessWidget {
               // SizedBox(height: 2.h),
               _buttons(context),
               Expanded(
-                  child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final conversationList =
-                        ref.watch(groupChatConversationListProvider);
-                    print('group conversation List:${conversationList.length}');
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                    child: ref.watch(groupListProviderA).when(
+                          data: (data) {
+                            return _buildList(data, ref);
+                          },
+                          error: (error, stackTrace) =>
+                              buildEmptyPlaceHolder(''),
+                          loading: () => buildLoading,
+                        )
 
-                    return ListView.separated(
-                        itemBuilder: (context, index) => GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RouteList.groupInfo,
-                                    arguments: conversationList[index]);
-                              },
-                              child: _buildConversationItem(
-                                  context, conversationList[index], ref),
-                            ),
-                        separatorBuilder: (context, index) => Divider(
-                              color: Colors.grey.shade300,
-                              height: 1,
-                            ),
-                        itemCount: conversationList.length);
-                  },
-                ),
-              ))
+                    // final conversationList =
+                    //     ref.watch(groupChatConversationListProvider);
+                    // print('group conversation List:${conversationList.length}');
+
+                    ),
+              )
             ],
           )),
     );
+  }
+
+  Widget _buildList(
+      List<GroupConversationModel> conversationList, WidgetRef ref) {
+    return ListView.separated(
+        itemBuilder: (context, index) => GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RouteList.groupInfo,
+                    arguments: conversationList[index]);
+              },
+              child:
+                  _buildConversationItem(context, conversationList[index], ref),
+            ),
+        separatorBuilder: (context, index) => Divider(
+              color: Colors.grey.shade300,
+              height: 1,
+            ),
+        itemCount: conversationList.length);
   }
 
   Widget _buildConversationItem(
@@ -109,8 +124,7 @@ class GroupsScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          getCicleAvatar(
-              model.groupInfo.name ?? '', model.groupInfo.extension ?? ''),
+          getCicleAvatar(model.groupInfo.name ?? '', model.image),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(

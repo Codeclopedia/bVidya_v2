@@ -53,11 +53,43 @@ class BChatApiService {
       String token, String userIds) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
+      print('contactsByIds ${userIds}');
       final data = {'user_ids': userIds};
       final response =
           await _dio.post('$baseUrlApi${ApiList.contactsByIds}', data: data);
       print('contactsByIds ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
+        return ContactListResponse.fromJson(response.data);
+      } else {
+        return ContactListResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return ContactListResponse(status: 'error', message: '$e');
+    }
+  }
+
+  Future<ContactListResponse> getGroupUsers(
+      String token,
+      List<String> membersIds,
+      String ownerId,
+      List<String> adminIds,
+      String groupId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      final data = {
+        'user_ids': membersIds.join(','),
+        'owner': ownerId,
+        'admin': adminIds.join(','),
+        'group_id': groupId,
+      };
+      final response = await _dio
+          .post('$baseUrlApi${ApiList.groupContactsByIds}', data: data);
+      print('groups ${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        // return ContactListResponse(
+        //     status: 'error', message: '${response.statusCode}- Data');
         return ContactListResponse.fromJson(response.data);
       } else {
         return ContactListResponse(

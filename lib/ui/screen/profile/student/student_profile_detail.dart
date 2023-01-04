@@ -9,7 +9,7 @@ import '../../../../generated/l10n.dart';
 import '../base_settings.dart';
 
 class StudentProfileDetail extends StatelessWidget {
-  StudentProfileDetail({super.key});
+  const StudentProfileDetail({super.key});
 
   //texteditingController
   // final nameTextController = useTextEditingController(text: '');
@@ -89,9 +89,7 @@ class StudentProfileDetail extends StatelessWidget {
                 hintText: S.current.prof_edit_address,
               ),
             ),
-            SizedBox(
-              height: 4.h,
-            ),
+            SizedBox(height: 4.h),
             Consumer(
               builder: (context, ref, child) {
                 return SizedBox(

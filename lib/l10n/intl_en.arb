@@ -103,6 +103,7 @@
 
     "grp_btx_clear":"Clear Chat",
     "grp_btx_exit":"Exit Group",
+    "grp_btx_report":"Report Group",
 
     "atc_content":"Share Content",
     "atc_camera":"Camera",
@@ -280,6 +281,20 @@
     "t_schedule_caption":"Upcoming classes",
     "t_schedule_no_class":"No Upcoming class",
 
+    "groups_create_title":"New Group",
+    "groups_create_subject":"Add Subject",
+    "groups_create_caption":"Group Title",
+    "groups_create_hint_name":"Enter group name",
+    "group_empty_no_contacts":"No Contacts",
+    "group_error_empty":"Group Name can't be emply",
+    "group_error_invalid":"Group Name very short",
+    "group_error_creating":"Error in creating group",
+
+    "grp_chat_members":"{count} Memebers",
+
+    "chat_replying":"Replying to {name}",
+
+
   "Account": "Account",
   "settingsNoti": "Notifications",
   "settingShare": "Share bVidya app",
@@ -361,6 +376,7 @@
   "teacher_sub": "Chemistry Educator",
   "teacher_prep": "K12 & NEET",
   "teacher_exp": "7 Years of Experience",
+  "teacher_exp_value": "{year} Years of Experience",
   "teacher_follow": "Follow",
   "teacher_followed": "Followed",
   "teacher_about": "About",
