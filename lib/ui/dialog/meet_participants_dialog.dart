@@ -1,10 +1,10 @@
 import 'package:agora_rtm/agora_rtm.dart';
 
-import '../../controller/bmeet_providers.dart';
-import '../../controller/providers/bmeet_provider.dart';
-import '../../core/constants.dart';
-import '../../core/state.dart';
-import '../../core/ui_core.dart';
+import '/controller/bmeet_providers.dart';
+import '/controller/providers/bmeet_provider.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
 
 class MeetParticipantsDialog extends StatelessWidget {
   final bool isHost;

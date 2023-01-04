@@ -4,7 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
-import '../../../core/helpers/bchat_handler.dart';
+import '/core/helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';

@@ -1,6 +1,6 @@
-import '../core/helpers/duration.dart';
-import '../core/state.dart';
-import '../core/utils/date_utils.dart';
+import '/core/helpers/duration.dart';
+import '/core/state.dart';
+import '/core/utils/date_utils.dart';
 import '/data/models/models.dart';
 import '/data/repository/bmeet_repository.dart';
 import '/data/services/bmeet_api_services.dart';

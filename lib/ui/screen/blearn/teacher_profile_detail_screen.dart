@@ -1,4 +1,4 @@
-import '../../../controller/profile_providers.dart';
+import '/controller/profile_providers.dart';
 import '/data/models/models.dart';
 import '/core/constants/route_list.dart';
 // import '/data/models/response/profile/instructor_profile_response.dart';
@@ -199,7 +199,9 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                     MaterialStateProperty.all<Color>(data
                                         ? AppColors.iconGreyColor
                                         : AppColors.primaryColor)),
-                            child: data ? Text(S.current.teacher_followed) : Text(S.current.teacher_follow));
+                            child: data
+                                ? Text(S.current.teacher_followed)
+                                : Text(S.current.teacher_follow));
                       },
                       error: (error, stackTrace) =>
                           buildEmptyPlaceHolder('error in loading data'),

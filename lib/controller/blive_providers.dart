@@ -1,5 +1,5 @@
-import '../core/helpers/duration.dart';
-import '../core/state.dart';
+import '/core/helpers/duration.dart';
+import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/blive_repository.dart';
 import '/data/services/blive_api_services.dart';

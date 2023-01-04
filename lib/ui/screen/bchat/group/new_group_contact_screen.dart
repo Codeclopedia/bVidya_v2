@@ -1,10 +1,10 @@
-// import 'package:bvidya/data/models/models.dart';
+// import '/data/models/models.dart';
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
 
-import '../../../../controller/providers/contacts_select_notifier.dart';
+import '/controller/providers/contacts_select_notifier.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
 import '../../blearn/components/common.dart';

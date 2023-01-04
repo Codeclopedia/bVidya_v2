@@ -1,8 +1,7 @@
-
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/data/models/response/bchat/contacts_response.dart';
-import 'package:bvidya/ui/screen/bchat/dash/models/reply_model.dart';
-import 'package:bvidya/ui/widgets.dart';
+import '/data/models/response/bchat/contacts_response.dart';
+import '/ui/screen/bchat/dash/models/reply_model.dart';
+import '/ui/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';

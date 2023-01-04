@@ -1,5 +1,5 @@
-import '../../../core/constants.dart';
-import '../../../data/models/response/auth/login_response.dart';
+import '/core/constants.dart';
+import '/data/models/response/auth/login_response.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 

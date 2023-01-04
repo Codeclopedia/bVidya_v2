@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 
-import '../core/state.dart';
+import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/profile_repository.dart';
 import '/data/services/profile_api_service.dart';

@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '../../../../core/helpers/video_helper.dart';
+import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';

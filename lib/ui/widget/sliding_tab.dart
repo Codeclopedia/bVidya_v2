@@ -1,9 +1,9 @@
-import 'package:bvidya/core/state.dart';
+import '/core/state.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 // import 'package:flutter_advanced_segment/flutter_advanced_segment.dart';
 
-import '../../core/constants/colors.dart';
-import '../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/ui_core.dart';
 // import '../screen/blearn/course_detail_screen.dart';
 import '../screen/profile/student/my_learning_screen.dart';
 

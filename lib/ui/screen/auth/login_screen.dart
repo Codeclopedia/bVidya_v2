@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/controller/bchat_providers.dart';
+import '/controller/bchat_providers.dart';
 import 'package:flutter/gestures.dart';
 
-import '../../../controller/providers/user_auth_provider.dart';
+import '/controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';

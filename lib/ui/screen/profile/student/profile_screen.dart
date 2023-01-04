@@ -1,4 +1,4 @@
-import 'package:bvidya/ui/dialog/basic_dialog.dart';
+import '/ui/dialog/basic_dialog.dart';
 
 import '/core/constants/colors.dart';
 import '/core/constants/route_list.dart';

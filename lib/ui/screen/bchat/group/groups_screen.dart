@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/bchat_group_manager.dart';
+import '/core/helpers/bchat_group_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 

@@ -1,15 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/data/services/fcm_api_service.dart';
+import '/data/services/fcm_api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart' as pr;
 
-import '../../controller/bchat_providers.dart';
-import '../../controller/providers/call_end_provider.dart';
-import '../../data/models/models.dart';
-import '../../data/services/bchat_api_service.dart';
-import '../../ui/base_back_screen.dart';
+import '/controller/bchat_providers.dart';
+import '/controller/providers/call_end_provider.dart';
+import '/data/models/models.dart';
+import '/data/services/bchat_api_service.dart';
+import '/ui/base_back_screen.dart';
 import '../constants/route_list.dart';
 import '../state.dart';
 import '../ui_core.dart';
@@ -46,20 +46,14 @@ Future makeAudioCall(
     Map<String, dynamic> map = {
       'name': contact.name,
       'image': contact.profileImage,
-      'fcm_token':contact.fcmToken,
+      'fcm_token': contact.fcmToken,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing
     };
     hideLoading(ref);
     if (contact.fcmToken?.isNotEmpty == true) {
-      FCMApiService.instance.sendCallPush(
-          contact.fcmToken ?? '',
-          user.fcmToken,
-          callBody,
-          user.id.toString(),
-          user.name,
-          user.image,
-          false);
+      FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
+          callBody, user.id.toString(), user.name, user.image, false);
     }
 
     Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
@@ -99,20 +93,14 @@ Future makeVideoCall(
     final CallBody callBody = response.body!;
     Map<String, dynamic> map = {
       'name': contact.name,
-      'fcm_token':contact.fcmToken,
+      'fcm_token': contact.fcmToken,
       'image': contact.profileImage,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing
     };
     if (contact.fcmToken?.isNotEmpty == true) {
-      FCMApiService.instance.sendCallPush(
-          contact.fcmToken ?? '',
-          user.fcmToken,
-          callBody,
-          user.id.toString(),
-          user.name,
-          user.image,
-          true);
+      FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
+          callBody, user.id.toString(), user.name, user.image, true);
     }
     hideLoading(ref);
     Navigator.pushNamed(context, RouteList.bChatVideoCall, arguments: map);
@@ -124,14 +112,14 @@ Future makeVideoCall(
   //     .sendChatPush(chat, toToken, fromUserId, senderName, type);
 }
 
-Future receiveCall(String authToken,String fcmToken, String callId, String image, bool hasVideo,
-    BuildContext context) async {
+Future receiveCall(String authToken, String fcmToken, String callId,
+    String image, bool hasVideo, BuildContext context) async {
   final response =
       await BChatApiService.instance.receiveCall(authToken, callId);
   if (response.status == 'successfull' && response.body != null) {
     final CallBody callBody = response.body!;
     Map<String, dynamic> map = {
-      'fcm_token':fcmToken,
+      'fcm_token': fcmToken,
       'name': callBody.callerName,
       'image': image,
       'call_info': callBody,

@@ -1,9 +1,9 @@
-import '../data/models/models.dart';
-import '../ui/widget/base_drawer_page.dart';
+import '/data/models/models.dart';
+import '/ui/widget/base_drawer_page.dart';
 import 'constants.dart';
 import 'helpers/call_helper.dart';
 import 'ui_core.dart';
-import '../ui/screens.dart';
+import '/ui/screens.dart';
 
 class Routes {
   static Route generateRoute(RouteSettings settings) {
@@ -313,7 +313,7 @@ class Routes {
         screen = const StudentProfileScreen();
         hasDrawer = true;
         break;
-        
+
       case RouteList.studentProfileDetail:
         screen = const StudentProfileScreen();
         break;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../../core/state.dart';
-import '../../../../core/theme/appstyle.dart';
-import '../../../../core/theme/inputstyle.dart';
-import '../../../../core/theme/textstyles.dart';
+import '/core/state.dart';
+import '/core/theme/appstyle.dart';
+import '/core/theme/inputstyle.dart';
+import '/core/theme/textstyles.dart';
 import '../../../../generated/l10n.dart';
 import '../base_settings.dart';
 

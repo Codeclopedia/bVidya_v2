@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/state.dart';
-// import 'package:bvidya/data/services/bchat_api_service.dart';
+// import '/core/helpers/bchat_contact_manager.dart';
+import '/core/state.dart';
+// import '/data/services/bchat_api_service.dart';
 
-import '../../data/models/conversation_model.dart';
+import '/data/models/conversation_model.dart';
 
 class BchatGroupManager {
   BchatGroupManager._();
@@ -69,13 +69,11 @@ class BchatGroupManager {
     return image ?? '';
   }
 
-  static void loadGroupMemebers(ChatGroup groupInfo,WidgetRef ref) async {
-    final groups =  groupInfo.memberList ?? [];
-    if(groups.isNotEmpty){
-        // BChatApiService.instance.getContactsByIds(token, userIds)
-      for(String id in groups){
-
-      }
+  static void loadGroupMemebers(ChatGroup groupInfo, WidgetRef ref) async {
+    final groups = groupInfo.memberList ?? [];
+    if (groups.isNotEmpty) {
+      // BChatApiService.instance.getContactsByIds(token, userIds)
+      for (String id in groups) {}
     }
   }
 }

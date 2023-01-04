@@ -1,5 +1,5 @@
-import '../../controller/providers/user_auth_provider.dart';
-import '../../core/constants/route_list.dart';
+import '/controller/providers/user_auth_provider.dart';
+import '/core/constants/route_list.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/response/auth/login_response.dart';

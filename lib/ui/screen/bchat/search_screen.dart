@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/helpers/bchat_handler.dart';
+import '/core/helpers/bchat_contact_manager.dart';
+import '/core/helpers/bchat_handler.dart';
 
-import '../../../controller/bchat_providers.dart';
-import '../../../data/models/models.dart';
+import '/controller/bchat_providers.dart';
+import '/data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../blearn/components/common.dart';
 import '/core/constants.dart';

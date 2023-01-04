@@ -3,10 +3,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
 
-import '../../../controller/bchat_providers.dart';
-import '../../../core/constants/route_list.dart';
-import '../../../core/state.dart';
-import '../../../data/models/models.dart';
+import '/controller/bchat_providers.dart';
+import '/core/constants/route_list.dart';
+import '/core/state.dart';
+import '/data/models/models.dart';
 import '../blearn/components/common.dart';
 import '/core/constants/colors.dart';
 // import '/core/constants/data.dart';

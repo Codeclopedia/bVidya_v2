@@ -1,7 +1,6 @@
-
 import 'package:shimmer/shimmer.dart';
 
-import '../../core/ui_core.dart';
+import '/core/ui_core.dart';
 
 class CustomizableShimmerTile extends StatelessWidget {
   final double height;

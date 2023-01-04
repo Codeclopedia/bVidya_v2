@@ -1,7 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../core/constants/colors.dart';
-import '../../core/ui_core.dart';
+import '/core/constants/colors.dart';
+import '/core/ui_core.dart';
 
 class ChatMessageBodyWidget extends StatelessWidget {
   final ChatMessage message;

@@ -1,4 +1,4 @@
-import '../core/state.dart';
+import '/core/state.dart';
 import '/data/repository/auth_repository.dart';
 import '/data/services/auth_api_service.dart';
 import 'providers/chat_reply_provider.dart';
