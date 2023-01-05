@@ -2230,6 +2230,16 @@ class S {
     );
   }
 
+  /// `Update`
+  String get btn_update {
+    return Intl.message(
+      'Update',
+      name: 'btn_update',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Meeting Scheduled`
   String get dg_title_meeting_scheduled {
     return Intl.message(
@@ -2375,6 +2385,16 @@ class S {
     return Intl.message(
       'New Group',
       name: 'groups_create_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Group`
+  String get groups_create_edit_title {
+    return Intl.message(
+      'Edit Group',
+      name: 'groups_create_edit_title',
       desc: '',
       args: [],
     );

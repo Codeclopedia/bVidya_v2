@@ -2,7 +2,7 @@ import '/core/state.dart';
 import '/data/models/models.dart';
 
 final selectedContactProvider =
-    StateNotifierProvider.autoDispose<GroupContactNotifier, List<Contacts>>(
+    StateNotifierProvider<GroupContactNotifier, List<Contacts>>(
         (ref) => GroupContactNotifier());
 
 class GroupContactNotifier extends StateNotifier<List<Contacts>> {
@@ -19,6 +19,10 @@ class GroupContactNotifier extends StateNotifier<List<Contacts>> {
 
   void addContact(Contacts c) {
     state = [...state, c];
+  }
+
+  void addContacts(List<Contacts> newItems) {
+    state = [...state, ...newItems];
   }
 
   void removeContact(Contacts c) {

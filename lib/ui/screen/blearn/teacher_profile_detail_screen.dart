@@ -333,6 +333,32 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildCriteriaList(List<InstructorCourse>? courses) {
+    if (courses == null || courses.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return ListView.builder(
+        // padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
+        padding: EdgeInsets.only(left: 6.w, right: 6.w),
+        itemCount: courses.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          Course course = Course.fromJson(courses[index].toJson()
+            ..addAll({
+              'instructor_name': instructor.name,
+              'instructor_image': instructor.image,
+            }));
+          return InkWell(
+            onTap: () => Navigator.pushNamed(
+                context, RouteList.bLearnCourseDetail,
+                arguments: course),
+            child: InstructorCourseListRow(course: courses[index]),
+          );
+        });
+  }
+
   Widget _buildCoursesList(List<InstructorCourse>? courses) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -373,6 +399,36 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAllCourseList(List<InstructorCourse>? courses) {
+    if (courses == null || courses.isEmpty) {
+      return buildEmptyPlaceHolder('No Courses');
+    }
+    return SizedBox(
+      height: 28.h,
+      child: ListView.builder(
+          itemCount: courses.length,
+          shrinkWrap: true,
+          padding: EdgeInsets.only(left: 6.w, right: 6.w),
+          // physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (BuildContext context, int index) {
+            Course course = Course.fromJson(courses[index].toJson()
+              ..addAll({
+                'instructor_name': instructor.name,
+                'instructor_image': instructor.image,
+              }));
+
+            // Course course = courses[index] as Course;
+            return InkWell(
+              onTap: () => Navigator.pushNamed(
+                  context, RouteList.bLearnCourseDetail,
+                  arguments: course),
+              child: InstructorProfileCourseRowItem(course: course),
+            );
+          }),
     );
   }
 
@@ -622,54 +678,8 @@ Widget buildAllCoursesShimmer() {
   );
 }
 
-Widget _buildAllCourseList(List<InstructorCourse>? courses) {
-  if (courses == null || courses.isEmpty) {
-    return buildEmptyPlaceHolder('No Courses');
-  }
-  return SizedBox(
-    height: 28.h,
-    child: ListView.builder(
-        itemCount: courses.length,
-        shrinkWrap: true,
-        padding: EdgeInsets.only(left: 6.w, right: 6.w),
-        // physics: const NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext context, int index) {
-          InstructorCourse course = courses[index];
-          return InkWell(
-            onTap: () => Navigator.pushNamed(
-                context, RouteList.bLearnCourseDetail,
-                arguments: course),
-            child: InstructorProfileCourseRowItem(course: course),
-          );
-        }),
-  );
-}
-
-Widget _buildCriteriaList(List<InstructorCourse>? courses) {
-  if (courses == null || courses.isEmpty) {
-    return const SizedBox.shrink();
-  }
-  return ListView.builder(
-      // padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
-      padding: EdgeInsets.only(left: 6.w, right: 6.w),
-      itemCount: courses.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        InstructorCourse course = courses[index];
-        return InkWell(
-          onTap: () => Navigator.pushNamed(
-              context, RouteList.bLearnCourseDetail,
-              arguments: course),
-          child: InstructorCourseListRow(course: course),
-        );
-      });
-}
-
 class InstructorProfileCourseRowItem extends StatelessWidget {
-  final InstructorCourse course;
+  final Course course;
   // final Course course;
   const InstructorProfileCourseRowItem({Key? key, required this.course})
       : super(key: key);

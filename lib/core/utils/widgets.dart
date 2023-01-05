@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:avatars/avatars.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -94,6 +95,33 @@ ImageProvider getImageProviderFile(String url) {
       File(url),
     );
   }
+}
+
+ImageProvider getImageProviderChatImage(ChatImageMessageBody body) {
+  if (body.thumbnailLocalPath?.isNotEmpty == true) {
+    return FileImage(
+      File(body.thumbnailLocalPath!),
+    );
+  }
+  if (body.localPath.isNotEmpty) {
+    return FileImage(
+      File(body.localPath),
+    );
+  }
+  if (body.thumbnailRemotePath?.isNotEmpty == true) {
+    return CachedNetworkImageProvider(body.thumbnailRemotePath!);
+  }
+  return CachedNetworkImageProvider(body.remotePath!);
+  // final lo
+  // if (url.startsWith('http')) {
+  //   return CachedNetworkImageProvider(url);
+  // } else if (url.startsWith('assets')) {
+  //   return AssetImage(url);
+  // } else {
+  //   return FileImage(
+  //     File(url),
+  //   );
+  // }
 }
 
 SvgPicture getSvgIcon(String name,

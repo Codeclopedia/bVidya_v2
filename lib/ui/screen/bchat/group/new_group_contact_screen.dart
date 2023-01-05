@@ -3,6 +3,7 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:collection/collection.dart';
 
 import '/controller/providers/contacts_select_notifier.dart';
 import '/controller/bchat_providers.dart';
@@ -14,7 +15,8 @@ import '/core/ui_core.dart';
 import '../../../widgets.dart';
 
 class NewGroupContactsScreen extends StatelessWidget {
-  const NewGroupContactsScreen({Key? key}) : super(key: key);
+  final bool edit;
+  const NewGroupContactsScreen({Key? key, this.edit = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,10 @@ class NewGroupContactsScreen extends StatelessWidget {
                       ElevatedButton(
                         style: elevatedButtonYellowStyle,
                         onPressed: () async {
+                          if (edit) {
+                            Navigator.pop(context, true);
+                            return;
+                          }
                           final added = await Navigator.pushNamed(
                               context, RouteList.createNewGroup);
                           if (added != null && added is ChatGroup) {
@@ -86,7 +92,11 @@ class NewGroupContactsScreen extends StatelessWidget {
                               _groupHeader(groupByValue),
                           itemBuilder: (context, Contacts element) =>
                               _contactRow(
-                                  element, selectedList.contains(element), ref),
+                                  element,
+                                  selectedList.firstWhereOrNull(
+                                          (e) => e.userId == element.userId) !=
+                                      null,
+                                  ref),
                           itemComparator: (item1, item2) =>
                               item1.name.compareTo(item2.name), // optional
                           useStickyGroupSeparators: false, // optional

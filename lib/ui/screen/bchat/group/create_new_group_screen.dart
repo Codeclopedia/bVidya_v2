@@ -2,6 +2,8 @@
 
 import 'dart:io';
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/ui/screens.dart';
 import '/controller/providers/contacts_select_notifier.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
@@ -10,7 +12,6 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/helpers/bchat_group_manager.dart';
 import '../../blearn/components/common.dart';
-import '../../../base_back_screen.dart';
 import '../../../dialog/image_picker_dialog.dart';
 import '../../../widgets.dart';
 // import 'new_group_contact_screen.dart';
@@ -18,27 +19,36 @@ import '../../../widgets.dart';
 final selectedGroupImageProvider =
     StateProvider.autoDispose<File?>((ref) => null);
 
+// ignore: must_be_immutable
 class CreateNewGroupScreen extends HookWidget {
-  CreateNewGroupScreen({Key? key}) : super(key: key);
-  late TextEditingController _controller;
+  ChatGroup? group;
+  CreateNewGroupScreen({Key? key, this.group}) : super(key: key);
+  TextEditingController? _controller;
 
   @override
   Widget build(BuildContext context) {
     useEffect(() {
-      _controller = TextEditingController();
-      return () {};
+      _controller = TextEditingController(text: group?.name ?? '');
+      return () {
+        _controller?.dispose();
+      };
     }, const []);
 
     return Scaffold(
       body: ColouredBoxBar(
         topSize: 25.h,
-        topBar: BAppBar(title: S.current.groups_create_title),
+        topBar: BAppBar(
+            title: group != null
+                ? S.current.groups_create_edit_title
+                : S.current.groups_create_title),
         body: _buildList(context),
       ),
     );
   }
 
   Widget _buildList(BuildContext context) {
+    String imageUrl =
+        group != null ? BchatGroupManager.getGroupImage(group!) : '';
     return Padding(
       padding: EdgeInsets.only(left: 6.w, right: 6.w, bottom: 2.h),
       child: Column(
@@ -63,10 +73,12 @@ class CreateNewGroupScreen extends HookWidget {
                 return ElevatedButton(
                   style: elevatedButtonYellowStyle,
                   onPressed: () async {
-                    String name = _controller.text;
+                    String name = _controller!.text;
                     createGroup(context, name, ref);
                   },
-                  child: Text(S.current.btn_create),
+                  child: Text(group != null
+                      ? S.current.btn_update
+                      : S.current.btn_create),
                 );
               })
             ],
@@ -98,8 +110,15 @@ class CreateNewGroupScreen extends HookWidget {
                               ),
                             ),
                             child: image == null
-                                ? const Icon(Icons.person)
-                                : _buildImage(image, () {
+                                ? (imageUrl.isNotEmpty
+                                    ? _buildImage(imageUrl, () {
+                                        ref
+                                            .read(selectedGroupImageProvider
+                                                .notifier)
+                                            .state = null;
+                                      })
+                                    : const Icon(Icons.person))
+                                : _buildImage(image.absolute.path, () {
                                     ref
                                         .read(
                                             selectedGroupImageProvider.notifier)
@@ -173,71 +192,121 @@ class CreateNewGroupScreen extends HookWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 1.h),
-          Expanded(
-            child: Consumer(
-              builder: (context, ref, child) {
-                final list = ref.watch(selectedContactProvider);
-                if (list.isEmpty) {
-                  return buildEmptyPlaceHolder(
-                      S.current.group_empty_no_contacts);
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: list.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return _contactRow(list[index]);
-                  },
-                );
-                //
-                // return ref.watch(myContactsList).when(
-                //       data: (list) {
-                //         if (list.isEmpty) {
-                //           return buildEmptyPlaceHolder('No Contacts');
-                //         }
-                //         return ListView.builder(
-                //           shrinkWrap: true,
-                //           itemCount: list.length,
-                //           physics: const NeverScrollableScrollPhysics(),
-                //           itemBuilder: (context, index) {
-                //             return _contactRow(list[index]);
-                //           },
-                //         );
-                //       },
-                //       error: (e, t) => buildEmptyPlaceHolder('No Contacts'),
-                //       loading: () => buildLoading,
-                //     );
-              },
-            ),
-            // child: GroupedListView(
-            //   elements: contacts,
-            //   groupBy: (element) => element.name[0],
-            //   // groupComparator: (item1, item2) => item1.compareTo(item2),
-            //   groupSeparatorBuilder: (String groupByValue) =>
-            //       _groupHeader(groupByValue),
-            //   itemBuilder: (context, ContactModel element) =>
-            //       _contactRow(element),
-            //   itemComparator: (item1, item2) =>
-            //       item1.name.compareTo(item2.name), // optional
-            //   useStickyGroupSeparators: false, // optional
-            //   floatingHeader: false, // optional
-            //   order: GroupedListOrder.ASC, // optional
-            // ),
-          ),
+          if (group == null) _buildParticipants(),
+          if (group != null) ..._editBuildParticipants(context)
+          // Row(
+          //   children: [
+          //     Text(
+          //       S.current.grp_caption_participation,
+          //       style: TextStyle(
+          //         fontFamily: kFontFamily,
+          //         color: Colors.black,
+          //         fontSize: 10.sp,
+          //         fontWeight: FontWeight.bold,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildImage(File image, Function() onTap) {
+  Widget _buildParticipants() {
+    return Expanded(
+      child: Consumer(
+        builder: (context, ref, child) {
+          final list = ref.watch(selectedContactProvider);
+          if (list.isEmpty) {
+            return buildEmptyPlaceHolder(S.current.group_empty_no_contacts);
+          }
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: list.length,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return _contactRow(list[index]);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  List<Widget> _editBuildParticipants(BuildContext context) {
+    return [
+      SizedBox(height: 1.h),
+      _addParticipationRow(context),
+      Expanded(
+        child: Consumer(
+          builder: (context, ref, child) {
+            final list = ref.watch(selectedContactProvider);
+            // final updateList = [];
+            // updateList.addAll(list);
+            // updateList.addAll(GroupInfoScreen.contacts);
+            if (list.isEmpty) {
+              return buildEmptyPlaceHolder(S.current.group_empty_no_contacts);
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: list.length,
+              // physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return _contactRemoveRow(list[index], ref);
+              },
+            );
+          },
+        ),
+      )
+    ];
+  }
+
+  Widget _addParticipationRow(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        await Navigator.pushNamed(
+            context,
+            group != null
+                ? RouteList.editGroupContacts
+                : RouteList.newGroupContacts);
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 7.w,
+              backgroundColor: AppColors.primaryColor,
+              child: const Icon(
+                Icons.person_add,
+                color: Colors.white,
+              ),
+            ),
+            // getCicleAvatar(contact.name, contact.image),
+            SizedBox(width: 3.w),
+            Text(
+              S.current.grp_txt_add_participant,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontWeight: FontWeight.w600,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(String image, Function() onTap) {
     return Stack(
       children: [
         CircleAvatar(
           radius: 4.h,
           // borderRadius: BorderRadius.all(Radius.circular(3.w)),
-          child: Image.file(
-            image,
+          child: Image(
+            image: getImageProviderFile(image),
             width: 8.h,
             height: 8.h,
             fit: BoxFit.cover,
@@ -267,8 +336,6 @@ class CreateNewGroupScreen extends HookWidget {
       EasyLoading.showError(S.current.group_error_invalid);
       return;
     }
-    final list = ref.read(selectedContactProvider);
-    final userIds = list.map((e) => e.userId.toString()).toList();
 
     final file = ref.read(selectedGroupImageProvider);
     final String url;
@@ -277,16 +344,30 @@ class CreateNewGroupScreen extends HookWidget {
     } else {
       url = '';
     }
-    // print('url : $url');
-    final group =
-        await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
+    final ChatGroup? groupCreated;
+    if (group != null) {
+      final list = ref.read(selectedContactProvider);
+      final userIds = list.map((e) => e.userId.toString()).toList();
+      final removedContact = GroupInfoScreen.contacts
+          .where((e) => !userIds.contains(e.userId.toString()))
+          .toList();
+
+      final removedUserIds =
+          removedContact.map((e) => e.userId.toString()).toList();
+
+      groupCreated = await BchatGroupManager.editGroup(
+          group!.groupId, name.trim(), '', userIds, removedUserIds, url);
+    } else {
+      final list = ref.read(selectedContactProvider);
+      final userIds = list.map((e) => e.userId.toString()).toList();
+      groupCreated =
+          await BchatGroupManager.createNewGroup(name.trim(), '', userIds, url);
+    }
 
     hideLoading(ref);
-
-    if (group != null) {
-      print('group : ${group.toJson()}');
-      // ref.read(groupl)
-      Navigator.pop(context, group);
+    if (groupCreated != null) {
+      // print('group : ${groupCreated.toJson()}');
+      Navigator.pop(context, groupCreated);
     } else {
       AppSnackbar.instance.error(context, S.current.group_error_creating);
       // EasyLoading.showError('Error in creating group');
@@ -320,14 +401,59 @@ class CreateNewGroupScreen extends HookWidget {
         children: [
           getCicleAvatar(contact.name, contact.profileImage),
           SizedBox(width: 3.w),
-          Text(
-            contact.name,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: AppColors.contactNameTextColor,
-              fontSize: 11.sp,
+          Expanded(
+            child: Text(
+              contact.name,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _contactRemoveRow(Contacts contact, WidgetRef ref) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 1.h),
+      child: Row(
+        children: [
+          getCicleAvatar(contact.name, contact.profileImage),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Text(
+              contact.name,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
+              ),
+            ),
+          ),
+          if (GroupInfoScreen.contacts.contains(contact))
+            ElevatedButton(
+              style: elevatedButtonEndStyle
+              // .copyWith(
+              //     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+              //         const EdgeInsets.all(0)))
+              ,
+              onPressed: () {
+                ref
+                    .read(selectedContactProvider.notifier)
+                    .removeContact(contact);
+              },
+              child: Text(
+                'Remove',
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: Colors.white,
+                  fontSize: 8.sp,
+                ),
+              ),
+            ),
         ],
       ),
     );

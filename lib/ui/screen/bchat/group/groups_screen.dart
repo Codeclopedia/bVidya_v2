@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../../../../controller/providers/contacts_select_notifier.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/core/helpers/bchat_group_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -243,8 +244,10 @@ class GroupsScreen extends HookConsumerWidget {
       return InkWell(
         splashColor: AppColors.primaryColor,
         onTap: () async {
+          ref.read(selectedContactProvider.notifier).clear();
           final result =
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
+
           if (result != null && result is ChatGroup) {
             ChatGroup group = result;
             // group.extension.

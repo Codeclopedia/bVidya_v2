@@ -23,6 +23,8 @@ class RouteList {
   static const String groups = '/groups';
   static const String newGroupContacts = '/new-group-contacts';
   static const String createNewGroup = '/create-new-group-contacts';
+  static const String editGroup = '/edit-group';
+  static const String editGroupContacts = '/edit-group-contacts';
   static const String groupInfo = '/group-info';
   static const String groupChatScreen = '/group-chat-screen';
   static const String bChatVideoCall = '/chat_video_call';

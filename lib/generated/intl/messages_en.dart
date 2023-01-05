@@ -252,6 +252,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "btn_end": MessageLookupByLibrary.simpleMessage("End"),
         "btn_ok": MessageLookupByLibrary.simpleMessage("OK"),
         "btn_remove": MessageLookupByLibrary.simpleMessage("Remove"),
+        "btn_update": MessageLookupByLibrary.simpleMessage("Update"),
         "btn_yes_logout":
             MessageLookupByLibrary.simpleMessage("Sure, want to logout"),
         "callDesc": MessageLookupByLibrary.simpleMessage(
@@ -349,6 +350,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Group Name very short"),
         "groups_create_caption":
             MessageLookupByLibrary.simpleMessage("Group Title"),
+        "groups_create_edit_title":
+            MessageLookupByLibrary.simpleMessage("Edit Group"),
         "groups_create_hint_name":
             MessageLookupByLibrary.simpleMessage("Enter group name"),
         "groups_create_subject":

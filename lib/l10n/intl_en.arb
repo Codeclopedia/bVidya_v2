@@ -260,6 +260,7 @@
     "btn_continue":"Continue",
     "btn_ok":"OK",
     "btn_create":"Create",
+    "btn_update":"Update",
     "dg_title_meeting_scheduled":"Meeting Scheduled",
     "dg_message_meeting_scheduled":"Meeting has been scheduled. You can see the details in the scheduled meeting list.",
 
@@ -282,6 +283,7 @@
     "t_schedule_no_class":"No Upcoming class",
 
     "groups_create_title":"New Group",
+    "groups_create_edit_title":"Edit Group",
     "groups_create_subject":"Add Subject",
     "groups_create_caption":"Group Title",
     "groups_create_hint_name":"Enter group name",

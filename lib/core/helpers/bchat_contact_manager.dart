@@ -171,4 +171,28 @@ class BChatContactManager {
       return false;
     }
   }
+
+  static Future<List<ChatMediaFile>> loadMediaFiles(String convId) async {
+    final List<ChatMediaFile> items = [];
+    try {
+      ChatConversation? conv =await
+          ChatClient.getInstance.chatManager.getConversation(convId);
+
+      final list = (await conv?.loadMessagesWithMsgType(type: MessageType.IMAGE))??[];
+      if (list.isNotEmpty) {
+        for (var f in list) {
+          final body = f.body as ChatImageMessageBody;
+          items.add(ChatMediaFile(f.msgId, body));
+        }
+      }
+    } catch (_) {}
+    return items;
+  }
+}
+
+class ChatMediaFile {
+  final String msgId;
+  final ChatImageMessageBody body;
+
+  ChatMediaFile(this.msgId, this.body);
 }

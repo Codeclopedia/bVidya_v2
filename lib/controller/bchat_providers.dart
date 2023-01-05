@@ -121,8 +121,8 @@ final myContactsList = FutureProvider<List<Contacts>>((ref) async {
 //   return contacts ?? [];
 // });
 
-final groupMembersInfo = FutureProvider.autoDispose
-    .family<GroupMeberInfo?, String>((ref, groupId) async {
+final groupMembersInfo =
+    FutureProvider.family<GroupMeberInfo?, String>((ref, groupId) async {
   try {
     final info = await ChatClient.getInstance.groupManager
         .fetchGroupInfoFromServer(groupId, fetchMembers: true);
@@ -131,10 +131,8 @@ final groupMembersInfo = FutureProvider.autoDispose
       membersIds.add(info.owner!);
     }
     String userIds = membersIds.join(',');
-    print('Users to load :$userIds  ${membersIds.length}');
     if (userIds.isNotEmpty) {
       final userId = (await getMeAsUser())!.id.toString();
-      // print('Users to load :$userIds  ${membersIds.length}');
       final contacts = await ref.read(bChatProvider).getContactsByIds(userIds);
       return GroupMeberInfo(contacts ?? [], info, userId);
     }
@@ -143,13 +141,6 @@ final groupMembersInfo = FutureProvider.autoDispose
   }
   return null;
 });
-
-class GroupMeberInfo {
-  final List<Contacts> members;
-  final ChatGroup group;
-  final String userId;
-  GroupMeberInfo(this.members, this.group, this.userId);
-}
 
 final groupListProvider = FutureProvider<List<GroupConversationModel>>(
   (ref) => BchatGroupManager.loadGroupConversationsList(),
@@ -195,6 +186,11 @@ final chatContactsList =
   // return [];
 });
 
+final chatImageFiles = FutureProvider.autoDispose
+    .family<List<ChatMediaFile>, String>((ref, convId) async {
+  return BChatContactManager.loadMediaFiles(convId);
+});
+
 final audioCallTimerProvider =
     StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
   (_) => DurationNotifier(),
@@ -206,3 +202,10 @@ final audioCallChangeProvider =
     ref.read(audioCallTimerProvider.notifier),
   ),
 );
+
+class GroupMeberInfo {
+  final List<Contacts> members;
+  final ChatGroup group;
+  final String userId;
+  GroupMeberInfo(this.members, this.group, this.userId);
+}

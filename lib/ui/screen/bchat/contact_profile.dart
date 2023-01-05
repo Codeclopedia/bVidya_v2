@@ -1,4 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/ui/screen/blearn/components/common.dart';
+import '../../../controller/bchat_providers.dart';
 import '/core/helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
@@ -86,29 +88,15 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 5.w, right: 5.w, bottom: 3.h),
+    return Material(
+      color: Colors.transparent,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 2.h),
-            _textCaption(S.current.pr_name),
-            SizedBox(height: 0.4.h),
-            _textValue(contact.name),
-            SizedBox(height: 2.h),
-            _textCaption(S.current.pr_email),
-            SizedBox(height: 0.4.h),
-            _textValue(contact.email ?? ''),
-            SizedBox(height: 2.h),
-            _textCaption(S.current.pr_phone),
-            SizedBox(height: 0.4.h),
-            _textValue(contact.phone ?? ''),
-            SizedBox(height: 3.h),
+            _buildUserInfo(),
             _buildMuteSettings(),
-            SizedBox(height: 3.h),
             _mediaSection(),
-            SizedBox(height: 3.h),
             _buildGroups(),
             SizedBox(height: 3.h),
             Consumer(builder: (context, ref, child) {
@@ -152,21 +140,47 @@ class ContactProfileScreen extends HookConsumerWidget {
     );
   }
 
+  Widget _buildUserInfo() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6.w),
+      child: Column(
+        children: [
+          SizedBox(height: 2.h),
+          _textCaption(S.current.pr_name),
+          SizedBox(height: 0.4.h),
+          _textValue(contact.name),
+          SizedBox(height: 2.h),
+          _textCaption(S.current.pr_email),
+          SizedBox(height: 0.4.h),
+          _textValue(contact.email ?? ''),
+          SizedBox(height: 2.h),
+          _textCaption(S.current.pr_phone),
+          SizedBox(height: 0.4.h),
+          _textValue(contact.phone ?? ''),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGroups() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          S.current.pr_common_groups,
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            fontSize: 11.sp,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+          child: Text(
+            S.current.pr_common_groups,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 11.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
+          padding: EdgeInsets.symmetric(horizontal: 2.w),
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return _contactRow(contacts[index]);
@@ -184,12 +198,14 @@ class ContactProfileScreen extends HookConsumerWidget {
         children: [
           getCicleAvatar(contact.name, contact.image),
           SizedBox(width: 3.w),
-          Text(
-            contact.name,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: AppColors.contactNameTextColor,
-              fontSize: 11.sp,
+          Expanded(
+            child: Text(
+              contact.name,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
+              ),
             ),
           ),
         ],
@@ -226,52 +242,82 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _mediaSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              S.current.pr_media_shared,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 11.sp,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            TextButton(
-              onPressed: (() {}),
-              child: Text(
-                S.current.pr_btx_all,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                S.current.pr_media_shared,
                 style: TextStyle(
                   fontFamily: kFontFamily,
-                  fontSize: 8.sp,
-                  color: AppColors.primaryColor,
+                  fontSize: 11.sp,
+                  color: Colors.black,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
-            _rowImage(
-                image:
-                    'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
-                last: true,
-                counter: 4),
-          ],
-        )
-      ],
+              TextButton(
+                onPressed: (() {}),
+                child: Text(
+                  S.current.pr_btx_all,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 8.sp,
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              return ref.watch(chatImageFiles(contact.userId.toString())).when(
+                    data: (data) {
+                      if (data.isEmpty) {
+                        return buildEmptyPlaceHolder('No Media');
+                      }
+                      return SizedBox(
+                        height: 30.w,
+                        child: ListView.separated(
+                          itemCount: data.length > 3 ? 3 : data.length,
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: (context, index) => SizedBox(
+                            width: 3.w,
+                          ),
+                          itemBuilder: (context, index) {
+                            return _rowChatImageBody(data[index]);
+                          },
+                        ),
+                      );
+                    },
+                    error: (error, stackTrace) =>
+                        buildEmptyPlaceHolder('Error in loadin No Media'),
+                    loading: () => buildLoading,
+                  );
+            },
+          ),
+          // Row(
+          //   mainAxisSize: MainAxisSize.max,
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     _rowImage(
+          //         image:
+          //             'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
+          //     _rowImage(
+          //         image:
+          //             'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
+          //     _rowImage(
+          //         image:
+          //             'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
+          //         last: true,
+          //         counter: 4),
+          //   ],
+          // )
+        ],
+      ),
     );
   }
 
@@ -318,6 +364,41 @@ class ContactProfileScreen extends HookConsumerWidget {
           );
   }
 
+  Widget _rowChatImageBody(ChatMediaFile file,
+      {bool last = false, int counter = 0}) {
+    return SizedBox(
+      height: imageSize,
+      width: imageSize,
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(4.w)),
+        child: Stack(
+          children: [
+            Image(
+              image: getImageProviderChatImage(file.body),
+              fit: BoxFit.cover,
+              height: imageSize,
+              width: imageSize,
+            ),
+            if (last && counter > 0)
+              Container(
+                color: Colors.black38,
+                child: Center(
+                  child: Text(
+                    '$counter+',
+                    style: TextStyle(
+                      fontFamily: kFontFamily,
+                      color: Colors.white,
+                      fontSize: 15.sp,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMuteSettings() {
     return Consumer(
       builder: (context, ref, child) {
@@ -336,24 +417,27 @@ class ContactProfileScreen extends HookConsumerWidget {
 //
             // conv?.
           },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                S.current.pr_mute_notification,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  fontSize: 11.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.current.pr_mute_notification,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 11.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              mySwitch(mute, (value) async {
-                // ref.read(muteProvider(contact.userId.toString()).notifier)
-                _updateSetting(value);
-                ref.read(chatMuteProvider.notifier).state = value;
-              })
-            ],
+                mySwitch(mute, (value) async {
+                  // ref.read(muteProvider(contact.userId.toString()).notifier)
+                  _updateSetting(value);
+                  ref.read(chatMuteProvider.notifier).state = value;
+                })
+              ],
+            ),
           ),
         );
       },

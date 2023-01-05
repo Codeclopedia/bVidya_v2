@@ -115,10 +115,10 @@ class BChatRepository {
 
   Future<String?> uploadImage(File file) async {
     final result = await api.uploadImage(token, file);
-    if (result.status == successfull) {
-      return result.body?.source;
-    }
-    return null;
+    // if (result.status == successfull) {
+    //   return result.body?.source;
+    // }
+    return result.body?.source;
   }
 
   // getGroupMediaList(ChatGroup groupInfo) {}

@@ -1,3 +1,4 @@
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/ui/screen/profile/settings/webview_screen.dart';
 
 import '/data/models/models.dart';
@@ -44,9 +45,22 @@ class Routes {
       case RouteList.createNewGroup:
         screen = CreateNewGroupScreen();
         break;
+      case RouteList.editGroup:
+        if (settings.arguments is ChatGroup) {
+          screen = CreateNewGroupScreen(group: settings.arguments as ChatGroup);
+        } else {
+          screen = _parameterMissing();
+        }
+        // screen = CreateNewGroupScreen();
+        break;
       case RouteList.newGroupContacts:
         screen = const NewGroupContactsScreen();
         break;
+
+      case RouteList.editGroupContacts:
+        screen = const NewGroupContactsScreen(edit: true);
+        break;
+
       case RouteList.groupChatScreen:
         if (settings.arguments is GroupConversationModel) {
           screen = GroupChatScreen(

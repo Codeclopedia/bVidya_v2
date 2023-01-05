@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '/controller/providers/contacts_select_notifier.dart';
 import '/ui/dialog/basic_dialog.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
@@ -22,6 +23,7 @@ class GroupInfoScreen extends StatelessWidget {
 
   const GroupInfoScreen({super.key, required this.group});
 
+  static final List<Contacts> contacts = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,15 +117,17 @@ class GroupInfoScreen extends StatelessWidget {
                 if (grpInfo == null) {
                   return buildEmptyPlaceHolder('No Member loaded');
                 }
+
                 final data = grpInfo.members;
                 final grp = grpInfo.group;
-                bool canAddMember =
-                    (grp.adminList ?? []).contains(grpInfo.userId) ||
-                        (grp.owner ?? '') != grpInfo.userId;
+                bool isAdmin = (grp.adminList ?? []).contains(grpInfo.userId) ||
+                    (grp.owner ?? '') == grpInfo.userId;
 
                 print(
-                    'Group Owner ${grp.owner} =  ${grp.adminList}  $canAddMember ${grpInfo.userId}');
-
+                    'Group Owner ${grp.owner} =  ${grp.adminList}  $isAdmin ${grpInfo.userId}');
+                contacts.clear();
+                contacts.addAll(data.where(
+                    (element) => element.userId.toString() != grpInfo.userId));
                 // (grp.permissionType == ChatGroupPermissionType.Owner ||
                 //     grp.permissionType == ChatGroupPermissionType.Admin);
 
@@ -133,7 +137,7 @@ class GroupInfoScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 2.w),
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    if (canAddMember) {
+                    if (isAdmin) {
                       if (index == 0) {
                         return _addParticipationRow(context);
                       } else {
@@ -144,7 +148,7 @@ class GroupInfoScreen extends StatelessWidget {
                       return _contactRow(data[index], false, grpInfo.userId);
                     }
                   },
-                  itemCount: data.length + (canAddMember ? 1 : 0),
+                  itemCount: data.length + (isAdmin ? 1 : 0),
                 );
               },
               error: (error, stackTrace) => buildEmptyPlaceHolder(''),
@@ -173,13 +177,15 @@ class GroupInfoScreen extends StatelessWidget {
             ),
             // getCicleAvatar(contact.name, contact.image),
             SizedBox(width: 3.w),
-            Text(
-              S.current.grp_txt_add_participant,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontWeight: FontWeight.w600,
-                color: AppColors.contactNameTextColor,
-                fontSize: 11.sp,
+            Expanded(
+              child: Text(
+                S.current.grp_txt_add_participant,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.contactNameTextColor,
+                  fontSize: 11.sp,
+                ),
               ),
             ),
           ],
@@ -496,6 +502,34 @@ class GroupInfoScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
+          ),
+          Positioned(
+            right: 1.w,
+            top: 1.h,
+            child: Consumer(builder: (context, ref, child) {
+              return IconButton(
+                icon: const Icon(Icons.edit, color: Colors.white),
+                onPressed: () {
+                  ref.read(selectedContactProvider.notifier).clear();
+
+                  // final user = await getMeAsUser();
+                  // final List<Contacts> empty = [];
+                  // final infos = ref
+                  //     .read(groupMembersInfo(group.groupInfo.groupId))
+                  //     .maybeWhen(
+                  //         orElse: () => GroupMeberInfo(
+                  //             empty, group.groupInfo, user!.id.toString()));
+
+                  if (contacts.isNotEmpty) {
+                    ref
+                        .read(selectedContactProvider.notifier)
+                        .addContacts(contacts);
+                    Navigator.pushNamed(context, RouteList.editGroup,
+                        arguments: group.groupInfo);
+                  }
+                },
+              );
+            }),
           ),
           Center(
             child: Padding(

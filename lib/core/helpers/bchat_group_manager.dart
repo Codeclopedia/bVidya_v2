@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '/controller/bchat_providers.dart';
-import '/core/state.dart';
+// import '/controller/bchat_providers.dart';
+// import '/core/state.dart';
 import '../../data/models/models.dart';
 
 class BchatGroupManager {
@@ -21,6 +21,52 @@ class BchatGroupManager {
       Map<String, dynamic> ext = {'image': image};
       await ChatClient.getInstance.groupManager
           .updateGroupExtension(group.groupId, jsonEncode(ext));
+      return group;
+    } catch (e) {
+      print('Error creating group $e');
+    }
+    return null;
+  }
+
+  static Future<ChatGroup?> updateMembers(
+      String groupId, List<String> ids, List<String> removeIds) async {
+    try {
+      if (ids.isNotEmpty) {
+        await ChatClient.getInstance.groupManager.addMembers(groupId, ids);
+      }
+      if (removeIds.isNotEmpty) {
+        await ChatClient.getInstance.groupManager
+            .removeMembers(groupId, removeIds);
+      }
+
+      return await ChatClient.getInstance.groupManager
+          .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+    } catch (e) {
+      print('Error creating group $e');
+    }
+    return null;
+  }
+
+  static Future<ChatGroup?> editGroup(String groupId, String name, String? desc,
+      List<String> ids, List<String> removeIds, String image) async {
+    try {
+      await ChatClient.getInstance.groupManager.changeGroupName(groupId, name);
+
+      if (ids.isNotEmpty) {
+        await ChatClient.getInstance.groupManager.addMembers(groupId, ids);
+      }
+      if (removeIds.isNotEmpty) {
+        await ChatClient.getInstance.groupManager
+            .removeMembers(groupId, removeIds);
+      }
+
+      if (image.isNotEmpty) {
+        Map<String, dynamic> ext = {'image': image};
+        await ChatClient.getInstance.groupManager
+            .updateGroupExtension(groupId, jsonEncode(ext));
+      }
+      final ChatGroup group = await ChatClient.getInstance.groupManager
+          .fetchGroupInfoFromServer(groupId, fetchMembers: true);
       return group;
     } catch (e) {
       print('Error creating group $e');
@@ -85,6 +131,8 @@ class BchatGroupManager {
     final ext = group.extension;
     String? image;
     if (ext?.isNotEmpty == true) {
+      print('ext : ${group.extension} - ${group.name}');
+
       final map = jsonDecode(ext!);
       image = map['image'];
     }
