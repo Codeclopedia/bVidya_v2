@@ -48,10 +48,8 @@ setupCallKit() {
         onDeclineCall(callerFCM, fromId, fromName, image, body, hasVideo);
         break;
       case Event.ACTION_CALL_START:
-
         break;
       case Event.ACTION_CALL_ENDED:
-      
         break;
       default:
     }
@@ -77,7 +75,6 @@ Future<void> showIncomingCall(
   showIncomingCallScreen(
       body, callerName, callerIdFrom, senderFCM, callerImage, hasVideo);
 }
-
 
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   CallBody? callBody = remoteMessage.payload();
@@ -130,9 +127,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     handle: callerName,
   );
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
-
 }
-
 
 showIncomingCallScreen(CallBody callBody, String callerName, String callerId,
     String callerFCM, String callerImage, bool hasVideo) async {
@@ -251,7 +246,6 @@ onCallAccept(String callerIdFrom, String fcmToken, String callerName,
   Navigator.pushNamed(
       context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
       arguments: map);
-
 }
 
 // onHoldAnswer(
@@ -268,6 +262,11 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     return;
   }
   FCMApiService.instance.sendCallEndPush(
-      senderFCM, 'DECLINE_CALL', body, user.id.toString(), user.name, hasVideo);
+      senderFCM,
+      NotiConstants.actionCallDecline,
+      body,
+      user.id.toString(),
+      user.name,
+      hasVideo);
   await FlutterCallkitIncoming.endAllCalls();
 }

@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/bchat_group_manager.dart';
-import 'package:bvidya/core/utils.dart';
 
 import '../core/helpers/extensions.dart';
+import '../core/utils.dart';
 import '/core/helpers/bchat_contact_manager.dart';
 import '/core/helpers/duration.dart';
 
@@ -14,11 +13,11 @@ import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/data/repository/bchat_respository.dart';
 
+import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
-import 'providers/bchat_sdk_controller.dart';
+import 'providers/bchat/bchat_sdk_controller.dart';
 import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
-import 'providers/group_chat_conversations_provider.dart';
 
 final apiBChatProvider =
     Provider<BChatApiService>((_) => BChatApiService.instance);
@@ -46,14 +45,14 @@ final chatConversationListProvider =
     StateNotifierProvider<ChatConversationNotifier, List<ConversationModel>>(
         (ref) => ChatConversationNotifier());
 
-final groupChatConversationListProvider = StateNotifierProvider<
-    GroupChatConversationNotifier, List<GroupConversationModel>>(
-  (ref) {
-    final List<GroupConversationModel> empty = [];
-    final initial = ref.watch(groupListProvider).maybeWhen(orElse: () => empty);
-    return GroupChatConversationNotifier(initial);
-  },
-);
+// final groupChatConversationListProvider = StateNotifierProvider<
+//     GroupChatConversationNotifier, List<GroupConversationModel>>(
+//   (ref) {
+//     final List<GroupConversationModel> empty = [];
+//     final initial = ref.watch(groupListProvider).maybeWhen(orElse: () => empty);
+//     return GroupChatConversationNotifier(initial);
+//   },
+// );
 
 //Loading Previous Chat
 final chatLoadingPreviousProvider = StateProvider.autoDispose<bool>(
@@ -104,9 +103,9 @@ final searchChatContact =
 });
 
 final myContactsList = FutureProvider<List<Contacts>>((ref) async {
-  final ids = await BChatContactManager.getContacts();
-  final contacts = await ref.read(bChatProvider).getContactsByIds(ids);
-  return contacts ?? [];
+  // final ids = await BChatContactManager.getContacts();
+  // final contacts = await ref.read(bChatProvider).getContactsByIds(ids);
+  return ref.watch(chatConversationProvider.select((value) => value.contacts));
 });
 
 // final groupMembersList =
@@ -124,8 +123,10 @@ final myContactsList = FutureProvider<List<Contacts>>((ref) async {
 final groupMembersInfo =
     FutureProvider.family<GroupMeberInfo?, String>((ref, groupId) async {
   try {
-    final info = await ChatClient.getInstance.groupManager
-        .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+    ChatGroup info =
+        await ChatClient.getInstance.groupManager.getGroupWithId(groupId) ??
+            await ChatClient.getInstance.groupManager
+                .fetchGroupInfoFromServer(groupId, fetchMembers: true);
     final membersIds = info.memberList ?? [];
     if (!membersIds.contains(info.owner)) {
       membersIds.add(info.owner!);
@@ -142,14 +143,14 @@ final groupMembersInfo =
   return null;
 });
 
-final groupListProvider = FutureProvider<List<GroupConversationModel>>(
-  (ref) => BchatGroupManager.loadGroupConversationsList(),
-);
+// final groupListProvider = FutureProvider<List<GroupConversationModel>>(
+//   (ref) => BchatGroupManager.loadGroupConversationsList(),
+// );
 
-final groupListProviderA =
-    FutureProvider.autoDispose<List<GroupConversationModel>>(
-  (ref) => BchatGroupManager.loadGroupConversationsList(),
-);
+// final groupListProviderA =
+//     FutureProvider.autoDispose<List<GroupConversationModel>>(
+//   (ref) => BchatGroupManager.loadGroupConversationsList(),
+// );
 
 final groupMediaProvier =
     FutureProvider.family<List<ChatGroupSharedFileEx>, String>(
@@ -177,14 +178,14 @@ final groupMediaProvier =
   return results;
 });
 
-final chatContactsList =
-    FutureProvider.autoDispose<List<Contacts>>((ref) async {
-  final result = await ref.read(bChatProvider).getContacts();
-  return result?.contacts ?? [];
-  // if (result?.contacts?.isNotEmpty == true) {
-  // }
-  // return [];
-});
+// final chatContactsList =
+//     FutureProvider.autoDispose<List<Contacts>>((ref) async {
+//   final result = await ref.read(bChatProvider).getContacts();
+//   return result?.contacts ?? [];
+//   // if (result?.contacts?.isNotEmpty == true) {
+//   // }
+//   // return [];
+// });
 
 final chatImageFiles = FutureProvider.autoDispose
     .family<List<ChatMediaFile>, String>((ref, convId) async {

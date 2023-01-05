@@ -10,16 +10,18 @@ class LessonListRow extends StatelessWidget {
   final int openIndex;
   final Lesson lesson;
   final Function(int) onExpand;
-  final int? courseId;
+  final int courseId;
+  final int instructorId;
 
-  const LessonListRow({
-    Key? key,
-    required this.index,
-    required this.lesson,
-    required this.openIndex,
-    required this.onExpand,
-    this.courseId,
-  }) : super(key: key);
+  const LessonListRow(
+      {Key? key,
+      required this.index,
+      required this.lesson,
+      required this.openIndex,
+      required this.onExpand,
+      required this.courseId,
+      required this.instructorId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +85,13 @@ class LessonListRow extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 2.h),
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  await sendVideoPlayback(lesson.id, instructorId);
                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       arguments: {
                         "lesson": lesson,
                         "course_id": courseId,
+                        'instructor_id': instructorId
                       });
                 },
                 child: Row(

@@ -68,7 +68,7 @@ class ImagePickerDialog extends StatelessWidget {
             'icon_chat_camera.svg',
             cameraColor,
             () async {
-              File? file = await _imgFromCamera();
+              File? file = await imgFromCamera(_picker);
               if (file != null) {
                 Navigator.pop(context, file);
               }
@@ -80,7 +80,7 @@ class ImagePickerDialog extends StatelessWidget {
             'icon_chat_media.svg',
             mediaColor,
             () async {
-              File? file = await _imgFromGallery();
+              File? file = await imgFromGallery(_picker);
               if (file != null) {
                 Navigator.pop(context, file);
               }
@@ -136,8 +136,11 @@ class ImagePickerDialog extends StatelessWidget {
     );
   }
 
-  Future<File?> _imgFromGallery() async {
-    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  
+}
+
+  Future<File?> imgFromGallery(final ImagePicker picker) async {
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       final file = File(image.path);
       return file;
@@ -149,13 +152,12 @@ class ImagePickerDialog extends StatelessWidget {
     // });
   }
 
-  Future<File?> _imgFromCamera() async {
+ Future<File?> imgFromCamera(final ImagePicker picker) async {
     XFile? image =
-        await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     if (image != null) {
       final file = File(image.path);
       return file;
     }
     return null;
   }
-}

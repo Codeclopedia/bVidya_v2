@@ -379,24 +379,51 @@ class TeacherProfileDetailScreen extends StatelessWidget {
   }
 
   Widget _loading() {
-    return SizedBox(
-      height: 32.h,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
+    return SingleChildScrollView(
+      child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          CustomizableShimmerTile(height: 10.w, width: 90.w),
+          SizedBox(
+            height: 5.w,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          CustomizableShimmerTile(height: 15.w, width: 90.w),
+          SizedBox(
+            height: 5.w,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CustomizableShimmerTile(height: 30.h, width: 70.w),
+          CustomizableShimmerTile(height: 15.w, width: 60.w),
+          SizedBox(
+            height: 3.w,
           ),
+          SizedBox(
+            height: 32.h,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: 3.w),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomizableShimmerTile(height: 25.w, width: 35.w),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomizableShimmerTile(height: 25.w, width: 35.w),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomizableShimmerTile(height: 25.w, width: 35.w),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 3.w),
+          CustomizableShimmerTile(height: 15.w, width: 90.w),
+          SizedBox(height: 3.w),
+          CustomizableShimmerTile(height: 15.w, width: 90.w),
+          SizedBox(height: 3.w),
+          CustomizableShimmerTile(height: 15.w, width: 90.w),
+          SizedBox(height: 3.w),
+          CustomizableShimmerTile(height: 15.w, width: 90.w),
         ],
       ),
     );

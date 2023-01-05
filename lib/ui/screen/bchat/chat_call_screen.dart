@@ -1,16 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import '/core/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
-import 'package:provider/provider.dart' as pr;
+// import 'package:provider/provider.dart' as pr;
 
 import '/core/utils.dart';
 import '/data/services/fcm_api_service.dart';
-import '/controller/providers/call_end_provider.dart';
+// import '/controller/providers/call_end_provider.dart';
 import '/controller/providers/p2p_call_provider.dart';
 import '/controller/bchat_providers.dart';
-import '/core/constants/colors.dart';
+// import '/core/constants/colors.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
 import '/core/state.dart';
@@ -325,7 +326,7 @@ class ChatCallScreen extends ConsumerWidget {
                   }
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
-                      'END_CALL',
+                      NotiConstants.actionCallEnd,
                       callInfo,
                       user.id.toString(),
                       user.name,

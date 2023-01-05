@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '/app.dart';
+import '/core/constants/notification_const.dart';
+// import '/app.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
-import '/core/helpers/bmeet_helper.dart';
+// import '/core/helpers/bmeet_helper.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
 import '/core/ui_core.dart';
@@ -80,9 +81,9 @@ class P2PCallProvider extends ChangeNotifier {
     _callDirection = type;
     _body = body;
     FirebaseMessaging.onMessage.listen((message) {
-      if (message.data['type'] == 'p2p_call') {
+      if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
-        if (action == 'DECLINE_CALL') {
+        if (action == NotiConstants.actionCallDecline) {
           if (!_disconnected && !_endCall) {
             _endCall = true;
             notifyListeners();

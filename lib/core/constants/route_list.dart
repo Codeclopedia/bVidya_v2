@@ -1,3 +1,12 @@
+class DrawerMenu{
+ static const int settings = 0;
+ static const int profile = 1;
+ static const int bLive = 2;
+ static const int bMeet = 3;
+ static const int bLearn = 4;
+ static const int bChat = 5;
+}
+
 class RouteList {
   RouteList._();
   // static const String splash = '/splash';
@@ -82,6 +91,6 @@ class RouteList {
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 
   //
-  static const String bForum = '/forum';
-  static const String bDiscuss = '/discuss';
+  // static const String bForum = '/forum';
+  // static const String bDiscuss = '/discuss';
 }

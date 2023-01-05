@@ -9,8 +9,9 @@ final drawerStateProvider = StateProvider<bool>((ref) => false);
 
 class BaseDrawerPage extends StatefulWidget {
   final Widget body;
-  final String screenName;
-  const BaseDrawerPage({Key? key, required this.body, required this.screenName})
+  final int currentIndex;
+  const BaseDrawerPage(
+      {Key? key, required this.body, required this.currentIndex})
       : super(key: key);
 
   @override
@@ -39,8 +40,9 @@ class _BaseDrawerPageState extends State<BaseDrawerPage> {
         drawerScrimColor: Colors.transparent,
         drawerEdgeDragWidth: 20.w,
         endDrawer: EndDrawer(
+          currentIndex: widget.currentIndex,
           scaffoldKey: _scaffoldKey,
-          myRouteName: widget.screenName,
+          // myRouteName: widget.screenName,
         ),
         onEndDrawerChanged: (isOpened) {
           // ref.read(drawerStateProvider.notifier).state = isOpened;

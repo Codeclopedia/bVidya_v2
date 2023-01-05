@@ -18,6 +18,7 @@ dependencies:
   agora_chat_sdk: ^1.0.9
   agora_rtc_engine: ^6.0.0
   agora_rtm: ^1.5.0
+  animate_icons: ^2.0.0
   audioplayers: ^1.1.1
   avatars: ^3.0.2
   awesome_notifications: ^0.7.2
@@ -60,6 +61,7 @@ dependencies:
   sizer: ^2.0.15
   sqflite: ^2.1.0+1
   swipe_to: ^1.0.2
+  top_snackbar_flutter: ^3.0.0+1
   url_launcher: ^6.1.7
   uuid: ^3.0.7
   video_player: ^2.4.10

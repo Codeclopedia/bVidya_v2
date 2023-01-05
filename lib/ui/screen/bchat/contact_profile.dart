@@ -1,6 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/screen/blearn/components/common.dart';
-import '../../../controller/bchat_providers.dart';
+
+import '/ui/screen/blearn/components/common.dart';
+import '/controller/bchat_providers.dart';
 import '/core/helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
@@ -35,6 +36,7 @@ final blockProvider = StateProvider.autoDispose.family<Future<bool>, int>(
     return BChatContactManager.isUserBlocked(id.toString());
   }),
 );
+
 //Mute
 // final muteUserProvider =
 //     FutureProvider.autoDispose.family<ChatPushRemindType, String>(
@@ -81,9 +83,9 @@ class ContactProfileScreen extends HookConsumerWidget {
         await BChatContactManager.fetchChatMuteStateFor(
             contact.userId.toString());
     if (remindType == ChatPushRemindType.NONE) {
-      ref.read(chatMuteProvider.notifier).state = true;
-    } else {
       ref.read(chatMuteProvider.notifier).state = false;
+    } else {
+      ref.read(chatMuteProvider.notifier).state = true;
     }
   }
 
@@ -96,6 +98,7 @@ class ContactProfileScreen extends HookConsumerWidget {
           children: [
             _buildUserInfo(),
             _buildMuteSettings(),
+            SizedBox(height: 1.h),
             _mediaSection(),
             _buildGroups(),
             SizedBox(height: 3.h),
@@ -144,6 +147,7 @@ class ContactProfileScreen extends HookConsumerWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6.w),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 2.h),
           _textCaption(S.current.pr_name),
@@ -192,51 +196,58 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _contactRow(ContactModel contact) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 1.h),
-      child: Row(
-        children: [
-          getCicleAvatar(contact.name, contact.image),
-          SizedBox(width: 3.w),
-          Expanded(
-            child: Text(
-              contact.name,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: AppColors.contactNameTextColor,
-                fontSize: 11.sp,
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 1.h),
+        padding: EdgeInsets.symmetric(horizontal: 4.w),
+        child: Row(
+          children: [
+            getCicleAvatar(contact.name, contact.image),
+            SizedBox(width: 3.w),
+            Expanded(
+              child: Text(
+                contact.name,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: AppColors.contactNameTextColor,
+                  fontSize: 11.sp,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildButton(IconData icon, String text, Function() onTap) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        padding: EdgeInsets.all(1.5.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2.w),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6.w),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.all(1.5.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2.w),
+          ),
+          backgroundColor: const Color(0xFFF5F5F5),
         ),
-        backgroundColor: const Color(0xFFF5F5F5),
-      ),
-      onPressed: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Icon(icon, color: const Color(0xFFB70000), size: 5.w),
-          SizedBox(width: 4.w),
-          Text(
-            text,
-            style: TextStyle(
-              color: const Color(0xFFB70000),
-              fontSize: 12.sp,
-              fontFamily: kFontFamily,
-            ),
-          )
-        ],
+        onPressed: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Icon(icon, color: const Color(0xFFB70000), size: 5.w),
+            SizedBox(width: 4.w),
+            Text(
+              text,
+              style: TextStyle(
+                color: const Color(0xFFB70000),
+                fontSize: 12.sp,
+                fontFamily: kFontFamily,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

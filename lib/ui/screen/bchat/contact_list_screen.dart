@@ -3,6 +3,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:grouped_list/grouped_list.dart';
 
+import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants/route_list.dart';
 import '/core/state.dart';
@@ -69,11 +70,7 @@ class ContactListScreen extends StatelessWidget {
                       final conv = await ChatClient.getInstance.chatManager
                           .getConversation(element.userId.toString(),
                               type: ChatConversationType.Chat);
-                      final isOnline = (await ChatClient
-                              .getInstance.presenceManager
-                              .fetchPresenceStatus(
-                                  members: [element.userId.toString()]))
-                          .first;
+
                       if (conv != null) {
                         ConversationModel model = ConversationModel(
                             id: element.userId.toString(),
@@ -81,11 +78,11 @@ class ContactListScreen extends StatelessWidget {
                             contact: element,
                             conversation: conv,
                             lastMessage: await conv.latestMessage(),
-                            isOnline: isOnline);
-                        // Navigator.pop(context,model);
+                            isOnline: null);
                         ref
-                            .read(bChatSDKControllerProvider)
-                            .loadConversations(ref);
+                            .read(chatConversationProvider)
+                            .addOrUpdateConversation(model);
+
                         Navigator.pushReplacementNamed(
                             context, RouteList.chatScreen,
                             arguments: model);

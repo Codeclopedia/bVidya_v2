@@ -14,7 +14,7 @@ class StudentProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
       showEmail: true,
-      screenName: RouteList.profile,
+      currentIndex: DrawerMenu.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,

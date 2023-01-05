@@ -50,7 +50,6 @@ export 'screen/profile/settings/contactus_screen.dart';
 export 'screen/profile/settings/report_problem_screen.dart';
 
 export 'screen/profile/student/profile_screen.dart';
-// export 'screen/profile/student/student_course_screen.dart';
 export 'screen/profile/student/my_learning_screen.dart';
 export 'screen/profile/student/student_profile_detail.dart';
 
@@ -60,5 +59,7 @@ export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
 export 'screen/profile/teacher/teacher_classrequest.dart';
 export 'screen/profile/teacher/teacher_schedule.dart';
+
+export 'screen/profile/settings/webview_screen.dart';
 
 export 'screen/blearn/teacher_profile_detail_screen.dart';

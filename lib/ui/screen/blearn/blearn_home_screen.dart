@@ -27,6 +27,7 @@ class BLearnHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       body: BaseDrawerAppBarScreen(
+        currentIndex: DrawerMenu.bLearn,
         routeName: RouteList.bLearnHome,
         topBar: _buildUser(),
         body: Consumer(

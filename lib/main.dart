@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
 import 'core/utils/call_utils.dart';
@@ -66,42 +67,17 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
 onNewFireabseMessage(RemoteMessage message, bool foreground) {
   try {
-    print('onNewFirebaseMessage: ${message.data} $foreground');
-    if (message.data['type'] == 'p2p_call') {
+    // print('onNewFirebaseMessage: ${message.data} $foreground');
+    if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
-      print('action: $action');
-      if (action == 'START_CALL') {
+      // print('action: $action');
+      if (action == NotiConstants.actionCallStart) {
         showIncomingCall(message);
-      } else if (action == 'END_CALL') {
+      } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
       }
     }
   } catch (e) {
-    print('error $e');
+    // print('error $e');
   }
 }
-
-  // setupCall(BuildContext context) {
-  //   final FlutterCallkeep callKeep = FlutterCallkeep();
-  //   final callSetup = <String, dynamic>{
-  //     'ios': {
-  //       'appName': 'CallKeepDemo',
-  //     },
-  //     'android': {
-  //       'alertTitle': 'Permissions required',
-  //       'alertDescription':
-  //           'This application needs to access your phone accounts',
-  //       'cancelButton': 'Cancel',
-  //       'okButton': 'ok',
-  //       // Required to get audio in background when using Android 11
-  //       'foregroundService': {
-  //         'channelId': 'com.company.my',
-  //         'channelName': 'Foreground service for my app',
-  //         'notificationTitle': 'My app is running on background',
-  //         'notificationIcon': 'mipmap/ic_notification_launcher',
-  //       },
-  //     },
-  //   };
-  //   callKeep.setup(context, callSetup, backgroundMode: true);
-  // }
-// }

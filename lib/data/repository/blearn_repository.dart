@@ -1,8 +1,6 @@
 import '../models/models.dart';
 import '../services/blearn_api_service.dart';
 
-// const successfull = 'successfull';
-
 class BLearnRepository {
   static const successfull = 'successfull';
   final BLearnApiService _api;
@@ -105,6 +103,26 @@ class BLearnRepository {
     } else {
       print('Error ${result.message ?? 'Error'} ');
       return null;
+    }
+  }
+
+  Future<LikedCourseResponse?> getLikedCourse(int courseId) async {
+    final result = await _api.likeCourse(_authToken, courseId.toString());
+    if (result?.status == successfull && result?.body != null) {
+      return result;
+    } else {
+      return null;
+    }
+  }
+
+  Future<BaseResponse> setfeedback(
+      String courseId, int rating, String comment) async {
+    final result =
+        await _api.courseFeedback(_authToken, courseId, rating, comment);
+    if (result.status == "successfully" && result.body != null) {
+      return result;
+    } else {
+      return BaseResponse(status: 'error', message: '${result.status}');
     }
   }
 }

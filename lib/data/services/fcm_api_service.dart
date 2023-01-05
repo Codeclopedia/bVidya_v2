@@ -70,11 +70,11 @@ class FCMApiService {
 
     final data = {
       'registration_ids': [toToken],
-      'type': 'p2p_call',
+      'type': NotiConstants.typeCall,
       'notification': {},
       'data': {
-        'type': 'p2p_call',
-        'action': 'START_CALL',
+        'type': NotiConstants.typeCall,
+        'action': NotiConstants.actionCallStart,
         'image': image,
         'has_video': hasVideo ? 'true' : 'false',
         'caller_fcm': callerFCMToken,
@@ -115,10 +115,10 @@ class FCMApiService {
 
     final data = {
       'registration_ids': [toToken],
-      'type': 'p2p_call',
+      'type': NotiConstants.typeCall,
       'notification': {},
       'data': {
-        'type': 'p2p_call',
+        'type': NotiConstants.typeCall,
         'action': action,
         'content': jsonEncode(callBody.toJson()),
         'from_id': fromId,

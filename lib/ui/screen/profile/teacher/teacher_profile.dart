@@ -15,7 +15,7 @@ class TeacherProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
-      screenName: RouteList.profile,
+      currentIndex: DrawerMenu.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,

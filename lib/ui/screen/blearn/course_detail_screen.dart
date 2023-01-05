@@ -1,3 +1,7 @@
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '/ui/widget/sliding_tab.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
@@ -5,42 +9,225 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import 'components/common.dart';
+import 'components/course_feedback_form.dart';
 import 'components/lesson_list_row.dart';
 import '../../widgets.dart';
 
 // int _selectedIndex = -1;
-
+final ratingProvider = StateProvider<int>((ref) => 3);
 final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
 final selectedIndexLessonProvider = StateProvider<int>((ref) => 0);
+final isModelSheetOpened = StateProvider.autoDispose<bool>((ref) => false);
 
-class CourseDetailScreen extends ConsumerWidget {
+class CourseDetailScreen extends HookConsumerWidget {
   final Course course;
   const CourseDetailScreen({Key? key, required this.course}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
+    bool modelSheetOpened = ref.watch(isModelSheetOpened);
+    int rating = ref.read(ratingProvider);
+    final feedbackMessageController = useTextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: CustomFeedbackForm(
+        callback: (modelSheetState) {
+          ref.read(isModelSheetOpened.notifier).state = modelSheetState;
+        },
+      ),
       body: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
+        child: Stack(
           children: [
-            _topImage(context),
-            _subjectDetail(),
-            SlidingTab(
-              label1: 'Description',
-              label2: 'Curriculum',
-              selectedIndex: selectedIndex,
-              callback: (index) {
-                ref.read(selectedTabCourseDetailProvider.notifier).state =
-                    index;
-              },
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _topImage(context),
+                _subjectDetail(),
+                SlidingTab(
+                  label1: 'Description',
+                  label2: 'Curriculum',
+                  selectedIndex: selectedIndex,
+                  callback: (index) {
+                    ref.read(selectedTabCourseDetailProvider.notifier).state =
+                        index;
+                  },
+                ),
+                // _toggleItems(),
+                SizedBox(height: 2.h),
+                selectedIndex == 0 ? _buildDescView() : _builCurriculumView(),
+              ],
             ),
-            // _toggleItems(),
-            SizedBox(height: 2.h),
-            selectedIndex == 0 ? _buildDescView() : _builCurriculumView()
+            Visibility(
+                visible: modelSheetOpened,
+                child: feedbackform(
+                    rating, ref, feedbackMessageController, context))
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget feedbackform(int rating, WidgetRef ref,
+      TextEditingController feedbackMessageController, BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: ClipPath(
+        clipper: ClipPathClass(),
+        child: Container(
+          height: 100.w,
+          width: 100.w,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                    color: Color.fromARGB(255, 125, 125, 125),
+                    blurRadius: 5.0,
+                    offset: Offset(1, 3)),
+              ],
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5.w),
+                  topRight: Radius.circular(5.w))),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Rate Your Experience',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15.sp),
+              ),
+              Text(
+                'Are you satisfied with the experience?',
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 10.sp),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 3.w),
+                child: RatingBar.builder(
+                  initialRating: rating.roundToDouble(),
+                  itemCount: 5,
+                  itemSize: 12.5.w,
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  // itemBuilder: (context, index) {
+                  //   switch (index) {
+                  //     case 0:
+                  //       return const Icon(
+                  //         Icons.sentiment_very_dissatisfied,
+                  //         color: Colors.red,
+                  //       );
+
+                  //     case 1:
+                  //       return const Icon(
+                  //         Icons.sentiment_dissatisfied,
+                  //         color: Colors.redAccent,
+                  //       );
+                  //     case 2:
+                  //       return const Icon(
+                  //         Icons.sentiment_neutral,
+                  //         color: Colors.amber,
+                  //       );
+                  //     case 3:
+                  //       return const Icon(
+                  //         Icons.sentiment_satisfied,
+                  //         color: Colors.lightGreen,
+                  //       );
+                  //     case 4:
+                  //       return const Icon(
+                  //         Icons.sentiment_very_satisfied,
+                  //         color: Colors.green,
+                  //       );
+                  //   }
+                  //   return Container();
+                  // },
+                  onRatingUpdate: (rating) {
+                    ref.read(ratingProvider.notifier).state = rating.toInt();
+                  },
+                ),
+              ),
+              const Divider(),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Tell us what can be improved?",
+                  style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 10.sp),
+                ),
+              ),
+              SizedBox(height: 1.w),
+              Container(
+                height: 35.w,
+                width: 100.w,
+                padding: EdgeInsets.symmetric(horizontal: 2.w),
+                decoration: BoxDecoration(
+                    color: AppColors.cardWhite,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
+                child: TextField(
+                  controller: feedbackMessageController,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Tell us how can we improve...",
+                      hintStyle: TextStyle(fontSize: 10.sp)),
+                ),
+              ),
+              SizedBox(
+                height: 5.w,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  height: 12.5.w,
+                  width: 70.w,
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        final response;
+                        feedbackMessageController.text.isEmpty
+                            ? showTopSnackBar(
+                                Overlay.of(context)!,
+                                const CustomSnackBar.error(
+                                  message: 'Please Fill all the details.',
+                                ),
+                              )
+                            : {
+                                response = await ref
+                                    .read(bLearnRepositoryProvider)
+                                    .setfeedback(course.id.toString(), rating,
+                                        feedbackMessageController.text),
+                                ref.read(isModelSheetOpened.notifier).state =
+                                    false,
+                                print(response.status),
+                                showTopSnackBar(
+                                  Overlay.of(context)!,
+                                  const CustomSnackBar.success(
+                                    message: 'Feedback Submitted',
+                                  ),
+                                )
+                              };
+                      },
+                      child: const Text("Submit")),
+                ),
+              )
+              // Container(
+              // height: 15.w,
+              // width: 70.w,
+              //   alignment: Alignment.center,
+              //   decoration: BoxDecoration(
+              //       color: AppColors.primaryColor,
+              //       borderRadius: BorderRadius.circular(15)),
+              //   child: Text(
+              //     "Submit",
+              //     style: TextStyle(
+              //         color: AppColors.cardWhite,
+              //         fontSize: 12.5.sp,
+              //         fontWeight: FontWeight.w500),
+              //   ),
+              // )
+            ],
+          ),
         ),
       ),
     );
@@ -96,7 +283,8 @@ class CourseDetailScreen extends ConsumerWidget {
           index: index + 1,
           openIndex: selectedIndex,
           lesson: lessons[index],
-          courseId: course.id,
+          courseId: course.id!,
+          instructorId: course.userId!,
           onExpand: (index) {
             ref.read(selectedIndexLessonProvider.notifier).state = index;
           },
@@ -160,7 +348,7 @@ class CourseDetailScreen extends ConsumerWidget {
             ),
             SizedBox(height: 1.h),
             _getText(),
-            SizedBox(height: 1.h),
+            SizedBox(height: 10.w),
             const TwoColorText(
               first: 'Related',
               second: 'Courses',
@@ -417,4 +605,26 @@ class CourseDetailScreen extends ConsumerWidget {
       ],
     );
   }
+}
+
+class ClipPathClass extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0.0, size.height);
+    path.lineTo(size.width * 0.835, size.height);
+
+    path.quadraticBezierTo(size.width * 0.7, size.height * 0.825,
+        size.width * 0.85, size.height * 0.775);
+    path.quadraticBezierTo(
+        size.width * 0.95, size.height * 0.765, size.width, size.height * 0.9);
+
+    path.lineTo(size.width, 0.0);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

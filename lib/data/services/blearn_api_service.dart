@@ -240,4 +240,41 @@ class BLearnApiService {
       return null;
     }
   }
+
+  Future<BaseResponse> courseFeedback(
+      String token, String courseId, int rating, String comment) async {
+    final data = {'course_id': courseId, 'rating': rating, 'comment': comment};
+    try {
+      _dio.options.headers["X-Auth-Token"] = token;
+
+      final response =
+          await _dio.post('${baseUrlApi}feedback-course', data: data);
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future<LikedCourseResponse?> likeCourse(String token, String id) async {
+    _dio.options.headers['X-Auth-Token'] = '${token}';
+    try {
+      var response = await _dio.get('${StringConstant.BASE_URL}likecourse/$id');
+
+      if (response.statusCode == 200) {
+        return LikedCourseResponse.fromJson(response.data);
+      } else {
+        print(response.statusMessage);
+        return null;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  
 }

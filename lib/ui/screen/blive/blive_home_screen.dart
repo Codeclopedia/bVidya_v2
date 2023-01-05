@@ -26,7 +26,7 @@ class BLiveHomeScreen extends HookWidget {
         return true;
       },
       child: LiveDrawerScreen(
-        screenName: RouteList.bLive,
+        currentIndex: DrawerMenu.bLive,
         baseBody: SafeArea(
           child: Container(
             alignment: Alignment.bottomCenter,
@@ -133,7 +133,7 @@ class BLiveHomeScreen extends HookWidget {
                   padding: EdgeInsets.only(top: 1.h),
                   alignment: Alignment.topRight,
                   child: UserConsumer(
-                    builder: (context,user, ref) {
+                    builder: (context, user, ref) {
                       return user.role.toLowerCase() == 'teacher'
                           ? InkWell(
                               onTap: () {
@@ -240,8 +240,7 @@ class BLiveHomeScreen extends HookWidget {
             builder: (context, user, ref) {
               return Column(
                 children: [
-                  getRectFAvatar(
-                      size: 22.w, user.name, user.image),
+                  getRectFAvatar(size: 22.w, user.name, user.image),
                   SizedBox(height: 0.5.h),
                   Text(user.name, style: textStyleBlack)
                 ],

@@ -8,7 +8,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
-      screenName: RouteList.settings,
+      currentIndex: DrawerMenu.settings,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,

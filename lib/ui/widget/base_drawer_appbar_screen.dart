@@ -8,17 +8,18 @@ class BaseDrawerAppBarScreen extends StatelessWidget {
   final Widget topBar;
   final Widget body;
   final String routeName;
-
+  final int currentIndex;
   const BaseDrawerAppBarScreen(
       {super.key,
       required this.topBar,
       required this.body,
+      required this.currentIndex,
       required this.routeName});
 
   @override
   Widget build(BuildContext context) {
     return BaseDrawerPage(
-      screenName: routeName,
+      currentIndex:currentIndex,
       body: ColouredBoxBar(
         topBar: topBar,
         // home: true,

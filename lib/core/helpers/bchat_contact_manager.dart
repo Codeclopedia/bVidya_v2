@@ -175,10 +175,11 @@ class BChatContactManager {
   static Future<List<ChatMediaFile>> loadMediaFiles(String convId) async {
     final List<ChatMediaFile> items = [];
     try {
-      ChatConversation? conv =await
-          ChatClient.getInstance.chatManager.getConversation(convId);
+      ChatConversation? conv =
+          await ChatClient.getInstance.chatManager.getConversation(convId);
 
-      final list = (await conv?.loadMessagesWithMsgType(type: MessageType.IMAGE))??[];
+      final list =
+          (await conv?.loadMessagesWithMsgType(type: MessageType.IMAGE)) ?? [];
       if (list.isNotEmpty) {
         for (var f in list) {
           final body = f.body as ChatImageMessageBody;

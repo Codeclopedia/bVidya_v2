@@ -21,7 +21,6 @@ class ConversationModel {
       this.mute = false});
 }
 
-
 class GroupConversationModel {
   final ChatGroup groupInfo;
   final String image;

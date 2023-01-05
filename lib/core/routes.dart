@@ -1,9 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/screen/profile/settings/webview_screen.dart';
 
 import '/data/models/models.dart';
-import '/ui/widget/base_drawer_page.dart';
-import 'constants.dart';
+import 'constants/route_list.dart';
 import 'helpers/call_helper.dart';
 import 'ui_core.dart';
 import '/ui/screens.dart';
@@ -27,14 +25,14 @@ class Routes {
         screen = ForgetPasswordScreen();
         break;
 
-      case RouteList.bForum:
-        screen = _commingSoon(RouteList.bForum);
-        hasDrawer = true;
-        break;
-      case RouteList.bDiscuss:
-        screen = _commingSoon(RouteList.bDiscuss);
-        hasDrawer = true;
-        break;
+      // case RouteList.bForum:
+      //   screen = _commingSoon(RouteList.bForum);
+      //   hasDrawer = true;
+      //   break;
+      // case RouteList.bDiscuss:
+      //   screen = _commingSoon(RouteList.bDiscuss);
+      //   hasDrawer = true;
+      //   break;
       case RouteList.home:
         screen = const HomeScreen();
         hasDrawer = true;
@@ -86,13 +84,12 @@ class Routes {
             model: settings.arguments as ConversationModel,
           );
         } else {
-          screen = const Scaffold(
+          screen = Scaffold(
             body: Center(
-              child: Text('Not a valid Chat Screen'),
+              child: Text('Not a valid Chat Screen of name: ${settings.name}'),
             ),
           );
         }
-
         break;
 
       case RouteList.bChatVideoCall:
@@ -186,9 +183,10 @@ class Routes {
           String meetingId = args['meeting_id'] as String;
           String appId = args['app_id'] as String;
           int userId = args['user_id'] as int;
+
+          int id = args['id'] as int;
           bool video = args['video'] as bool;
           bool mute = args['mute'] as bool;
-          int id = args['id'] as int;
           String userName = args['user_name'] as String;
 
           // print('Meeting: ${meeting.toJson()}');
@@ -282,9 +280,11 @@ class Routes {
           final arg = settings.arguments as Map<String, dynamic>;
           Lesson lesson = arg["lesson"];
           int courseId = arg["course_id"];
+          int instructorId =arg['instructor_id'];
           screen = BlearnVideoPlayer(
             lesson: lesson,
             courseId: courseId,
+            instructorId: instructorId,
           );
         } else {
           screen = _parameterMissing();
@@ -363,21 +363,16 @@ class Routes {
 
       case RouteList.teacherDashboard:
         screen = const TeacherDashboard();
-        // if (settings.arguments is User) {
-        //   User course = settings.arguments as User;
-        //   screen = TeacherDashboard(
-        //     user: course,
-        //   );
-        // } else {
-        //   screen = _parameterMissing();
-        // }
         break;
 
       case RouteList.webview:
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
           String url = args['url'];
-          String title = args['title'] ?? 'bVidya';
+          String title = 'bVidya';
+          if (args.containsKey('title')) {
+            title = args['title'] ?? 'bVidya';
+          }
           screen = WebViewScreen(url: url, title: title);
         } else {
           screen = _parameterMissing();
@@ -424,12 +419,12 @@ class Routes {
     );
   }
 
-  static Widget _commingSoon(String name) {
-    return BaseDrawerPage(
-      screenName: name,
-      body: Center(
-        child: Text('Feature Comming soon', style: textStyleHeading),
-      ),
-    );
-  }
+  // static Widget _commingSoon(String name) {
+  //   return BaseDrawerPage(
+  //     screenName: name,
+  //     body: Center(
+  //       child: Text('Feature Comming soon', style: textStyleHeading),
+  //     ),
+  //   );
+  // }
 }

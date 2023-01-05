@@ -120,11 +120,11 @@ class GroupInfoScreen extends StatelessWidget {
 
                 final data = grpInfo.members;
                 final grp = grpInfo.group;
-                bool isAdmin = (grp.adminList ?? []).contains(grpInfo.userId) ||
-                    (grp.owner ?? '') == grpInfo.userId;
-
-                print(
-                    'Group Owner ${grp.owner} =  ${grp.adminList}  $isAdmin ${grpInfo.userId}');
+                bool hasPermission =
+                    (grp.adminList ?? []).contains(grpInfo.userId) ||
+                        (grp.owner ?? '') == grpInfo.userId;
+                // print(
+                //     'Group Owner ${grp.owner} =  ${grp.adminList}  $hasPermission ${grpInfo.userId}');
                 contacts.clear();
                 contacts.addAll(data.where(
                     (element) => element.userId.toString() != grpInfo.userId));
@@ -137,18 +137,23 @@ class GroupInfoScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 2.w),
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    if (isAdmin) {
+                    if (hasPermission) {
                       if (index == 0) {
                         return _addParticipationRow(context);
                       } else {
+                        bool isAdmin = (grp.adminList ?? [])
+                            .contains(data[index - 1].userId.toString());
                         return _contactRow(
-                            data[index - 1], true, grpInfo.userId);
+                            data[index - 1], isAdmin, grpInfo.userId);
                       }
                     } else {
-                      return _contactRow(data[index], false, grpInfo.userId);
+                      bool isAdmin = (grp.adminList ?? [])
+                          .contains(data[index].userId.toString());
+
+                      return _contactRow(data[index], isAdmin, grpInfo.userId);
                     }
                   },
-                  itemCount: data.length + (isAdmin ? 1 : 0),
+                  itemCount: data.length + (hasPermission ? 1 : 0),
                 );
               },
               error: (error, stackTrace) => buildEmptyPlaceHolder(''),
@@ -194,7 +199,8 @@ class GroupInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(Contacts contact, bool hasPermission, String userId) {
+  Widget _contactRow(Contacts contact, bool isAdmin, String userId) {
+    bool isOwner = contact.userId.toString() == group.groupInfo.owner;
     return InkWell(
       onLongPress: () {},
       child: Container(
@@ -214,14 +220,14 @@ class GroupInfoScreen extends StatelessWidget {
                 ),
               ),
             ),
-            if (hasPermission)
+            if (isAdmin || isOwner)
               const Icon(
                 Icons.person_outline,
                 color: AppColors.primaryColor,
               ),
-            if (hasPermission)
+            if (isAdmin || isOwner)
               Text(
-                'Admin',
+                isOwner ? 'Owner' : 'Admin',
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: AppColors.primaryColor,
@@ -507,27 +513,22 @@ class GroupInfoScreen extends StatelessWidget {
             right: 1.w,
             top: 1.h,
             child: Consumer(builder: (context, ref, child) {
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
-                onPressed: () {
-                  ref.read(selectedContactProvider.notifier).clear();
-
-                  // final user = await getMeAsUser();
-                  // final List<Contacts> empty = [];
-                  // final infos = ref
-                  //     .read(groupMembersInfo(group.groupInfo.groupId))
-                  //     .maybeWhen(
-                  //         orElse: () => GroupMeberInfo(
-                  //             empty, group.groupInfo, user!.id.toString()));
-
-                  if (contacts.isNotEmpty) {
-                    ref
-                        .read(selectedContactProvider.notifier)
-                        .addContacts(contacts);
-                    Navigator.pushNamed(context, RouteList.editGroup,
-                        arguments: group.groupInfo);
-                  }
-                },
+              final user = ref.watch(loginRepositoryProvider).user;
+              return Visibility(
+                visible: group.groupInfo.owner == user?.id.toString(),
+                child: IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.white),
+                  onPressed: () {
+                    ref.read(selectedContactProvider.notifier).clear();
+                    if (contacts.isNotEmpty) {
+                      ref
+                          .read(selectedContactProvider.notifier)
+                          .addContacts(contacts);
+                      Navigator.pushNamed(context, RouteList.editGroup,
+                          arguments: group.groupInfo);
+                    }
+                  },
+                ),
               );
             }),
           ),

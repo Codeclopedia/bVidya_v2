@@ -16,8 +16,9 @@ final videoStateProvider = StateProvider<bool>((ref) => false);
 class BlearnVideoPlayer extends HookConsumerWidget {
   final Lesson lesson;
   final int courseId;
+  final int instructorId;
 
-  BlearnVideoPlayer({Key? key, required this.lesson, required this.courseId})
+  BlearnVideoPlayer({Key? key, required this.lesson, required this.courseId,required this.instructorId})
       : super(key: key);
 
   FlickManager? flickManager;
@@ -108,7 +109,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
 
               // await _videoPlayerController.initialize();
               // _createChewieController();
-              await sendVideoPlayback(lessons[index].id);
+              await sendVideoPlayback(lessons[index].id,instructorId);
               // hideLoading(ref);
 
               ref.read(videoStateProvider.notifier).state = true;

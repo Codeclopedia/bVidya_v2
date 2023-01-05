@@ -4,6 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'core/constants.dart';
 import 'core/helpers/bchat_handler.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
@@ -176,11 +177,11 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     }
     FirebaseMessaging.onMessage.listen((message) {
       //For P2P Call
-      if (message.data['type'] == 'p2p_call') {
+      if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
-        if (action == 'START_CALL') {
+        if (action == NotiConstants.actionCallStart) {
           showIncomingCall(message);
-        } else if (action == 'END_CALL') {
+        } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
         }
       }

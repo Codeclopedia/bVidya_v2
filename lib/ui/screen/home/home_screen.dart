@@ -4,6 +4,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
+import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
@@ -19,15 +20,17 @@ class HomeScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // final provider = ref.watch(chatConversationProvider);
     useEffect(() {
-      print('useEffect called in HomeSreen');
-      ref.read(bChatSDKControllerProvider).loadChats(ref);
-      // _loadConversations(ref);
-      // getContacts();
+      // print('useEffect called in HomeSreen');
+      ref.read(bChatSDKControllerProvider).init();
+      ref.read(chatConversationProvider).init(ref);
+
       _addHandler(ref);
       return _disposeAll;
     }, const []);
     return BaseDrawerAppBarScreen(
+      currentIndex: DrawerMenu.bChat,
       routeName: RouteList.home,
       topBar: _userAppBar(context),
       body: _chatListScreen(context),
@@ -36,62 +39,23 @@ class HomeScreen extends HookConsumerWidget {
 
   void _addHandler(WidgetRef ref) {
     registerForContact('home_screen_contact', ref);
-    try {
-      ChatClient.getInstance.chatManager.addEventHandler(
-        'home_screen_chat',
-        ChatEventHandler(
-          onMessagesReceived: (msgs) {
-            ref.read(bChatSDKControllerProvider).reloadConversation(ref);
-          },
-        ),
-      );
-    } on ChatError catch (e) {
-      debugPrint('Error ${e.code} - ${e.description}');
-    }
-    // try {
-    //   ChatClient.getInstance.presenceManager.addEventHandler(
-    //     "user_presence_home_screen",
-    //     ChatPresenceEventHandler(
-    //       onPresenceStatusChanged: (list) {
-    //         ref.read(chatConversationListProvider.notifier).updateStatus(list);
-    //       },
-    //     ),
-    //   );
-    // } catch (_) {}
-  }
-
-  void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    // for (var msg in messages) {
-    //  print('msg: ${msg.from}');
-    // ref.read(chatMessageListProvider.notifier).addChat(msg);
-    // }
-    if (messages.isNotEmpty) {
-      ref.read(bChatSDKControllerProvider).reloadConversation(ref);
-      // _loadConversations(ref);
-    }
+    registerForNewMessage('home_screen_chat', (msgs) {
+      for (var lastMessage in msgs) {
+        if (lastMessage.conversationId != null &&
+            lastMessage.chatType == ChatType.Chat) {
+          ref.watch(chatConversationProvider).updateConversationMessage(
+              lastMessage, lastMessage.conversationId!);
+        }
+      }
+    });
   }
 
   void _disposeAll() {
     unregisterForContact('home_screen_contact');
-    try {
-      ChatClient.getInstance.chatManager.removeEventHandler('home_screen_chat');
-    } catch (e) {
-      debugPrint('Error $e');
-    }
-    //
-    // _signOut();
+    unregisterForNewMessage('home_screen_chat');
   }
 
-  // Future _signOutAsync() async {
-  //   try {
-  //     await ChatClient.getInstance.logout(true);
-  //     print("sign out succeed");
-  //   } on ChatError catch (e) {
-  //     print("sign out failed, code: ${e.code}, desc: ${e.description}");
-  //   }
-  // }
-
-  _chatListScreen(BuildContext context) {
+  Widget _chatListScreen(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h),
       height: double.infinity,
@@ -106,10 +70,11 @@ class HomeScreen extends HookConsumerWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final loading = ref.watch(loadingChatProvider);
+                final loading = ref.watch(chatConversationProvider
+                    .select((value) => value.isLoading));
 
-                final conversationList =
-                    ref.watch(chatConversationListProvider);
+                final conversationList = ref.watch(chatConversationProvider
+                    .select((value) => value.chatConversationList));
 
                 // print('conversationList:${conversationList.length}');
                 return loading && conversationList.isEmpty
@@ -144,9 +109,7 @@ class HomeScreen extends HookConsumerWidget {
             arguments: model);
         await Future.delayed(const Duration(seconds: 1)); //delay to reset state
         try {
-          ref
-              .read(bChatSDKControllerProvider)
-              .reloadOnlyConversation(ref, model);
+          ref.read(chatConversationProvider).update();
         } catch (_) {}
       },
       onLongPress: (() {
@@ -312,7 +275,8 @@ class HomeScreen extends HookConsumerWidget {
           final model =
               await Navigator.pushNamed(context, RouteList.contactList);
           if (model != null) {
-            ref.read(bChatSDKControllerProvider).reloadConversation(ref);
+            ref.read(chatConversationProvider).update();
+            // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
 
             // ref
             //     .read(bChatSDKControllerProvider)
@@ -387,28 +351,6 @@ class HomeScreen extends HookConsumerWidget {
     );
   }
 
-  // Widget _buildBChatText() {
-  //   return RichText(
-  //       text: TextSpan(children: [
-  //     TextSpan(
-  //         text: 'b',
-  //         style: TextStyle(
-  //           fontFamily: kFontFamily,
-  //           color: AppColors.redBColor,
-  //           fontSize: 14.sp,
-  //           fontWeight: FontWeight.bold,
-  //         )),
-  //     TextSpan(
-  //         text: 'chat',
-  //         style: TextStyle(
-  //           fontFamily: kFontFamily,
-  //           color: AppColors.darkChatColor,
-  //           fontSize: 14.sp,
-  //           fontWeight: FontWeight.bold,
-  //         )),
-  //   ]));
-  // }
-
   Widget _userAppBar(BuildContext context) {
     return SizedBox(
       height: 12.h,
@@ -466,7 +408,8 @@ class HomeScreen extends HookConsumerWidget {
                   final result =
                       await Navigator.pushNamed(context, RouteList.search);
                   if (result == true) {
-                    ref.read(bChatSDKControllerProvider).loadConversations(ref);
+                    ref.read(chatConversationProvider).update();
+                    // ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   }
                 },
                 child: Container(

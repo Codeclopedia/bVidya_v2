@@ -26,7 +26,7 @@ class BMeetHomeScreen extends StatelessWidget {
         return true;
       },
       child: LiveDrawerScreen(
-        screenName: RouteList.bMeet,
+        currentIndex: DrawerMenu.bMeet,
         baseBody: SafeArea(
           child: Container(
             alignment: Alignment.bottomCenter,

@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-// import '/controller/bchat_providers.dart';
-// import '/core/state.dart';
 import '../../data/models/models.dart';
 
 class BchatGroupManager {
@@ -47,6 +45,14 @@ class BchatGroupManager {
     return null;
   }
 
+  static Future loadPublicGroups() async {
+    try {
+      await ChatClient.getInstance.groupManager.fetchPublicGroupsFromServer();
+    } catch (e) {
+      print('Error creating group $e');
+    }
+  }
+
   static Future<ChatGroup?> editGroup(String groupId, String name, String? desc,
       List<String> ids, List<String> removeIds, String image) async {
     try {
@@ -79,8 +85,7 @@ class BchatGroupManager {
     List<GroupConversationModel> conversations = [];
     List<ChatGroup> groups = [];
     try {
-      // groups = await ChatClient.getInstance.groupManager.getJoinedGroups();
-      // if (groups.isEmpty) {
+      
       groups = await ChatClient.getInstance.groupManager
           .fetchJoinedGroupsFromServer();
       // }

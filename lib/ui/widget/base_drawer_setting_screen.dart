@@ -6,20 +6,22 @@ import 'base_drawer_page.dart';
 
 class BaseDrawerSettingScreen extends StatelessWidget {
   final Widget bodyContent;
-  final String screenName;
+  // final String screenName;
+  final int currentIndex;
   final bool showEmail;
 
   const BaseDrawerSettingScreen(
       {Key? key,
       required this.bodyContent,
-      required this.screenName,
+      // required this.screenName,
+      required this.currentIndex,
       this.showEmail = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BaseDrawerPage(
-      screenName: screenName,
+      currentIndex: currentIndex,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
