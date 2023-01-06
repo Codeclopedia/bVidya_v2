@@ -131,23 +131,21 @@ InputDecoration get inputEditProfileStyle => InputDecoration(
       ),
     );
 
-
-InputDecoration  inputMultiLineStyle = InputDecoration(
-      contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.h),
-      fillColor: const Color(0xFFF5F5F5),
-      filled: true,
-
-      hintStyle: TextStyle(
-        fontSize: 9.sp,
-        fontFamily: kFontFamily,
-        color: AppColors.inputHintText,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        borderSide: const BorderSide(color: Color(0xFF989898), width: 1.0),
-      ),
-      border: OutlineInputBorder(
-        gapPadding: 4.0,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-    );
+InputDecoration inputMultiLineStyle = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.h),
+  fillColor: const Color(0xFFF5F5F5),
+  filled: true,
+  hintStyle: TextStyle(
+    fontSize: 9.sp,
+    fontFamily: kFontFamily,
+    color: AppColors.inputHintText,
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12.0),
+    borderSide: const BorderSide(color: Color(0xFF989898), width: 1.0),
+  ),
+  border: OutlineInputBorder(
+    gapPadding: 4.0,
+    borderRadius: BorderRadius.circular(12.0),
+  ),
+);

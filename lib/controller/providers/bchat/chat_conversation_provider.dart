@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/data/services/bchat_api_service.dart';
 
 import '../../bchat_providers.dart';
 import '/core/utils.dart';
@@ -62,9 +63,11 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         notifyListeners();
         return;
       }
+      List<Contacts> contacts = [];
       final ids = await BChatContactManager.getContacts();
-      final contacts =
-          await ref.read(bChatProvider).getContactsByIds(ids) ?? [];
+      if (ids.isNotEmpty) {
+        contacts = await ref.read(bChatProvider).getContactsByIds(ids) ?? [];
+      }
 
       // List<String> userIds = await BChatContactManager.getContactList();
 
@@ -138,10 +141,14 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Future updateConversationMessage(ChatMessage lastMessage) async {
+  Future updateConversationMessage(ChatMessage lastMessage,
+      {bool update = false}) async {
     try {
       final id = lastMessage.conversationId;
-      if (id == null) return;
+      if (id == null) {
+        print('Conversation id is null');
+        return;
+      }
       final model = _chatConversationMap[id];
       if (model != null) {
         final newModel = ConversationModel(
@@ -154,11 +161,53 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         );
         _chatConversationMap.update(id, (v) => newModel,
             ifAbsent: () => newModel);
-      } else {}
+      } else {
+        final user = await getMeAsUser();
+        if (user == null) {
+          return;
+        }
+        final Contacts contact;
+        if (_contactsMap.containsKey(id)) {
+          contact = _contactsMap[id]!;
+        } else {
+          final result = await BChatApiService.instance
+              .getContactsByIds(user.authToken, id);
+          if (result.body?.contacts?.isNotEmpty == true) {
+            contact = result.body!.contacts![0];
+            _contactsMap.addAll({contact.userId: contact});
+          } else {
+            return;
+          }
+          final conv = await ChatClient.getInstance.chatManager
+              .getConversation(id, type: ChatConversationType.Chat);
+          ConversationModel newModel = ConversationModel(
+            id: id,
+            badgeCount: (await conv?.unreadCount()) ?? 0,
+            contact: contact,
+            conversation: conv,
+            lastMessage: await conv?.latestMessage(),
+          );
+          _chatConversationMap.addAll({id: newModel});
+        }
+        // ref
+        //     .read(chatConversationProvider)
+        //     .addOrUpdateConversation(model);
+        // final newModel = ConversationModel(
+        //   id: id,
+        //   badgeCount: (await model.conversation?.unreadCount()) ?? 0,
+        //   contact: model.contact,
+        //   conversation: model.conversation,
+        //   lastMessage: lastMessage,
+        //   // isOnline: null,
+        // );
+      }
     } catch (e) {
       return;
     }
-    // notifyListeners();
+    if (update) {
+      notifyListeners();
+    }
+    //
   }
 
   void update() {

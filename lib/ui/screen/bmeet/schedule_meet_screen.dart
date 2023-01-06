@@ -350,10 +350,7 @@ class ScheduleMeetScreen extends HookWidget {
     );
   }
 
-  void _scheduleMeeting(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  void _scheduleMeeting(BuildContext context, WidgetRef ref) async {
     showLoading(ref);
     final mute = ref.watch(muteSchdeuleMeetingProvider);
     final camOff = ref.watch(videoOffSchdeuleMeetingProvider);
@@ -385,7 +382,19 @@ class ScheduleMeetScreen extends HookWidget {
     }
   }
 
-  void dispose() {}
+  void dispose() {
+    _controller.dispose();
+    _dateController.dispose();
+    _endController.dispose();
+    _startController.dispose();
+    _subjectController.dispose();
+
+    _titleFocus.dispose();
+    _subjectFocus.dispose();
+    _dateFocus.dispose();
+    _startFocus.dispose();
+    _endFocus.dispose();
+  }
 
   Widget _buildSettingRow(
       String title, String desc, bool value, Function(bool) onTapSetting) {

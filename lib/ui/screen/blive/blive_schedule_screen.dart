@@ -478,5 +478,14 @@ class ScheduleBLiveScreen extends HookWidget {
             ));
   }
 
-  void dispose() {}
+  void dispose() {
+    _controller.dispose();
+    _dateController.dispose();
+    _startController.dispose();
+    _subjectController.dispose();
+    _titleFocus.dispose();
+    _dateFocus.dispose();
+    _startFocus.dispose();
+    _descFocus.dispose();
+  }
 }

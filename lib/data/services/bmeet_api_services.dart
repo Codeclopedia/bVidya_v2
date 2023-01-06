@@ -71,7 +71,7 @@ class BMeetApiService {
       final data = {
         'name': title,
         'description': subject,
-        'date': DateFormat('yyyy-MM-dd').format(date),
+        'date': DateFormat('y-MM-dd').format(date),
         'start_time': DateFormat.Hm().format(startAt),
         'end_time': DateFormat.Hm().format(endAt),
         'repeatable': '0',

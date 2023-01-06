@@ -1,4 +1,5 @@
-// import 'package:bvidya/ui/widget/webView.dart';
+
+import 'package:carousel_slider/carousel_slider.dart';
 
 import '/core/helpers/blive_helper.dart';
 import '/controller/blearn_providers.dart';
@@ -55,7 +56,7 @@ class BLearnHomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 2.h),
-          _buildOngoing(),
+          _buildOngoing(body.popularCourses),
           _buildExploreCaption(context),
           _buildCourses(body.featuredCategories),
           _buildRecommended(),
@@ -95,7 +96,7 @@ class BLearnHomeScreen extends StatelessWidget {
   Widget _buildWebinarContent(
       List<LMSLiveClass>? broadcastData, WidgetRef ref) {
     if (broadcastData == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Padding(
         padding: EdgeInsets.symmetric(vertical: 1.h),
@@ -126,91 +127,108 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOngoing() {
-    return Container(
-      height: 42.w,
-      width: double.infinity,
-      margin: EdgeInsets.only(left: 6.w, right: 6.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(5.w)),
-      ),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SizedBox(
-              height: 42.w,
-              width: double.infinity,
-              child: Image.asset(
-                "assets/images/banner_image.png",
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Container(
+  Widget _buildOngoing(List<Course>? onGoingCoursesList) {
+    return CarouselSlider.builder(
+        itemCount: 5,
+        options: CarouselOptions(
+          aspectRatio: 16 / 7,
+          viewportFraction: 1,
+          initialPage: 0,
+          enableInfiniteScroll: true,
+          reverse: false,
+          autoPlay: true,
+          autoPlayInterval: const Duration(seconds: 5),
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+          autoPlayCurve: Curves.fastOutSlowIn,
+          enlargeCenterPage: true,
+          enlargeFactor: 0.3,
+          onPageChanged: (index, reason) {},
+          scrollDirection: Axis.horizontal,
+        ),
+        itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
+          return Container(
             height: 42.w,
             width: double.infinity,
+            margin: EdgeInsets.only(left: 6.w, right: 6.w),
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-              Colors.white.withOpacity(0.5),
-              Colors.transparent
-            ])),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              borderRadius: BorderRadius.all(Radius.circular(5.w)),
+            ),
+            child: Stack(
               children: [
-                Text(
-                  'Ongoing',
-                  style: TextStyle(
-                    fontSize: 9.sp,
-                    color: Colors.black,
-                    fontFamily: kFontFamily,
-                  ),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.w),
+                      image: DecorationImage(
+                          image: getImageProvider(
+                              onGoingCoursesList?[itemIndex].image ?? ""),
+                          fit: BoxFit.cover)),
                 ),
-                SizedBox(height: 0.4.h),
-                Text(
-                  'Photoshop Beginners:\nZero to Hero',
-                  style: TextStyle(
-                      fontFamily: kFontFamily,
-                      fontSize: 11.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w800),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [
+                    Colors.white,
+                    Colors.white.withOpacity(0.5),
+                    Colors.transparent
+                  ])),
                 ),
-                Text(
-                  '15/25 Lessons',
-                  style: TextStyle(
-                      fontFamily: kFontFamily,
-                      fontSize: 8.sp,
-                      color: Colors.black),
-                ),
-                SizedBox(height: 2.w),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    textStyle: TextStyle(
-                        fontFamily: kFontFamily,
-                        color: Colors.white,
-                        fontSize: 8.sp),
-                    // elevation: 0.0,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.w),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.w)),
-                    backgroundColor: const Color(0xFF65427A),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    'Continue',
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Ongoing',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                          color: Colors.black,
+                          fontFamily: kFontFamily,
+                        ),
+                      ),
+                      SizedBox(height: 0.4.h),
+                      Text(
+                        'Photoshop Beginners:\nZero to Hero',
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            fontSize: 11.sp,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w800),
+                      ),
+                      Text(
+                        '15/25 Lessons',
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            fontSize: 8.sp,
+                            color: Colors.black),
+                      ),
+                      SizedBox(height: 2.w),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(
+                              fontFamily: kFontFamily,
+                              color: Colors.white,
+                              fontSize: 8.sp),
+                          // elevation: 0.0,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 6.w, vertical: 1.w),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.w)),
+                          backgroundColor: const Color(0xFF65427A),
+                        ),
+                        onPressed: () {},
+                        child: const Text(
+                          'Continue',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Widget _buildExploreCaption(BuildContext context) {

@@ -11,6 +11,8 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import 'components/common.dart';
 
+final teacherOccupation = StateProvider.autoDispose<String>((ref) => '');
+
 final selectedTabTeacherDetailsProvider =
     StateProvider.autoDispose<int>((ref) => 0);
 
@@ -59,6 +61,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                 child: buildEmptyPlaceHolder('No Data'),
                               );
                             }
+                            // ref.read(teacherOccupation.notifier).state =
+                            //     data.profile?.occupation ?? '';
                             return _buildContent(data, context);
                           },
                           error: (error, stackTrace) =>
@@ -98,13 +102,25 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 0.5.h),
-                        child: Text(
-                          instructor.occupation ?? '',
-                          style: TextStyle(
-                              color: AppColors.black,
-                              fontSize: 2.5.w,
-                              fontWeight: FontWeight.w500),
-                        ),
+                        child: instructor.occupation == null
+                            ? Consumer(
+                                builder: (context, ref, child) {
+                                  return Text(
+                                    ref.watch(teacherOccupation),
+                                    style: TextStyle(
+                                        color: AppColors.black,
+                                        fontSize: 2.5.w,
+                                        fontWeight: FontWeight.w500),
+                                  );
+                                },
+                              )
+                            : Text(
+                                instructor.occupation ?? '',
+                                style: TextStyle(
+                                    color: AppColors.black,
+                                    fontSize: 2.5.w,
+                                    fontWeight: FontWeight.w500),
+                              ),
                       ),
                       Text(
                         S.current

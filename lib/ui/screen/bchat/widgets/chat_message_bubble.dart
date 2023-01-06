@@ -114,6 +114,7 @@ class ChatMessageBubble extends StatelessWidget {
       case MessageType.VIDEO:
         {
           ChatVideoMessageBody body = message.body as ChatVideoMessageBody;
+          return _videoOnly(body);
         }
         break;
       default:
@@ -129,6 +130,8 @@ class ChatMessageBubble extends StatelessWidget {
       constraints: BoxConstraints(
         minWidth: 30.w,
         maxWidth: 60.w,
+        minHeight: 5.h,
+        maxHeight: 30.h,
       ),
       margin: isOwnMessage
           ? EdgeInsets.only(right: 2.w)
@@ -138,14 +141,49 @@ class ChatMessageBubble extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
-              image: NetworkImage(body.remotePath ??
-                  'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg'),
+              image: getImageProviderChatImage(body),
             ),
           ),
           Positioned(
             right: 2.w,
             bottom: 1.h,
             child: _buildTime(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _videoOnly(ChatVideoMessageBody body) {
+    // final bool isOwnMessage = message.from == currentUser.id;
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: 30.w,
+        maxWidth: 60.w,
+        minHeight: 5.h,
+        maxHeight: 30.h,
+      ),
+      margin: isOwnMessage
+          ? EdgeInsets.only(right: 2.w)
+          : EdgeInsets.only(left: 2.w),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(3.w)),
+            child: Image(
+              image: getImageProviderChatVideo(body),
+            ),
+          ),
+          Positioned(
+            right: 2.w,
+            bottom: 1.h,
+            child: _buildTime(),
+          ),
+          const Center(
+            child: Icon(
+              Icons.play_circle_outline,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

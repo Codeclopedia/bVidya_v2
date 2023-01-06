@@ -112,6 +112,24 @@ ImageProvider getImageProviderChatImage(ChatImageMessageBody body) {
     return CachedNetworkImageProvider(body.thumbnailRemotePath!);
   }
   return CachedNetworkImageProvider(body.remotePath!);
+}
+
+ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body) {
+  if (body.thumbnailLocalPath?.isNotEmpty == true) {
+    return FileImage(
+      File(body.thumbnailLocalPath!),
+    );
+  }
+  // if (body.localPath.isNotEmpty) {
+  //   return FileImage(
+  //     File(body.localPath),
+  //   );
+  // }
+  if (body.thumbnailRemotePath?.isNotEmpty == true) {
+    return CachedNetworkImageProvider(body.thumbnailRemotePath!);
+  }
+  return const CachedNetworkImageProvider(
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg');
   // final lo
   // if (url.startsWith('http')) {
   //   return CachedNetworkImageProvider(url);

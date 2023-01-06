@@ -51,7 +51,7 @@ Future<void> main() async {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  debugPrint('listen a terminate message ${message.data}');
+  debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
 
   if (Platform.isAndroid) {
     await Firebase.initializeApp();

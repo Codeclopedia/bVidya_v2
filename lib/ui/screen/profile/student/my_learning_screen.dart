@@ -1,10 +1,18 @@
+import 'dart:convert';
+
+import '/data/models/response/blearn/follow_response.dart';
+import '/data/models/response/blearn/instructors_response.dart';
+import '/ui/widgets.dart';
+
+import '/controller/profile_providers.dart';
 import '../../../widget/sliding_tab.dart';
+import '../../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 import '../../../widget/courses_circularIndicator.dart';
-import '../../../widget/tab_switcher.dart';
+// import '../../../widget/tab_switcher.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 
@@ -61,7 +69,8 @@ class MyLearningScreen extends ConsumerWidget {
           Expanded(
               child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-            child: selectedIndex == 0 ? _buildCourses() : _buildFollowed(),
+            child:
+                selectedIndex == 0 ? _buildCourses() : _buildFollowed(ref: ref),
           ))
         ],
       )),
@@ -173,60 +182,90 @@ class MyLearningScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFollowed() {
-    return Container(
-      color: Colors.white,
-      child: ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.only(top: 1.h),
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          return _buldFollwedRow();
-        },
-      ),
-    );
+  Widget _buildFollowed({required WidgetRef ref}) {
+    return ref.watch(follwedInstructorsProvider).when(
+          data: (data) {
+            return Container(
+              color: Colors.white,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: data?.length,
+                padding: EdgeInsets.only(top: 1.h),
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  return _buldFollwedRow(data![index], context);
+                },
+              ),
+            );
+          },
+          error: (e, t) => buildEmptyPlaceHolder('No Teacher Followed yet'),
+          loading: () => ListView.builder(
+            shrinkWrap: true,
+            itemCount: 10,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.w),
+                child: CustomizableShimmerTile(height: 25.w, width: 100.w),
+              );
+            },
+          ),
+        );
   }
 
-  Widget _buldFollwedRow() {
+  Widget _buldFollwedRow(
+      FollowedInstructor followedInstructor, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
-      child: Row(
-        children: [
-          getCicleAvatar('A', '', radius: 3.h),
-          // CircleAvatar(
-          //   radius: 7.w,
-          //   backgroundImage:
-          //       AssetImage("assets/images/dummy_profile.png"),
-          // ),
-          SizedBox(width: 5.w),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "User Name",
-                  style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: kFontFamily,
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w400),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 0.3.h),
-                  child: Text(
-                    "2K Followers",
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, RouteList.bLearnteacherProfileDetail,
+              arguments: Instructor(
+                  id: followedInstructor.instructorId,
+                  name: followedInstructor.instructorName,
+                  experience: followedInstructor.experience,
+                  image: followedInstructor.image,
+                  occupation: null,
+                  specialization: followedInstructor.specialization));
+        },
+        child: Row(
+          children: [
+            getCicleAvatar('A', followedInstructor.image ?? "", radius: 3.h),
+            // CircleAvatar(
+            //   radius: 7.w,
+            //   backgroundImage:
+            //       AssetImage("assets/images/dummy_profile.png"),
+            // ),
+            SizedBox(width: 5.w),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    followedInstructor.instructorName ?? "",
                     style: TextStyle(
-                        fontSize: 8.sp,
-                        color: AppColors.descTextColor,
+                        fontSize: 12.sp,
                         fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w300),
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w400),
                   ),
-                )
-              ],
-            ),
-          )
-        ],
+                  Padding(
+                    padding: EdgeInsets.only(top: 0.3.h),
+                    child: Text(
+                      "2K Followers",
+                      style: TextStyle(
+                          fontSize: 8.sp,
+                          color: AppColors.descTextColor,
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.w300),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

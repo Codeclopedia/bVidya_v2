@@ -23,8 +23,7 @@ final apiBChatProvider =
     Provider<BChatApiService>((_) => BChatApiService.instance);
 
 final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
-  // User? user = ref.read(loginRepositoryProvider).user;
-  return BChatSDKController();
+  return BChatSDKController.instance;
 });
 
 final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
@@ -89,7 +88,7 @@ final searchQueryProvider = StateProvider.autoDispose<String>(
 
 final searchChatContact =
     FutureProvider.autoDispose<List<SearchContactResult>>((ref) async {
-  final term = ref.read(searchQueryProvider).trim();
+  final term = ref.watch(searchQueryProvider).trim();
   User? user = ref.read(loginRepositoryProvider).user;
   if (term.isNotEmpty && user != null) {
     final result = await ref.read(bChatProvider).searchContact(term);
@@ -142,15 +141,6 @@ final groupMembersInfo =
   }
   return null;
 });
-
-// final groupListProvider = FutureProvider<List<GroupConversationModel>>(
-//   (ref) => BchatGroupManager.loadGroupConversationsList(),
-// );
-
-// final groupListProviderA =
-//     FutureProvider.autoDispose<List<GroupConversationModel>>(
-//   (ref) => BchatGroupManager.loadGroupConversationsList(),
-// );
 
 final groupMediaProvier =
     FutureProvider.family<List<ChatGroupSharedFileEx>, String>(

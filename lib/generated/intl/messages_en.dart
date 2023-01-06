@@ -506,6 +506,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetPassDesc":
             MessageLookupByLibrary.simpleMessage("Reset your password"),
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "search_contact_ppl": MessageLookupByLibrary.simpleMessage("People"),
         "secrityDesc":
             MessageLookupByLibrary.simpleMessage("End to End encrypted"),
         "settingChat": MessageLookupByLibrary.simpleMessage("Chats"),

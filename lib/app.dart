@@ -173,10 +173,11 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
 
     final message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {
-      debugPrint('getInitialMessage : ${message.data}');
+      debugPrint('getInitialMessage : ${message.toMap()}');
     }
     FirebaseMessaging.onMessage.listen((message) {
       //For P2P Call
+      print('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {

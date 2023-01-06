@@ -20,7 +20,8 @@ class ChatMessageBodyWidget extends StatelessWidget {
       case MessageType.TXT:
         {
           ChatTextMessageBody body = message.body as ChatTextMessageBody;
-          return _buildTextMessage(body);
+          return Padding(
+              padding: EdgeInsets.all(1.w), child: _buildTextMessage(body));
         }
       case MessageType.IMAGE:
         {
@@ -28,8 +29,8 @@ class ChatMessageBodyWidget extends StatelessWidget {
           return ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
-              image: NetworkImage(body.remotePath ??
-                  'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg'),
+              image: getImageProviderChatImage(body),
+              fit: BoxFit.cover,
             ),
           );
         }
@@ -40,11 +41,17 @@ class ChatMessageBodyWidget extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(3.w)),
-                child: Image(
-                  image: NetworkImage(body.thumbnailRemotePath ??
-                      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg'),
+                child: Image(image: getImageProviderChatVideo(body)
+                    // NetworkImage(body.thumbnailRemotePath ??
+                    //     'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg'),
+                    ),
+              ),
+              const Center(
+                child: Icon(
+                  Icons.play_circle_outline,
+                  color: Colors.white,
                 ),
-              )
+              ),
             ],
           );
         }

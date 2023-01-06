@@ -15,9 +15,11 @@ import '/data/models/models.dart';
 
 class BChatSDKController {
   // WidgetRef? _ref;
-  BChatSDKController() {
-    print('BChatSDKController initialized');
-  }
+  // BChatSDKController() {
+  //   print('BChatSDKController initialized');
+  // }
+  static BChatSDKController instance = BChatSDKController._();
+  BChatSDKController._();
 
   bool _initialized = false;
 
@@ -40,8 +42,11 @@ class BChatSDKController {
       print('error contacts  = $e');
     }
     try {
-      final list = await ChatClient.getInstance.groupManager
-          .fetchJoinedGroupsFromServer();
+      final list =
+          await ChatClient.getInstance.groupManager.fetchJoinedGroupsFromServer(
+        needMemberCount: true,
+        needRole: true,
+      );
       print('Loaded groups  = ${list.length}');
     } catch (e) {
       print('error groups  = $e');
@@ -339,25 +344,4 @@ class BChatSDKController {
     } on ChatError catch (_) {}
   }
 
-  // void loadGroupConversations(WidgetRef ref) async {
-  //   List<GroupConversationModel> conversations = [];
-  //   // conversations.clear();
-  //   try {
-  //     conversations = await BchatGroupManager.loadGroupConversationsList();
-  //   } catch (e) {
-  //     // recall failed, code: e.code, reason: e.description
-  //   }
-  //   if (conversations.isNotEmpty) {
-  //     try {
-  //       ref
-  //           .read(groupChatConversationListProvider.notifier)
-  //           .addConversations(conversations);
-  //     } catch (e) {}
-  //   }
-  // }
-
-  // void dispose() {
-  //   ChatClient.getInstance.presenceManager
-  //       .removeEventHandler("user_presence_home_screen");
-  // }
 }

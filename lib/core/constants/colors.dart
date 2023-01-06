@@ -30,6 +30,8 @@ class AppColors {
   static const Color inputHeaderText = Color(0xFF010101);
 
   static const Color inputHintText = Color(0x99010101);
+  
+  static const Color inputText = Color(0xFF000000);
 
   static const Color yellowAccent = Color(0xFFFFC948);
 

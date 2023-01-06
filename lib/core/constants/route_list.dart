@@ -39,6 +39,9 @@ class RouteList {
   static const String bChatVideoCall = '/chat_video_call';
   static const String bChatAudioCall = '/chat_audio_call';
 
+  static const String bViewImage = '/chat_view_image';
+  static const String bViewVideo = '/chat_watch_video';
+
   //BMeet
   static const String bMeet = '/b-meet';
   static const String bMeetStart = '/b-meet-start';

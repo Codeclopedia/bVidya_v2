@@ -7,29 +7,11 @@ import '../base_settings.dart';
 
 // String? options = S.current.bmeet;
 
-class ReportProblemScreen extends StatefulWidget {
+class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({Key? key}) : super(key: key);
 
-  @override
-  State<ReportProblemScreen> createState() => _ReportProblemScreenState();
-}
 
-class _ReportProblemScreenState extends State<ReportProblemScreen> {
-  late final TextEditingController _textEditController;
-
-  String options = S.current.bmeet;
-
-  @override
-  void initState() {
-    _textEditController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textEditController.dispose();
-    super.dispose();
-  }
+  static String options = S.current.bmeet;
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +38,11 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
                 SizedBox(height: 1.5.h),
                 Consumer(
                   builder: (context, ref, child) {
-                    return _buildIssues(() async {
+                    return _buildIssues((content) async {
                       showLoading(ref);
                       final result = await ref
                           .read(profileRepositoryProvider)
-                          .reportProblem(options, _textEditController.text);
+                          .reportProblem(options, content);
                       hideLoading(ref);
                       if (result == null) {
                         // ignore: use_build_context_synchronously
@@ -80,7 +62,8 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
     );
   }
 
-  Widget _buildIssues(Function() onClick) {
+  Widget _buildIssues(Function(String content) onClick) {
+    final textEditController = TextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -94,7 +77,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
         ),
         SizedBox(height: 1.5.h),
         TextField(
-          controller: _textEditController,
+          controller: textEditController,
           decoration: inputDirectionStyle.copyWith(
             hintText: S.current.issuesDesc,
           ),
@@ -105,7 +88,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
         SizedBox(height: 1.5.h),
         ElevatedButton(
           style: elevatedButtonStyle,
-          onPressed: onClick,
+          onPressed: () => onClick(textEditController.text.trim()),
           child: Text(S.current.submitBtn),
         ),
       ],

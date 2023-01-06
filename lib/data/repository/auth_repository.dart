@@ -96,6 +96,11 @@ class AuthRepository {
         name: name,
         otp: otp);
     if (result.status != null && result.status == successfull) {
+      _user = result.body;
+      userToken = _user?.authToken ?? '';
+
+      final pref = await SharedPreferences.getInstance();
+      await pref.setString('user', jsonEncode(_user!.toJson()));
       return null;
     }
     return result.message ?? 'Unknown error occurred!!';

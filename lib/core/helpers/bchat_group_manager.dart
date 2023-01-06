@@ -54,7 +54,7 @@ class BchatGroupManager {
   }
 
   static Future<ChatGroup?> editGroup(String groupId, String name, String? desc,
-      List<String> ids, List<String> removeIds, String image) async {
+      List<String> ids, List<String> removeIds, String image,bool updateImage) async {
     try {
       await ChatClient.getInstance.groupManager.changeGroupName(groupId, name);
 
@@ -85,9 +85,11 @@ class BchatGroupManager {
     List<GroupConversationModel> conversations = [];
     List<ChatGroup> groups = [];
     try {
-      
-      groups = await ChatClient.getInstance.groupManager
-          .fetchJoinedGroupsFromServer();
+      groups =
+          await ChatClient.getInstance.groupManager.fetchJoinedGroupsFromServer(
+        needMemberCount: true,
+        needRole: true,
+      );
       // }
     } catch (e) {
       print('Error: $e');
@@ -144,7 +146,6 @@ class BchatGroupManager {
     return image ?? '';
   }
 
-
   static Future chageGroupMuteStateFor(String userId, bool mute) async {
     try {
       final chatparam = ChatSilentModeParam.remindType(
@@ -162,7 +163,8 @@ class BchatGroupManager {
     }
   }
 
-  static Future<ChatPushRemindType> fetchGroupMuteStateFor(String userId) async {
+  static Future<ChatPushRemindType> fetchGroupMuteStateFor(
+      String userId) async {
     try {
       final result = await ChatClient.getInstance.pushManager
           .fetchConversationSilentMode(

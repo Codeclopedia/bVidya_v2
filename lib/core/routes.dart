@@ -91,6 +91,26 @@ class Routes {
           );
         }
         break;
+      case RouteList.bViewImage:
+        if (settings.arguments is ChatImageMessageBody) {
+          screen = FullScreenImageScreen(
+            body: settings.arguments as ChatImageMessageBody,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+
+        break;
+      case RouteList.bViewVideo:
+        if (settings.arguments is ChatVideoMessageBody) {
+          screen = ChatVideoPlayerScreen(
+            body: settings.arguments as ChatVideoMessageBody,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+
+        break;
 
       case RouteList.bChatVideoCall:
         // screen = const ChatVideoCall();
@@ -280,7 +300,7 @@ class Routes {
           final arg = settings.arguments as Map<String, dynamic>;
           Lesson lesson = arg["lesson"];
           int courseId = arg["course_id"];
-          int instructorId =arg['instructor_id'];
+          int instructorId = arg['instructor_id'];
           screen = BlearnVideoPlayer(
             lesson: lesson,
             courseId: courseId,

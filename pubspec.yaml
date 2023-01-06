@@ -24,6 +24,7 @@ dependencies:
   awesome_notifications: ^0.7.2
   cached_network_image: ^3.2.2
   callkeep: ^0.3.2
+  carousel_slider: ^4.2.1
   chart_sparkline: ^1.0.12
   collection: ^1.16.0
   cupertino_icons: ^1.0.2

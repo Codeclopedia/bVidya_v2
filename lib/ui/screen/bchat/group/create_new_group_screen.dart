@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
 import '/ui/screens.dart';
 import '/controller/providers/contacts_select_notifier.dart';
 import '/controller/bchat_providers.dart';
@@ -128,28 +129,32 @@ class CreateNewGroupScreen extends HookWidget {
                           Positioned(
                             bottom: 1.h,
                             right: 1.w,
-                            child: InkWell(
-                              onTap: () async {
-                                final pickedFile =
-                                    await showImageFilePicker(context);
-                                if (pickedFile != null) {
-                                  ref
-                                      .read(selectedGroupImageProvider.notifier)
-                                      .state = pickedFile;
-                                }
-                              },
-                              child: Container(
-                                width: 6.w,
-                                height: 6.w,
-                                decoration: BoxDecoration(
-                                  color: AppColors.yellowAccent,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1,
+                            child: Visibility(
+                              visible: image == null || imageUrl.isEmpty,
+                              child: InkWell(
+                                onTap: () async {
+                                  final pickedFile =
+                                      await showImageFilePicker(context);
+                                  if (pickedFile != null) {
+                                    ref
+                                        .read(
+                                            selectedGroupImageProvider.notifier)
+                                        .state = pickedFile;
+                                  }
+                                },
+                                child: Container(
+                                  width: 6.w,
+                                  height: 6.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.yellowAccent,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
                                   ),
+                                  child: Icon(Icons.add, size: 4.w),
                                 ),
-                                child: Icon(Icons.add, size: 4.w),
                               ),
                             ),
                           ),
@@ -305,12 +310,11 @@ class CreateNewGroupScreen extends HookWidget {
         CircleAvatar(
           radius: 4.h,
           // borderRadius: BorderRadius.all(Radius.circular(3.w)),
-          child: Image(
-            image: getImageProviderFile(image),
-            width: 8.h,
-            height: 8.h,
-            fit: BoxFit.cover,
-          ),
+          backgroundImage: getImageProviderFile(image),
+          // width: 8.h,
+          // height: 8.h,
+          // fit: BoxFit.cover,
+          // ),
         ),
         Positioned(
           right: 0,
@@ -346,17 +350,24 @@ class CreateNewGroupScreen extends HookWidget {
     }
     final ChatGroup? groupCreated;
     if (group != null) {
-      final list = ref.read(selectedContactProvider);
-      final userIds = list.map((e) => e.userId.toString()).toList();
-      final removedContact = GroupInfoScreen.contacts
-          .where((e) => !userIds.contains(e.userId.toString()))
+      final alreadyMemberIds =
+          GroupInfoScreen.contacts.map((e) => e.userId.toString()).toList();
+      final toBeMemberIds = ref
+          .read(selectedContactProvider)
+          .map((e) => e.userId.toString())
           .toList();
 
-      final removedUserIds =
-          removedContact.map((e) => e.userId.toString()).toList();
+      List<String> removedUserIds =
+          alreadyMemberIds.where((id) => !toBeMemberIds.contains(id)).toList();
 
-      groupCreated = await BchatGroupManager.editGroup(
-          group!.groupId, name.trim(), '', userIds, removedUserIds, url);
+      List<String> toAddUserIds =
+          toBeMemberIds.where((id) => !alreadyMemberIds.contains(id)).toList();
+      //already memeber GroupInfoScreen.contacts
+      //updated member selectedContactProvider
+      //to add
+
+      groupCreated = await BchatGroupManager.editGroup(group!.groupId,
+          name.trim(), '', toAddUserIds, removedUserIds, url, file != null);
     } else {
       final list = ref.read(selectedContactProvider);
       final userIds = list.map((e) => e.userId.toString()).toList();
@@ -367,6 +378,7 @@ class CreateNewGroupScreen extends HookWidget {
     hideLoading(ref);
     if (groupCreated != null) {
       // print('group : ${groupCreated.toJson()}');
+      ref.read(groupConversationProvider).addConveration(groupCreated);
       Navigator.pop(context, groupCreated);
     } else {
       AppSnackbar.instance.error(context, S.current.group_error_creating);

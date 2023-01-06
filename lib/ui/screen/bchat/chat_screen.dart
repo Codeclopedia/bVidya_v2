@@ -175,14 +175,38 @@ class ChatScreen extends HookConsumerWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      alignment: Alignment.center,
+                      constraints: BoxConstraints(
+                        minHeight: 5.h,
+                        maxHeight: 20.h,
+                      ),
                       decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
+                          color: AppColors.cardWhite,
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                      child: attFile.messageType == MessageType.IMAGE
-                          ? Image(image: FileImage(attFile.file))
-                          : (attFile.messageType == MessageType.VIDEO
-                              ? getSvgIcon('icon_chat_media.svg')
-                              : getSvgIcon('icon_chat_doc.svg')),
+                      child: Stack(
+                        children: [
+                          attFile.messageType == MessageType.IMAGE
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(1.w),
+                                  ),
+                                  child: Image(image: FileImage(attFile.file)),
+                                )
+                              : (attFile.messageType == MessageType.VIDEO
+                                  ? getSvgIcon('icon_chat_media.svg')
+                                  : getSvgIcon('icon_chat_doc.svg')),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              onPressed: () {
+                                ref.read(attachedFile.notifier).state = null;
+                              },
+                              icon: const Icon(Icons.close, color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   InkWell(
@@ -263,10 +287,12 @@ class ChatScreen extends HookConsumerWidget {
                 ),
                 SizedBox(height: 1.h),
                 Container(
-                    padding: EdgeInsets.all(2.w),
+                    // padding: EdgeInsets.all(1.w),
+                    constraints:
+                        BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
                     decoration: BoxDecoration(
                       color: AppColors.chatBoxBackgroundOthers,
-                      borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                      borderRadius: BorderRadius.all(Radius.circular(3.w)),
                     ),
                     child: ChatMessageBodyWidget(message: replyOf.message)
                     //  Column(
@@ -293,7 +319,17 @@ class ChatScreen extends HookConsumerWidget {
             final ChatMessage msg = ChatMessage.createTxtSendMessage(
                 targetId: model.contact.userId.toString(), content: input);
             // ..from = _myChatPeerUserId;
-
+            msg.attributes = {
+              // Adds the push template to the message.
+              "em_push_template": {
+                // Sets the template name.
+                "name": "text_message",
+                // Sets the template title by specifying the variable.
+                "title_args": ["title"],
+                // Sets the template content by specifying the variable.
+                "content_args": ["content"],
+              }
+            };
             // ref.read(chatMessageListProvider.notifier).addChat(msg);
             return await _sendMessage(msg, ref);
           },
@@ -413,8 +449,8 @@ class ChatScreen extends HookConsumerWidget {
                 onLongPress: () =>
                     _onMessageLongPress(message, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTap(message, isSelected, ref)
-                    : null,
+                    ? _onMessageTapSelect(message, isSelected, ref)
+                    : _onMessageTap(message, context),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
@@ -446,7 +482,18 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  _onMessageTap(ChatMessage message, bool selected, WidgetRef ref) {
+  _onMessageTap(ChatMessage message, BuildContext context) {
+    if (message.body.type == MessageType.IMAGE) {
+      //open image
+      Navigator.pushNamed(context, RouteList.bViewImage,
+          arguments: message.body as ChatImageMessageBody);
+    } else if (message.body.type == MessageType.VIDEO) {
+      Navigator.pushNamed(context, RouteList.bViewVideo,
+          arguments: message.body as ChatVideoMessageBody);
+    } else if (message.body.type == MessageType.FILE) {}
+  }
+
+  _onMessageTapSelect(ChatMessage message, bool selected, WidgetRef ref) {
     if (selected) {
       ref.read(selectedChatMessageListProvider.notifier).remove(message);
     } else {
@@ -531,13 +578,13 @@ class ChatScreen extends HookConsumerWidget {
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
     ref.read(bhatMessagesProvider(model)).addChats(messages);
-    for (var msg in messages) {
-      // print('msg: ${msg.from}');
-      if (msg.chatType == ChatType.Chat) {
-        ref.read(chatConversationProvider).updateConversationMessage(msg);
-      }
-      // ref.read()
-    }
+    // for (var msg in messages) {
+    //   // print('msg: ${msg.from}');
+    //   if (msg.chatType == ChatType.Chat) {
+    //     ref.read(chatConversationProvider).updateConversationMessage(msg);
+    //   }
+    //   // ref.read()
+    // }
   }
 
   Future<void> _onScroll(

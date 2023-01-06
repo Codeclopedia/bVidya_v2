@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
+import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/helpers/bchat_contact_manager.dart';
 import '/core/helpers/bchat_handler.dart';
 
@@ -63,6 +66,22 @@ class SearchScreen extends HookWidget {
                     final inputText = ref.watch(inputTextProvider);
                     return TextFormField(
                       controller: controller,
+                      decoration: searchInputDirectionStyle.copyWith(
+                        suffixIcon: inputText.isNotEmpty
+                            ? IconButton(
+                                onPressed: () {
+                                  controller.text = '';
+                                },
+                                icon: const Icon(Icons.close,
+                                    color: Colors.black))
+                            : null,
+                        hintText: 'Search Person or Group',
+                      ),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontFamily: kFontFamily,
+                        color: AppColors.inputText,
+                      ),
                       onChanged: (value) {
                         ref.read(inputTextProvider.notifier).state =
                             value.trim();
@@ -75,17 +94,6 @@ class SearchScreen extends HookWidget {
                           ref.read(searchQueryProvider.notifier).state = '';
                         }
                       },
-                      decoration: searchInputDirectionStyle.copyWith(
-                        suffixIcon: inputText.isNotEmpty
-                            ? IconButton(
-                                onPressed: () {
-                                  controller.text = '';
-                                },
-                                icon: const Icon(Icons.close,
-                                    color: Colors.black))
-                            : null,
-                        hintText: 'Search Person or Group',
-                      ),
                     );
                   },
                 ),
@@ -107,7 +115,7 @@ class SearchScreen extends HookWidget {
           children: [
             SizedBox(height: 2.h),
             Text(
-              'People',
+              S.current.search_contact_ppl,
               style: TextStyle(
                 fontFamily: kFontFamily,
                 color: Colors.black,
@@ -117,6 +125,9 @@ class SearchScreen extends HookWidget {
             ),
             Consumer(builder: (context, ref, child) {
               final result = ref.watch(searchChatContact);
+              final contacts = ref.watch(
+                  chatConversationProvider.select((value) => value.contacts));
+              final contactIds = contacts.map((e) => e.userId).toList();
               return result.when(
                   data: ((data) {
                     if (data.isEmpty) {
@@ -127,25 +138,59 @@ class SearchScreen extends HookWidget {
                       itemCount: data.length,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
+                        final item = data[index];
+                        bool alreadyAdded = contactIds.contains(item.userId!);
                         return InkWell(
                             onTap: () async {
-                              // final result = await ref
-                              //     .read(bChatProvider)
-                              //     .addContact(data[index]);
-                              final result = await BChatContactManager
-                                  .sendRequestToAddContact(
-                                      data[index].userId.toString());
+                              if (alreadyAdded) {
+                                final Contacts element = contacts.firstWhere(
+                                    (e) => e.userId == item.userId!);
+                                try {
+                                  final conv = await ChatClient
+                                      .getInstance.chatManager
+                                      .getConversation(
+                                          element.userId.toString(),
+                                          type: ChatConversationType.Chat);
 
-                              if (result == null) {
-                                AppSnackbar.instance.message(context,
-                                    'Request sent to ${data[index].name} successfully');
-                                // Navigator.pop(context, true);
+                                  if (conv != null) {
+                                    ConversationModel model = ConversationModel(
+                                      id: element.userId.toString(),
+                                      badgeCount: await conv.unreadCount(),
+                                      contact: element,
+                                      conversation: conv,
+                                      lastMessage: await conv.latestMessage(),
+                                    );
+                                    ref
+                                        .read(chatConversationProvider.notifier)
+                                        .addOrUpdateConversation(model);
+
+                                    Navigator.pushReplacementNamed(
+                                        context, RouteList.chatScreen,
+                                        arguments: model);
+                                  }
+                                } catch (e) {
+                                  debugPrint(
+                                      'Error in starting new chat of ${item.name}');
+                                }
                               } else {
-                                AppSnackbar.instance
-                                    .error(context, 'Error: $result');
+                                // final result = await ref
+                                //     .read(bChatProvider)
+                                //     .addContact(data[index]);
+                                final result = await BChatContactManager
+                                    .sendRequestToAddContact(
+                                        data[index].userId.toString());
+
+                                if (result == null) {
+                                  AppSnackbar.instance.message(context,
+                                      'Request sent to ${data[index].name} successfully');
+                                  // Navigator.pop(context, true);
+                                } else {
+                                  AppSnackbar.instance
+                                      .error(context, 'Error: $result');
+                                }
                               }
                             },
-                            child: _contactRow(data[index], ref));
+                            child: _contactRow(data[index], alreadyAdded, ref));
                       },
                     );
                   }),
@@ -176,19 +221,21 @@ class SearchScreen extends HookWidget {
     );
   }
 
-  Widget _contactRow(SearchContactResult contact, WidgetRef ref) {
+  Widget _contactRow(SearchContactResult contact, bool added, WidgetRef ref) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
           getCicleAvatar(contact.name ?? '', contact.image ?? ''),
           SizedBox(width: 3.w),
-          Text(
-            contact.name ?? '',
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: AppColors.contactNameTextColor,
-              fontSize: 11.sp,
+          Expanded(
+            child: Text(
+              contact.name ?? '',
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
+              ),
             ),
           ),
         ],

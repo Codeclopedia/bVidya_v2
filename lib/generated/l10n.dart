@@ -930,6 +930,16 @@ class S {
     );
   }
 
+  /// `People`
+  String get search_contact_ppl {
+    return Intl.message(
+      'People',
+      name: 'search_contact_ppl',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Clear Chat`
   String get grp_btx_clear {
     return Intl.message(

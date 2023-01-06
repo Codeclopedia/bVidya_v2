@@ -40,10 +40,10 @@ final signUpTimerProvider =
   (_) => TimerNotifier(),
 );
 
-final signUpOTPGeneratedProvider = StateProvider.autoDispose<bool>(
+final signUpOTPGeneratedProvider = StateProvider<bool>(
   (_) => false,
 );
-final signUpEnteredOTPProvider = StateProvider.autoDispose<String>(
+final signUpEnteredOTPProvider = StateProvider<String>(
   (_) => '',
 );
 

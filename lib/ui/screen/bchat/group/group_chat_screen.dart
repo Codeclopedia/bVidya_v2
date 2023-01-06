@@ -5,8 +5,8 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
-import '../../../../controller/providers/bchat/groups_conversation_provider.dart';
-import '../../../../controller/providers/bchat/group_chats_provider.dart';
+import '/controller/providers/bchat/groups_conversation_provider.dart';
+import '/controller/providers/bchat/group_chats_provider.dart';
 import '../../../dialog/image_picker_dialog.dart';
 import '../dash/models/attach_type.dart';
 import '/core/helpers/bchat_handler.dart';
@@ -111,8 +111,7 @@ class GroupChatScreen extends HookConsumerWidget {
     ref.read(groupChatProvider(model.id)).addChats(messages);
     for (var msg in messages) {
       print('msg: ${msg.from}');
-      if (msg.chatType == ChatType.GroupChat &&
-           msg.conversationId!=null) {
+      if (msg.chatType == ChatType.GroupChat && msg.conversationId != null) {
         ref
             .read(groupConversationProvider)
             .updateConversationMessage(msg, msg.conversationId!);
@@ -207,14 +206,38 @@ class GroupChatScreen extends HookConsumerWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      alignment: Alignment.center,
+                      constraints: BoxConstraints(
+                        minHeight: 5.h,
+                        maxHeight: 20.h,
+                      ),
                       decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
+                          color: AppColors.cardWhite,
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                      child: attFile.messageType == MessageType.IMAGE
-                          ? Image(image: FileImage(attFile.file))
-                          : (attFile.messageType == MessageType.VIDEO
-                              ? getSvgIcon('icon_chat_media.svg')
-                              : getSvgIcon('icon_chat_doc.svg')),
+                      child: Stack(
+                        children: [
+                          attFile.messageType == MessageType.IMAGE
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(1.w),
+                                  ),
+                                  child: Image(image: FileImage(attFile.file)),
+                                )
+                              : (attFile.messageType == MessageType.VIDEO
+                                  ? getSvgIcon('icon_chat_media.svg')
+                                  : getSvgIcon('icon_chat_doc.svg')),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              onPressed: () {
+                                ref.read(attachedFile.notifier).state = null;
+                              },
+                              icon: const Icon(Icons.close, color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   InkWell(
@@ -378,8 +401,8 @@ class GroupChatScreen extends HookConsumerWidget {
                 onLongPress: () =>
                     _onMessageLongPress(message, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTap(message, isSelected, ref)
-                    : null,
+                    ? _onMessageTapSelect(message, isSelected, ref)
+                    : _onMessageTap(message, context),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
@@ -411,12 +434,23 @@ class GroupChatScreen extends HookConsumerWidget {
     }
   }
 
-  _onMessageTap(ChatMessage message, bool selected, WidgetRef ref) {
+  _onMessageTapSelect(ChatMessage message, bool selected, WidgetRef ref) {
     if (selected) {
       ref.read(selectedChatMessageListProvider.notifier).remove(message);
     } else {
       ref.read(selectedChatMessageListProvider.notifier).addChat(message);
     }
+  }
+
+  _onMessageTap(ChatMessage message, BuildContext context) {
+    if (message.body.type == MessageType.IMAGE) {
+      //open image
+      Navigator.pushNamed(context, RouteList.bViewImage,
+          arguments: message.body as ChatImageMessageBody);
+    } else if (message.body.type == MessageType.VIDEO) {
+      Navigator.pushNamed(context, RouteList.bViewVideo,
+          arguments: message.body as ChatVideoMessageBody);
+    } else if (message.body.type == MessageType.FILE) {}
   }
 
   _showMessageOption(ChatMessage message) {
@@ -704,19 +738,19 @@ class GroupChatScreen extends HookConsumerWidget {
                 ),
                 SizedBox(height: 1.h),
                 Container(
-                    padding: EdgeInsets.all(2.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.chatBoxBackgroundOthers,
-                      borderRadius: BorderRadius.all(Radius.circular(2.w)),
-                    ),
-                    child: ChatMessageBodyWidget(message: replyOf.message)
-                    //  Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    //     ChatMessageBodyWidget(message: replyOf.message)
-                    //   ],
-                    // ),
-                    ),
+                  // padding: EdgeInsets.all(1.w),
+                  constraints: BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.chatBoxBackgroundOthers,
+                    borderRadius: BorderRadius.all(Radius.circular(3.w)),
+                  ),
+                  //  Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     ChatMessageBodyWidget(message: replyOf.message)
+                  //   ],
+                  // ),
+                ),
               ],
             ),
           );

@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/controller/bchat_providers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../../controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -20,12 +22,10 @@ class SignUpScreen extends HookWidget {
   Widget build(BuildContext context) {
     // final formKey = ref.watch(formKeyProvider);
     final fullNameTextController = useTextEditingController(text: '');
-    final emailTextController =
-        useTextEditingController(text: '');
+    final emailTextController = useTextEditingController(text: '');
     final mobileTextController = useTextEditingController(text: '');
     final passwordTextController = useTextEditingController(text: '');
-    final confirmPasswordTextController =
-        useTextEditingController(text: '');
+    final confirmPasswordTextController = useTextEditingController(text: '');
 
     return BaseWilPopupScreen(
       onBack: () async {
@@ -302,13 +302,26 @@ class SignUpScreen extends HookWidget {
     final result = await ref
         .read(loginRepositoryProvider)
         .verifyRegistrationOtp(name, email, password, confirmPass, enteredOTP);
-    hideLoading(ref);
+    
     if (result != null) {
+      hideLoading(ref);
       AppSnackbar.instance.error(context, result);
     } else {
+      final user = await ref.read(userAuthChangeProvider).loadUser();
+      if (user == null) {
+        hideLoading(ref);
+        AppSnackbar.instance
+            .error(context, 'Error occurred, Please restart app');
+        return;
+      }
       AppSnackbar.instance.message(context, 'Registration successfully');
-      ref.read(signUpOTPGeneratedProvider.notifier).state = true;
-      ref.read(signUpTimerProvider.notifier).start();
+      // ref.read(signUpOTPGeneratedProvider.notifier).state = true;
+      // ref.read(signUpTimerProvider.notifier).reset();
+      await ref.read(bChatSDKControllerProvider).initChatSDK(user);
+      await ref.read(bChatSDKControllerProvider).loadAllContactsGroup();
+      hideLoading(ref);
+      // ref.read(userAuthChangeProvider).setUserSigned(true);
+      Navigator.pushReplacementNamed(context, RouteList.home);
     }
   }
 
