@@ -144,6 +144,40 @@ class BchatGroupManager {
     return image ?? '';
   }
 
+
+  static Future chageGroupMuteStateFor(String userId, bool mute) async {
+    try {
+      final chatparam = ChatSilentModeParam.remindType(
+          mute ? ChatPushRemindType.ALL : ChatPushRemindType.NONE);
+      await ChatClient.getInstance.pushManager.setConversationSilentMode(
+        conversationId: userId,
+        param: chatparam,
+        type: ChatConversationType.GroupChat,
+      );
+      // return result.remindType ?? ChatPushRemindType.ALL;
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+  }
+
+  static Future<ChatPushRemindType> fetchGroupMuteStateFor(String userId) async {
+    try {
+      final result = await ChatClient.getInstance.pushManager
+          .fetchConversationSilentMode(
+              conversationId: userId, type: ChatConversationType.GroupChat);
+      ChatPushRemindType? remindType = result.remindType;
+      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      return remindType ?? ChatPushRemindType.ALL;
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+    return ChatPushRemindType.ALL;
+  }
+
   // static Future<List<Contacts>> loadGroupMemebers(
   //     ChatGroup groupInfo, WidgetRef ref) async {
   //   final groups = groupInfo.memberList ?? [];

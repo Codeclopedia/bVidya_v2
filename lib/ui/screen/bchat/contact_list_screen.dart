@@ -78,7 +78,8 @@ class ContactListScreen extends StatelessWidget {
                             contact: element,
                             conversation: conv,
                             lastMessage: await conv.latestMessage(),
-                            isOnline: null);
+                            // isOnline: null,
+                            );
                         ref
                             .read(chatConversationProvider)
                             .addOrUpdateConversation(model);

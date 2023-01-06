@@ -71,9 +71,9 @@ class BMeetApiService {
       final data = {
         'name': title,
         'description': subject,
-        'date': DateFormat.yMMMd(date),
-        'start_time': DateFormat.Hm(startAt),
-        'end_time': DateFormat.Hm(endAt),
+        'date': DateFormat('yyyy-MM-dd').format(date),
+        'start_time': DateFormat.Hm().format(startAt),
+        'end_time': DateFormat.Hm().format(endAt),
         'repeatable': '0',
         'disable_video': noVideo ? '0' : '1',
         'disable_audio': noAudio ? '0' : '1',

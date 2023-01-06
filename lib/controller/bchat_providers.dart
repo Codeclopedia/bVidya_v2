@@ -16,7 +16,7 @@ import '/data/repository/bchat_respository.dart';
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
 import 'providers/bchat/bchat_sdk_controller.dart';
-import 'providers/chat_conversations_provider.dart';
+// import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
 
 final apiBChatProvider =
@@ -41,9 +41,9 @@ final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
 //   return ref.watch(bChatRepositoryProvider).conversations;
 // });
 
-final chatConversationListProvider =
-    StateNotifierProvider<ChatConversationNotifier, List<ConversationModel>>(
-        (ref) => ChatConversationNotifier());
+// final chatConversationListProvider =
+//     StateNotifierProvider<ChatConversationNotifier, List<ConversationModel>>(
+//         (ref) => ChatConversationNotifier());
 
 // final groupChatConversationListProvider = StateNotifierProvider<
 //     GroupChatConversationNotifier, List<GroupConversationModel>>(

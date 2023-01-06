@@ -17,6 +17,10 @@ class GroupConversationChangeProvider extends ChangeNotifier {
   List<GroupConversationModel> get groupConversationList =>
       _groupConversationMap.values.toList();
 
+  bool _isLoading = true;
+
+  bool get isLoading => _isLoading;
+
   Future addConveration(ChatGroup grp) async {
     GroupConversationModel model;
     try {
@@ -45,6 +49,7 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     for (var item in list) {
       _groupConversationMap.addAll({item.id: item});
     }
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -68,10 +73,11 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     }
     _groupConversationMap.update(grp.groupId, (v) => model,
         ifAbsent: () => model);
-    notifyListeners();
+    // notifyListeners();
   }
 
-  Future updateConversationMessage(ChatMessage lastMessage, String groupId) async {
+  Future updateConversationMessage(
+      ChatMessage lastMessage, String groupId) async {
     try {
       final model = _groupConversationMap[groupId];
       if (model != null) {

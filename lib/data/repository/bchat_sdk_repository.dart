@@ -66,7 +66,8 @@ class BChatSDKRepository {
               contact: contact,
               conversation: conv,
               lastMessage: lastMessage,
-              isOnline: null);
+              // isOnline: null,
+              );
         } catch (e) {
           continue;
         }

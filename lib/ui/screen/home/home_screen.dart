@@ -43,8 +43,9 @@ class HomeScreen extends HookConsumerWidget {
       for (var lastMessage in msgs) {
         if (lastMessage.conversationId != null &&
             lastMessage.chatType == ChatType.Chat) {
-          ref.watch(chatConversationProvider).updateConversationMessage(
-              lastMessage, lastMessage.conversationId!);
+          ref
+              .watch(chatConversationProvider)
+              .updateConversationMessage(lastMessage);
         }
       }
     });
@@ -107,7 +108,6 @@ class HomeScreen extends HookConsumerWidget {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.chatScreen,
             arguments: model);
-        await Future.delayed(const Duration(seconds: 1)); //delay to reset state
         try {
           ref.read(chatConversationProvider).update();
         } catch (_) {}

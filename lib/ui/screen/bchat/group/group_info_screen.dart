@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 
 import '/controller/providers/contacts_select_notifier.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -17,7 +19,7 @@ final groupMuteProvider = StateProvider.autoDispose<bool>(
   ((_) => true),
 );
 
-class GroupInfoScreen extends StatelessWidget {
+class GroupInfoScreen extends HookConsumerWidget {
   final GroupConversationModel group;
   static final imageSize = 28.w;
 
@@ -25,7 +27,12 @@ class GroupInfoScreen extends StatelessWidget {
 
   static final List<Contacts> contacts = [];
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      _loadMuteSetting(ref);
+      return () {};
+    }, []);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ColouredBoxBar(
@@ -438,6 +445,21 @@ class GroupInfoScreen extends StatelessWidget {
           );
   }
 
+  _updateSetting(bool mute) async {
+    await BchatGroupManager.chageGroupMuteStateFor(
+        group.groupInfo.groupId, mute);
+  }
+
+  _loadMuteSetting(WidgetRef ref) async {
+    ChatPushRemindType remindType =
+        await BchatGroupManager.fetchGroupMuteStateFor(group.groupInfo.groupId);
+    if (remindType == ChatPushRemindType.NONE) {
+      ref.read(groupMuteProvider.notifier).state = false;
+    } else {
+      ref.read(groupMuteProvider.notifier).state = true;
+    }
+  }
+
   Widget _buildMuteSettings() {
     return Consumer(
       builder: (context, ref, child) {
@@ -445,6 +467,7 @@ class GroupInfoScreen extends StatelessWidget {
         return InkWell(
           onTap: () {
             ref.read(groupMuteProvider.notifier).state = !mute;
+            _updateSetting(!mute);
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
@@ -462,6 +485,7 @@ class GroupInfoScreen extends StatelessWidget {
                 ),
                 mySwitch(mute, (value) {
                   ref.read(groupMuteProvider.notifier).state = value;
+                  _updateSetting(value);
                 })
               ],
             ),

@@ -40,12 +40,13 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       final lastMessage = await conv.latestMessage();
       if (lastMessage == null) return;
       ConversationModel model = ConversationModel(
-          id: contact.userId.toString(),
-          badgeCount: await conv.unreadCount(),
-          contact: contact,
-          conversation: conv,
-          lastMessage: lastMessage,
-          isOnline: null);
+        id: contact.userId.toString(),
+        badgeCount: await conv.unreadCount(),
+        contact: contact,
+        conversation: conv,
+        lastMessage: lastMessage,
+        // isOnline: null,
+      );
       _chatConversationMap.addAll({model.id: model});
     } catch (e) {
       return;
@@ -86,12 +87,13 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           final lastMessage = await conv.latestMessage();
           if (lastMessage == null) continue;
           model = ConversationModel(
-              id: contact.userId.toString(),
-              badgeCount: await conv.unreadCount(),
-              contact: contact,
-              conversation: conv,
-              lastMessage: lastMessage,
-              isOnline: null);
+            id: contact.userId.toString(),
+            badgeCount: await conv.unreadCount(),
+            contact: contact,
+            conversation: conv,
+            lastMessage: lastMessage,
+            // isOnline: null,
+          );
         } catch (e) {
           continue;
         }
@@ -119,12 +121,13 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         final lastMessage = await conv.latestMessage();
         if (lastMessage == null) return;
         newModel = ConversationModel(
-            id: convId.toString(),
-            badgeCount: await conv.unreadCount(),
-            contact: model.contact,
-            conversation: conv,
-            lastMessage: lastMessage,
-            isOnline: null);
+          id: convId.toString(),
+          badgeCount: await conv.unreadCount(),
+          contact: model.contact,
+          conversation: conv,
+          lastMessage: lastMessage,
+          // isOnline: null,
+        );
         _chatConversationMap.update(convId, (v) => newModel,
             ifAbsent: () => newModel);
       }
@@ -135,25 +138,23 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Future updateConversationMessage(
-      ChatMessage lastMessage, String conversationId) async {
+  Future updateConversationMessage(ChatMessage lastMessage) async {
     try {
-      final model = _chatConversationMap[conversationId];
+      final id = lastMessage.conversationId;
+      if (id == null) return;
+      final model = _chatConversationMap[id];
       if (model != null) {
         final newModel = ConversationModel(
-            id: model.id,
-            badgeCount: (await model.conversation?.unreadCount()) ?? 0,
-            contact: model.contact,
-            conversation: model.conversation,
-            lastMessage: lastMessage,
-            isOnline: null);
-        _chatConversationMap.update(conversationId, (v) => newModel,
+          id: model.id,
+          badgeCount: (await model.conversation?.unreadCount()) ?? 0,
+          contact: model.contact,
+          conversation: model.conversation,
+          lastMessage: lastMessage,
+          // isOnline: null,
+        );
+        _chatConversationMap.update(id, (v) => newModel,
             ifAbsent: () => newModel);
-      } else {
-        // final grp = await ChatClient.getInstance.groupManager
-        //     .fetchGroupInfoFromServer(groupId, fetchMembers: true);
-        // addConveration(grp);
-      }
+      } else {}
     } catch (e) {
       return;
     }

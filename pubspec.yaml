@@ -59,6 +59,7 @@ dependencies:
   shared_preferences: ^2.0.15
   shimmer: ^2.0.0
   sizer: ^2.0.15
+  spring: ^2.0.2
   sqflite: ^2.1.0+1
   swipe_to: ^1.0.2
   top_snackbar_flutter: ^3.0.0+1

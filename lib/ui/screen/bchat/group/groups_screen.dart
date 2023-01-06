@@ -21,7 +21,7 @@ class GroupsScreen extends HookConsumerWidget {
     final grpProvider = ref.watch(groupConversationProvider);
 
     useEffect(() {
-      grpProvider.init();
+      ref.read(groupConversationProvider.notifier).init();
       // loadGroupConversations(ref);
       return () {};
     }, const []);
@@ -37,7 +37,9 @@ class GroupsScreen extends HookConsumerWidget {
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                  child: _buildList(grpProvider.groupConversationList, ref),
+                  child: grpProvider.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _buildList(grpProvider.groupConversationList, ref),
                   // child: ref.watch(groupListProviderA).when(
                   //       data: (data) {
                   //         return _buildList(data, ref);
@@ -81,11 +83,7 @@ class GroupsScreen extends HookConsumerWidget {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.groupChatScreen,
             arguments: model);
-        await Future.delayed(
-          const Duration(milliseconds: 500),
-        ); //delay to reset state
-        // ref.invalidate(chatConversationListProvider);
-        // ref.read(bChatSDKControllerProvider).loadConversations(ref);
+        ref.read(groupConversationProvider.notifier).update();
       },
       // onLongPress: (() {
       //   showDialog(

@@ -11,7 +11,7 @@ import 'package:swipe_to/swipe_to.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/bchat_handler.dart';
 import '/core/utils.dart';
-import '/core/utils/chat_utils.dart';
+// import '/core/utils/chat_utils.dart';
 
 // import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
@@ -34,18 +34,14 @@ final selectedChatMessageListProvider =
     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
         (ref) => ChatMessageNotifier());
 
-final onlineStatusProvier =
-    StateProvider.autoDispose<ChatPresence?>((_) => null);
-
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 
 // ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
-  // final int userId;
   final ConversationModel model;
   ChatScreen({Key? key, required this.model}) : super(key: key);
 
-  late String _myChatPeerUserId;
+  // late String _myChatPeerUserId;
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
@@ -59,16 +55,19 @@ class ChatScreen extends HookConsumerWidget {
     useEffect(() {
       // print('useEffect Called');
       _scrollController = ScrollController();
-      _myChatPeerUserId = ChatClient.getInstance.currentUserId ?? '1';
-      ref.read(bhatMessagesProvider(model.id)).init(model);
+      ref.read(bhatMessagesProvider(model)).init();
       _loadMe();
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      _addChatHandler(ref);
-
-      return disposeAll;
+      registerForNewMessage('chat_screen', (msg) {
+        onMessagesReceived(msg, ref);
+      });
+      return () {
+        unregisterForNewMessage('chat_screen');
+        _scrollController.dispose();
+      };
     }, const []);
 
-    ref.listen(bhatMessagesProvider(model.id), (previous, next) {
+    ref.listen(bhatMessagesProvider(model), (previous, next) {
       _isLoadingMore = next.isLoadingMore;
       _hasMoreData = next.hasMoreData;
     });
@@ -104,8 +103,8 @@ class ChatScreen extends HookConsumerWidget {
         fcmToken: user.fcmToken,
         phone: user.phone,
       );
-      _myChatPeerUserId =
-          ChatClient.getInstance.currentUserId ?? user.id.toString();
+      // _myChatPeerUserId =
+      //     ChatClient.getInstance.currentUserId ?? user.id.toString();
     }
   }
 
@@ -141,9 +140,8 @@ class ChatScreen extends HookConsumerWidget {
                   left: 0,
                   child: Consumer(
                     builder: (context, ref, child) {
-                      bool isLoadingMore = ref.watch(
-                          bhatMessagesProvider(model.id)
-                              .select((value) => value.isLoadingMore));
+                      bool isLoadingMore = ref.watch(bhatMessagesProvider(model)
+                          .select((value) => value.isLoadingMore));
                       return isLoadingMore
                           ? const Center(
                               child: SizedBox(
@@ -211,12 +209,6 @@ class ChatScreen extends HookConsumerWidget {
                         );
                       }
 
-                      msg.attributes?.addAll({"em_force_notification": true});
-                      ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-                      if (replyOf != null) {
-                        msg.attributes?.addAll({'reply_of': replyOf.toJson()});
-                        ref.read(chatModelProvider).clearReplyBox();
-                      }
                       await _sendMessage(msg, ref);
                       ref.read(attachedFile.notifier).state = null;
                     },
@@ -302,13 +294,6 @@ class ChatScreen extends HookConsumerWidget {
                 targetId: model.contact.userId.toString(), content: input);
             // ..from = _myChatPeerUserId;
 
-            msg.attributes?.addAll({"em_force_notification": true});
-
-            ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-            if (replyOf != null) {
-              msg.attributes?.addAll({'reply_of': replyOf.toJson()});
-              ref.read(chatModelProvider).clearReplyBox();
-            }
             // ref.read(chatMessageListProvider.notifier).addChat(msg);
             return await _sendMessage(msg, ref);
           },
@@ -364,7 +349,7 @@ class ChatScreen extends HookConsumerWidget {
 
   Widget _buildMessageList(WidgetRef ref) {
     final chatList = ref
-        .watch(bhatMessagesProvider(model.id).select((value) => value.messages))
+        .watch(bhatMessagesProvider(model).select((value) => value.messages))
         .reversed
         .toList();
     return ListView.builder(
@@ -394,7 +379,7 @@ class ChatScreen extends HookConsumerWidget {
         final selectedItems = ref.watch(selectedChatMessageListProvider);
         bool isSelected = selectedItems.contains(message);
 
-        bool isOwnMessage = message.from == _myChatPeerUserId;
+        bool isOwnMessage = message.from != model.id;
         if (!isOwnMessage) _markRead(message);
 
         return Column(
@@ -471,37 +456,46 @@ class ChatScreen extends HookConsumerWidget {
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
     // if (_me == null) return 'User details not loaded yet';
-    try {
-      msg.setMessageStatusCallBack(
-        MessageStatusCallBack(
-          onSuccess: () {
-            hideLoading(ref);
-            // FCMApiService.instance.sendChatPush(
-            //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
-            // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
-          },
-          onError: (error) {
-            hideLoading(ref);
-            // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
-          },
-          onProgress: (progress) {
-            showLoading(ref);
-            // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
-          },
-        ),
-      );
-      final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-      ref.read(bhatMessagesProvider(model.id).notifier).addChat(chat);
-    } on ChatError catch (e) {
-      print("send failed, code: ${e.code}, desc: ${e.description}");
-      return e.description;
+    msg.attributes?.addAll({"em_force_notification": true});
+    ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
+    if (replyOf != null) {
+      msg.attributes?.addAll({'reply_of': replyOf.toJson()});
+      ref.read(chatModelProvider).clearReplyBox();
     }
-    _scrollController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+
+    msg.setMessageStatusCallBack(
+      MessageStatusCallBack(
+        onSuccess: () {
+          hideLoading(ref);
+          // FCMApiService.instance.sendChatPush(
+          //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
+          // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
+        },
+        onError: (error) {
+          hideLoading(ref);
+          // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
+        },
+        onProgress: (progress) {
+          showLoading(ref);
+          // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
+        },
+      ),
     );
-    return null;
+    // final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
+    final chat =
+        await ref.read(bhatMessagesProvider(model).notifier).sendMessage(msg);
+    if (chat != null) {
+      ref
+          .read(chatConversationProvider.notifier)
+          .updateConversationMessage(msg);
+      _scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      return null;
+    }
+    return 'Error while sending message';
   }
 
   Widget _buildUserTyping(String name) {
@@ -535,144 +529,12 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  // bool isLoadingMore = false;
-
-  // Future<void> onLoadEarlier(WidgetRef ref) async {
-  //   try {
-  //     final message = ref.read(bhatMessagesProvider(model.id).notifier).getLast();
-  //     if (message == null) return;
-
-  //     if (model.conversation != null) {
-  //       print('next_chat_id ${message.msgId}');
-  //       await Future.delayed(const Duration(seconds: 2));
-  //       final chats = await model.conversation
-  //           ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
-  //       ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
-  //       ref.read(chatHasMoreOldMessageProvider.notifier).state =
-  //           chats?.length == 20;
-  //       return;
-  //     }
-
-  //     // String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
-  //     // if (cursor == null || cursor.isEmpty) return;
-
-  //     // final oldResult = await ChatClient.getInstance.chatManager
-  //     //     .fetchHistoryMessages(
-  //     //         conversationId: model.id.toString(),
-  //     //         pageSize: 20,
-  //     //         startMsgId: message.msgId);
-
-  //     // // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
-  //     // if (oldResult.cursor == null ||
-  //     //     cursor == oldResult.cursor ||
-  //     //     oldResult.cursor?.isEmpty == true) {
-  //     //   // debugPrint('Not a new cursor : ${oldResult.cursor}');
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-  //     //   return;
-  //     // }
-  //     // // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
-  //     // // debugPrint('old data list ${oldResult.data.length}');
-  //     // if (oldResult.data.isNotEmpty) {
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state =
-  //     //       oldResult.data.length == 20;
-  //     //   ref
-  //     //       .read(chatMessageListProvider.notifier)
-  //     //       .addChats(oldResult.data, oldResult.cursor);
-  //     // } else {
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-  //     //   // print('Set has More Data :false');
-  //     // }
-  //   } catch (e) {}
-
-  //   return;
-  // }
-
-  Future _loadPresence(WidgetRef ref) async {
-    try {
-      ref.read(onlineStatusProvier.notifier).state =
-          await fetchOnlineStatus(model.contact.userId.toString());
-      // print(
-      //     'Online status =${model.isOnline?.statusDetails} ${model.isOnline?.lastTime} ${model.isOnline?.statusDescription}  ${model.isOnline?.expiryTime}');
-      ChatClient.getInstance.presenceManager
-          .subscribe(members: [model.contact.userId.toString()], expiry: 100);
-
-      ChatClient.getInstance.presenceManager.addEventHandler(
-        "user_presence_home_screen",
-        ChatPresenceEventHandler(
-          onPresenceStatusChanged: (list) {
-            for (var s in list) {
-              if (s.publisher == model.contact.userId.toString()) {
-                ref.read(onlineStatusProvier.notifier).state = s;
-                // print(
-                //     'Update status =${s.statusDetails} ${s.lastTime} ${s.statusDescription}  ${s.expiryTime}');
-                break;
-              }
-            }
-            print('onPresenceStatusChanged: ${list.toList()}');
-          },
-        ),
-      );
-    } catch (e) {
-      print('Presence error $e');
-    }
-  }
-
-  _addChatHandler(WidgetRef ref) async {
-    try {
-      // if (model.badgeCount > 0) {
-      //   await model.conversation?.markAllMessagesAsRead();
-      // }
-      registerForNewMessage('chat_screen', (msg) {
-        onMessagesReceived(msg, ref);
-      });
-      // if (model.conversation != null) {
-      //   await model.conversation?.markAllMessagesAsRead();
-      //   final chats = await model.conversation?.loadMessages(loadCount: 20);
-      //   // print('next_chat_id ${chats![0].msgId}');
-      //   ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
-      //   // return;
-      // }
-
-      // final value = await ChatClient.getInstance.chatManager
-      //     .fetchHistoryMessages(
-      //         conversationId: model.id.toString(), pageSize: 20);
-
-      // final chats = value.data;
-      // if (chats.isNotEmpty) {
-      //   debugPrint('preLoadChat cursor : ${value.cursor}');
-      //   debugPrint('data list ${chats.length}');
-      //   ref
-      //       .read(chatMessageListProvider.notifier)
-      //       .addChats(chats, value.cursor);
-      // } else {
-      //   // final list =
-      //   //     await ChatClient.getInstance.contactManager.getAllContactsFromDB();
-      //   // if (!list.contains(model.contact.userId.toString())) {
-      //   //   ChatClient.getInstance.contactManager
-      //   //       .addContact(model.contact.userId.toString(), reason: 'Hi');
-      //   // }
-      // }
-
-    } on ChatError catch (e) {
-      debugPrint('error: ${e.code}- ${e.description}');
-    }
-    await _loadPresence(ref);
-  }
-
-  void disposeAll() {
-    ChatClient.getInstance.chatManager.removeEventHandler('chat_screen');
-  }
-
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    
-    ref.read(bhatMessagesProvider(model.id)).addChats(messages);
+    ref.read(bhatMessagesProvider(model)).addChats(messages);
     for (var msg in messages) {
       // print('msg: ${msg.from}');
-      if (msg.chatType == ChatType.Chat &&
-           msg.conversationId!=null) {
-        ref
-            .read(chatConversationProvider)
-            .updateConversationMessage(msg, msg.conversationId!);
+      if (msg.chatType == ChatType.Chat) {
+        ref.read(chatConversationProvider).updateConversationMessage(msg);
       }
       // ref.read()
     }
@@ -687,8 +549,7 @@ class ChatScreen extends HookConsumerWidget {
               scrollController.position.maxScrollExtent &&
           !scrollController.position.outOfRange;
       if (topReached) {
-        ref.watch(bhatMessagesProvider(model.id).notifier).loadMore();
-        
+        ref.watch(bhatMessagesProvider(model).notifier).loadMore();
       }
     }
 
@@ -769,18 +630,9 @@ class ChatScreen extends HookConsumerWidget {
           const Spacer(),
           IconButton(
               onPressed: () async {
-                // print('conversation is NULL =${model.conversation == null} ');
-                for (var m in selectedItems) {
-                  try {
-                    await model.conversation?.deleteMessage(m.msgId);
-                    // ref
-                    //     .read(selectedChatMessageListProvider.notifier)
-                    //     .remove(m);
-                    ref.read(bhatMessagesProvider(model.id).notifier).remove(m);
-                  } on ChatError catch (e) {
-                    print('Error- ${e.code} :${e.description}');
-                  }
-                }
+                ref
+                    .read(bhatMessagesProvider(model).notifier)
+                    .deleteMessages(selectedItems);
                 ref.read(selectedChatMessageListProvider.notifier).clear();
                 // ChatClient.getInstance.chatManager.del
               },
@@ -794,7 +646,7 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   Widget _topBar(BuildContext context, WidgetRef ref) {
-    final value = ref.watch(onlineStatusProvier);
+    // final value = ref.watch(onlineStatusProvier);
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -843,7 +695,9 @@ class ChatScreen extends HookConsumerWidget {
                           ),
                           SizedBox(height: 0.3.h),
                           Text(
-                            parseChatPresenceToReadable(value),
+                            ref.watch(bhatMessagesProvider(model)
+                                .select((value) => value.onlineStatus)),
+                            // parseChatPresenceToReadable(value),
                             style: TextStyle(
                               fontFamily: kFontFamily,
                               color: AppColors.yellowAccent,

@@ -98,7 +98,7 @@ class ContactProfileScreen extends HookConsumerWidget {
           children: [
             _buildUserInfo(),
             _buildMuteSettings(),
-            SizedBox(height: 1.h),
+            // SizedBox(height: 1.h),
             _mediaSection(),
             _buildGroups(),
             SizedBox(height: 3.h),
@@ -145,7 +145,7 @@ class ContactProfileScreen extends HookConsumerWidget {
 
   Widget _buildUserInfo() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6.w),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -255,80 +255,83 @@ class ContactProfileScreen extends HookConsumerWidget {
   Widget _mediaSection() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                S.current.pr_media_shared,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  fontSize: 11.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              TextButton(
-                onPressed: (() {}),
-                child: Text(
-                  S.current.pr_btx_all,
+      child: Consumer(builder: (context, ref, child) {
+        final medias = ref.watch(chatImageFiles(contact.userId.toString()));
+
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.current.pr_media_shared,
                   style: TextStyle(
                     fontFamily: kFontFamily,
-                    fontSize: 8.sp,
-                    color: AppColors.primaryColor,
+                    fontSize: 11.sp,
+                    color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            ],
-          ),
-          Consumer(
-            builder: (context, ref, child) {
-              return ref.watch(chatImageFiles(contact.userId.toString())).when(
-                    data: (data) {
-                      if (data.isEmpty) {
-                        return buildEmptyPlaceHolder('No Media');
-                      }
-                      return SizedBox(
-                        height: 30.w,
-                        child: ListView.separated(
-                          itemCount: data.length > 3 ? 3 : data.length,
-                          scrollDirection: Axis.horizontal,
-                          separatorBuilder: (context, index) => SizedBox(
-                            width: 3.w,
-                          ),
-                          itemBuilder: (context, index) {
-                            return _rowChatImageBody(data[index]);
-                          },
-                        ),
-                      );
+                Visibility(
+                  visible: medias.hasValue,
+                  child: TextButton(
+                    onPressed: (() {}),
+                    child: Text(
+                      S.current.pr_btx_all,
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        fontSize: 8.sp,
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            medias.when(
+              data: (data) {
+                if (data.isEmpty) {
+                  return buildEmptyPlaceHolder('No Media');
+                }
+                return SizedBox(
+                  height: 30.w,
+                  child: ListView.separated(
+                    itemCount: data.length > 3 ? 3 : data.length,
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: 3.w,
+                    ),
+                    itemBuilder: (context, index) {
+                      return _rowChatImageBody(data[index]);
                     },
-                    error: (error, stackTrace) =>
-                        buildEmptyPlaceHolder('Error in loadin No Media'),
-                    loading: () => buildLoading,
-                  );
-            },
-          ),
-          // Row(
-          //   mainAxisSize: MainAxisSize.max,
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     _rowImage(
-          //         image:
-          //             'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
-          //     _rowImage(
-          //         image:
-          //             'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
-          //     _rowImage(
-          //         image:
-          //             'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
-          //         last: true,
-          //         counter: 4),
-          //   ],
-          // )
-        ],
-      ),
+                  ),
+                );
+              },
+              error: (error, stackTrace) =>
+                  buildEmptyPlaceHolder('Error in loadin No Media'),
+              loading: () => buildLoading,
+            ),
+            // Row(
+            //   mainAxisSize: MainAxisSize.max,
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=400'),
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/2736613/pexels-photo-2736613.jpeg?auto=compress&cs=tinysrgb&w=400'),
+            //     _rowImage(
+            //         image:
+            //             'https://images.pexels.com/photos/583842/pexels-photo-583842.jpeg?auto=compress&cs=tinysrgb&w=400',
+            //         last: true,
+            //         counter: 4),
+            //   ],
+            // )
+          ],
+        );
+      }),
     );
   }
 
@@ -419,14 +422,7 @@ class ContactProfileScreen extends HookConsumerWidget {
         return InkWell(
           onTap: () async {
             _updateSetting(!mute);
-            ref.read(chatMuteProvider.notifier).state =
-                // ref.read(muteProvider(contact.userId.toString()).notifier).state =
-                !mute;
-
-            // final conv = await ChatClient.getInstance.chatManager
-            //     .getConversation(currentUser.userId.toString());
-//
-            // conv?.
+            ref.read(chatMuteProvider.notifier).state = !mute;
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
