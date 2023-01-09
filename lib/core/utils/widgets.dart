@@ -97,8 +97,8 @@ ImageProvider getImageProviderFile(String url) {
   }
 }
 
-ImageProvider getImageProviderChatImage(ChatImageMessageBody body) {
-  if (body.thumbnailLocalPath?.isNotEmpty == true) {
+ImageProvider getImageProviderChatImage(ChatImageMessageBody body,{bool loadThumbFirst=true}) {
+  if (body.thumbnailLocalPath?.isNotEmpty == true && loadThumbFirst) {
     return FileImage(
       File(body.thumbnailLocalPath!),
     );
@@ -108,7 +108,7 @@ ImageProvider getImageProviderChatImage(ChatImageMessageBody body) {
       File(body.localPath),
     );
   }
-  if (body.thumbnailRemotePath?.isNotEmpty == true) {
+  if (body.thumbnailRemotePath?.isNotEmpty == true && loadThumbFirst) {
     return CachedNetworkImageProvider(body.thumbnailRemotePath!);
   }
   return CachedNetworkImageProvider(body.remotePath!);

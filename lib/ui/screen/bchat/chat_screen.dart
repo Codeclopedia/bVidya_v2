@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
@@ -320,15 +321,19 @@ class ChatScreen extends HookConsumerWidget {
                 targetId: model.contact.userId.toString(), content: input);
             // ..from = _myChatPeerUserId;
             msg.attributes = {
+              "em_apns_ext": {
+                "em_push_title": "custom push title",
+                "em_push_content": "custom push content",
+              },
               // Adds the push template to the message.
-              "em_push_template": {
-                // Sets the template name.
-                "name": "text_message",
-                // Sets the template title by specifying the variable.
-                "title_args": ["title"],
-                // Sets the template content by specifying the variable.
-                "content_args": ["content"],
-              }
+              // "em_push_template": {
+              //   // Sets the template name.
+              //   "name": "text_message",
+              //   // Sets the template title by specifying the variable.
+              //   "title_args": ["title"],
+              //   // Sets the template content by specifying the variable.
+              //   "content_args": ["content"],
+              // }
             };
             // ref.read(chatMessageListProvider.notifier).addChat(msg);
             return await _sendMessage(msg, ref);
@@ -485,8 +490,15 @@ class ChatScreen extends HookConsumerWidget {
   _onMessageTap(ChatMessage message, BuildContext context) {
     if (message.body.type == MessageType.IMAGE) {
       //open image
-      Navigator.pushNamed(context, RouteList.bViewImage,
-          arguments: message.body as ChatImageMessageBody);
+      showImageViewer(
+          context,
+          getImageProviderChatImage(message.body as ChatImageMessageBody,
+              loadThumbFirst: false), onViewerDismissed: () {
+        // print("dismissed");
+      });
+
+      // Navigator.pushNamed(context, RouteList.bViewImage,
+      //     arguments: message.body as ChatImageMessageBody);
     } else if (message.body.type == MessageType.VIDEO) {
       Navigator.pushNamed(context, RouteList.bViewVideo,
           arguments: message.body as ChatVideoMessageBody);
@@ -718,44 +730,47 @@ class ChatScreen extends HookConsumerWidget {
                   Navigator.pushNamed(context, RouteList.contactProfile,
                       arguments: model.contact);
                 },
-                child: Row(
-                  children: [
-                    SizedBox(width: 2.w),
-                    getRectFAvatar(
-                      model.contact.name,
-                      model.contact.profileImage,
-                    ),
-                    SizedBox(width: 2.w),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            model.contact.name,
-                            style: TextStyle(
-                                fontFamily: kFontFamily,
-                                color: Colors.white,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 0.3.h),
-                          Text(
-                            ref.watch(bhatMessagesProvider(model)
-                                .select((value) => value.onlineStatus)),
-                            // parseChatPresenceToReadable(value),
-                            style: TextStyle(
-                              fontFamily: kFontFamily,
-                              color: AppColors.yellowAccent,
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w200,
-                            ),
-                          ),
-                        ],
+                child: Padding(
+                  padding: EdgeInsets.only(left: 2.w, top: 1.h, bottom: 1.h),
+                  child: Row(
+                    children: [
+                      // SizedBox(width: 2.w),
+                      getRectFAvatar(
+                        model.contact.name,
+                        model.contact.profileImage,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 2.w),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              model.contact.name,
+                              style: TextStyle(
+                                  fontFamily: kFontFamily,
+                                  color: Colors.white,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 0.3.h),
+                            Text(
+                              ref.watch(bhatMessagesProvider(model)
+                                  .select((value) => value.onlineStatus)),
+                              // parseChatPresenceToReadable(value),
+                              style: TextStyle(
+                                fontFamily: kFontFamily,
+                                color: AppColors.yellowAccent,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w200,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -289,19 +289,18 @@ class ContactProfileScreen extends HookConsumerWidget {
                 ),
               ],
             ),
+            SizedBox(height: 1.h),
             medias.when(
               data: (data) {
                 if (data.isEmpty) {
                   return buildEmptyPlaceHolder('No Media');
                 }
                 return SizedBox(
-                  height: 30.w,
+                  height: imageSize,
                   child: ListView.separated(
                     itemCount: data.length > 3 ? 3 : data.length,
                     scrollDirection: Axis.horizontal,
-                    separatorBuilder: (context, index) => SizedBox(
-                      width: 3.w,
-                    ),
+                    separatorBuilder: (context, index) => SizedBox(width: 3.w),
                     itemBuilder: (context, index) {
                       return _rowChatImageBody(data[index]);
                     },
@@ -381,7 +380,7 @@ class ContactProfileScreen extends HookConsumerWidget {
   Widget _rowChatImageBody(ChatMediaFile file,
       {bool last = false, int counter = 0}) {
     return SizedBox(
-      height: imageSize,
+      // height: imageSize + 2.w,
       width: imageSize,
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(4.w)),
@@ -511,17 +510,16 @@ class ContactProfileScreen extends HookConsumerWidget {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
+                  SizedBox(height: 3.h),
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       InkWell(
                           onTap: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                RouteList.chatScreen, (route) => route.isFirst);
+                            Navigator.pop(context);
+                            // Navigator.pushNamedAndRemoveUntil(context,
+                            //     RouteList.chatScreen, (route) => route.isFirst);
                           },
                           child: _buildIcon('icon_pr_chat.svg')),
                       _buildIcon('icon_pr_vcall.svg'),

@@ -6,14 +6,21 @@ String parseChatPresenceToReadable(ChatPresence? presence) {
   if (presence == null) {
     return '';
   }
-  double now = DateTime.now().millisecondsSinceEpoch / 1000;
-  double diff = now - presence.lastTime;
+  // double now = DateTime.now().millisecondsSinceEpoch / 1000;
+  // double diff = now - presence.lastTime;
   if (presence.statusDetails?.values.isNotEmpty == true) {
-    int value = presence.statusDetails!.values.first;
-    if (value == 1) {
-      return 'Online';
+    for (var status in presence.statusDetails!.values) {
+      if (status == 1) {
+        return 'Online';
+      }
     }
+
+    // int value = presence.statusDetails!.values.first;
+    // if (value == 1) {
+    //   return 'Online';
+    // }
   }
+
   // print('$now  ${presence.lastTime}  : $diff');
   debugPrint(
       'Online status =${presence.statusDetails} ${presence.lastTime} ${presence.statusDescription}  ${presence.expiryTime}');
@@ -50,6 +57,9 @@ Future<ChatPresence?> fetchOnlineStatus(String userId) async {
 
 Future<List<ChatPresence>> fetchOnlineStatuses(List<String> contacts) async {
   try {
+    final pushtemplate =
+        await ChatClient.getInstance.pushManager.getPushTemplate();
+    print('pushtemplate: $pushtemplate');
     return await ChatClient.getInstance.presenceManager
         .fetchPresenceStatus(members: contacts);
   } on ChatError catch (e) {

@@ -105,6 +105,11 @@
     "grp_btx_exit":"Exit Group",
     "grp_btx_report":"Report Group",
 
+    "bchat_conv_read":"Mark as Read",
+    "bchat_conv_delete":"Delete Conversation",
+    "bchat_conv_mute":"Mute Conversation",
+    "bchat_conv_unmute":"Unmute Conversation",
+
     "atc_content":"Share Content",
     "atc_camera":"Camera",
     "atc_media":"Media",

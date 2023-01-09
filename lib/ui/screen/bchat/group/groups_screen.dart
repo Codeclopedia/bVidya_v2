@@ -1,8 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../../../../controller/providers/bchat/groups_conversation_provider.dart';
+import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/contacts_select_notifier.dart';
-// import '/ui/screen/blearn/components/common.dart';
-// import '/core/helpers/bchat_group_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 
@@ -13,18 +11,11 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
 
-class GroupsScreen extends HookConsumerWidget {
+class GroupsScreen extends StatelessWidget {
   const GroupsScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final grpProvider = ref.watch(groupConversationProvider);
-
-    useEffect(() {
-      ref.read(groupConversationProvider.notifier).init();
-      // loadGroupConversations(ref);
-      return () {};
-    }, const []);
+  Widget build(BuildContext context) {
     return Scaffold(
       body: ColouredBoxBar(
           topBar: _buildTopBar(context),
@@ -35,24 +26,17 @@ class GroupsScreen extends HookConsumerWidget {
               // SizedBox(height: 2.h),
               _buttons(context),
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                  child: grpProvider.isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _buildList(grpProvider.groupConversationList, ref),
-                  // child: ref.watch(groupListProviderA).when(
-                  //       data: (data) {
-                  //         return _buildList(data, ref);
-                  //       },
-                  //       error: (error, stackTrace) =>
-                  //           buildEmptyPlaceHolder(''),
-                  //       loading: () => buildLoading,
-                  //     )
-
-                  // final conversationList =
-                  //     ref.watch(groupChatConversationListProvider);
-                  // print('group conversation List:${conversationList.length}');
-                ),
+                child: Consumer(builder: (context, ref, child) {
+                  ref.read(groupConversationProvider.notifier).init();
+                  final grpProvider = ref.watch(groupConversationProvider);
+                  return Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                    child: grpProvider.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _buildList(grpProvider.groupConversationList, ref),
+                  );
+                }),
               )
             ],
           )),
@@ -83,7 +67,10 @@ class GroupsScreen extends HookConsumerWidget {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.groupChatScreen,
             arguments: model);
-        ref.read(groupConversationProvider.notifier).update();
+
+        ref
+            .read(groupConversationProvider.notifier)
+            .updateConversationOnly(model.id);
       },
       // onLongPress: (() {
       //   showDialog(
@@ -248,25 +235,8 @@ class GroupsScreen extends HookConsumerWidget {
           ref.read(selectedContactProvider.notifier).clear();
           final result =
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
-
           if (result != null && result is ChatGroup) {
             ref.read(groupConversationProvider).addConveration(result);
-            // ChatGroup group = result;
-            // group.extension.
-            // ChatConversation? conv = await ChatClient.getInstance.chatManager
-            //     .getConversation(group.groupId,
-            //         type: ChatConversationType.GroupChat);
-            // final model = GroupConversationModel(
-            //   id: group.groupId,
-            //   groupInfo: group,
-            //   badgeCount: await conv?.unreadCount() ?? 0,
-            //   conversation: conv,
-            //   lastMessage: await conv?.latestMessage(),
-            //   image: BchatGroupManager.getGroupImage(group),
-            // );
-            // ref
-            //     .read(groupChatConversationListProvider.notifier)
-            //     .addConversation(model);
           }
         },
         child: Row(

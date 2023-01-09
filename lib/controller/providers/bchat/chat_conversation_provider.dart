@@ -30,39 +30,27 @@ class ChatConversationChangeProvider extends ChangeNotifier {
   List<ConversationModel> get chatConversationList =>
       _chatConversationMap.values.toList();
 
-  Future addConveration(Contacts contact) async {
-    try {
-      _contactsMap.addAll({contact.userId: contact});
-
-      final conv = await ChatClient.getInstance.chatManager.getConversation(
-          contact.userId.toString(),
-          type: ChatConversationType.Chat);
-      if (conv == null) return;
-      final lastMessage = await conv.latestMessage();
-      if (lastMessage == null) return;
-      ConversationModel model = ConversationModel(
-        id: contact.userId.toString(),
-        badgeCount: await conv.unreadCount(),
-        contact: contact,
-        conversation: conv,
-        lastMessage: lastMessage,
-        // isOnline: null,
-      );
-      _chatConversationMap.addAll({model.id: model});
-    } catch (e) {
-      return;
-    }
-  }
+  bool _initialized = false;
 
   Future init(WidgetRef ref) async {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
     _chatConversationMap.clear();
     try {
+      _isLoading = true;
+      // try{}catch()
       final User? loginUser = await getMeAsUser();
       if (loginUser == null) {
         _isLoading = false;
-        notifyListeners();
+        try {
+          await Future.delayed(const Duration(seconds: 2));
+          notifyListeners();
+        } catch (e) {}
         return;
       }
+
       List<Contacts> contacts = [];
       final ids = await BChatContactManager.getContacts();
       if (ids.isNotEmpty) {
@@ -70,7 +58,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       }
 
       // List<String> userIds = await BChatContactManager.getContactList();
-
       // final response = await BChatApiService.instance
       //     .getContactsByIds(loginUser.authToken, userIds.join(','));
       // if (response.status == 'success' &&
@@ -98,12 +85,15 @@ class ChatConversationChangeProvider extends ChangeNotifier {
             // isOnline: null,
           );
         } catch (e) {
+          print('error $e');
           continue;
         }
         _chatConversationMap.addAll({model.id: model});
         // conversations.add(model);
       }
-    } catch (e) {}
+    } catch (e) {
+      print('error $e');
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -118,8 +108,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     try {
       final model = _chatConversationMap[convId];
       if (model != null) {
-        final conv = await ChatClient.getInstance.chatManager
-            .getConversation(convId, type: ChatConversationType.Chat);
+        final conv = model.conversation;
+        // final conv = await ChatClient.getInstance.chatManager
+        //     .getConversation(convId, type: ChatConversationType.Chat);
         if (conv == null) return;
         final lastMessage = await conv.latestMessage();
         if (lastMessage == null) return;
@@ -141,6 +132,30 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
+  Future addConveration(Contacts contact) async {
+    try {
+      _contactsMap.addAll({contact.userId: contact});
+
+      final conv = await ChatClient.getInstance.chatManager.getConversation(
+          contact.userId.toString(),
+          type: ChatConversationType.Chat);
+      if (conv == null) return;
+      final lastMessage = await conv.latestMessage();
+      if (lastMessage == null) return;
+      ConversationModel model = ConversationModel(
+        id: contact.userId.toString(),
+        badgeCount: await conv.unreadCount(),
+        contact: contact,
+        conversation: conv,
+        lastMessage: lastMessage,
+        // isOnline: null,
+      );
+      _chatConversationMap.addAll({model.id: model});
+    } catch (e) {
+      return;
+    }
+  }
+
   Future updateConversationMessage(ChatMessage lastMessage,
       {bool update = false}) async {
     try {
@@ -149,8 +164,10 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         print('Conversation id is null');
         return;
       }
+
       final model = _chatConversationMap[id];
       if (model != null) {
+        print('Conversation id  ${model.lastMessage!.from.toString()} $update');
         final newModel = ConversationModel(
           id: model.id,
           badgeCount: (await model.conversation?.unreadCount()) ?? 0,
@@ -161,6 +178,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         );
         _chatConversationMap.update(id, (v) => newModel,
             ifAbsent: () => newModel);
+        if (update) {
+          notifyListeners();
+        }
       } else {
         final user = await getMeAsUser();
         if (user == null) {
@@ -212,5 +232,17 @@ class ChatConversationChangeProvider extends ChangeNotifier {
 
   void update() {
     notifyListeners();
+  }
+
+  void updateConversationOnly(String id) async {
+    await updateConversation(id);
+    notifyListeners();
+  }
+
+  void deleteConversationOnly(String id) {
+    ConversationModel? model = _chatConversationMap.remove(id);
+    if (model != null) {
+      notifyListeners();
+    }
   }
 }

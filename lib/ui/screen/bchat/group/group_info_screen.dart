@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
 import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
 import 'package:bvidya/core/helpers/bchat_group_manager.dart';
 
@@ -542,14 +543,16 @@ class GroupInfoScreen extends HookConsumerWidget {
                 visible: group.groupInfo.owner == user?.id.toString(),
                 child: IconButton(
                   icon: const Icon(Icons.edit, color: Colors.white),
-                  onPressed: () {
+                  onPressed: () async{
                     ref.read(selectedContactProvider.notifier).clear();
                     if (contacts.isNotEmpty) {
                       ref
                           .read(selectedContactProvider.notifier)
                           .addContacts(contacts);
-                      Navigator.pushNamed(context, RouteList.editGroup,
+                     await Navigator.pushNamed(context, RouteList.editGroup,
                           arguments: group.groupInfo);
+
+                      ref.read(groupConversationProvider).update();
                     }
                   },
                 ),

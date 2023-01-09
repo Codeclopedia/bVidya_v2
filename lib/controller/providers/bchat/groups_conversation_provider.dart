@@ -43,7 +43,13 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
+  bool _initialized = false;
+
   Future init() async {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
     _groupConversationMap.clear();
     final list = await BchatGroupManager.loadGroupConversationsList();
     for (var item in list) {
@@ -76,8 +82,8 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Future updateConversationMessage(
-      ChatMessage lastMessage, String groupId) async {
+  Future updateConversationMessage(ChatMessage lastMessage, String groupId,
+      {bool update = false}) async {
     try {
       final model = _groupConversationMap[groupId];
       if (model != null) {
@@ -99,7 +105,28 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     } catch (e) {
       return;
     }
-    // notifyListeners();
+    if (update) {
+      notifyListeners();
+    }
+    //
+  }
+
+  void updateConversationOnly(String groupId) async {
+    final model = _groupConversationMap[groupId];
+    if (model != null) {
+      // await model.conversation?.markAllMessagesAsRead();
+      final newModel = GroupConversationModel(
+          id: groupId,
+          groupInfo: model.groupInfo,
+          conversation: model.conversation,
+          badgeCount: await model.conversation?.unreadCount() ?? 0,
+          lastMessage: await model.conversation?.latestMessage(),
+          image: model.image);
+      // model.lastMessage = (GroupConversationModel);
+      _groupConversationMap.update(groupId, (v) => newModel,
+          ifAbsent: () => newModel);
+    }
+    notifyListeners();
   }
 
   void update() {

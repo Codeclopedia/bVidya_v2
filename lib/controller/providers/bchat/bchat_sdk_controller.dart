@@ -173,6 +173,12 @@ class BChatSDKController {
         phone: currentUser.phone,
       );
 
+      final pushtemplate =
+          await ChatClient.getInstance.pushManager.getPushTemplate();
+      print('pushtemplate: $pushtemplate');
+
+      ChatClient.getInstance.pushManager
+          .updatePushDisplayStyle(DisplayStyle.Simple);
       // registerForPresence();
       // await loadConversations(ref);
 
@@ -343,5 +349,4 @@ class BChatSDKController {
       await ChatClient.getInstance.logout(true);
     } on ChatError catch (_) {}
   }
-
 }

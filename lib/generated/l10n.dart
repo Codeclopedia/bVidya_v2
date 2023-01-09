@@ -970,6 +970,46 @@ class S {
     );
   }
 
+  /// `Mark as Read`
+  String get bchat_conv_read {
+    return Intl.message(
+      'Mark as Read',
+      name: 'bchat_conv_read',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Conversation`
+  String get bchat_conv_delete {
+    return Intl.message(
+      'Delete Conversation',
+      name: 'bchat_conv_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mute Conversation`
+  String get bchat_conv_mute {
+    return Intl.message(
+      'Mute Conversation',
+      name: 'bchat_conv_mute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unmute Conversation`
+  String get bchat_conv_unmute {
+    return Intl.message(
+      'Unmute Conversation',
+      name: 'bchat_conv_unmute',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Share Content`
   String get atc_content {
     return Intl.message(

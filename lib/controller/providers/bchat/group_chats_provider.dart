@@ -1,11 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/data/models/conversation_model.dart';
-
+import '/data/models/conversation_model.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
 final groupChatProvider = ChangeNotifierProvider.autoDispose
-    .family<GroupChatChangeProvider, String>(
+    .family<GroupChatChangeProvider, GroupConversationModel>(
         (ref, id) => GroupChatChangeProvider(id));
 
 class GroupChatChangeProvider extends ChangeNotifier {
@@ -19,21 +18,20 @@ class GroupChatChangeProvider extends ChangeNotifier {
   bool get hasMoreData => _hasMoreData;
 
   bool get isLoadingMore => _isLoadingMore;
-  final String conversationId;
+  // final String conversationId;
+  final GroupConversationModel grpModel;
+  GroupChatChangeProvider(this.grpModel);
 
-  GroupChatChangeProvider(this.conversationId);
-
-  late GroupConversationModel _model;
+  
 
   addMessage() {}
 
-  init(GroupConversationModel model) async {
-    _model = model;
-    if (model.conversation != null) {
+  init() async {
+    // grpModel = model;
+    if (grpModel.conversation != null) {
       try {
-        await _model.conversation?.markAllMessagesAsRead();
-
-        final chats = await _model.conversation?.loadMessages(loadCount: 20);
+        await grpModel.conversation?.markAllMessagesAsRead();
+        final chats = await grpModel.conversation?.loadMessages(loadCount: 20);
         if (chats != null) {
           for (var e in chats) {
             _messagesMap.addAll({e.msgId: e});
@@ -48,7 +46,7 @@ class GroupChatChangeProvider extends ChangeNotifier {
   }
 
   addChat(ChatMessage e) {
-    if (e.conversationId == conversationId &&
+    if (e.conversationId == grpModel.id &&
         e.chatType == ChatType.GroupChat) {
       _messagesMap.addAll({e.msgId: e});
       notifyListeners();
@@ -57,7 +55,7 @@ class GroupChatChangeProvider extends ChangeNotifier {
 
   addChats(List<ChatMessage> chats) {
     for (var e in chats) {
-      if (e.conversationId == conversationId &&
+      if (e.conversationId == grpModel.id &&
           e.chatType == ChatType.GroupChat) {
         _messagesMap.addAll({e.msgId: e});
       }
@@ -67,14 +65,14 @@ class GroupChatChangeProvider extends ChangeNotifier {
 
   loadMore() async {
     try {
-      if (_model.conversation != null && messages.isNotEmpty) {
+      if (grpModel.conversation != null && messages.isNotEmpty) {
         _isLoadingMore = true;
         notifyListeners();
 
         final message = messages[0];
         print('next_chat_id ${message.msgId}');
         // await Future.delayed(const Duration(seconds: 2));
-        final chats = await _model.conversation
+        final chats = await grpModel.conversation
             ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
         if (chats != null) {
           for (var e in chats) {

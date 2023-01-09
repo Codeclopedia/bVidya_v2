@@ -47,6 +47,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "atc_media_desc":
             MessageLookupByLibrary.simpleMessage("Share photos and videos"),
         "bchat": MessageLookupByLibrary.simpleMessage("bChat"),
+        "bchat_conv_delete":
+            MessageLookupByLibrary.simpleMessage("Delete Conversation"),
+        "bchat_conv_mute":
+            MessageLookupByLibrary.simpleMessage("Mute Conversation"),
+        "bchat_conv_read": MessageLookupByLibrary.simpleMessage("Mark as Read"),
+        "bchat_conv_unmute":
+            MessageLookupByLibrary.simpleMessage("Unmute Conversation"),
         "blearn": MessageLookupByLibrary.simpleMessage("bLearn"),
         "blearn_added": MessageLookupByLibrary.simpleMessage("Added"),
         "blearn_btx_mostviewed":

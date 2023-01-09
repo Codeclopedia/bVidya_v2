@@ -148,6 +148,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   }
 
   void deleteMessages(List<ChatMessage> msgs) {
+    print('before usersize :${_messagesMap.length}');
     for (ChatMessage m in msgs) {
       try {
         convModel.conversation?.deleteMessage(m.msgId);
@@ -158,6 +159,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
         debugPrint('other error in deleting chat: $e');
       }
     }
+    print('after usersize :${_messagesMap.length}');
     notifyListeners();
   }
 

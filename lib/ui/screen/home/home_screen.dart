@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
@@ -21,14 +22,16 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final provider = ref.watch(chatConversationProvider);
+
     useEffect(() {
       // print('useEffect called in HomeSreen');
       ref.read(bChatSDKControllerProvider).init();
-      ref.read(chatConversationProvider).init(ref);
 
       _addHandler(ref);
       return _disposeAll;
     }, const []);
+    ref.read(chatConversationProvider.notifier).init(ref);
+
     return BaseDrawerAppBarScreen(
       currentIndex: DrawerMenu.bChat,
       routeName: RouteList.home,
@@ -41,11 +44,13 @@ class HomeScreen extends HookConsumerWidget {
     registerForContact('home_screen_contact', ref);
     registerForNewMessage('home_screen_chat', (msgs) {
       for (var lastMessage in msgs) {
+        print(
+            'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
         if (lastMessage.conversationId != null &&
             lastMessage.chatType == ChatType.Chat) {
           ref
-              .watch(chatConversationProvider)
-              .updateConversationMessage(lastMessage);
+              .read(chatConversationProvider.notifier)
+              .updateConversationMessage(lastMessage, update: true);
         }
       }
     });
@@ -109,11 +114,14 @@ class HomeScreen extends HookConsumerWidget {
         await Navigator.pushNamed(context, RouteList.chatScreen,
             arguments: model);
         try {
-          ref.read(chatConversationProvider).update();
+          ref.read(chatConversationProvider).updateConversationOnly(model.id);
         } catch (_) {}
       },
-      onLongPress: (() {
-        showDialog(
+      onLongPress: (() async {
+        ChatPushRemindType remindType =
+            await BChatContactManager.fetchChatMuteStateFor(model.id);
+        bool mute = remindType != ChatPushRemindType.NONE;
+        final result = await showDialog(
           context: context,
           useSafeArea: true,
           builder: (context) {
@@ -122,10 +130,18 @@ class HomeScreen extends HookConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(3.w),
               ),
-              child: ConversationMenuDialog(model: model),
+              child: ConversationMenuDialog(model: model, muted: mute),
             );
           },
         );
+        if (result == null) {
+          return;
+        }
+        if (result == 1) {
+          ref.read(chatConversationProvider).updateConversationOnly(model.id);
+        } else if (result == 2) {
+          ref.read(chatConversationProvider).deleteConversationOnly(model.id);
+        } else {}
       }),
       child: _contactRow(model),
     );
