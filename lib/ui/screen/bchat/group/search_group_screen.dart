@@ -2,32 +2,25 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '/controller/providers/bchat/chat_conversation_provider.dart';
-import '/core/sdk_helpers/bchat_contact_manager.dart';
 
+import '/controller/providers/bchat/groups_conversation_provider.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
-import '../../base_back_screen.dart';
-import '../blearn/components/common.dart';
+import '../../../base_back_screen.dart';
+import '../../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-import '../../widget/coloured_box_bar.dart';
+import '../../../widget/coloured_box_bar.dart';
 
-class SearchScreen extends StatelessWidget {
+class GroupSearchScreen extends StatelessWidget {
   final _key = GlobalKey<FormState>();
 
-  SearchScreen({Key? key}) : super(key: key);
+  GroupSearchScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // useEffect(() {
-    //   registerForContact('search_screen', null);
-    //   return () {
-    //     unregisterForContact('search_screen');
-    //   };
-    // }, const []);
-
     return BaseWilPopupScreen(
       onBack: () async => true,
       child: Scaffold(
@@ -74,7 +67,7 @@ class SearchScreen extends StatelessWidget {
                                 icon: const Icon(Icons.close,
                                     color: Colors.black))
                             : null,
-                        hintText: 'Search Person',
+                        hintText: 'Search Group',
                       ),
                       style: TextStyle(
                         fontSize: 10.sp,
@@ -87,10 +80,11 @@ class SearchScreen extends StatelessWidget {
                       },
                       onFieldSubmitted: (value) {
                         if (value.trim().isNotEmpty) {
-                          ref.read(searchQueryProvider.notifier).state =
+                          ref.read(searchQueryGroupProvider.notifier).state =
                               value.trim();
                         } else {
-                          ref.read(searchQueryProvider.notifier).state = '';
+                          ref.read(searchQueryGroupProvider.notifier).state =
+                              '';
                         }
                       },
                     );
@@ -123,10 +117,10 @@ class SearchScreen extends StatelessWidget {
               ),
             ),
             Consumer(builder: (context, ref, child) {
-              final result = ref.watch(searchChatContact);
-              final contacts = ref.watch(
-                  chatConversationProvider.select((value) => value.contacts));
-              final contactIds = contacts.map((e) => e.userId).toList();
+              final result = ref.watch(searchGroupProvider);
+              final groups = ref.watch(groupConversationProvider
+                  .select((value) => value.groupConversationList));
+              final contactIds = groups.map((e) => e.id).toList();
               return result.when(
                   data: ((data) {
                     if (data.isEmpty) {
@@ -138,55 +132,24 @@ class SearchScreen extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final item = data[index];
-                        bool alreadyAdded = contactIds.contains(item.userId!);
+                        bool alreadyAdded = contactIds.contains(item.groupId);
                         return InkWell(
                             onTap: () async {
                               if (alreadyAdded) {
-                                final Contacts element = contacts.firstWhere(
-                                    (e) => e.userId == item.userId!);
-                                try {
-                                  final conv = await ChatClient
-                                      .getInstance.chatManager
-                                      .getConversation(
-                                          element.userId.toString(),
-                                          type: ChatConversationType.Chat);
-
-                                  if (conv != null) {
-                                    ConversationModel model = ConversationModel(
-                                      id: element.userId.toString(),
-                                      badgeCount: await conv.unreadCount(),
-                                      contact: element,
-                                      conversation: conv,
-                                      lastMessage: await conv.latestMessage(),
-                                    );
-                                    ref
-                                        .read(chatConversationProvider.notifier)
-                                        .addOrUpdateConversation(model);
-
-                                    Navigator.pushReplacementNamed(
-                                        context, RouteList.chatScreen,
-                                        arguments: model);
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                      'Error in starting new chat of ${item.name}');
-                                }
+                                final GroupConversationModel element = groups
+                                    .firstWhere((e) => e.id == item.groupId);
+                                Navigator.pushReplacementNamed(
+                                    context, RouteList.groupChatScreen,
+                                    arguments: element);
                               } else {
                                 final userResult = data[index];
-                                // final result = await ref
-                                //     .read(bChatProvider)
-                                //     .addContact(userResult);
-                                final result = await BChatContactManager
-                                    .sendRequestToAddContact(
-                                        userResult.userId.toString());
+                                final result =
+                                    await BchatGroupManager.addPublicGroup(
+                                        userResult.groupId);
 
                                 if (result == null) {
-                                  // AppSnackbar.instance.message(context,
-                                  //     '${data[index].name} added as your contact successfully');
-                                  // ref.read(chatConversationProvider).addContact(
-                                  //     userResult.userId!.toString());
                                   AppSnackbar.instance.message(context,
-                                      'Request sent to ${userResult.name} successfully');
+                                      'Added to group ${userResult.name} successfully');
                                   // Navigator.pop(context, true);
                                 } else {
                                   AppSnackbar.instance.error(context, result);
@@ -200,40 +163,23 @@ class SearchScreen extends StatelessWidget {
                   error: (e, t) => buildEmptyPlaceHolder('No User found'),
                   loading: () => buildLoading);
             }),
-            // SizedBox(height: 3.h),
-            // Text(
-            //   'Group Chat',
-            //   style: TextStyle(
-            //     fontFamily: kFontFamily,
-            //     color: Colors.black,
-            //     fontSize: 10.sp,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-            // ListView.builder(
-            //   itemCount: 3,
-            //   shrinkWrap: true,
-            //   physics: const NeverScrollableScrollPhysics(),
-            //   itemBuilder: (context, index) {
-            //     return _contactRow(contacts[index]);
-            //   },
-            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _contactRow(SearchContactResult contact, bool added, WidgetRef ref) {
+  Widget _contactRow(ChatGroup group, bool added, WidgetRef ref) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name ?? '', contact.image ?? ''),
+          getCicleAvatar(
+              group.name ?? '', BchatGroupManager.getGroupImage(group)),
           SizedBox(width: 3.w),
           Expanded(
             child: Text(
-              contact.name ?? '',
+              group.name ?? '',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 color: AppColors.contactNameTextColor,

@@ -3,7 +3,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
-import '/core/helpers/bchat_contact_manager.dart';
+import '../../../core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
 import '/core/constants/data.dart';
@@ -552,7 +552,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                       _buildIcon('icon_pr_acall.svg'),
                       InkWell(
                         onTap: () {
-                          Navigator.pushNamed(context, RouteList.search);
+                          Navigator.pushNamed(context, RouteList.searchContact);
                         },
                         child: _buildIcon('icon_pr_search.svg'),
                       ),

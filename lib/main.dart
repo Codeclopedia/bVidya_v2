@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
@@ -15,25 +14,8 @@ import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    ChatOptions options = ChatOptions(
-      appKey: '61420261#491569',
-      autoLogin: false,
-      acceptInvitationAlways: false,
-      deleteMessagesAsExitGroup: false,
-      requireAck: true,
-      requireDeliveryAck: true,
-    );
-    if (Platform.isIOS) {
-      options
-          .enableAPNs(DefaultFirebaseOptions.currentPlatform.messagingSenderId);
-    }
-    options.enableFCM(DefaultFirebaseOptions.currentPlatform.messagingSenderId);
-    await ChatClient.getInstance.init(options);
-  } catch (e) {
-    print('Error : $e');
-  }
-
+  
+  await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {

@@ -90,6 +90,10 @@
 
     "chat_input_hint":"Write your message",
 
+    "contact_menu_delete":"Delete Contact",
+    "contact_menu_block":"Block Contact",
+    "contact_menu_unblock":"Unblock Contact",
+
     "pr_name":"Display Name",
     "pr_email":"Email Address",
     "pr_phone":"Phone Number",

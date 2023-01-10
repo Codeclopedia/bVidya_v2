@@ -279,6 +279,12 @@ class MessageLookup extends MessageLookupByLibrary {
             "Tell us how can we help you."),
         "contactQuery": MessageLookupByLibrary.simpleMessage(
             "Write us your query and we\'ll get back to you soon!"),
+        "contact_menu_block":
+            MessageLookupByLibrary.simpleMessage("Block Contact"),
+        "contact_menu_delete":
+            MessageLookupByLibrary.simpleMessage("Delete Contact"),
+        "contact_menu_unblock":
+            MessageLookupByLibrary.simpleMessage("Unblock Contact"),
         "contact_title": MessageLookupByLibrary.simpleMessage("Contact Us"),
         "course_calender": MessageLookupByLibrary.simpleMessage(
             "bVidya Educator since\n6th July, 2018"),

@@ -3,7 +3,7 @@ import '/data/services/bchat_api_service.dart';
 
 import '../../bchat_providers.dart';
 import '/core/utils.dart';
-import '/core/helpers/bchat_contact_manager.dart';
+import '../../../core/sdk_helpers/bchat_contact_manager.dart';
 import '/data/models/models.dart';
 
 import '/core/ui_core.dart';
@@ -130,6 +130,36 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     }
 
     // notifyListeners();
+  }
+
+  Future<Contacts?> removedContact(String userId) async {
+    try {
+      final user = await getMeAsUser();
+      if (user == null) {
+        return null;
+      }
+      return _contactsMap.remove(userId);
+    } catch (e) {}
+  }
+
+  Future<Contacts?> addContact(String userId) async {
+    try {
+      final user = await getMeAsUser();
+      if (user == null) {
+        return null;
+      }
+      final Contacts contact;
+      final result = await BChatApiService.instance
+          .getContactsByIds(user.authToken, userId);
+      if (result.body?.contacts?.isNotEmpty == true) {
+        contact = result.body!.contacts![0];
+        _contactsMap.addAll({contact.userId: contact});
+        return contact;
+      } else {
+        return null;
+      }
+    } catch (e) {}
+    return null;
   }
 
   Future addConveration(Contacts contact) async {

@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
-import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/helpers/bchat_group_manager.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/controller/providers/contacts_select_notifier.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -620,7 +620,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                       _buildIcon('icon_pr_acall.svg'),
                       InkWell(
                         onTap: () {
-                          Navigator.pushNamed(context, RouteList.search);
+                          Navigator.pushNamed(context, RouteList.searchContact);
                         },
                         child: _buildIcon('icon_pr_search.svg'),
                       ),

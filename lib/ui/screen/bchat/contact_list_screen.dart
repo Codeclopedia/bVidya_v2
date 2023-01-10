@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/ui/dialog/contact_menu_dialog.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 import '/controller/providers/bchat/chat_conversation_provider.dart';
@@ -66,6 +67,12 @@ class ContactListScreen extends StatelessWidget {
                   _groupHeader(groupByValue),
               itemBuilder: (context, element) {
                 return InkWell(
+                    onLongPress: () async {
+                      final value = await showContactMenu(context, element);
+                      if (value) {
+                        ref.read(chatConversationProvider).update();
+                      }
+                    },
                     onTap: (() async {
                       final conv = await ChatClient.getInstance.chatManager
                           .getConversation(element.userId.toString(),
@@ -73,13 +80,13 @@ class ContactListScreen extends StatelessWidget {
 
                       if (conv != null) {
                         ConversationModel model = ConversationModel(
-                            id: element.userId.toString(),
-                            badgeCount: await conv.unreadCount(),
-                            contact: element,
-                            conversation: conv,
-                            lastMessage: await conv.latestMessage(),
-                            // isOnline: null,
-                            );
+                          id: element.userId.toString(),
+                          badgeCount: await conv.unreadCount(),
+                          contact: element,
+                          conversation: conv,
+                          lastMessage: await conv.latestMessage(),
+                          // isOnline: null,
+                        );
                         ref
                             .read(chatConversationProvider)
                             .addOrUpdateConversation(model);

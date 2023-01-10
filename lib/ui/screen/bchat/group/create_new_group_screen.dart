@@ -11,7 +11,7 @@ import '/data/models/models.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-import '/core/helpers/bchat_group_manager.dart';
+import '../../../../core/sdk_helpers/bchat_group_manager.dart';
 import '../../blearn/components/common.dart';
 import '../../../dialog/image_picker_dialog.dart';
 import '../../../widgets.dart';

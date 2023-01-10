@@ -1,41 +1,11 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_provider.dart';
+import 'package:bvidya/core/utils/notification_controller.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../state.dart';
-
-// class Listern extends ChatContactManagerListener {
-//   @override
-//   void onContactAdded(String userName) {
-//     print('Listener:Added: $userName ');
-//     EasyLoading.showInfo('Added: $userName ');
-//   }
-
-//   @override
-//   void onContactDeleted(String userName) {
-//     print('Listener:Deleted: $userName ');
-//     EasyLoading.showInfo('Deleted: $userName ');
-//   }
-
-//   @override
-//   void onContactInvited(String userName, String? reason) {
-//     print('Listener:Invited: $userName - $reason');
-//     EasyLoading.showInfo('Invited: $userName - $reason');
-//   }
-
-//   @override
-//   void onFriendRequestAccepted(String userName) {
-//     print('Listener:Acceped: $userName ');
-//     EasyLoading.showInfo('Acceped: $userName ');
-//   }
-
-//   @override
-//   void onFriendRequestDeclined(String userName) {
-//     print('Listener:Declined: $userName ');
-//     EasyLoading.showInfo('Declined: $userName ');
-//   }
-// }
 
 registerForContact(String key, WidgetRef? ref) {
   try {
@@ -48,27 +18,51 @@ registerForContact(String key, WidgetRef? ref) {
         onContactInvited: (userId, reason) {
           //
           print('Invited: $userId - $reason');
-          EasyLoading.showInfo('Invited: $userId - $reason');
+          // EasyLoading.showInfo('Invited: $userId - $reason');
+          NotificationController.showContactInviteNotification(
+              userId, reason ?? 'New Invitation');
         },
-        onContactAdded: (userId) {
+        onContactAdded: (userId) async {
           //
           print('Added: $userId ');
-          EasyLoading.showInfo('Added: $userId ');
+          final result =
+              await ref?.read(chatConversationProvider).addContact(userId);
+          if (result != null) {
+            NotificationController.showContactActionNotification(
+                userId, 'bVidya', 'New Contact ${result.name} added');
+          } else {
+            NotificationController.showContactActionNotification(
+                userId, 'bVidya', 'New Contact added');
+          }
+          // EasyLoading.showInfo('Added: $userId ');
         },
-        onContactDeleted: (userId) {
+        onContactDeleted: (userId) async {
           //
           print('Deleted: $userId ');
-          EasyLoading.showInfo('Deleted: $userId ');
+          final result =
+              await ref?.read(chatConversationProvider).removedContact(userId);
+          if (result != null) {
+            NotificationController.showContactActionNotification(
+                userId, 'bVidya', 'Contact ${result.name} deleted');
+          } else {
+            NotificationController.showContactActionNotification(
+                userId, 'bVidya', 'Contact delete');
+          }
+          // EasyLoading.showInfo('Deleted: $userId ');
         },
         onFriendRequestAccepted: (userId) {
           //
           print('Acceped: $userId ');
           EasyLoading.showInfo('Acceped: $userId ');
+          NotificationController.showContactActionNotification(
+              userId, 'bVidya', 'Connection request accepted');
         },
         onFriendRequestDeclined: (userId) {
           //
-          print('Declined: $userId ');
+
           EasyLoading.showInfo('Declined: $userId ');
+          NotificationController.showContactActionNotification(
+              userId, 'bVidya', 'Connection request declined');
         },
       ),
     );

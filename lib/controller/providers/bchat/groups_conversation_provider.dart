@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/bchat_group_manager.dart';
+import '../../../core/sdk_helpers/bchat_group_manager.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';

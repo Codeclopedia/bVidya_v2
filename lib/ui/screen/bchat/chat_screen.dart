@@ -11,7 +11,7 @@ import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 
 import '/core/helpers/call_helper.dart';
-import '/core/helpers/bchat_handler.dart';
+import '../../../core/sdk_helpers/bchat_handler.dart';
 import '/core/utils.dart';
 import '/core/constants.dart';
 import '/core/state.dart';

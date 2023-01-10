@@ -56,6 +56,9 @@ class Routes {
       case RouteList.groups:
         screen = const GroupsScreen();
         break;
+      case RouteList.searchGroups:
+        screen = GroupSearchScreen();
+        break;
       case RouteList.createNewGroup:
         screen = CreateNewGroupScreen();
         break;
@@ -214,7 +217,7 @@ class Routes {
         }
 
         break;
-      case RouteList.search:
+      case RouteList.searchContact:
         screen = SearchScreen();
         break;
       case RouteList.bMeet:

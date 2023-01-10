@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/core/helpers/extensions.dart';
 import '/core/utils.dart';
-import '/core/helpers/bchat_contact_manager.dart';
+import '../core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/helpers/duration.dart';
 
 import '/core/state.dart';
@@ -15,16 +16,16 @@ import '/data/repository/bchat_respository.dart';
 
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
-import 'providers/bchat/bchat_sdk_controller.dart';
+import '../core/sdk_helpers/bchat_sdk_controller.dart';
 // import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
 
 final apiBChatProvider =
     Provider<BChatApiService>((_) => BChatApiService.instance);
 
-final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
-  return BChatSDKController.instance;
-});
+// final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
+//   return BChatSDKController.instance;
+// });
 
 final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
   User? user = ref.read(loginRepositoryProvider).user;
@@ -90,6 +91,10 @@ final searchQueryProvider = StateProvider.autoDispose<String>(
   (ref) => '',
 );
 
+final searchQueryGroupProvider = StateProvider.autoDispose<String>(
+  (ref) => '',
+);
+
 final searchChatContact =
     FutureProvider.autoDispose<List<SearchContactResult>>((ref) async {
   final term = ref.watch(searchQueryProvider).trim();
@@ -100,6 +105,29 @@ final searchChatContact =
     return result?.contacts?.where((e) => e.userId != user.id).toList() ?? [];
     // }
     // return [];
+  } else {
+    return [];
+  }
+});
+
+final publicGroupList = FutureProvider<List<ChatGroupInfo>>(
+    ((ref) => BchatGroupManager.fetchPublicGroups()));
+
+final searchGroupProvider =
+    FutureProvider.autoDispose<List<ChatGroup>>((ref) {
+  final term = ref.watch(searchQueryGroupProvider).trim();
+  final list = ref.watch(publicGroupList).valueOrNull;
+  if (term.isNotEmpty && list != null) {
+    final items = list
+        .where((element) {
+          if (element.name?.isNotEmpty == true) {
+            return element.name!.contains(term);
+          }
+          return false;
+        })
+        .map((e) => e.groupId)
+        .toList();
+    return  BchatGroupManager.loadPublicGroupsInfo(items);
   } else {
     return [];
   }

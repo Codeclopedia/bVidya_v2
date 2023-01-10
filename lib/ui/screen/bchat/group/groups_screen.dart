@@ -208,10 +208,14 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
             ),
             const Expanded(child: UserTopBar()),
             InkWell(
+              onTap: () async {
+                await Navigator.pushNamed(context, RouteList.searchGroups);
+                ref.read(groupConversationProvider).update();
+              },
               child: Container(
                 padding: EdgeInsets.all(0.7.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                decoration:const BoxDecoration(
+                  borderRadius: BorderRadius.all( Radius.circular(5)),
                   color: AppColors.yellowAccent,
                 ),
                 child: const Icon(

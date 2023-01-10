@@ -1,10 +1,10 @@
-class DrawerMenu{
- static const int settings = 0;
- static const int profile = 1;
- static const int bLive = 2;
- static const int bMeet = 3;
- static const int bLearn = 4;
- static const int bChat = 5;
+class DrawerMenu {
+  static const int settings = 0;
+  static const int profile = 1;
+  static const int bLive = 2;
+  static const int bMeet = 3;
+  static const int bLearn = 4;
+  static const int bChat = 5;
 }
 
 class RouteList {
@@ -29,8 +29,9 @@ class RouteList {
   static const String recentCalls = '/recent-calls';
   static const String contactList = '/contact-list';
   static const String contactProfile = '/contact-profile';
-  static const String search = '/search';
+  static const String searchContact = '/search-contact';
   static const String groups = '/groups';
+  static const String searchGroups = '/search-groups';
   static const String newGroupContacts = '/new-group-contacts';
   static const String createNewGroup = '/create-new-group-contacts';
   static const String editGroup = '/edit-group';

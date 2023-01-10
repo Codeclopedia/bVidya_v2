@@ -3,10 +3,11 @@
 import 'dart:convert';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:bvidya/core/utils.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/utils.dart';
 import '/app.dart';
 import '../constants/route_list.dart';
 import '../routes.dart';
@@ -14,7 +15,7 @@ import '../ui_core.dart';
 import 'chat_utils.dart';
 
 class NotificationController {
-  static ReceivedAction? initialAction;
+  // static ReceivedAction? initialAction;
 
   ///  *********************************************
   ///     INITIALIZATIONS
@@ -62,19 +63,35 @@ class NotificationController {
     debugPrint(
         'onActionReceivedMethod:actionType ${receivedAction.actionType} , payload ${receivedAction.payload},key: ${receivedAction.channelKey}');
 
-    BuildContext? context = navigatorKey.currentContext;
     if (receivedAction.payload != null &&
-        receivedAction.channelKey == 'chat_channel' &&
-        context != null) {
+        receivedAction.channelKey == 'chat_channel') {
       if ((await getMeAsUser()) == null) {
         return;
       }
+
+      if (receivedAction.actionType == ActionType.SilentAction
+          //  ||receivedAction.actionType == ActionType.SilentBackgroundAction
+          ) {
+        String? type = receivedAction.payload?['type'];
+        String? from = receivedAction.payload?['from'];
+        if (type == 'contact_invite' && from != null) {
+          print('${receivedAction.buttonKeyPressed} ');
+          if (receivedAction.buttonKeyPressed == 'ACCEPT_CONTACT') {
+            await BChatContactManager.acceptRequest(from);
+          } else if (receivedAction.buttonKeyPressed == 'DECLINE_CONTACT') {
+            await BChatContactManager.declineRequest(from);
+          }
+        }
+        return;
+      }
+      BuildContext? context = navigatorKey.currentContext;
       debugPrint('  payload: ${receivedAction.payload}');
-      handleNotificationAction(receivedAction.payload!, context, false);
-      // BuildContext context = navigatorKey.currentContext!;
+      if (context != null) {
+        handleChatNotificationAction(receivedAction.payload!, context, false);
+      }
     } else {
       debugPrint(
-          'context: ${(context != null)}, key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
+          'key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
     }
 
     // if (receivedAction.actionType == ActionType.SilentAction ||
@@ -96,9 +113,15 @@ class NotificationController {
   ///     REQUESTING NOTIFICATION PERMISSIONS
   ///  *********************************************
   ///
+  ///
   static Future<bool> displayNotificationRationale() async {
-    bool userAuthorized = false;
     BuildContext context = navigatorKey.currentContext!;
+    return await displayNotification(context);
+  }
+
+  static Future<bool> displayNotification(BuildContext context) async {
+    bool userAuthorized = false;
+
     await showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -108,20 +131,20 @@ class NotificationController {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Image.asset(
-                        'assets/animated-bell.gif',
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                    'Allow Awesome Notifications to send you beautiful notifications!'),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: Image.asset(
+                //         'assets/animated-bell.gif',
+                //         height: MediaQuery.of(context).size.height * 0.3,
+                //         fit: BoxFit.fitWidth,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                const Text('bViyda'),
+                SizedBox(height: 2.h),
+                const Text('Allow Notifications to receive notifications!'),
               ],
             ),
             actions: [
@@ -203,7 +226,76 @@ class NotificationController {
   //       ]);
   // }
 
-  static Future shouldShowNotification(RemoteMessage message) async {
+  static Future showContactActionNotification(
+      String userId, String title, String content) async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) isAllowed = await displayNotificationRationale();
+    if (!isAllowed) return;
+    if ((await getMeAsUser()) == null) {
+      return;
+    }
+    // int id = DateTime.now().hashCode;
+    int id = '$content$userId'.hashCode;
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: title,
+        icon: 'resource://mipmap/ic_launcher',
+        body: content,
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        notificationLayout: NotificationLayout.BigText,
+        payload: {
+          // 'type': 'contact_invite',
+          'from': userId,
+          // 'msgId': message.data['m'] ?? ''
+        },
+      ),
+    );
+  }
+
+  static Future showContactInviteNotification(
+      String userId, String content) async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) isAllowed = await displayNotificationRationale();
+    if (!isAllowed) return;
+    if ((await getMeAsUser()) == null) {
+      return;
+    }
+    int id = 'contact_invite$userId'.hashCode;
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: 'You have received an invitation',
+        icon: 'resource://mipmap/ic_launcher',
+        body: content,
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        notificationLayout: NotificationLayout.BigText,
+        payload: {
+          'type': 'contact_invite',
+          'from': userId,
+          // 'msgId': message.data['m'] ?? ''
+        },
+      ),
+      actionButtons: [
+        NotificationActionButton(
+          key: 'ACCEPT_CONTACT',
+          label: 'Accept',
+          actionType: ActionType.SilentAction,
+        ),
+        NotificationActionButton(
+            key: 'DECLINE_CONTACT',
+            label: 'Decline',
+            actionType: ActionType.SilentAction,
+            isDangerousOption: true)
+      ],
+    );
+  }
+
+  static Future shouldShowChatNotification(RemoteMessage message) async {
     try {
       if (message.data.isNotEmpty &&
           message.data['alert'] != null &&
@@ -211,9 +303,9 @@ class NotificationController {
         String title = message.notification?.title ?? '';
         String content = message.notification?.body ?? '';
         String? type = jsonDecode(message.data['e'])['type'];
-        print('type: $type');
+        // print('type: $type');
         dynamic from = message.data['f'];
-        print('From $from');
+        // print('From $from');
 
         if (title.isNotEmpty &&
             content.isNotEmpty &&
@@ -235,7 +327,7 @@ class NotificationController {
             }
 
             int id = DateTime.now().hashCode;
-            print('  showing notification id $id');
+            // print('  showing notification id $id');
             AwesomeNotifications().createNotification(
               content: NotificationContent(
                 id: id,
@@ -249,7 +341,6 @@ class NotificationController {
                 payload: {
                   'type': type,
                   'from': from.toString(),
-                  // 'msgId': message.data['m'] ?? ''
                 },
               ),
             );
@@ -259,7 +350,7 @@ class NotificationController {
     } catch (e) {}
   }
 
-  static Future<bool> handleNotificationAction(
+  static Future<bool> handleChatNotificationAction(
       Map<String, String?> message, BuildContext context, bool replace) async {
     String? type = message['type'];
     String? from = message['from'];

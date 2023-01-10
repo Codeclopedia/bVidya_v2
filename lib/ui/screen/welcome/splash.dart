@@ -7,6 +7,7 @@ import 'package:bvidya/core/utils/notification_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
@@ -41,7 +42,7 @@ class SplashScreen extends ConsumerWidget {
     if (initialAction != null &&
         initialAction.payload != null &&
         initialAction.channelKey == 'chat_channel') {
-      if (await NotificationController.handleNotificationAction(
+      if (await NotificationController.handleChatNotificationAction(
           initialAction.payload!, context, true)) {
         return;
       }
@@ -66,7 +67,7 @@ class SplashScreen extends ConsumerWidget {
           ref.read(userAuthChangeProvider).loadUser();
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
-          await ref.read(bChatSDKControllerProvider).initChatSDK(next.value!);
+          BChatSDKController.instance.initChatSDK(next.value!);
           await _handleFirebaseMessages(context, ref, next.value);
         } else {
           Future.delayed(const Duration(seconds: 2), () {

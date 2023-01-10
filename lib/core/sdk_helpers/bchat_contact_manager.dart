@@ -189,6 +189,25 @@ class BChatContactManager {
     } catch (_) {}
     return items;
   }
+
+  static Future acceptRequest(String from) async {
+    try {
+      await ChatClient.getInstance.contactManager.acceptInvitation(from);
+    } catch (_) {}
+  }
+
+  static Future declineRequest(String from) async {
+    try {
+      await ChatClient.getInstance.contactManager.declineInvitation(from);
+    } catch (_) {}
+  }
+
+  static Future deleteContact(String userId) async {
+    try {
+      await ChatClient.getInstance.contactManager
+          .deleteContact(userId, keepConversation: false);
+    } catch (_) {}
+  }
 }
 
 class ChatMediaFile {

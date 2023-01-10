@@ -11,6 +11,7 @@ export 'screen/bchat/recent_call_screen.dart';
 export 'screen/bchat/contact_list_screen.dart';
 export 'screen/bchat/contact_profile.dart';
 export 'screen/bchat/search_screen.dart';
+
 export 'screen/bchat/chat_audio_call.dart';
 export 'screen/bchat/chat_call_screen.dart';
 export 'screen/bchat/full_screen_image.dart';
@@ -22,6 +23,7 @@ export 'screen/bchat/group/new_group_contact_screen.dart';
 export 'screen/bchat/group/group_info_screen.dart';
 export 'screen/bchat/group/group_info_screen.dart';
 export 'screen/bchat/group/group_chat_screen.dart';
+export 'screen/bchat/group/search_group_screen.dart';
 
 export 'base_back_screen.dart';
 

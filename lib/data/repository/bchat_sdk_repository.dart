@@ -1,7 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 // import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
-import '/core/helpers/bchat_contact_manager.dart';
+import '../../core/sdk_helpers/bchat_contact_manager.dart';
 import '../models/models.dart';
 import '../services/bchat_api_service.dart';
 

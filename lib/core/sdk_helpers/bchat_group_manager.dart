@@ -45,14 +45,6 @@ class BchatGroupManager {
     return null;
   }
 
-  static Future loadPublicGroups() async {
-    try {
-      await ChatClient.getInstance.groupManager.fetchPublicGroupsFromServer();
-    } catch (e) {
-      print('Error creating group $e');
-    }
-  }
-
   static Future<ChatGroup?> editGroup(
       String groupId,
       String name,
@@ -194,6 +186,61 @@ class BchatGroupManager {
     } catch (e) {
       print('Error2: ${e} ');
     }
+  }
+
+  // static searchGroup(String term) async {
+  //   try {
+  //     final list = await ChatClient.getInstance.groupManager
+  //         .fetchPublicGroupsFromServer();
+  //         if(list.data.isNotEmpty==true){
+  //           for()
+  //         }
+  //   } on ChatError catch (e) {
+  //     print('Error: ${e.code}- ${e.description} ');
+  //   } catch (e) {
+  //     print('Error2: ${e} ');
+  //   }
+  // }
+  static Future<List<ChatGroupInfo>> fetchPublicGroups() async {
+    try {
+      final list = await ChatClient.getInstance.groupManager
+          .fetchPublicGroupsFromServer();
+      if (list.data.isNotEmpty == true) {
+        return list.data;
+      }
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+    return [];
+  }
+
+  static Future addPublicGroup(String groupId) async {
+    try {
+      await ChatClient.getInstance.groupManager.joinPublicGroup(groupId);
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+  }
+
+  static Future<List<ChatGroup>> loadPublicGroupsInfo(
+      List<String> items) async {
+    try {
+      final List<ChatGroup> infos = [];
+      for (var groupId in items) {
+        infos.add(await ChatClient.getInstance.groupManager
+            .fetchGroupInfoFromServer(groupId));
+      }
+      return infos;
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+    return [];
   }
 
   // static Future<List<Contacts>> loadGroupMemebers(

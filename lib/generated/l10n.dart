@@ -830,6 +830,36 @@ class S {
     );
   }
 
+  /// `Delete Contact`
+  String get contact_menu_delete {
+    return Intl.message(
+      'Delete Contact',
+      name: 'contact_menu_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Block Contact`
+  String get contact_menu_block {
+    return Intl.message(
+      'Block Contact',
+      name: 'contact_menu_block',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unblock Contact`
+  String get contact_menu_unblock {
+    return Intl.message(
+      'Unblock Contact',
+      name: 'contact_menu_unblock',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Display Name`
   String get pr_name {
     return Intl.message(

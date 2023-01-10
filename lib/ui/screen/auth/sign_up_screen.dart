@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/controller/bchat_providers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../../controller/providers/user_auth_provider.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
+import '/controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -302,7 +302,7 @@ class SignUpScreen extends HookWidget {
     final result = await ref
         .read(loginRepositoryProvider)
         .verifyRegistrationOtp(name, email, password, confirmPass, enteredOTP);
-    
+
     if (result != null) {
       hideLoading(ref);
       AppSnackbar.instance.error(context, result);
@@ -317,8 +317,9 @@ class SignUpScreen extends HookWidget {
       AppSnackbar.instance.message(context, 'Registration successfully');
       // ref.read(signUpOTPGeneratedProvider.notifier).state = true;
       // ref.read(signUpTimerProvider.notifier).reset();
-      await ref.read(bChatSDKControllerProvider).initChatSDK(user);
-      await ref.read(bChatSDKControllerProvider).loadAllContactsGroup();
+      await BChatSDKController.instance.initChatSDK(user);
+      await BChatSDKController.instance.loadAllContactsGroup();
+
       hideLoading(ref);
       // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);

@@ -4,13 +4,11 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:bvidya/core/utils/chat_utils.dart';
-// import 'package:bvidya/data/models/conversation_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '/core/utils/chat_utils.dart';
 import 'core/constants.dart';
-import 'core/helpers/bchat_handler.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
@@ -83,85 +81,6 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     }
   }
 
-//phone  cizrHqoEQ9eQ-qIhBsiNmh:APA91bGGAQJ_jX3CxDH7yppIRmRTLqWsjPqXm76wZdLmqqF6KwnYm7hwETnFz_cjbesXiRutNHpEOG_DhqX4-i4mObuzohBgKotvY8sOWkYpfu6R8BeSXg3xnXXtk-EM_MjVWGqJbnnn
-//Tablet coto9ZIQQx6JnETPcwmNXP:APA91bE-APmjhr2dX9MwyA58DttecVdQMlxirOovMdejgf27Tb-ivAx11K95p1YRoGpwvGycLJCGpyWZbT-ML6exlypQpoHcRH27jtePK1yC1JjaD15NRFkLz1sYskABtt7ayjy6oFvP
-  void onMessagesReceived(List<ChatMessage> messages) {
-    // int i = 0;
-    // for (var msg in messages) {
-    // i++;
-    // switch (msg.body.type) {
-    //   case MessageType.TXT:
-    //     {
-    //       ChatTextMessageBody body = msg.body as ChatTextMessageBody;
-    //       print(
-    //         "receive $i text message: ${body.content}, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.IMAGE:
-    //     {
-    //       ChatImageMessageBody body = msg.body as ChatImageMessageBody;
-    //       print(
-    //         "receive image message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.VIDEO:
-    //     {
-    //       ChatVideoMessageBody body = msg.body as ChatVideoMessageBody;
-    //       print(
-    //         "receive video message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.LOCATION:
-    //     {
-    //       ChatLocationMessageBody body = msg.body as ChatLocationMessageBody;
-    //       print(
-    //         "receive location message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.VOICE:
-    //     {
-    //       ChatVoiceMessageBody body = msg.body as ChatVoiceMessageBody;
-    //       print(
-    //         "receive voice message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.FILE:
-    //     {
-    //       ChatFileMessageBody body = msg.body as ChatFileMessageBody;
-    //       print(
-    //         "receive image message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.CUSTOM:
-    //     {
-    //       ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
-    //       print(
-    //         "receive custom message, from: ${msg.from}",
-    //       );
-    //     }
-    //     break;
-    //   case MessageType.CMD:
-    //     {}
-    //     break;
-    // }
-    // }
-  }
-
-  void _addChatListener() {
-    registerForNewMessage(
-      'app_message_handler',
-      (p0) {
-        onMessagesReceived(p0);
-      },
-    );
-  }
-
   void _firebase() async {
     // FirebaseMessaging? messaging = FirebaseMessaging.instance;
     // if (messaging == null) return;
@@ -191,7 +110,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
           closeIncomingCall(message);
         }
       } else {
-        NotificationController.shouldShowNotification(message);
+        NotificationController.shouldShowChatNotification(message);
       }
     });
 
@@ -212,10 +131,15 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
       debugPrint('onTokenRefresh Error $e');
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      if (message.data['alert'] != null && message.data['f'] != null) {
+      if (message.data['alert'] != null && message.data['e'] != null) {
         handleRemoteMessage(message, context, fallbackScreen: '');
       }
     });
+
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) {
+      await NotificationController.displayNotification(context);
+    }
   }
 
   @override
@@ -237,7 +161,6 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
       ],
       supportedLocales: S.delegate.supportedLocales,
     );
-    // });
   }
 
   @override

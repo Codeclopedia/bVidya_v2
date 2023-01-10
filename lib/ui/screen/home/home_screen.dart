@@ -1,15 +1,14 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
-// import '../../../controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
-import '/core/helpers/bchat_handler.dart';
+import '../../../core/sdk_helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
-import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -26,7 +25,8 @@ class HomeScreen extends HookConsumerWidget {
 
     useEffect(() {
       // print('useEffect called in HomeSreen');
-      ref.read(bChatSDKControllerProvider).init();
+      BChatSDKController.instance.init();
+      // ref.read(bChatSDKControllerProvider).init();
 
       _addHandler(ref);
       return _disposeAll;
@@ -432,12 +432,12 @@ class HomeScreen extends HookConsumerWidget {
               const Spacer(),
               InkWell(
                 onTap: () async {
-                  final result =
-                      await Navigator.pushNamed(context, RouteList.search);
-                  if (result == true) {
-                    ref.read(chatConversationProvider).update();
-                    // ref.read(bChatSDKControllerProvider).loadConversations(ref);
-                  }
+                  final result = await Navigator.pushNamed(
+                      context, RouteList.searchContact);
+                  // if (result == true) {
+                  ref.read(chatConversationProvider).update();
+                  // ref.read(bChatSDKControllerProvider).loadConversations(ref);
+                  // }
                 },
                 child: Container(
                   padding: EdgeInsets.all(1.w),

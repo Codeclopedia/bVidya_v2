@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:bvidya/core/helpers/bchat_group_manager.dart';
-import 'package:bvidya/core/routes.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
+// import 'package:bvidya/core/routes.dart';
 import 'package:bvidya/core/utils.dart';
 import 'package:bvidya/data/models/models.dart';
 import 'package:bvidya/data/services/bchat_api_service.dart';
@@ -71,9 +71,6 @@ Future<ChatPresence?> fetchOnlineStatus(String userId) async {
 
 Future<List<ChatPresence>> fetchOnlineStatuses(List<String> contacts) async {
   try {
-    final pushtemplate =
-        await ChatClient.getInstance.pushManager.getPushTemplate();
-    print('pushtemplate: $pushtemplate');
     return await ChatClient.getInstance.presenceManager
         .fetchPresenceStatus(members: contacts);
   } on ChatError catch (e) {
