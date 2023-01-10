@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
@@ -302,7 +303,32 @@ class ContactProfileScreen extends HookConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     separatorBuilder: (context, index) => SizedBox(width: 3.w),
                     itemBuilder: (context, index) {
-                      return _rowChatImageBody(data[index]);
+                      return InkWell(
+                        onTap: () {
+                          final list = data
+                              .map((e) => getImageProviderChatImage(e.body,
+                                  loadThumbFirst: false))
+                              .toList();
+                          MultiImageProvider multiImageProvider =
+                              MultiImageProvider(list);
+                          // final body = data[index].body;
+                          showImageViewerPager(context, multiImageProvider,
+                              onPageChanged: (page) {
+                            print("page changed to $page");
+                          }, onViewerDismissed: (page) {
+                            print("dismissed while on page $page");
+                          });
+                          // showImageViewer(
+                          //     context,
+                          //     getImageProviderChatImage(data[index].body,
+                          //         loadThumbFirst: false),
+                          //     onViewerDismissed: () {
+                          //   // print("dismissed");
+                          // });
+                        },
+                        child: _rowChatImageBody(data[index],
+                            counter: data.length - 3, last: index == 2),
+                      );
                     },
                   ),
                 );

@@ -25,6 +25,7 @@ class RouteList {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String chatScreen = '/chat-screen';
+  static const String chatScreenDirect = '/chat-screen-direct';
   static const String recentCalls = '/recent-calls';
   static const String contactList = '/contact-list';
   static const String contactProfile = '/contact-profile';
@@ -36,6 +37,7 @@ class RouteList {
   static const String editGroupContacts = '/edit-group-contacts';
   static const String groupInfo = '/group-info';
   static const String groupChatScreen = '/group-chat-screen';
+  static const String groupChatScreenDirect = '/group-chat-screen-direct';
   static const String bChatVideoCall = '/chat_video_call';
   static const String bChatAudioCall = '/chat_audio_call';
 

@@ -10,7 +10,7 @@ import '/core/utils.dart';
 
 import '/data/services/bchat_api_service.dart';
 
-import '/firebase_options.dart';
+// import '/firebase_options.dart';
 import '/data/models/models.dart';
 
 class BChatSDKController {
@@ -34,16 +34,18 @@ class BChatSDKController {
   }
 
   Future loadAllContactsGroup() async {
+    final client = ChatClient.getInstance;
     try {
-      final list = await ChatClient.getInstance.contactManager
-          .getAllContactsFromServer();
-      print('Loaded contacts  = ${list.length}');
+      final list = await client.contactManager.getAllContactsFromServer();
+      final conversations =
+          await client.chatManager.getConversationsFromServer();
+
+      print('Loaded contacts  = ${list.length} - ${conversations.length}');
     } catch (e) {
       print('error contacts  = $e');
     }
     try {
-      final list =
-          await ChatClient.getInstance.groupManager.fetchJoinedGroupsFromServer(
+      final list = await client.groupManager.fetchJoinedGroupsFromServer(
         needMemberCount: true,
         needRole: true,
       );
@@ -88,9 +90,12 @@ class BChatSDKController {
         if (keyBody != null) {
           shouldLogin = keyBody.appKey != token.body!.appKey ||
               keyBody.userId != token.body!.userId;
-          await pref.setString('chat_body', jsonEncode(token.body!));
+          if (shouldLogin) {
+            await pref.setString('chat_body', jsonEncode(token.body!));
+          }
         } else {
           keyBody = token.body!;
+          await pref.setString('chat_body', jsonEncode(token.body!));
         }
 
         print('should Login -  $shouldLogin');
@@ -103,14 +108,16 @@ class BChatSDKController {
       return;
     }
     // ${oldChatBody.toString()}
-    ChatOptions options = ChatOptions(
-      appKey: keyBody.appKey,
-      autoLogin: false,
-      acceptInvitationAlways: false,
-      deleteMessagesAsExitGroup: false,
-      requireAck: true,
-      requireDeliveryAck: true,
-    );
+    // ChatOptions options = ChatOptions(
+    //   appKey: keyBody.appKey,
+    //   autoLogin: false,
+    //   acceptInvitationAlways: false,
+    //   deleteMessagesAsExitGroup: false,
+    //   requireAck: true,
+    //   requireDeliveryAck: true,
+    // );
+    // options.enableFCM(DefaultFirebaseOptions.currentPlatform.messagingSenderId);
+    // await ChatClient.getInstance.init(options);
 
     // if (Platform.isIOS) {
     //   String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
@@ -118,10 +125,12 @@ class BChatSDKController {
     //     options.enableAPNs(aPNStoken);
     //   }
     //   // options.enableAPNs(certName)
-    // }
+    // }  //
 
-    options.enableFCM(DefaultFirebaseOptions.currentPlatform.appId);
-    await ChatClient.getInstance.init(options);
+    if ('61420261#491569' != keyBody.appKey) {
+      await ChatClient.getInstance.changeAppKey(newAppKey: keyBody.appKey);
+    }
+
     // showLoading(ref);
     bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
 

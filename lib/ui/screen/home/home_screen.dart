@@ -5,6 +5,7 @@ import 'package:bvidya/core/helpers/bchat_contact_manager.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
+// import '../../../controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
@@ -85,20 +86,23 @@ class HomeScreen extends HookConsumerWidget {
                 // print('conversationList:${conversationList.length}');
                 return loading && conversationList.isEmpty
                     ? buildLoading
-                    : ListView.separated(
-                        shrinkWrap: false,
-                        itemCount: conversationList.length,
-                        separatorBuilder: (context, index) {
-                          return Container(
-                            height: 1,
-                            color: Colors.grey.shade300,
+                    : conversationList.isEmpty
+                        ? buildEmptyPlaceHolder('No Converasations')
+                        : ListView.separated(
+                            shrinkWrap: false,
+                            itemCount: conversationList.length,
+                            separatorBuilder: (context, index) {
+                              return Container(
+                                height: 1,
+                                color: Colors.grey.shade300,
+                              );
+                            },
+                            itemBuilder: (context, index) {
+                              final model = conversationList[index];
+                              return _buildConversationItem(
+                                  context, model, ref);
+                            },
                           );
-                        },
-                        itemBuilder: (context, index) {
-                          final model = conversationList[index];
-                          return _buildConversationItem(context, model, ref);
-                        },
-                      );
               },
             ),
           ),
@@ -256,29 +260,36 @@ class HomeScreen extends HookConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _newMessageButton(context),
-        TextButton(
-            onPressed: () async {
-              Navigator.pushNamed(context, RouteList.groups);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => const DashChatScreen(),
-              //     ));
-              // final result =
-              //     await Navigator.pushNamed(context, RouteList.contactProfile);
-              // if (result != null) {
-              //   print('Return value $result');
-              // }
-            },
-            child: Text(
-              S.current.home_btx_groups,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: AppColors.primaryColor,
-                fontSize: 11.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            )),
+        Consumer(builder: (context, ref, child) {
+          return TextButton(
+              onPressed: () async {
+                // try {
+                //   ref.refresh(groupConversationProvider);
+                // } catch (e) {
+                //   print('error :$e');
+                // }
+                Navigator.pushNamed(context, RouteList.groups);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const DashChatScreen(),
+                //     ));
+                // final result =
+                //     await Navigator.pushNamed(context, RouteList.contactProfile);
+                // if (result != null) {
+                //   print('Return value $result');
+                // }
+              },
+              child: Text(
+                S.current.home_btx_groups,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: AppColors.primaryColor,
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ));
+        }),
       ],
     );
   }

@@ -1,5 +1,6 @@
 enum AttachType {
-  camera,
+  cameraPhoto,
+  cameraVideo,
   media,
   audio,
   docs,

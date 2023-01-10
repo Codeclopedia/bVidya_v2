@@ -46,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "atc_media": MessageLookupByLibrary.simpleMessage("Media"),
         "atc_media_desc":
             MessageLookupByLibrary.simpleMessage("Share photos and videos"),
+        "atc_record": MessageLookupByLibrary.simpleMessage("Record Video"),
         "bchat": MessageLookupByLibrary.simpleMessage("bChat"),
         "bchat_conv_delete":
             MessageLookupByLibrary.simpleMessage("Delete Conversation"),

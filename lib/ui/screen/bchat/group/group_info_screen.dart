@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
@@ -541,20 +543,40 @@ class GroupInfoScreen extends HookConsumerWidget {
               final user = ref.watch(loginRepositoryProvider).user;
               return Visibility(
                 visible: group.groupInfo.owner == user?.id.toString(),
-                child: IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  onPressed: () async{
-                    ref.read(selectedContactProvider.notifier).clear();
-                    if (contacts.isNotEmpty) {
-                      ref
-                          .read(selectedContactProvider.notifier)
-                          .addContacts(contacts);
-                     await Navigator.pushNamed(context, RouteList.editGroup,
-                          arguments: group.groupInfo);
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      onPressed: () async {
+                        ref.read(selectedContactProvider.notifier).clear();
+                        if (contacts.isNotEmpty) {
+                          ref
+                              .read(selectedContactProvider.notifier)
+                              .addContacts(contacts);
+                          await Navigator.pushNamed(
+                              context, RouteList.editGroup,
+                              arguments: group.groupInfo);
 
-                      ref.read(groupConversationProvider).update();
-                    }
-                  },
+                          ref.read(groupConversationProvider).update();
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.white),
+                      onPressed: () async {
+                        await BchatGroupManager.deleteGroup(
+                            group.groupInfo.groupId);
+                        await ref
+                            .read(groupConversationProvider)
+                            .delete(group.groupInfo.groupId);
+                        Navigator.popUntil(context, (route) {
+                          print(
+                              'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
+                          return route.isFirst;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               );
             }),

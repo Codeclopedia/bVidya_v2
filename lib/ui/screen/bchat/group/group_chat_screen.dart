@@ -1,17 +1,18 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/ui/screens.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
-import 'package:image_picker/image_picker.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
+import '../../../../controller/bchat_providers.dart';
+import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
-import '../../../dialog/image_picker_dialog.dart';
 import '../dash/models/attach_type.dart';
 import '/core/helpers/bchat_handler.dart';
-import '../chat_screen.dart';
 // import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -28,15 +29,18 @@ import '../widgets/typing_indicator.dart';
 final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 
 class GroupChatScreen extends HookConsumerWidget {
+  
   final GroupConversationModel model;
-  GroupChatScreen({Key? key, required this.model}) : super(key: key);
+  final bool direct;
+  
+  GroupChatScreen({Key? key, required this.model, this.direct = false})
+      : super(key: key);
 
   String _myUserId = '';
   late final ScrollController _scrollController;
 
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
-  // User? _me;
   late Contacts _me;
 
   @override
@@ -64,10 +68,25 @@ class GroupChatScreen extends HookConsumerWidget {
     // ref.listen(chatHasMoreOldMessageProvider, (previous, next) {
     //   _hasMoreData = next;
     // });
-    return Scaffold(
-      body: ColouredBoxBar(
-        topBar: _topBar(context),
-        body: _chatList(context),
+    final selectedItems = ref.watch(selectedChatMessageListProvider);
+    return BaseWilPopupScreen(
+      onBack: () async {
+        if (selectedItems.isNotEmpty) {
+          ref.read(selectedChatMessageListProvider.notifier).clear();
+          return false;
+        }
+        if (direct) {
+          Navigator.pushReplacementNamed(context, RouteList.home);
+          return false;
+        }
+
+        return true;
+      },
+      child: Scaffold(
+        body: ColouredBoxBar(
+          topBar: _topBar(context),
+          body: _chatList(context),
+        ),
       ),
     );
   }
@@ -181,11 +200,23 @@ class GroupChatScreen extends HookConsumerWidget {
             targetId: model.id, content: input, chatType: ChatType.GroupChat);
         // ..from = _myUserId;
 
-        ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-        if (replyOf != null) {
-          msg.attributes?.addAll({'reply_of': replyOf.toJson()});
-          ref.read(chatModelProvider).clearReplyBox();
-        }
+        msg.attributes = {
+          "em_apns_ext": {
+            "em_push_title":
+                "${model.groupInfo.name}: ${_me.name} sent you a message",
+            "em_push_content": input,
+            'type': 'group_chat'
+          },
+          // Adds the push template to the message.
+          // "em_push_template": {
+          //   // Sets the template name.
+          //   "name": "default",
+          //   // Sets the template title by specifying the variable.
+          //   "title_args": ["${model.contact.name} sent you a message"],
+          //   // Sets the template content by specifying the variable.
+          //   "content_args": [input],
+          // }
+        };
 
         return await _sendMessage(msg, ref);
       },
@@ -215,16 +246,9 @@ class GroupChatScreen extends HookConsumerWidget {
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
                       child: Stack(
                         children: [
-                          attFile.messageType == MessageType.IMAGE
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(1.w),
-                                  ),
-                                  child: Image(image: FileImage(attFile.file)),
-                                )
-                              : (attFile.messageType == MessageType.VIDEO
-                                  ? getSvgIcon('icon_chat_media.svg')
-                                  : getSvgIcon('icon_chat_doc.svg')),
+                          AttachedFileView(
+                            attFile: attFile,
+                          ),
                           Positioned(
                             right: 0,
                             top: 0,
@@ -242,33 +266,47 @@ class GroupChatScreen extends HookConsumerWidget {
                   InkWell(
                     onTap: () async {
                       final ChatMessage msg;
-
+                      final String content;
                       if (attFile.messageType == MessageType.IMAGE) {
                         msg = ChatMessage.createImageSendMessage(
-                          targetId: model.id,
-                          filePath: attFile.file.absolute.path,
-                          fileSize: await attFile.file.length(),
+                          targetId: model.id.toString(),
+                          filePath: attFile.file.path,
+                          fileSize: attFile.file.size.toInt(),
                         );
+                        content = 'Image file';
                       } else if (attFile.messageType == MessageType.VIDEO) {
                         msg = ChatMessage.createVideoSendMessage(
-                          targetId: model.id,
-                          filePath: attFile.file.absolute.path,
-                          fileSize: await attFile.file.length(),
+                          targetId: model.id.toString(),
+                          filePath: attFile.file.path,
+                          fileSize: attFile.file.size.toInt(),
                         );
+                        content = 'Video file';
                       } else {
                         msg = ChatMessage.createFileSendMessage(
-                          targetId: model.id,
-                          filePath: attFile.file.absolute.path,
-                          fileSize: await attFile.file.length(),
+                          targetId: model.id.toString(),
+                          filePath: attFile.file.path,
+                          fileSize: attFile.file.size.toInt(),
                         );
+                        content = 'File';
                       }
+                      msg.attributes = {
+                        "em_apns_ext": {
+                          "em_push_title":
+                              "${model.groupInfo.name}: ${_me.name} sent you a message",
+                          "em_push_content": content,
+                          'type': 'group_chat'
+                        },
+                        // Adds the push template to the message.
+                        // "em_push_template": {
+                        //   // Sets the template name.
+                        //   "name": "default",
+                        //   // Sets the template title by specifying the variable.
+                        //   "title_args": ["${model.contact.name} sent you a message"],
+                        //   // Sets the template content by specifying the variable.
+                        //   "content_args": [input],
+                        // }
+                      };
 
-                      msg.attributes?.addAll({"em_force_notification": true});
-                      ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-                      if (replyOf != null) {
-                        msg.attributes?.addAll({'reply_of': replyOf.toJson()});
-                        ref.read(chatModelProvider).clearReplyBox();
-                      }
                       await _sendMessage(msg, ref);
                       ref.read(attachedGroupFile.notifier).state = null;
                     },
@@ -288,28 +326,50 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  final ImagePicker _picker = ImagePicker();
   _pickFiles(AttachType type, WidgetRef ref) async {
-    // print('Request Attach: $type');
-    // var fileExts = ['jpg', 'pdf', 'doc'];
-
     switch (type) {
-      case AttachType.camera:
-        File? file = await imgFromCamera(_picker);
-        if (file != null) {
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(file, MessageType.IMAGE);
+      case AttachType.cameraPhoto:
+        List<Media>? res = await ImagesPicker.openCamera(
+          quality: 0.8,
+          pickType: PickType.image,
+          maxSize: 5000, //5 MB
+        );
+        // print(res);
+        if (res != null) {
+          final Media media = res.first;
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.IMAGE);
+        }
+        return;
+      case AttachType.cameraVideo:
+        List<Media>? res = await ImagesPicker.openCamera(
+          quality: 0.8,
+          pickType: PickType.video,
+          maxSize: 10000, //10 MB
+        );
+        if (res != null) {
+          final Media media = res.first;
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.VIDEO);
         }
         return;
       case AttachType.media:
-        File? file = await imgFromGallery(_picker);
-        if (file != null) {
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(file, MessageType.IMAGE);
+        List<Media>? res = await ImagesPicker.pick(
+          count: 1,
+          pickType: PickType.all,
+          language: Language.System,
+          maxSize: 5000,
+        );
+        if (res != null) {
+          final Media media = res.first;
+          bool isImage = media.path.toLowerCase().endsWith('png') ||
+              media.path.toLowerCase().endsWith('jpg') ||
+              media.path.toLowerCase().endsWith('jpeg');
+          ref.read(attachedFile.notifier).state = AttachedFile(
+              media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
         }
-        // fileExts = ['jpg', 'png', 'jpeg', 'mp4', 'mov'];
         break;
-      // ;
+
       case AttachType.audio:
         // fileExts = ['aac', 'mp3', 'wav'];
         break;
@@ -467,7 +527,11 @@ class GroupChatScreen extends HookConsumerWidget {
       msg.attributes?.addAll({'from_name': _me.name});
       msg.attributes?.addAll({'from_image': _me.profileImage});
       msg.attributes?.addAll({"em_force_notification": true});
-
+      ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
+      if (replyOf != null) {
+        msg.attributes?.addAll({'reply_of': replyOf.toJson()});
+        ref.read(chatModelProvider).clearReplyBox();
+      }
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {

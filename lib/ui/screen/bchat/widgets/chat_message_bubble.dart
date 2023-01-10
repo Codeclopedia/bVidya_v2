@@ -1,12 +1,12 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/data/models/response/bchat/contacts_response.dart';
-import '/ui/screen/bchat/dash/models/reply_model.dart';
-import '/ui/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '/data/models/response/bchat/contacts_response.dart';
+import '/ui/screen/bchat/dash/models/reply_model.dart';
+import '/ui/widgets.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '../dash/models/mention.dart';
@@ -279,7 +279,7 @@ class ChatMessageBubble extends StatelessWidget {
               //   children: getMessage(body.content),
               // )),
               // const Spacer(),
-              SizedBox(width: 8.w)
+              SizedBox(width: 12.w)
             ],
           ),
           _buildTime(),

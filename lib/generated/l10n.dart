@@ -1030,6 +1030,16 @@ class S {
     );
   }
 
+  /// `Record Video`
+  String get atc_record {
+    return Intl.message(
+      'Record Video',
+      name: 'atc_record',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Media`
   String get atc_media {
     return Intl.message(

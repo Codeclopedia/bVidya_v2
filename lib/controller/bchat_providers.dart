@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../core/helpers/extensions.dart';
-import '../core/utils.dart';
+import '/core/helpers/extensions.dart';
+import '/core/utils.dart';
 import '/core/helpers/bchat_contact_manager.dart';
 import '/core/helpers/duration.dart';
 
@@ -31,6 +31,10 @@ final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
   final api = ref.read(apiBChatProvider);
   return BChatSDKRepository(api, user?.authToken ?? '');
 });
+
+final selectedChatMessageListProvider =
+    StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
+        (ref) => ChatMessageNotifier());
 
 // final bChatConvListProvider = FutureProvider<List<ConversationModel>>((ref) {
 //   return ref.read(bChatSDKProvider).getConversations();
@@ -153,7 +157,8 @@ final groupMediaProvier =
     for (var fId in list) {
       if (fId.fileId != null) {
         if (count < 3) {
-          File file = File('path${groupId}_${fId.fileId}');
+          File file =
+              File('${Directory.systemTemp.path}/${groupId}_${fId.fileId}');
           await ChatClient.getInstance.groupManager.downloadGroupSharedFile(
               groupId: groupId, fileId: fId.fileId!, savePath: file.path);
           count++;

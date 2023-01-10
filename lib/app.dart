@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/chat_utils.dart';
+import 'package:bvidya/data/models/conversation_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -76,6 +80,8 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     }
   }
 
+//phone  cizrHqoEQ9eQ-qIhBsiNmh:APA91bGGAQJ_jX3CxDH7yppIRmRTLqWsjPqXm76wZdLmqqF6KwnYm7hwETnFz_cjbesXiRutNHpEOG_DhqX4-i4mObuzohBgKotvY8sOWkYpfu6R8BeSXg3xnXXtk-EM_MjVWGqJbnnn
+//Tablet coto9ZIQQx6JnETPcwmNXP:APA91bE-APmjhr2dX9MwyA58DttecVdQMlxirOovMdejgf27Tb-ivAx11K95p1YRoGpwvGycLJCGpyWZbT-ML6exlypQpoHcRH27jtePK1yC1JjaD15NRFkLz1sYskABtt7ayjy6oFvP
   void onMessagesReceived(List<ChatMessage> messages) {
     // int i = 0;
     // for (var msg in messages) {
@@ -171,10 +177,6 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
 
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      debugPrint('getInitialMessage : ${message.toMap()}');
-    }
     FirebaseMessaging.onMessage.listen((message) {
       //For P2P Call
       print('firebase:onMessage -> ${message.toMap()} ');
@@ -188,12 +190,33 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
       }
     });
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+      if (Platform.isIOS) {
+        await ChatClient.getInstance.pushManager.updateAPNsDeviceToken(
+          token,
+        );
+      } else if (Platform.isAndroid) {
+        await ChatClient.getInstance.pushManager.updateFCMPushToken(
+          token,
+        );
+      }
       debugPrint('onTokenRefresh: $token');
     }, onDone: () {
       debugPrint('onTokenRefresh DONE');
     }, onError: (e) {
       debugPrint('onTokenRefresh Error $e');
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      if (message.data['alert'] != null && message.data['f'] != null) {
+        //open specific screen
+        String from = message.data['f'];
+        // String to = message.data['t'];
+        final model = await getConversationModel(from);
+        if (model != null) {
+          // await Navigator.pushNamed(context, RouteList.chatScreen,
+          //     arguments: model);
+        }
+      }
     });
   }
 

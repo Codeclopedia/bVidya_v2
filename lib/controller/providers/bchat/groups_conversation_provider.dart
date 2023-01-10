@@ -21,6 +21,22 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  // bool _initialized = false;
+
+  Future init() async {
+    // if (_initialized) {
+    //   return;
+    // }
+    // _initialized = true;
+    _groupConversationMap.clear();
+    final list = await BchatGroupManager.loadGroupConversationsList();
+    for (var item in list) {
+      _groupConversationMap.addAll({item.id: item});
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future addConveration(ChatGroup grp) async {
     GroupConversationModel model;
     try {
@@ -41,22 +57,6 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     }
     _groupConversationMap.addAll({grp.groupId: model});
     // notifyListeners();
-  }
-
-  bool _initialized = false;
-
-  Future init() async {
-    if (_initialized) {
-      return;
-    }
-    _initialized = true;
-    _groupConversationMap.clear();
-    final list = await BchatGroupManager.loadGroupConversationsList();
-    for (var item in list) {
-      _groupConversationMap.addAll({item.id: item});
-    }
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future updateConversation(ChatGroup grp) async {
@@ -131,5 +131,17 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   void update() {
     notifyListeners();
+  }
+
+  Future delete(String groupId) async {
+    final model = _groupConversationMap.remove(groupId);
+  }
+
+  @override
+  void dispose() {
+    // _initialized = false;
+    _groupConversationMap.clear();
+
+    super.dispose();
   }
 }

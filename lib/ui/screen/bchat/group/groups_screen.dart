@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/ui/screen/blearn/components/common.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/contacts_select_notifier.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -11,11 +12,27 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
 
-class GroupsScreen extends StatelessWidget {
+// class GroupsScreen extends StatelessWidget {
+//   const GroupsScreen({Key? key}) : super(key: key);
+
+class GroupsScreen extends ConsumerStatefulWidget {
   const GroupsScreen({Key? key}) : super(key: key);
 
   @override
+  GroupsScreenState createState() => GroupsScreenState();
+}
+
+class GroupsScreenState extends ConsumerState<GroupsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // "ref" can be used in all life-cycles of a StatefulWidget.
+    ref.read(groupConversationProvider.notifier).init();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final grpProvider = ref.watch(groupConversationProvider);
     return Scaffold(
       body: ColouredBoxBar(
           topBar: _buildTopBar(context),
@@ -26,18 +43,12 @@ class GroupsScreen extends StatelessWidget {
               // SizedBox(height: 2.h),
               _buttons(context),
               Expanded(
-                child: Consumer(builder: (context, ref, child) {
-                  ref.read(groupConversationProvider.notifier).init();
-                  final grpProvider = ref.watch(groupConversationProvider);
-                  return Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                    child: grpProvider.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : _buildList(grpProvider.groupConversationList, ref),
-                  );
-                }),
-              )
+                  child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                child: grpProvider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildList(grpProvider.groupConversationList, ref),
+              ))
             ],
           )),
     );
@@ -45,20 +56,22 @@ class GroupsScreen extends StatelessWidget {
 
   Widget _buildList(
       List<GroupConversationModel> conversationList, WidgetRef ref) {
-    return ListView.separated(
-        itemBuilder: (context, index) => GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, RouteList.groupInfo,
-                    arguments: conversationList[index]);
-              },
-              child:
-                  _buildConversationItem(context, conversationList[index], ref),
-            ),
-        separatorBuilder: (context, index) => Divider(
-              color: Colors.grey.shade300,
-              height: 1,
-            ),
-        itemCount: conversationList.length);
+    return conversationList.isEmpty
+        ? buildEmptyPlaceHolder('No Groups')
+        : ListView.separated(
+            itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, RouteList.groupInfo,
+                        arguments: conversationList[index]);
+                  },
+                  child: _buildConversationItem(
+                      context, conversationList[index], ref),
+                ),
+            separatorBuilder: (context, index) => Divider(
+                  color: Colors.grey.shade300,
+                  height: 1,
+                ),
+            itemCount: conversationList.length);
   }
 
   Widget _buildConversationItem(
@@ -237,6 +250,8 @@ class GroupsScreen extends StatelessWidget {
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
           if (result != null && result is ChatGroup) {
             ref.read(groupConversationProvider).addConveration(result);
+          } else {
+            ref.read(groupConversationProvider).update();
           }
         },
         child: Row(

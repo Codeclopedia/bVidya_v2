@@ -53,8 +53,14 @@ class BchatGroupManager {
     }
   }
 
-  static Future<ChatGroup?> editGroup(String groupId, String name, String? desc,
-      List<String> ids, List<String> removeIds, String image,bool updateImage) async {
+  static Future<ChatGroup?> editGroup(
+      String groupId,
+      String name,
+      String? desc,
+      List<String> ids,
+      List<String> removeIds,
+      String image,
+      bool updateImage) async {
     try {
       await ChatClient.getInstance.groupManager.changeGroupName(groupId, name);
 
@@ -178,6 +184,16 @@ class BchatGroupManager {
       print('Error2: ${e} ');
     }
     return ChatPushRemindType.ALL;
+  }
+
+  static Future deleteGroup(String groupId) async {
+    try {
+      await ChatClient.getInstance.groupManager.destroyGroup(groupId);
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
   }
 
   // static Future<List<Contacts>> loadGroupMemebers(

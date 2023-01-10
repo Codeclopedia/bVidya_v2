@@ -112,6 +112,7 @@
 
     "atc_content":"Share Content",
     "atc_camera":"Camera",
+    "atc_record":"Record Video",
     "atc_media":"Media",
     "atc_media_desc":"Share photos and videos",
     "atc_audio":"Audio",

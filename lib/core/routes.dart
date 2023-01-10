@@ -68,6 +68,15 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+            case RouteList.groupChatScreenDirect:
+        if (settings.arguments is GroupConversationModel) {
+          screen = GroupChatScreen(
+            model: settings.arguments as GroupConversationModel,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
       case RouteList.groupInfo:
         if (settings.arguments is GroupConversationModel) {
           screen = GroupInfoScreen(
@@ -82,6 +91,20 @@ class Routes {
         if (settings.arguments is ConversationModel) {
           screen = ChatScreen(
             model: settings.arguments as ConversationModel,
+          );
+        } else {
+          screen = Scaffold(
+            body: Center(
+              child: Text('Not a valid Chat Screen of name: ${settings.name}'),
+            ),
+          );
+        }
+        break;
+      case RouteList.chatScreenDirect:
+        if (settings.arguments is ConversationModel) {
+          screen = ChatScreen(
+            model: settings.arguments as ConversationModel,
+            direct: true,
           );
         } else {
           screen = Scaffold(
