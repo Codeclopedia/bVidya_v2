@@ -144,31 +144,31 @@ final elevatedButtonStyle = ElevatedButton.styleFrom(
 );
 
 final elevatedButtonEndStyle = ElevatedButton.styleFrom(
-      textStyle: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 8.sp,
-        color: Colors.white,
-      ),
-      backgroundColor: AppColors.redBColor,
-      foregroundColor: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.2.h),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2.w),
-      ),
-    );
+  textStyle: TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 8.sp,
+    color: Colors.white,
+  ),
+  backgroundColor: AppColors.redBColor,
+  foregroundColor: Colors.white,
+  padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.2.h),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(2.w),
+  ),
+);
 
 final elevatedButtonYellowStyle = ElevatedButton.styleFrom(
-      textStyle: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 11.sp,
-      ),
-      foregroundColor: AppColors.primaryColor,
-      backgroundColor: AppColors.yellowAccent,
-      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 0.7.h),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2.w),
-      ),
-    );
+  textStyle: TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 11.sp,
+  ),
+  foregroundColor: AppColors.primaryColor,
+  backgroundColor: AppColors.yellowAccent,
+  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 0.7.h),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(2.w),
+  ),
+);
 
 final elevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
@@ -190,6 +190,7 @@ final dialogElevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
     fontSize: 8.sp,
     color: Colors.black,
   ),
+  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
   foregroundColor: Colors.black,
   backgroundColor: AppColors.cardWhite,
   shape: RoundedRectangleBorder(
@@ -204,6 +205,7 @@ final dialogElevatedButtonStyle = ElevatedButton.styleFrom(
     color: Colors.white,
   ),
   backgroundColor: AppColors.primaryColor,
+  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(2.w),
   ),

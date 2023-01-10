@@ -302,7 +302,7 @@ class HomeScreen extends HookConsumerWidget {
           final model =
               await Navigator.pushNamed(context, RouteList.contactList);
           if (model != null) {
-            ref.read(chatConversationProvider).update();
+            ref.read(chatConversationProvider).updateUi();
             // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
 
             // ref
@@ -435,7 +435,7 @@ class HomeScreen extends HookConsumerWidget {
                   final result = await Navigator.pushNamed(
                       context, RouteList.searchContact);
                   // if (result == true) {
-                  ref.read(chatConversationProvider).update();
+                  ref.read(chatConversationProvider).updateUi();
                   // ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   // }
                 },

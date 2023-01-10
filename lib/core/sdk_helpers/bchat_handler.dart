@@ -1,11 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_provider.dart';
-import 'package:bvidya/core/utils/notification_controller.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../state.dart';
+import '/controller/providers/bchat/chat_conversation_provider.dart';
+import '/core/utils/notification_controller.dart';
 
 registerForContact(String key, WidgetRef? ref) {
   try {
@@ -40,7 +39,7 @@ registerForContact(String key, WidgetRef? ref) {
           //
           print('Deleted: $userId ');
           final result =
-              await ref?.read(chatConversationProvider).removedContact(userId);
+              await ref?.read(chatConversationProvider).removedContact(int.tryParse(userId)??-1);
           if (result != null) {
             NotificationController.showContactActionNotification(
                 userId, 'bVidya', 'Contact ${result.name} deleted');
@@ -53,14 +52,15 @@ registerForContact(String key, WidgetRef? ref) {
         onFriendRequestAccepted: (userId) {
           //
           print('Acceped: $userId ');
-          EasyLoading.showInfo('Acceped: $userId ');
+
+          // EasyLoading.showInfo('Acceped: $userId ');
           NotificationController.showContactActionNotification(
               userId, 'bVidya', 'Connection request accepted');
         },
         onFriendRequestDeclined: (userId) {
           //
 
-          EasyLoading.showInfo('Declined: $userId ');
+          // EasyLoading.showInfo('Declined: $userId ');
           NotificationController.showContactActionNotification(
               userId, 'bVidya', 'Connection request declined');
         },
@@ -72,6 +72,7 @@ registerForContact(String key, WidgetRef? ref) {
     print('Error2 registerForContact $e');
   }
 }
+
 
 unregisterForContact(String key) {
   try {

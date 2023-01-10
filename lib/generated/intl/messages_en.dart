@@ -283,8 +283,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Block Contact"),
         "contact_menu_delete":
             MessageLookupByLibrary.simpleMessage("Delete Contact"),
+        "contact_menu_request":
+            MessageLookupByLibrary.simpleMessage("Send Request"),
         "contact_menu_unblock":
             MessageLookupByLibrary.simpleMessage("Unblock Contact"),
+        "contact_menu_view":
+            MessageLookupByLibrary.simpleMessage("View Profile"),
         "contact_title": MessageLookupByLibrary.simpleMessage("Contact Us"),
         "course_calender": MessageLookupByLibrary.simpleMessage(
             "bVidya Educator since\n6th July, 2018"),

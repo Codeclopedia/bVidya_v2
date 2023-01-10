@@ -564,16 +564,32 @@ class GroupInfoScreen extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed: () async {
-                        await BchatGroupManager.deleteGroup(
-                            group.groupInfo.groupId);
-                        await ref
-                            .read(groupConversationProvider)
-                            .delete(group.groupInfo.groupId);
-                        Navigator.popUntil(context, (route) {
-                          print(
-                              'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
-                          return route.isFirst;
-                        });
+                        await showBasicDialog(
+                            context, 'Delete group', 'Are you sure?', 'Yes',
+                            () async {
+                          await BchatGroupManager.deleteGroup(
+                              group.groupInfo.groupId);
+                          await ref
+                              .read(groupConversationProvider)
+                              .delete(group.groupInfo.groupId);
+                          Navigator.popUntil(context, (route) {
+                            print(
+                                'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
+                            return route.isFirst;
+                          });
+                          
+                          // Navigator.pop(context);
+                        },negativeButton: 'No');
+                        // await BchatGroupManager.deleteGroup(
+                        //     group.groupInfo.groupId);
+                        // await ref
+                        //     .read(groupConversationProvider)
+                        //     .delete(group.groupInfo.groupId);
+                        // Navigator.popUntil(context, (route) {
+                        //   print(
+                        //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
+                        //   return route.isFirst;
+                        // });
                       },
                     ),
                   ],

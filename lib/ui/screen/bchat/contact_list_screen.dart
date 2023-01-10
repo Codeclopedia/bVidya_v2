@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+// import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/chat_utils.dart';
 import 'package:bvidya/ui/dialog/contact_menu_dialog.dart';
 import 'package:grouped_list/grouped_list.dart';
 
@@ -22,7 +23,7 @@ class ContactListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ColouredBoxBar(
-        topBar: const BAppBar(title: 'Add New People'),
+        topBar: const BAppBar(title: 'Start New Conversation'),
         body: Consumer(
           builder: (context, ref, child) {
             return ref.watch(myContactsList).when(
@@ -69,32 +70,23 @@ class ContactListScreen extends StatelessWidget {
                 return InkWell(
                     onLongPress: () async {
                       final value = await showContactMenu(context, element);
-                      if (value) {
-                        ref.read(chatConversationProvider).update();
-                      }
-                    },
-                    onTap: (() async {
-                      final conv = await ChatClient.getInstance.chatManager
-                          .getConversation(element.userId.toString(),
-                              type: ChatConversationType.Chat);
-
-                      if (conv != null) {
-                        ConversationModel model = ConversationModel(
-                          id: element.userId.toString(),
-                          badgeCount: await conv.unreadCount(),
-                          contact: element,
-                          conversation: conv,
-                          lastMessage: await conv.latestMessage(),
-                          // isOnline: null,
+                      if (value == 1) {
+                        Navigator.popAndPushNamed(
+                          context,
+                          RouteList.contactInfo,
+                          arguments: {
+                            'contact': element,
+                            'is_contact': true,
+                          },
                         );
+                      } else if (value == 2) {
                         ref
                             .read(chatConversationProvider)
-                            .addOrUpdateConversation(model);
-
-                        Navigator.pushReplacementNamed(
-                            context, RouteList.chatScreen,
-                            arguments: model);
-                      }
+                            .removedContact(element.userId);
+                      } else {}
+                    },
+                    onTap: (() async {
+                      openChatScreen(context, element, ref);
                     }),
                     child: _contactRow(element));
               },

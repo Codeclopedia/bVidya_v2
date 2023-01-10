@@ -95,12 +95,13 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       print('error $e');
     }
     _isLoading = false;
-    notifyListeners();
+    updateUi();
   }
 
   Future addOrUpdateConversation(ConversationModel model) async {
     _contactsMap.addAll({model.contact.userId: model.contact});
     _chatConversationMap.update(model.id, (v) => model, ifAbsent: () => model);
+    updateUi();
   }
 
   Future updateConversation(String convId) async {
@@ -132,14 +133,18 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Future<Contacts?> removedContact(String userId) async {
+  Future<Contacts?> removedContact(int userId) async {
     try {
       final user = await getMeAsUser();
-      if (user == null) {
+      if (user == null || userId <= 0) {
         return null;
       }
-      return _contactsMap.remove(userId);
-    } catch (e) {}
+      _chatConversationMap.remove(userId.toString());
+      final cont = _contactsMap.remove(userId);
+      updateUi();
+      return cont;
+    } catch (_) {}
+    return null;
   }
 
   Future<Contacts?> addContact(String userId) async {
@@ -154,6 +159,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       if (result.body?.contacts?.isNotEmpty == true) {
         contact = result.body!.contacts![0];
         _contactsMap.addAll({contact.userId: contact});
+        updateUi();
         return contact;
       } else {
         return null;
@@ -209,7 +215,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         _chatConversationMap.update(id, (v) => newModel,
             ifAbsent: () => newModel);
         if (update) {
-          notifyListeners();
+          updateUi();
         }
       } else {
         final user = await getMeAsUser();
@@ -255,24 +261,26 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       return;
     }
     if (update) {
-      notifyListeners();
+      updateUi();
     }
     //
   }
 
-  void update() {
-    notifyListeners();
+  void updateUi() {
+    try {
+      notifyListeners();
+    } catch (_) {}
   }
 
   void updateConversationOnly(String id) async {
     await updateConversation(id);
-    notifyListeners();
+    updateUi();
   }
 
   void deleteConversationOnly(String id) {
     ConversationModel? model = _chatConversationMap.remove(id);
     if (model != null) {
-      notifyListeners();
+      updateUi();
     }
   }
 }

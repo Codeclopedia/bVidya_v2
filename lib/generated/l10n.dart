@@ -830,6 +830,26 @@ class S {
     );
   }
 
+  /// `Send Request`
+  String get contact_menu_request {
+    return Intl.message(
+      'Send Request',
+      name: 'contact_menu_request',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Profile`
+  String get contact_menu_view {
+    return Intl.message(
+      'View Profile',
+      name: 'contact_menu_view',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Delete Contact`
   String get contact_menu_delete {
     return Intl.message(

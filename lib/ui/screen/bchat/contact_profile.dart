@@ -1,6 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_provider.dart';
+import 'package:bvidya/ui/dialog/basic_dialog.dart';
+import '/core/utils/chat_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
+// import '../../../controller/providers/bchat/chat_conversation_provider.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '../../../core/sdk_helpers/bchat_contact_manager.dart';
@@ -56,12 +62,21 @@ final blockProvider = StateProvider.autoDispose.family<Future<bool>, int>(
 
 class ContactProfileScreen extends HookConsumerWidget {
   final Contacts contact;
-  const ContactProfileScreen({super.key, required this.contact});
+  final bool fromChat;
+  final bool isInContact;
+  const ContactProfileScreen(
+      {super.key,
+      required this.contact,
+      this.fromChat = true,
+      this.isInContact = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      _loadMuteSetting(ref);
+      if (isInContact) {
+        _loadMuteSetting(ref);
+      }
+
       return () {};
     }, const []);
     return Scaffold(
@@ -97,51 +112,64 @@ class ContactProfileScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfo(),
-            _buildMuteSettings(),
-            // SizedBox(height: 1.h),
-            _mediaSection(),
-            _buildGroups(),
-            SizedBox(height: 3.h),
-            Consumer(builder: (context, ref, child) {
-              final future = ref.watch(blockProvider(contact.userId));
-
-              return FutureBuilder(
-                future: future,
-                builder: (context, snapshot) {
-                  if (snapshot.data != null) {
-                    bool blocked = snapshot.data!;
-                    return _buildButton(
-                        Icons.block,
-                        blocked
-                            ? S.current.pr_btx_unblock
-                            : S.current.pr_btx_block, () async {
-                      if (blocked) {
-                        await BChatContactManager.unBlockUser(
-                            contact.userId.toString());
-                      } else {
-                        await BChatContactManager.blockUser(
-                            contact.userId.toString());
-                      }
-                      ref.refresh(blockProvider(contact.userId));
-                      // ref.read(blockProvider(contact.userId).notifier).state =
-                      //     BChatContactManager.isUserBlocked(
-                      //         contact.userId.toString());
-                    });
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              );
-            }),
-            SizedBox(height: 1.h),
-            _buildButton(Icons.thumb_down_off_alt_outlined,
-                S.current.pr_btx_report, () {}),
-            SizedBox(height: 4.h),
+            if (isInContact) ...inContact(),
+            if (!isInContact) ...notInContact(),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> notInContact() {
+    return [
+      _buildUserInfo(),
+      SizedBox(height: 1.h),
+      _buildGroups(),
+      SizedBox(height: 3.h),
+    ];
+  }
+
+  List<Widget> inContact() {
+    return [
+      _buildUserInfo(),
+      _buildMuteSettings(),
+      _mediaSection(),
+      _buildGroups(),
+      SizedBox(height: 3.h),
+      Consumer(builder: (context, ref, child) {
+        final future = ref.watch(blockProvider(contact.userId));
+
+        return FutureBuilder(
+          future: future,
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              bool blocked = snapshot.data!;
+              return _buildButton(Icons.block,
+                  blocked ? S.current.pr_btx_unblock : S.current.pr_btx_block,
+                  () async {
+                if (blocked) {
+                  await BChatContactManager.unBlockUser(
+                      contact.userId.toString());
+                } else {
+                  await BChatContactManager.blockUser(
+                      contact.userId.toString());
+                }
+                ref.refresh(blockProvider(contact.userId));
+                // ref.read(blockProvider(contact.userId).notifier).state =
+                //     BChatContactManager.isUserBlocked(
+                //         contact.userId.toString());
+              });
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        );
+      }),
+      SizedBox(height: 1.h),
+      _buildButton(
+          Icons.thumb_down_off_alt_outlined, S.current.pr_btx_report, () {}),
+      SizedBox(height: 4.h),
+    ];
   }
 
   Widget _buildUserInfo() {
@@ -442,7 +470,6 @@ class ContactProfileScreen extends HookConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         final mute = ref.watch(chatMuteProvider);
-
         // ref.watch(muteProvider(contact.userId.toString()));
         return InkWell(
           onTap: () async {
@@ -514,6 +541,29 @@ class ContactProfileScreen extends HookConsumerWidget {
               },
             ),
           ),
+          if (isInContact)
+            Positioned(
+              right: 1.w,
+              top: 1.h,
+              child: Consumer(builder: (context, ref, child) {
+                return IconButton(
+                  icon: getSvgIcon('icon_delete_conv.svg', color: Colors.white),
+                  onPressed: () async {
+                    await showBasicDialog(
+                        context, 'Delete Contact', 'Are you sure?', 'Yes',
+                        () async {
+                      await BChatContactManager.deleteContact(
+                          contact.userId.toString());
+                      await ref
+                          .read(chatConversationProvider)
+                          .removedContact(contact.userId);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, RouteList.home, (route) => route.isFirst);
+                    }, negativeButton: 'No');
+                  },
+                );
+              }),
+            ),
           Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
@@ -541,13 +591,24 @@ class ContactProfileScreen extends HookConsumerWidget {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            // Navigator.pushNamedAndRemoveUntil(context,
-                            //     RouteList.chatScreen, (route) => route.isFirst);
-                          },
-                          child: _buildIcon('icon_pr_chat.svg')),
+                      Consumer(builder: (context, ref, child) {
+                        return InkWell(
+                            onTap: () async {
+                              if (fromChat) {
+                                Navigator.pop(context);
+                              } else {
+                                if (isInContact) {
+                                  openChatScreen(context, contact, ref);
+                                } else {
+                                  AppSnackbar.instance
+                                      .message(context, 'Send request to chat');
+                                }
+                              }
+                              // Navigator.pushNamedAndRemoveUntil(context,
+                              //     RouteList.chatScreen, (route) => route.isFirst);
+                            },
+                            child: _buildIcon('icon_pr_chat.svg'));
+                      }),
                       _buildIcon('icon_pr_vcall.svg'),
                       _buildIcon('icon_pr_acall.svg'),
                       InkWell(

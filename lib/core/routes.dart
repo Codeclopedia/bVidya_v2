@@ -217,6 +217,27 @@ class Routes {
         }
 
         break;
+      case RouteList.contactInfo:
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          Contacts contact = args['contact'];
+          bool isInContact = args['is_contact'];
+          screen = ContactProfileScreen(
+            contact: contact,
+            fromChat: false,
+            isInContact: isInContact,
+          );
+          // }
+          // if (settings.arguments is Contacts) {
+          //   screen = ContactProfileScreen(
+          //     contact: settings.arguments as Contacts,
+          //     fromChat: false,
+          //   );
+        } else {
+          screen = _parameterMissing();
+        }
+
+        break;
       case RouteList.searchContact:
         screen = SearchScreen();
         break;

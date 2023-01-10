@@ -1,4 +1,6 @@
 // import '/core/constants.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import '/core/state.dart';
 import '/data/models/models.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -165,13 +167,14 @@ class FeedbackPopup extends HookWidget {
                                   .state = '';
                               feedbackMessageController.text = '';
                               showLoading(ref);
+                              
                               final BaseResponse response = await ref
                                   .read(bLearnRepositoryProvider)
                                   .setfeedback(
                                       course.id.toString(), rating, input);
 
                               // ref.read(isModelSheetOpened.notifier).state = false;
-                              print(response.status);
+                              debugPrint(response.status);
                               hideLoading(ref);
                               onClose();
                               showTopSnackBar(

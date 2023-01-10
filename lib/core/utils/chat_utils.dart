@@ -3,13 +3,12 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
-// import 'package:bvidya/core/routes.dart';
-import 'package:bvidya/core/utils.dart';
-import 'package:bvidya/data/models/models.dart';
-import 'package:bvidya/data/services/bchat_api_service.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/controller/providers/bchat/chat_conversation_provider.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
+import '/core/utils.dart';
+import '/data/models/models.dart';
+import '/data/services/bchat_api_service.dart';
+import '/ui/screens.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../constants/route_list.dart';
@@ -192,5 +191,24 @@ Future<GroupConversationModel?> getGroupConversationModel(
         lastMessage: null);
   } catch (e) {
     return null;
+  }
+}
+
+openChatScreen(BuildContext context, Contacts contact, WidgetRef ref) async {
+  final conv = await ChatClient.getInstance.chatManager.getConversation(
+      contact.userId.toString(),
+      type: ChatConversationType.Chat);
+  if (conv != null) {
+    ConversationModel model = ConversationModel(
+      id: contact.userId.toString(),
+      badgeCount: await conv.unreadCount(),
+      contact: contact,
+      conversation: conv,
+      lastMessage: await conv.latestMessage(),
+      // isOnline: null,
+    );
+    ref.read(chatConversationProvider).addOrUpdateConversation(model);
+    Navigator.pushReplacementNamed(context, RouteList.chatScreen,
+        arguments: model);
   }
 }

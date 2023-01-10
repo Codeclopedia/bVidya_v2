@@ -29,6 +29,7 @@ class RouteList {
   static const String recentCalls = '/recent-calls';
   static const String contactList = '/contact-list';
   static const String contactProfile = '/contact-profile';
+  static const String contactInfo = '/contact-info';
   static const String searchContact = '/search-contact';
   static const String groups = '/groups';
   static const String searchGroups = '/search-groups';

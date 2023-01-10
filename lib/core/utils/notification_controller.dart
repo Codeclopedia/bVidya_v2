@@ -5,11 +5,14 @@ import 'dart:convert';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
+import '../constants.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/utils.dart';
 import '/app.dart';
-import '../constants/route_list.dart';
+// import '../constants/route_list.dart';
 import '../routes.dart';
 import '../ui_core.dart';
 import 'chat_utils.dart';
@@ -68,14 +71,13 @@ class NotificationController {
       if ((await getMeAsUser()) == null) {
         return;
       }
-
       if (receivedAction.actionType == ActionType.SilentAction
           //  ||receivedAction.actionType == ActionType.SilentBackgroundAction
           ) {
         String? type = receivedAction.payload?['type'];
         String? from = receivedAction.payload?['from'];
         if (type == 'contact_invite' && from != null) {
-          print('${receivedAction.buttonKeyPressed} ');
+          // debugPrint('${receivedAction.buttonKeyPressed} ');
           if (receivedAction.buttonKeyPressed == 'ACCEPT_CONTACT') {
             await BChatContactManager.acceptRequest(from);
           } else if (receivedAction.buttonKeyPressed == 'DECLINE_CONTACT') {
@@ -228,6 +230,17 @@ class NotificationController {
 
   static Future showContactActionNotification(
       String userId, String title, String content) async {
+    BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      showTopSnackBar(
+        Overlay.of(context)!,
+        CustomSnackBar.success(
+          message: content,
+        ),
+      );
+      return;
+    }
+
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
@@ -255,8 +268,68 @@ class NotificationController {
     );
   }
 
+  static showNewInvitation(BuildContext context, String userId) {
+    AnimationController? localAnimationController;
+    showTopSnackBar(
+      Overlay.of(context)!,
+      Container(
+        margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+        decoration: BoxDecoration(
+            color: AppColors.cardWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3.w))),
+        child: Column(
+          children: [
+            Text(
+              'You have received an invitation',
+              style: textStyleCaption,
+            ),
+            SizedBox(
+              height: 1.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () async {
+                      await BChatContactManager.acceptRequest(userId);
+                      localAnimationController?.reverse();
+                      // Navigator.pop(context);
+                      // Overlay.of(context)!.
+                    },
+                    child: const Text('Accept')),
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () async {
+                      await BChatContactManager.declineRequest(userId);
+                      localAnimationController?.reverse();
+                      // Navigator.pop(context);
+                    },
+                    child: const Text('Decline')),
+              ],
+            )
+          ],
+        ),
+      ),
+      persistent: true,
+      dismissType: DismissType.onSwipe,
+      onAnimationControllerInit: (controller) =>
+          localAnimationController = controller,
+      // const CustomSnackBar.info(
+      //   message: 'You have received an invitation',
+      // ),
+    );
+  }
+
   static Future showContactInviteNotification(
       String userId, String content) async {
+    BuildContext? context = navigatorKey.currentContext;
+    if (context != null) {
+      showNewInvitation(context, userId);
+      return;
+    }
+
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
