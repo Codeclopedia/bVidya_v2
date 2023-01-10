@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -9,6 +9,7 @@ import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
 import 'core/utils/call_utils.dart';
+import 'core/utils/notification_controller.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 
@@ -41,27 +42,7 @@ Future<void> main() async {
   }
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-  AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-            channelKey: 'chat_channel',
-            channelName: 'chat_channel',
-            groupKey: 'call_key',
-            channelDescription: 'Show Chat Notification'),
-        NotificationChannel(
-            channelKey: 'call_channel',
-            channelName: 'call_channel',
-            groupKey: 'call_key',
-            channelDescription: 'Show Call Notification'),
-      ],
-      channelGroups: [
-        NotificationChannelGroup(
-          channelGroupKey: 'call_key',
-          channelGroupName: 'bChat Call',
-        ),
-      ],
-      debug: true);
+  await NotificationController.initializeLocalNotifications();
   runApp(
     const ProviderScope(
       child: ResponsiveApp(),

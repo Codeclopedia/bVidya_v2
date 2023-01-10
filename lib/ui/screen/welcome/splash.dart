@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bvidya/core/utils/chat_utils.dart';
-import 'package:bvidya/ui/base_back_screen.dart';
+import 'package:bvidya/core/utils/notification_controller.dart';
+// import 'package:bvidya/ui/base_back_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -34,49 +36,20 @@ class SplashScreen extends ConsumerWidget {
       });
       return;
     }
-    try {
-      final message = await FirebaseMessaging.instance.getInitialMessage();
-      if (message != null && message.data.isNotEmpty) {
-        debugPrint('getInitialMessage : ${message.toMap()}');
-        if (message.data['alert'] != null && message.data['f'] != null) {
-          showLoading(ref);
-          //open specific screen
-          String? type = message.data['e']?['type'];
-          dynamic from = message.data['f'];
-          if (from == null) {
-            return;
-          }
-          if (type == 'chat_screen') {
-            final model = await getConversationModel(from.toString());
-            hideLoading(ref);
-            if (model != null) {
-              await Navigator.pushReplacementNamed(
-                  context, RouteList.chatScreen,
-                  arguments: model);
-              return;
-            }
-          } else if (type == 'group_chat') {
-            final model = await getGroupConversationModel(from.toString());
-            hideLoading(ref);
-            if (model != null) {
-              await Navigator.pushReplacementNamed(
-                  context, RouteList.groupChatScreen,
-                  arguments: model);
-              return;
-            }
-          }
-
-          Future.delayed(const Duration(seconds: 2), () {
-            Navigator.pushReplacementNamed(context, RouteList.home);
-          });
-        }
-      } else {
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.pushReplacementNamed(context, RouteList.home);
-        });
+    final initialAction = await AwesomeNotifications()
+        .getInitialNotificationAction(removeFromActionEvents: false);
+    if (initialAction != null &&
+        initialAction.payload != null &&
+        initialAction.channelKey == 'chat_channel') {
+      if (await NotificationController.handleNotificationAction(
+          initialAction.payload!, context, true)) {
+        return;
       }
-    } catch (e) {
-      hideLoading(ref);
+    }
+    final message = await FirebaseMessaging.instance.getInitialMessage();
+    if (message != null && message.data.isNotEmpty) {
+      handleRemoteMessage(message, context);
+    } else {
       Navigator.pushReplacementNamed(context, RouteList.home);
     }
   }

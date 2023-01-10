@@ -53,11 +53,11 @@ class BChatApiService {
       String token, String userIds) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
-      print('contactsByIds ${userIds}');
+      // print('contactsByIds ${userIds}');
       final data = {'user_ids': userIds};
       final response =
           await _dio.post('$baseUrlApi${ApiList.contactsByIds}', data: data);
-      print('contactsByIds ${jsonEncode(response.data)}');
+      // print('contactsByIds ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return ContactListResponse.fromJson(response.data);
       } else {

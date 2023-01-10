@@ -7,9 +7,25 @@ import 'ui_core.dart';
 import '/ui/screens.dart';
 
 class Routes {
+  static bool isChatScreen(String fromId) {
+    return currentScreen == RouteList.home ||
+        (currentScreen == RouteList.chatScreen && fromId == currentId) ||
+        (currentScreen == RouteList.chatScreenDirect && fromId == currentId);
+  }
+
+  static bool isGroupChatScreen(String fromId) {
+    return currentScreen == RouteList.groups ||
+        (currentScreen == RouteList.groupChatScreen && fromId == currentId) ||
+        (currentScreen == RouteList.groupChatScreenDirect &&
+            fromId == currentId);
+  }
+
+  static String currentScreen = '';
+  static String currentId = '';
   static Route generateRoute(RouteSettings settings) {
     final Widget screen;
     bool hasDrawer = false;
+    currentScreen = settings.name ?? '';
     switch (settings.name) {
       case RouteList.signup:
         screen = SignUpScreen();
@@ -68,8 +84,9 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
-            case RouteList.groupChatScreenDirect:
+      case RouteList.groupChatScreenDirect:
         if (settings.arguments is GroupConversationModel) {
+          currentId = (settings.arguments as GroupConversationModel).id;
           screen = GroupChatScreen(
             model: settings.arguments as GroupConversationModel,
           );
@@ -79,6 +96,7 @@ class Routes {
         break;
       case RouteList.groupInfo:
         if (settings.arguments is GroupConversationModel) {
+          currentId = (settings.arguments as GroupConversationModel).id;
           screen = GroupInfoScreen(
             group: settings.arguments as GroupConversationModel,
           );
@@ -89,6 +107,7 @@ class Routes {
         break;
       case RouteList.chatScreen:
         if (settings.arguments is ConversationModel) {
+          currentId = (settings.arguments as ConversationModel).id;
           screen = ChatScreen(
             model: settings.arguments as ConversationModel,
           );
@@ -102,6 +121,7 @@ class Routes {
         break;
       case RouteList.chatScreenDirect:
         if (settings.arguments is ConversationModel) {
+          currentId = (settings.arguments as ConversationModel).id;
           screen = ChatScreen(
             model: settings.arguments as ConversationModel,
             direct: true,

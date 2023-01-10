@@ -3,8 +3,9 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bvidya/core/utils/chat_utils.dart';
-import 'package:bvidya/data/models/conversation_model.dart';
+// import 'package:bvidya/data/models/conversation_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -14,6 +15,7 @@ import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/call_utils.dart';
+import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -61,6 +63,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     initLoading();
     _firebase();
+    NotificationController.startListeningNotificationEvents();
     setupCallKit();
   }
 
@@ -187,6 +190,8 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
         } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
         }
+      } else {
+        NotificationController.shouldShowNotification(message);
       }
     });
 
@@ -208,14 +213,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       if (message.data['alert'] != null && message.data['f'] != null) {
-        //open specific screen
-        String from = message.data['f'];
-        // String to = message.data['t'];
-        final model = await getConversationModel(from);
-        if (model != null) {
-          // await Navigator.pushNamed(context, RouteList.chatScreen,
-          //     arguments: model);
-        }
+        handleRemoteMessage(message, context, fallbackScreen: '');
       }
     });
   }

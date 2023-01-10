@@ -29,10 +29,9 @@ import '../widgets/typing_indicator.dart';
 final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 
 class GroupChatScreen extends HookConsumerWidget {
-  
   final GroupConversationModel model;
   final bool direct;
-  
+
   GroupChatScreen({Key? key, required this.model, this.direct = false})
       : super(key: key);
 
@@ -205,7 +204,8 @@ class GroupChatScreen extends HookConsumerWidget {
             "em_push_title":
                 "${model.groupInfo.name}: ${_me.name} sent you a message",
             "em_push_content": input,
-            'type': 'group_chat'
+            'type': 'group_chat',
+            'fId': _me.userId
           },
           // Adds the push template to the message.
           // "em_push_template": {
@@ -294,7 +294,8 @@ class GroupChatScreen extends HookConsumerWidget {
                           "em_push_title":
                               "${model.groupInfo.name}: ${_me.name} sent you a message",
                           "em_push_content": content,
-                          'type': 'group_chat'
+                          'type': 'group_chat',
+                          'fId': _me.userId
                         },
                         // Adds the push template to the message.
                         // "em_push_template": {
@@ -710,7 +711,13 @@ class GroupChatScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           IconButton(
-            onPressed: (() => Navigator.pop(context)),
+            onPressed: (() {
+              if (direct) {
+                Navigator.pushReplacementNamed(context, RouteList.home);
+              } else {
+                Navigator.pop(context);
+              }
+            }),
             icon: getSvgIcon('arrow_back.svg'),
           ),
           Padding(

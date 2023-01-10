@@ -173,20 +173,21 @@ class SearchScreen extends HookWidget {
                                       'Error in starting new chat of ${item.name}');
                                 }
                               } else {
-                                // final result = await ref
-                                //     .read(bChatProvider)
-                                //     .addContact(data[index]);
-                                final result = await BChatContactManager
-                                    .sendRequestToAddContact(
-                                        data[index].userId.toString());
+                                final result = await ref
+                                    .read(bChatProvider)
+                                    .addContact(data[index]);
+                                // final result = await BChatContactManager
+                                //     .sendRequestToAddContact(
+                                //         data[index].userId.toString());
 
                                 if (result == null) {
                                   AppSnackbar.instance.message(context,
-                                      'Request sent to ${data[index].name} successfully');
+                                      '${data[index].name} added as your contact successfully');
+                                  // AppSnackbar.instance.message(context,
+                                  //     'Request sent to ${data[index].name} successfully');
                                   // Navigator.pop(context, true);
                                 } else {
-                                  AppSnackbar.instance
-                                      .error(context, 'Error: $result');
+                                  AppSnackbar.instance.error(context, result);
                                 }
                               }
                             },

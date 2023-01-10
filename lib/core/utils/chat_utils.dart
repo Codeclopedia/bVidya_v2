@@ -1,9 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bvidya/core/helpers/bchat_group_manager.dart';
+import 'package:bvidya/core/routes.dart';
 import 'package:bvidya/core/utils.dart';
 import 'package:bvidya/data/models/models.dart';
 import 'package:bvidya/data/services/bchat_api_service.dart';
+import 'package:bvidya/ui/screens.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../constants/route_list.dart';
+import '../state.dart';
 import '../ui_core.dart';
 
 String parseChatPresenceToReadable(ChatPresence? presence) {
@@ -72,6 +82,69 @@ Future<List<ChatPresence>> fetchOnlineStatuses(List<String> contacts) async {
   } catch (e) {
     print('error: $e');
     return [];
+  }
+}
+
+Future handleRemoteMessage(RemoteMessage message, BuildContext context,
+    {WidgetRef? ref,
+    // bool replace = true,
+    String fallbackScreen = RouteList.home}) async {
+  try {
+    debugPrint('getInitialMessage : ${message.toMap()}');
+    if (message.data['alert'] != null && message.data['e'] != null) {
+      if (ref != null) {
+        showLoading(ref);
+      }
+      //open specific screen
+      print('Data: ${message.data}');
+      String? type = jsonDecode(message.data['e'])['type'];
+      print('type: $type');
+      dynamic from = message.data['f'];
+      print('From $from');
+
+      if (from == null) {
+        if (fallbackScreen.isNotEmpty) {
+          Navigator.pushReplacementNamed(context, fallbackScreen);
+        }
+        return;
+      }
+      if (type == 'chat') {
+        final model = await getConversationModel(from.toString());
+        if (ref != null) {
+          hideLoading(ref);
+        }
+        if (model != null) {
+          await Navigator.pushReplacementNamed(
+              context, RouteList.chatScreenDirect,
+              arguments: model);
+          return;
+        }
+      } else if (type == 'group_chat') {
+        final model = await getGroupConversationModel(from.toString());
+        if (ref != null) {
+          hideLoading(ref);
+        }
+        if (model != null) {
+          await Navigator.pushReplacementNamed(
+              context, RouteList.groupChatScreenDirect,
+              arguments: model);
+          return;
+        }
+      }
+      if (fallbackScreen.isNotEmpty) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pushReplacementNamed(context, fallbackScreen);
+        });
+      }
+    }
+  } catch (e) {
+    print('Error $e');
+    if (ref != null) {
+      hideLoading(ref);
+    }
+    if (fallbackScreen.isNotEmpty) {
+      Navigator.pushReplacementNamed(context, fallbackScreen);
+    }
   }
 }
 

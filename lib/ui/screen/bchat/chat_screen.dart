@@ -236,7 +236,8 @@ class ChatScreen extends HookConsumerWidget {
                           "em_push_title":
                               "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
                           "em_push_content": content,
-                          'type': 'chat'
+                          'type': 'chat',
+                          'fId': _me.userId
                         },
                         // Adds the push template to the message.
                         // "em_push_template": {
@@ -342,7 +343,8 @@ class ChatScreen extends HookConsumerWidget {
               "em_apns_ext": {
                 "em_push_title": "${_me.name} sent you a message",
                 "em_push_content": input,
-                'type': 'chat'
+                'type': 'chat',
+                'fId': _me.userId
               },
               //   // Adds the push template to the message.
               //   // "em_push_template": {
@@ -770,7 +772,13 @@ class ChatScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             IconButton(
-              onPressed: (() => Navigator.pop(context)),
+              onPressed: (() {
+                if (direct) {
+                  Navigator.pushReplacementNamed(context, RouteList.home);
+                } else {
+                  Navigator.pop(context);
+                }
+              }),
               icon: getSvgIcon('arrow_back.svg', width: 6.w),
             ),
             // SizedBox(width: 2.w),
