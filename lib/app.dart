@@ -69,15 +69,15 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      print('Hello I m here foreground');
+      debugPrint('Hello I m here foreground');
       // AndroidForegroundService.stopForeground();
     }
     if (state == AppLifecycleState.paused) {
-      print('Hello I m here background');
+      debugPrint('Hello I m here background');
     }
 
     if (state == AppLifecycleState.detached) {
-      print('Hello I m here in termination');
+      debugPrint('Hello I m here in termination');
     }
   }
 
@@ -101,7 +101,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
 
     FirebaseMessaging.onMessage.listen((message) {
       //For P2P Call
-      print('firebase:onMessage -> ${message.toMap()} ');
+      debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {

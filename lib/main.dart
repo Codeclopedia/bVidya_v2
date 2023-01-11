@@ -14,7 +14,7 @@ import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
@@ -53,7 +53,6 @@ onNewFireabseMessage(RemoteMessage message, bool foreground) {
     // print('onNewFirebaseMessage: ${message.data} $foreground');
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
-      // print('action: $action');
       if (action == NotiConstants.actionCallStart) {
         showIncomingCall(message);
       } else if (action == NotiConstants.actionCallEnd) {

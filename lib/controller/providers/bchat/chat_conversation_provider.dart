@@ -33,7 +33,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
   bool _initialized = false;
 
   Future init(WidgetRef ref) async {
-    if (_initialized) {
+    if (_initialized && _contactsMap.isNotEmpty) {
       return;
     }
     _initialized = true;
@@ -140,7 +140,8 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         return null;
       }
       _chatConversationMap.remove(userId.toString());
-      final cont = _contactsMap.remove(userId);
+      final cont = _contactsMap[userId];
+      _contactsMap.remove(userId);
       updateUi();
       return cont;
     } catch (_) {}
@@ -153,7 +154,14 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       if (user == null) {
         return null;
       }
+      if (_contactsMap.containsKey(userId)) {
+        //Already in listadded
+        updateUi();
+        return null;
+      }
+
       final Contacts contact;
+
       final result = await BChatApiService.instance
           .getContactsByIds(user.authToken, userId);
       if (result.body?.contacts?.isNotEmpty == true) {
@@ -269,7 +277,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
   void updateUi() {
     try {
       notifyListeners();
-    } catch (_) {}
+    } catch (e) {
+      print('Error in notify the ui');
+    }
   }
 
   void updateConversationOnly(String id) async {

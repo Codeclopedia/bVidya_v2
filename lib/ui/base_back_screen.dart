@@ -2,12 +2,18 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 
 showLoading(WidgetRef ref) {
-  ref.watch(loadingStateProvider.notifier).state = true;
+  try {
+    ref.watch(loadingStateProvider.notifier).state = true;
+  } catch (_) {}
+
   EasyLoading.show();
 }
 
 hideLoading(WidgetRef ref) {
-  ref.watch(loadingStateProvider.notifier).state = false;
+  try {
+    ref.watch(loadingStateProvider.notifier).state = false;
+  } catch (_) {}
+
   EasyLoading.dismiss();
 }
 

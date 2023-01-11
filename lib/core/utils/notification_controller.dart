@@ -288,15 +288,20 @@ class NotificationController {
               height: 1.h,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.max,
               children: [
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () {
+                      localAnimationController?.reverse();
+                    },
+                    child: const Text('Dismiss')),
+                const Spacer(),
                 TextButton(
                     style: textButtonStyle,
                     onPressed: () async {
                       await BChatContactManager.acceptRequest(userId);
                       localAnimationController?.reverse();
-                      // Navigator.pop(context);
-                      // Overlay.of(context)!.
                     },
                     child: const Text('Accept')),
                 TextButton(
@@ -304,7 +309,6 @@ class NotificationController {
                     onPressed: () async {
                       await BChatContactManager.declineRequest(userId);
                       localAnimationController?.reverse();
-                      // Navigator.pop(context);
                     },
                     child: const Text('Decline')),
               ],
@@ -391,6 +395,23 @@ class NotificationController {
             showNotification = !Routes.isGroupChatScreen(from.toString());
           }
           if (showNotification) {
+            BuildContext? context = navigatorKey.currentContext;
+            if (context != null) {
+              showTopSnackBar(
+                Overlay.of(context)!,
+                CustomSnackBar.info(
+                  message: "$title\n$content",
+                ),
+                onTap: () {
+                  handleChatNotificationAction({
+                    'type': type,
+                    'from': from.toString(),
+                  }, context, false);
+                },
+              );
+              return;
+            }
+
             bool isAllowed =
                 await AwesomeNotifications().isNotificationAllowed();
             if (!isAllowed) isAllowed = await displayNotificationRationale();

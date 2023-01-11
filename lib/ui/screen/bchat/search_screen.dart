@@ -146,15 +146,16 @@ class SearchScreen extends StatelessWidget {
                               final value = await showSearchMenu(
                                   context, item, alreadyAdded);
                               if (value == 0) {
-                                final result = await BChatContactManager
-                                    .sendRequestToAddContact(
-                                        item.userId.toString());
-                                if (result == null) {
-                                  AppSnackbar.instance.message(context,
-                                      'Request sent to ${item.name} successfully');
-                                } else {
-                                  AppSnackbar.instance.error(context, result);
-                                }
+                                _addContactSendRequest(ref, context, item);
+                                // final result = await BChatContactManager
+                                //     .sendRequestToAddContact(
+                                //         item.userId.toString());
+                                // if (result == null) {
+                                //   AppSnackbar.instance.message(context,
+                                //       'Request sent to ${item.name} successfully');
+                                // } else {
+                                //   AppSnackbar.instance.error(context, result);
+                                // }
                               } else if (value == 1) {
                                 final Contacts contact =
                                     contacts.firstWhereOrNull(
@@ -185,52 +186,44 @@ class SearchScreen extends StatelessWidget {
                                     (e) => e.userId == item.userId!);
                                 try {
                                   openChatScreen(context, element, ref);
-                                  // final conv = await ChatClient
-                                  //     .getInstance.chatManager
-                                  //     .getConversation(
-                                  //         element.userId.toString(),
-                                  //         type: ChatConversationType.Chat);
-
-                                  // if (conv != null) {
-                                  //   ConversationModel model = ConversationModel(
-                                  //     id: element.userId.toString(),
-                                  //     badgeCount: await conv.unreadCount(),
-                                  //     contact: element,
-                                  //     conversation: conv,
-                                  //     lastMessage: await conv.latestMessage(),
-                                  //   );
-                                  //   ref
-                                  //       .read(chatConversationProvider.notifier)
-                                  //       .addOrUpdateConversation(model);
-
-                                  //   Navigator.pushReplacementNamed(
-                                  //       context, RouteList.chatScreen,
-                                  //       arguments: model);
-                                  // }
                                 } catch (e) {
                                   debugPrint(
                                       'Error in starting new chat of ${item.name}');
                                 }
                               } else {
+                                _addContactSendRequest(ref, context, item);
                                 // final userResult = data[index];
                                 // final result = await ref
                                 //     .read(bChatProvider)
                                 //     .addContact(userResult);
-                                final result = await BChatContactManager
-                                    .sendRequestToAddContact(
-                                        item.userId.toString());
+                                // showLoading(ref);
+                                // final result = await BChatContactManager
+                                //     .sendRequestToAddContact(
+                                //         item.userId.toString());
 
-                                if (result == null) {
-                                  // AppSnackbar.instance.message(context,
-                                  //     '${data[index].name} added as your contact successfully');
-                                  // ref.read(chatConversationProvider).addContact(
-                                  //     userResult.userId!.toString());
-                                  AppSnackbar.instance.message(context,
-                                      'Request sent to ${item.name} successfully');
-                                  // Navigator.pop(context, true);
-                                } else {
-                                  AppSnackbar.instance.error(context, result);
-                                }
+                                // if (result == null) {
+                                //   AppSnackbar.instance.message(context,
+                                //       'Request sent to ${item.name} successfully');
+                                //   final contacts = await ref
+                                //           .read(bChatProvider)
+                                //           .getContactsByIds(
+                                //               item.userId.toString()) ??
+                                //       [];
+                                //   if (contacts.isNotEmpty) {
+                                //     openChatScreen(context, contacts[0], ref,
+                                //         sendInviateMessage: true);
+                                //   }
+
+                                //   // AppSnackbar.instance.message(context,
+                                //   //     '${data[index].name} added as your contact successfully');
+                                //   // ref.read(chatConversationProvider).addContact(
+                                //   //     userResult.userId!.toString());
+
+                                //   // Navigator.pop(context, true);
+                                // } else {
+                                //   hideLoading(ref);
+                                //   AppSnackbar.instance.error(context, result);
+                                // }
                               }
                             },
                             child: _contactRow(data[index], alreadyAdded, ref));
@@ -262,6 +255,28 @@ class SearchScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _addContactSendRequest(
+      WidgetRef ref, BuildContext context, SearchContactResult item) async {
+    showLoading(ref);
+    final result = await BChatContactManager.sendRequestToAddContact(
+        item.userId.toString());
+
+    if (result == null) {
+      AppSnackbar.instance
+          .message(context, 'Request sent to ${item.name} successfully');
+      final contacts = await ref
+              .read(bChatProvider)
+              .getContactsByIds(item.userId.toString()) ??
+          [];
+      if (contacts.isNotEmpty) {
+        openChatScreen(context, contacts[0], ref, sendInviateMessage: true);
+      }
+    } else {
+      hideLoading(ref);
+      AppSnackbar.instance.error(context, result);
+    }
   }
 
   Widget _contactRow(SearchContactResult contact, bool added, WidgetRef ref) {

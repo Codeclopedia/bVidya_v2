@@ -521,132 +521,142 @@ class GroupInfoScreen extends HookConsumerWidget {
   // }
 
   Widget _topBar(BuildContext context) {
-    return SizedBox(
-      width: 100.w,
-      // padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 1.w,
-            top: 1.h,
-            child: IconButton(
-              icon: getSvgIcon('arrow_back.svg'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+    return Material(
+      color: Colors.transparent,
+      child: SizedBox(
+        width: 100.w,
+        // padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+        child: Stack(
+          children: [
+            Positioned(
+              left: 1.w,
+              top: 1.h,
+              child: IconButton(
+                icon: getSvgIcon('arrow_back.svg'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
-          ),
-          Positioned(
-            right: 1.w,
-            top: 1.h,
-            child: Consumer(builder: (context, ref, child) {
-              final user = ref.watch(loginRepositoryProvider).user;
-              return Visibility(
-                visible: group.groupInfo.owner == user?.id.toString(),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.white),
-                      onPressed: () async {
-                        ref.read(selectedContactProvider.notifier).clear();
-                        if (contacts.isNotEmpty) {
-                          ref
-                              .read(selectedContactProvider.notifier)
-                              .addContacts(contacts);
-                          await Navigator.pushNamed(
-                              context, RouteList.editGroup,
-                              arguments: group.groupInfo);
-
-                          ref.read(groupConversationProvider).update();
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.white),
-                      onPressed: () async {
-                        await showBasicDialog(
-                            context, 'Delete group', 'Are you sure?', 'Yes',
-                            () async {
-                          await BchatGroupManager.deleteGroup(
-                              group.groupInfo.groupId);
-                          await ref
-                              .read(groupConversationProvider)
-                              .delete(group.groupInfo.groupId);
-                          Navigator.popUntil(context, (route) {
-                            print(
-                                'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
-                            return route.isFirst;
-                          });
-                          
-                          // Navigator.pop(context);
-                        },negativeButton: 'No');
-                        // await BchatGroupManager.deleteGroup(
-                        //     group.groupInfo.groupId);
-                        // await ref
-                        //     .read(groupConversationProvider)
-                        //     .delete(group.groupInfo.groupId);
-                        // Navigator.popUntil(context, (route) {
-                        //   print(
-                        //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
-                        //   return route.isFirst;
-                        // });
-                      },
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  getRectFAvatar(group.groupInfo.name ?? '', group.image,
-                      size: 20.w),
-                  SizedBox(
-                    height: 0.7.h,
-                  ),
-                  Text(
-                    group.groupInfo.name ?? '',
-                    style: TextStyle(
-                      fontFamily: kFontFamily,
-                      fontSize: 13.sp,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Positioned(
+              right: 1.w,
+              top: 1.h,
+              child: Consumer(builder: (context, ref, child) {
+                final user = ref.watch(loginRepositoryProvider).user;
+                return Visibility(
+                  visible: group.groupInfo.owner == user?.id.toString(),
+                  child: Row(
                     children: [
-                      InkWell(
-                          onTap: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                RouteList.chatScreen, (route) => route.isFirst);
-                          },
-                          child: _buildIcon('icon_pr_chat.svg')),
-                      _buildIcon('icon_pr_vcall.svg'),
-                      _buildIcon('icon_pr_acall.svg'),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, RouteList.searchContact);
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: () async {
+                          ref.read(selectedContactProvider.notifier).clear();
+                          if (contacts.isNotEmpty) {
+                            ref
+                                .read(selectedContactProvider.notifier)
+                                .addContacts(contacts);
+                            await Navigator.pushNamed(
+                                context, RouteList.editGroup,
+                                arguments: group.groupInfo);
+
+                            ref.read(groupConversationProvider).update();
+                          }
                         },
-                        child: _buildIcon('icon_pr_search.svg'),
+                      ),
+                      IconButton(
+                        icon: getSvgIcon('icon_delete_conv.svg',
+                            color: Colors.white, width: 5.w),
+                        onPressed: () async {
+                          await showBasicDialog(
+                              context, 'Delete group', 'Are you sure?', 'Yes',
+                              () async {
+                            await BchatGroupManager.deleteGroup(
+                                group.groupInfo.groupId);
+                            await ref
+                                .read(groupConversationProvider)
+                                .delete(group.groupInfo.groupId);
+
+                            Navigator.pushNamedAndRemoveUntil(context,
+                                RouteList.groups, (route) => route.isFirst);
+                            // Navigator.popUntil(context, (route) {
+                            //   print(
+                            //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
+                            //   return route.isFirst;
+                            // });
+
+                            // Navigator.pop(context);
+                          }, negativeButton: 'No');
+                          // await BchatGroupManager.deleteGroup(
+                          //     group.groupInfo.groupId);
+                          // await ref
+                          //     .read(groupConversationProvider)
+                          //     .delete(group.groupInfo.groupId);
+                          // Navigator.popUntil(context, (route) {
+                          //   print(
+                          //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
+                          //   return route.isFirst;
+                          // });
+                        },
                       ),
                     ],
                   ),
-                ],
+                );
+              }),
+            ),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    getRectFAvatar(group.groupInfo.name ?? '', group.image,
+                        size: 20.w),
+                    SizedBox(
+                      height: 0.7.h,
+                    ),
+                    Text(
+                      group.groupInfo.name ?? '',
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        fontSize: 13.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  RouteList.chatScreen,
+                                  (route) => route.isFirst);
+                            },
+                            child: _buildIcon('icon_pr_chat.svg')),
+                        _buildIcon('icon_pr_vcall.svg'),
+                        _buildIcon('icon_pr_acall.svg'),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RouteList.searchContact);
+                          },
+                          child: _buildIcon('icon_pr_search.svg'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

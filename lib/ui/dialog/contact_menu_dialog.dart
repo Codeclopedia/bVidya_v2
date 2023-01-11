@@ -8,7 +8,7 @@ import '../../data/models/models.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 
-Future<int> showContactMenu(BuildContext context, Contacts contact) async {
+Future<int?> showContactMenu(BuildContext context, Contacts contact) async {
   final blocked =
       await BChatContactManager.isUserBlocked(contact.userId.toString());
   return await showDialog(
@@ -31,7 +31,7 @@ Future<int> showContactMenu(BuildContext context, Contacts contact) async {
   );
 }
 
-Future<int> showSearchMenu(
+Future<int?> showSearchMenu(
     BuildContext context, SearchContactResult result, bool added) async {
   bool blocked = false;
   if (added) {
@@ -91,47 +91,48 @@ class ContactMenuDialog extends StatelessWidget {
             ),
           ),
         ),
-        if(!isInContact)
-        ..._buildOption(S.current.contact_menu_request, 'icon_mute_conv.svg',
-            () async {
-          Navigator.pop(context, 0);
-        }),
+        if (!isInContact)
+          ..._buildOption(S.current.contact_menu_request, 'icon_mute_conv.svg',
+              () async {
+            Navigator.pop(context, 0);
+          }),
         ..._buildOption(S.current.contact_menu_view, 'icon_mute_conv.svg',
             () async {
           Navigator.pop(context, 1);
-        }),
+        }, isLast: true),
         // Consumer(builder: (context, ref, child) {
-          if(isInContact)
-        ..._buildOption(S.current.contact_menu_delete, 'icon_delete_conv.svg',
-            () async {
-          await BChatContactManager.deleteContact(userId.toString());
-          
-          // await ref.read(chatConversationProvider).removedContact(userId);
+        if (isInContact)
+          ..._buildOption(S.current.contact_menu_delete, 'icon_delete_conv.svg',
+              () async {
+            await BChatContactManager.deleteContact(userId.toString());
 
-          Navigator.pop(context, 2);
-        }),
+            // await ref.read(chatConversationProvider).removedContact(userId);
+
+            Navigator.pop(context, 2);
+          }),
         // }),
         // SizedBox(height: 1.h),
         // Container(height: 0.8, color: const Color(0xFFF5F6F6)),
-        if(isInContact)
-        ..._buildOption(
-            blocked
-                ? S.current.contact_menu_unblock
-                : S.current.contact_menu_block,
-            'icon_mute_conv.svg', () async {
-          if (blocked) {
-            await BChatContactManager.unBlockUser(userId.toString());
-          } else {
-            await BChatContactManager.blockUser(userId.toString());
-          }
-          Navigator.pop(context, 3);
-        }),
+        if (isInContact)
+          ..._buildOption(
+              blocked
+                  ? S.current.contact_menu_unblock
+                  : S.current.contact_menu_block,
+              'icon_mute_conv.svg', () async {
+            if (blocked) {
+              await BChatContactManager.unBlockUser(userId.toString());
+            } else {
+              await BChatContactManager.blockUser(userId.toString());
+            }
+            Navigator.pop(context, 3);
+          }, isLast: true),
         SizedBox(height: 1.h),
       ],
     );
   }
 
-  List<Widget> _buildOption(String title, String icon, Function() onOption) {
+  List<Widget> _buildOption(String title, String icon, Function() onOption,
+      {bool isLast = false}) {
     return [
       InkWell(
         onTap: onOption,
@@ -162,8 +163,8 @@ class ContactMenuDialog extends StatelessWidget {
           ),
         ),
       ),
-      SizedBox(height: 1.h),
-      Container(height: 0.8, color: const Color(0xFFF5F6F6)),
+      // SizedBox(height: 1.h),
+      if (!isLast) Container(height: 0.8, color: const Color(0xFFF5F6F6)),
     ];
   }
 }

@@ -214,8 +214,8 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
               },
               child: Container(
                 padding: EdgeInsets.all(0.7.w),
-                decoration:const BoxDecoration(
-                  borderRadius: BorderRadius.all( Radius.circular(5)),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                   color: AppColors.yellowAccent,
                 ),
                 child: const Icon(
@@ -253,9 +253,9 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
           final result =
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
           if (result != null && result is ChatGroup) {
-            ref.read(groupConversationProvider).addConveration(result);
+            ref.read(groupConversationProvider.notifier).addConveration(result);
           } else {
-            ref.read(groupConversationProvider).update();
+            ref.read(groupConversationProvider.notifier).update();
           }
         },
         child: Row(

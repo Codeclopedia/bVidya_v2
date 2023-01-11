@@ -7,6 +7,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/agora_config.dart';
 import '/firebase_options.dart';
 import '/core/utils.dart';
 import '/data/services/bchat_api_service.dart';
@@ -21,9 +22,9 @@ class BChatSDKController {
   Future setup() async {
     try {
       ChatOptions options = ChatOptions(
-        appKey: '61420261#491569',
+        appKey: AgoraConfig.appKey,
         autoLogin: false,
-        acceptInvitationAlways: false,
+        acceptInvitationAlways: AgoraConfig.autoAcceptContact,
         deleteMessagesAsExitGroup: false,
         requireAck: true,
         requireDeliveryAck: true,
@@ -42,6 +43,7 @@ class BChatSDKController {
 
   Future init() async {
     if (!_initialized) {
+      _initialized = true;
       User? currentUser = await getMeAsUser();
       if (currentUser == null) {
         print('user not logged in, Abort initializing sdk');

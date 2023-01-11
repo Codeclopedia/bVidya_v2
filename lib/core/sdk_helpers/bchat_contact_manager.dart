@@ -82,6 +82,7 @@ class BChatContactManager {
       } else {
         await ChatClient.getInstance.contactManager
             .addContact(contactId, reason: 'Hi, Please accept my invitation');
+
         return null;
       }
     } on ChatError catch (e) {

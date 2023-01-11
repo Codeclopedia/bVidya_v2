@@ -194,11 +194,17 @@ Future<GroupConversationModel?> getGroupConversationModel(
   }
 }
 
-openChatScreen(BuildContext context, Contacts contact, WidgetRef ref) async {
+openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
+    {bool sendInviateMessage = false}) async {
   final conv = await ChatClient.getInstance.chatManager.getConversation(
       contact.userId.toString(),
       type: ChatConversationType.Chat);
   if (conv != null) {
+    if (sendInviateMessage) {
+      final inviateMessage = ChatMessage.createTxtSendMessage(
+          targetId: contact.userId.toString(), content: 'Hi');
+      await ChatClient.getInstance.chatManager.sendMessage(inviateMessage);
+    }
     ConversationModel model = ConversationModel(
       id: contact.userId.toString(),
       badgeCount: await conv.unreadCount(),
@@ -208,6 +214,7 @@ openChatScreen(BuildContext context, Contacts contact, WidgetRef ref) async {
       // isOnline: null,
     );
     ref.read(chatConversationProvider).addOrUpdateConversation(model);
+    hideLoading(ref);
     Navigator.pushReplacementNamed(context, RouteList.chatScreen,
         arguments: model);
   }
