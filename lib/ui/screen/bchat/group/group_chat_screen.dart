@@ -1,13 +1,13 @@
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 
-import '../../../../controller/bchat_providers.dart';
+import '/controller/bchat_providers.dart';
 import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
@@ -94,13 +94,13 @@ class GroupChatScreen extends HookConsumerWidget {
     final user = await getMeAsUser();
     if (user != null) {
       _me = Contacts(
-        name: user.name,
-        profileImage: user.image,
-        userId: user.id,
-        email: user.email,
-        fcmToken: user.fcmToken,
-        phone: user.phone,
-      );
+          name: user.name,
+          profileImage: user.image,
+          userId: user.id,
+          email: user.email,
+          fcmToken: user.fcmToken,
+          phone: user.phone,
+          status: ContactStatus.self);
       _myUserId = _me.userId.toString();
       // _memberList =
 
@@ -431,7 +431,10 @@ class GroupChatScreen extends HookConsumerWidget {
         String name = message.attributes?['from_name'] ?? '';
         String image = message.attributes?['from_image'] ?? '';
         Contacts contact = Contacts(
-            userId: int.parse(message.from!), name: name, profileImage: image);
+            userId: int.parse(message.from!),
+            name: name,
+            profileImage: image,
+            status: ContactStatus.group);
 
         return Column(
           // crossAxisAlignment:

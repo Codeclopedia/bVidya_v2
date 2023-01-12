@@ -22,13 +22,13 @@ class ContactListResponse {
 }
 
 class ContactsBody {
-  final List<Contacts>? contacts;
+  final List<Contact>? contacts;
 
   ContactsBody({this.contacts});
 
   ContactsBody.fromJson(Map<String, dynamic> json)
       : contacts = json["details"] != null
-            ? List.from(json["details"].map((x) => Contacts.fromJson(x)))
+            ? List.from(json["details"].map((x) => Contact.fromJson(x)))
             : null;
   //   if (json['contacts'] != null) {
   //     contacts = <Contacts>[];
@@ -45,7 +45,7 @@ class ContactsBody {
   }
 }
 
-class Contacts {
+class Contact {
   final int userId;
   final String name;
   final String? email;
@@ -55,7 +55,7 @@ class Contacts {
   final String profileImage;
   final String? bio;
 
-  Contacts(
+  Contact(
       {required this.userId,
       required this.name,
       // required this.peerId,
@@ -65,7 +65,7 @@ class Contacts {
       this.fcmToken,
       this.bio});
 
-  Contacts.fromJson(Map<String, dynamic> json)
+  Contact.fromJson(Map<String, dynamic> json)
       : userId = json['user_id'],
         name = json['name'],
         email = json['email'],

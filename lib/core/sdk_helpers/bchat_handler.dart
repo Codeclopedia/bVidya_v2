@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/constants/agora_config.dart';
+import 'package:bvidya/data/models/models.dart';
+import '/core/constants/agora_config.dart';
 
 import '../state.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
@@ -27,15 +28,10 @@ registerForContact(String key, WidgetRef? ref) {
             lastUserId = userId;
             lastAction = 'Add';
             print('Added: $userId ');
-            final result =
-                await ref?.read(chatConversationProvider).addContact(userId);
-            if (result != null) {
-              NotificationController.showContactActionNotification(
-                  userId, 'bVidya', 'New Contact ${result.name} added');
-            } else {
-              // NotificationController.showContactActionNotification(
-              //     userId, 'bVidya', 'New Contact added');
-            }
+            await ref
+                ?.read(chatConversationProvider)
+                .addContact(userId, ContactStatus.invited);
+
             return;
           }
 
@@ -58,8 +54,12 @@ registerForContact(String key, WidgetRef? ref) {
           lastUserId = userId;
           lastAction = 'Add';
           print('Added: $userId ');
-          final result =
-              await ref?.read(chatConversationProvider).addContact(userId);
+          final result = await ref
+              ?.read(chatConversationProvider)
+              .addContact(userId, ContactStatus.friend);
+          if (AgoraConfig.autoAcceptContact) {
+            return;
+          }
           if (result != null) {
             NotificationController.showContactActionNotification(
                 userId, 'bVidya', 'New Contact ${result.name} added');
@@ -91,6 +91,9 @@ registerForContact(String key, WidgetRef? ref) {
         },
         onFriendRequestAccepted: (userId) {
           //
+          if (AgoraConfig.autoAcceptContact) {
+            return;
+          }
           if (lastUserId == userId && lastAction == 'Acceped') {
             return;
           }
@@ -103,6 +106,9 @@ registerForContact(String key, WidgetRef? ref) {
         },
         onFriendRequestDeclined: (userId) {
           //
+          if (AgoraConfig.autoAcceptContact) {
+            return;
+          }
           if (lastUserId == userId && lastAction == 'Declined') {
             return;
           }
@@ -140,5 +146,24 @@ registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
 unregisterForNewMessage(String key) {
   try {
     ChatClient.getInstance.chatManager.removeEventHandler(key);
+  } catch (_) {}
+}
+
+registerForGroup(String key) {
+  try {
+    ChatClient.getInstance.groupManager.addEventHandler(
+        key,
+        ChatGroupEventHandler(
+          onUserRemovedFromGroup: (groupId, groupName) {},
+          onGroupDestroyed: (groupId, groupName) {},
+          onAdminAddedFromGroup: (groupId, admin) {},
+          onMemberExitedFromGroup: (groupId, member) {},
+        ));
+  } catch (_) {}
+}
+
+unregisterForGroup(String key) {
+  try {
+    ChatClient.getInstance.groupManager.removeEventHandler(key);
   } catch (_) {}
 }

@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/chat_utils.dart';
+import '/core/utils/chat_utils.dart';
 
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';

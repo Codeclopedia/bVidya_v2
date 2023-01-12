@@ -3,10 +3,9 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
 
+import '/controller/providers/bchat/groups_conversation_provider.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/controller/providers/contacts_select_notifier.dart';
 import '/ui/dialog/basic_dialog.dart';
 import '/ui/screen/blearn/components/common.dart';
@@ -498,28 +497,6 @@ class GroupInfoScreen extends HookConsumerWidget {
     );
   }
 
-  // Widget _textValue(String value) {
-  //   return Text(
-  //     value,
-  //     style: TextStyle(
-  //       fontFamily: kFontFamily,
-  //       fontSize: 11.sp,
-  //       color: Colors.black,
-  //     ),
-  //   );
-  // }
-
-  // Widget _textCaption(String caption) {
-  //   return Text(
-  //     caption,
-  //     style: TextStyle(
-  //       fontFamily: kFontFamily,
-  //       fontSize: 9.sp,
-  //       color: Colors.grey,
-  //     ),
-  //   );
-  // }
-
   Widget _topBar(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -570,32 +547,13 @@ class GroupInfoScreen extends HookConsumerWidget {
                           await showBasicDialog(
                               context, 'Delete group', 'Are you sure?', 'Yes',
                               () async {
-                            await BchatGroupManager.deleteGroup(
-                                group.groupInfo.groupId);
                             await ref
                                 .read(groupConversationProvider)
                                 .delete(group.groupInfo.groupId);
 
                             Navigator.pushNamedAndRemoveUntil(context,
                                 RouteList.groups, (route) => route.isFirst);
-                            // Navigator.popUntil(context, (route) {
-                            //   print(
-                            //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
-                            //   return route.isFirst;
-                            // });
-
-                            // Navigator.pop(context);
                           }, negativeButton: 'No');
-                          // await BchatGroupManager.deleteGroup(
-                          //     group.groupInfo.groupId);
-                          // await ref
-                          //     .read(groupConversationProvider)
-                          //     .delete(group.groupInfo.groupId);
-                          // Navigator.popUntil(context, (route) {
-                          //   print(
-                          //       'Route ${route.isFirst} ${route.settings.name} - ${route.hasActiveRouteBelow}');
-                          //   return route.isFirst;
-                          // });
                         },
                       ),
                     ],

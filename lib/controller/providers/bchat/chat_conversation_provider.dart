@@ -1,9 +1,11 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/data/repository/bchat_respository.dart';
 import '/data/services/bchat_api_service.dart';
 
 import '../../bchat_providers.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils.dart';
-import '../../../core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/data/models/models.dart';
 
 import '/core/ui_core.dart';
@@ -32,10 +34,11 @@ class ChatConversationChangeProvider extends ChangeNotifier {
 
   bool _initialized = false;
 
-  Future init(WidgetRef ref) async {
+  Future init(BChatRepository reader) async {
     if (_initialized && _contactsMap.isNotEmpty) {
       return;
     }
+    await BChatSDKController.instance.init();
     _initialized = true;
     _chatConversationMap.clear();
     try {
@@ -54,20 +57,15 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       List<Contacts> contacts = [];
       final ids = await BChatContactManager.getContacts();
       if (ids.isNotEmpty) {
-        contacts = await ref.read(bChatProvider).getContactsByIds(ids) ?? [];
+        // BChatRepository reader = ref.read(bChatProvider);
+        List<Contact> friends = await reader.getContactsByIds(ids) ?? [];
+        contacts = friends
+            .map((e) => Contacts.fromContact(e, ContactStatus.friend))
+            .toList();
       }
-
-      // List<String> userIds = await BChatContactManager.getContactList();
-      // final response = await BChatApiService.instance
-      //     .getContactsByIds(loginUser.authToken, userIds.join(','));
-      // if (response.status == 'success' &&
-      //     response.body?.contacts?.isNotEmpty == true) {
-      //   contacts = response.body?.contacts ?? [];
-      // }
 
       for (Contacts contact in contacts) {
         _contactsMap.addAll({contact.userId: contact});
-
         final ConversationModel model;
         try {
           final conv = await ChatClient.getInstance.chatManager.getConversation(
@@ -148,7 +146,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<Contacts?> addContact(String userId) async {
+  Future<Contacts?> addContact(String userId,ContactStatus status) async {
     try {
       final user = await getMeAsUser();
       if (user == null) {
@@ -165,7 +163,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       final result = await BChatApiService.instance
           .getContactsByIds(user.authToken, userId);
       if (result.body?.contacts?.isNotEmpty == true) {
-        contact = result.body!.contacts![0];
+        contact = Contacts.fromContact(result.body!.contacts![0], status);
         _contactsMap.addAll({contact.userId: contact});
         updateUi();
         return contact;
@@ -237,7 +235,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           final result = await BChatApiService.instance
               .getContactsByIds(user.authToken, id);
           if (result.body?.contacts?.isNotEmpty == true) {
-            contact = result.body!.contacts![0];
+            contact = Contacts.fromContact(result.body!.contacts![0], ContactStatus.invited);
             _contactsMap.addAll({contact.userId: contact});
           } else {
             return;

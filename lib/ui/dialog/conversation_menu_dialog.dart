@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
 import '/core/ui_core.dart';

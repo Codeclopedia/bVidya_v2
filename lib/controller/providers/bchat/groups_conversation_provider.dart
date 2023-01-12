@@ -1,5 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../../../core/sdk_helpers/bchat_group_manager.dart';
+
+import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
@@ -134,6 +135,12 @@ class GroupConversationChangeProvider extends ChangeNotifier {
   }
 
   Future delete(String groupId) async {
+    await BchatGroupManager.deleteGroup(groupId);
+     _groupConversationMap.remove(groupId);
+  }
+
+
+  Future remove(String groupId) async {
     final model = _groupConversationMap.remove(groupId);
   }
 

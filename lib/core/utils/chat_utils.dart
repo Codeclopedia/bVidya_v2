@@ -158,7 +158,7 @@ Future<ConversationModel?> getConversationModel(String fromId) async {
     final contact = response.body!.contacts!.first;
     return ConversationModel(
         id: fromId,
-        contact: contact,
+        contact: Contacts.fromContact(contact, ContactStatus.unknown),
         badgeCount: 0,
         conversation: conv,
         lastMessage: null);
@@ -195,14 +195,15 @@ Future<GroupConversationModel?> getGroupConversationModel(
 }
 
 openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
-    {bool sendInviateMessage = false}) async {
+    {bool sendInviateMessage = false, String message = ''}) async {
   final conv = await ChatClient.getInstance.chatManager.getConversation(
       contact.userId.toString(),
       type: ChatConversationType.Chat);
   if (conv != null) {
     if (sendInviateMessage) {
       final inviateMessage = ChatMessage.createTxtSendMessage(
-          targetId: contact.userId.toString(), content: 'Hi');
+          targetId: contact.userId.toString(),
+          content: message.isEmpty ? 'Hi' : message);
       await ChatClient.getInstance.chatManager.sendMessage(inviateMessage);
     }
     ConversationModel model = ConversationModel(

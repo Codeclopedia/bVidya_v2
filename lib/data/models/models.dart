@@ -36,4 +36,5 @@ export 'response/blive/live_rtm_response.dart';
 
 export 'response/base_response.dart';
 export 'conversation_model.dart';
+export 'contact_model.dart';
 export 'group_model.dart';

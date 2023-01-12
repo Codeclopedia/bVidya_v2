@@ -102,6 +102,7 @@ class ChatScreen extends HookConsumerWidget {
         email: user.email,
         fcmToken: user.fcmToken,
         phone: user.phone,
+        status: ContactStatus.self
       );
       // _myChatPeerUserId =
       //     ChatClient.getInstance.currentUserId ?? user.id.toString();

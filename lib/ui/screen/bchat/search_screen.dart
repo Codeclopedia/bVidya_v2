@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/ui/dialog/add_contact_dialog.dart';
 import 'package:collection/collection.dart';
-import 'package:bvidya/core/utils/chat_utils.dart';
+import '/core/utils/chat_utils.dart';
 
 import '../../dialog/contact_menu_dialog.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
@@ -33,6 +34,7 @@ class SearchScreen extends StatelessWidget {
     return BaseWilPopupScreen(
       onBack: () async => true,
       child: Scaffold(
+        // resizeToAvoidBottomInset: false,
         body: ColouredBoxBar(
           topSize: 25.h,
           topBar: _buildTopBar(context),
@@ -147,15 +149,6 @@ class SearchScreen extends StatelessWidget {
                                   context, item, alreadyAdded);
                               if (value == 0) {
                                 _addContactSendRequest(ref, context, item);
-                                // final result = await BChatContactManager
-                                //     .sendRequestToAddContact(
-                                //         item.userId.toString());
-                                // if (result == null) {
-                                //   AppSnackbar.instance.message(context,
-                                //       'Request sent to ${item.name} successfully');
-                                // } else {
-                                //   AppSnackbar.instance.error(context, result);
-                                // }
                               } else if (value == 1) {
                                 final Contacts contact =
                                     contacts.firstWhereOrNull(
@@ -164,6 +157,9 @@ class SearchScreen extends StatelessWidget {
                                             userId: item.userId!,
                                             name: item.name!,
                                             email: item.email,
+                                            status: alreadyAdded
+                                                ? ContactStatus.friend
+                                                : ContactStatus.none,
                                             phone: item.phone,
                                             profileImage: item.image!);
                                 Navigator.popAndPushNamed(
@@ -259,6 +255,11 @@ class SearchScreen extends StatelessWidget {
 
   _addContactSendRequest(
       WidgetRef ref, BuildContext context, SearchContactResult item) async {
+    final input = await showAddContactDialog(context, item.userId!, item.name!);
+    if (input == null) {
+      return;
+    }
+
     showLoading(ref);
     final result = await BChatContactManager.sendRequestToAddContact(
         item.userId.toString());
@@ -271,7 +272,9 @@ class SearchScreen extends StatelessWidget {
               .getContactsByIds(item.userId.toString()) ??
           [];
       if (contacts.isNotEmpty) {
-        openChatScreen(context, contacts[0], ref, sendInviateMessage: true);
+        openChatScreen(context,
+            Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
+            sendInviateMessage: true, message: input);
       }
     } else {
       hideLoading(ref);

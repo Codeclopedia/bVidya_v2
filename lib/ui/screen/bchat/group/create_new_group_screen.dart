@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
+import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/ui/screens.dart';
 import '/controller/providers/contacts_select_notifier.dart';
 import '/controller/bchat_providers.dart';

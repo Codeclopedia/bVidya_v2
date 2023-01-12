@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/state.dart';
+import '/core/state.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
 
@@ -17,8 +17,10 @@ class ChatVideoPlayerScreen extends HookWidget {
   Widget build(BuildContext context) {
     useEffect(() {
       flickManager = FlickManager(
-      videoPlayerController: body.localPath.isEmpty?VideoPlayerController.network(body.remotePath!):VideoPlayerController.file(File(body.localPath)),
-    );
+        videoPlayerController: body.localPath.isEmpty
+            ? VideoPlayerController.network(body.remotePath!)
+            : VideoPlayerController.file(File(body.localPath)),
+      );
       return () {
         print('Disponse called');
         flickManager?.dispose();

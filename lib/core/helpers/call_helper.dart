@@ -3,10 +3,8 @@
 import '/data/services/fcm_api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart' as pr;
 
 import '/controller/bchat_providers.dart';
-import '/controller/providers/call_end_provider.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/ui/base_back_screen.dart';

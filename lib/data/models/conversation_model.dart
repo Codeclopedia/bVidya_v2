@@ -1,6 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import 'models.dart';
+import 'contact_model.dart';
 
 class ConversationModel {
   final Contacts contact;

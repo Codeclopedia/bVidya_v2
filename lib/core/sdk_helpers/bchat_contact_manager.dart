@@ -76,13 +76,21 @@ class BChatContactManager {
 
   static Future<String?> sendRequestToAddContact(String contactId) async {
     try {
-      final list = await getContactList(fromServer: true);
+      List<String> list = await getContactList(fromServer: false);
+      print('before list : ${list.join(',')}');
       if (list.contains(contactId)) {
         return 'Already exists';
       } else {
-        await ChatClient.getInstance.contactManager
-            .addContact(contactId, reason: 'Hi, Please accept my invitation');
-
+        list = await getContactList(fromServer: true);
+        print('before x list : ${list.join(',')}');
+        if (list.contains(contactId)) {
+          return 'Already exists';
+        }
+        await ChatClient.getInstance.contactManager.addContact(contactId
+            // , reason: 'Hi, Please accept my invitation'
+            );
+        final updatedList = await getContactList(fromServer: true);
+        print('after list : ${updatedList.join(',')}');
         return null;
       }
     } on ChatError catch (e) {

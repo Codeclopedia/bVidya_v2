@@ -1,38 +1,49 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:intl/intl.dart';
+
+// import '/core/sdk_helpers/bchat_sdk_controller.dart';
+import '/controller/bchat_providers.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
-import '../../../core/sdk_helpers/bchat_handler.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
-import '../../dialog/conversation_menu_dialog.dart';
-import '../../widget/base_drawer_appbar_screen.dart';
+import '/ui/dialog/conversation_menu_dialog.dart';
+import '/ui/widget/base_drawer_appbar_screen.dart';
 
-class HomeScreen extends HookConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // final provider = ref.watch(chatConversationProvider);
+  HomeScreenState createState() => HomeScreenState();
+}
 
-    useEffect(() {
-      // print('useEffect called in HomeSreen');
-      BChatSDKController.instance.init();
-      // ref.read(bChatSDKControllerProvider).init();
+class HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // "ref" can be used in all life-cycles of a StatefulWidget.
+    // ref.read(groupConversationProvider.notifier).init();
+    ref.read(chatConversationProvider.notifier).init(ref.read(bChatProvider));
+    _addHandler(ref);
+  }
 
-      _addHandler(ref);
-      return _disposeAll;
-    }, const []);
-    ref.read(chatConversationProvider.notifier).init(ref);
+  @override
+  void dispose() {
+    _disposeAll();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return BaseDrawerAppBarScreen(
       currentIndex: DrawerMenu.bChat,
       routeName: RouteList.home,
@@ -82,6 +93,8 @@ class HomeScreen extends HookConsumerWidget {
 
                 final conversationList = ref.watch(chatConversationProvider
                     .select((value) => value.chatConversationList));
+                conversationList.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
+                    .compareTo((a.lastMessage?.serverTime ?? 1)));
 
                 // print('conversationList:${conversationList.length}');
                 return loading && conversationList.isEmpty
@@ -92,10 +105,8 @@ class HomeScreen extends HookConsumerWidget {
                             shrinkWrap: false,
                             itemCount: conversationList.length,
                             separatorBuilder: (context, index) {
-                              return Container(
-                                height: 1,
-                                color: Colors.grey.shade300,
-                              );
+                              return Divider(
+                                  height: 1, color: Colors.grey.shade300);
                             },
                             itemBuilder: (context, index) {
                               final model = conversationList[index];
@@ -304,7 +315,6 @@ class HomeScreen extends HookConsumerWidget {
           if (model != null) {
             ref.read(chatConversationProvider).updateUi();
             // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
-
             // ref
             //     .read(bChatSDKControllerProvider)
             //     .reloadConversation(ref,reloadContacts: true);

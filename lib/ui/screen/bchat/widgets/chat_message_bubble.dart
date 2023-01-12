@@ -4,7 +4,7 @@ import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '/data/models/response/bchat/contacts_response.dart';
+import '/data/models/contact_model.dart';
 import '/ui/screen/bchat/dash/models/reply_model.dart';
 import '/ui/widgets.dart';
 import '/core/constants.dart';

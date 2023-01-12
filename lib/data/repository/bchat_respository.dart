@@ -38,7 +38,7 @@ class BChatRepository {
     return null;
   }
 
-  Future<List<Contacts>?> getContactsByIds(String userIds) async {
+  Future<List<Contact>?> getContactsByIds(String userIds) async {
     final result = await api.getContactsByIds(token, userIds);
     if (result.status == successfull) {
       return result.body?.contacts ?? [];
@@ -46,7 +46,7 @@ class BChatRepository {
     return null;
   }
 
-  Future<List<Contacts>?> getGroupsMembersOnly(ChatGroup group) async {
+  Future<List<Contact>?> getGroupsMembersOnly(ChatGroup group) async {
     List<String> membersIds = group.memberList ?? [];
     if (membersIds.isEmpty) {
       // print('loading members: ${membersIds.join(',')} - $ownerId');
@@ -64,7 +64,7 @@ class BChatRepository {
     return await getContactsByIds(membersIds.join(','));
   }
 
-  Future<List<Contacts>?> getGroupsMembers(ChatGroup group) async {
+  Future<List<Contact>?> getGroupsMembers(ChatGroup group) async {
     String groupId = group.groupId;
     String ownerId = group.owner ?? '';
 

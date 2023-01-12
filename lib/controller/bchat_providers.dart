@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/core/helpers/extensions.dart';
 import '/core/utils.dart';
@@ -9,14 +9,14 @@ import '../core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/helpers/duration.dart';
 
 import '/core/state.dart';
-import '/data/repository/bchat_sdk_repository.dart';
+// import '/data/repository/bchat_sdk_repository.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/data/repository/bchat_respository.dart';
 
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
-import '../core/sdk_helpers/bchat_sdk_controller.dart';
+// import '../core/sdk_helpers/bchat_sdk_controller.dart';
 // import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
 
@@ -27,11 +27,11 @@ final apiBChatProvider =
 //   return BChatSDKController.instance;
 // });
 
-final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
-  User? user = ref.read(loginRepositoryProvider).user;
-  final api = ref.read(apiBChatProvider);
-  return BChatSDKRepository(api, user?.authToken ?? '');
-});
+// final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
+//   User? user = ref.read(loginRepositoryProvider).user;
+//   final api = ref.read(apiBChatProvider);
+//   return BChatSDKRepository(api, user?.authToken ?? '');
+// });
 
 final selectedChatMessageListProvider =
     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
@@ -111,10 +111,9 @@ final searchChatContact =
 });
 
 final publicGroupList = FutureProvider<List<ChatGroupInfo>>(
-    ((ref) => BchatGroupManager.fetchPublicGroups()));
+    (ref) => BchatGroupManager.fetchPublicGroups());
 
-final searchGroupProvider =
-    FutureProvider.autoDispose<List<ChatGroup>>((ref) {
+final searchGroupProvider = FutureProvider.autoDispose<List<ChatGroup>>((ref) {
   final term = ref.watch(searchQueryGroupProvider).trim();
   final list = ref.watch(publicGroupList).valueOrNull;
   if (term.isNotEmpty && list != null) {
@@ -127,7 +126,7 @@ final searchGroupProvider =
         })
         .map((e) => e.groupId)
         .toList();
-    return  BchatGroupManager.loadPublicGroupsInfo(items);
+    return BchatGroupManager.loadPublicGroupsInfo(items);
   } else {
     return [];
   }
@@ -166,7 +165,7 @@ final groupMembersInfo =
     if (userIds.isNotEmpty) {
       final userId = (await getMeAsUser())!.id.toString();
       final contacts = await ref.read(bChatProvider).getContactsByIds(userIds);
-      return GroupMeberInfo(contacts ?? [], info, userId);
+      return GroupMeberInfo( contacts?.map((e) => Contacts.fromContact(e, ContactStatus.group)).toList()??[], info, userId);
     }
   } catch (e) {
     print('error in loading members of $groupId');

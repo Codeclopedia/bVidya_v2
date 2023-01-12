@@ -68,7 +68,8 @@ class BChatSDKController {
       final conversations =
           await client.chatManager.getConversationsFromServer();
 
-      print('Loaded contacts  = ${list.length} - ${conversations.length}');
+      print(
+          'Loaded contacts  = ${list.join(',')} - ${conversations.join(',')}');
     } catch (e) {
       print('error contacts  = $e');
     }
@@ -136,6 +137,7 @@ class BChatSDKController {
     bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
     if (alreadyLoggedIn) {
       if (!shouldLogin) {
+        await ChatClient.getInstance.contactManager.getAllContactsFromDB();
         await ChatClient.getInstance.startCallback();
         return;
       }

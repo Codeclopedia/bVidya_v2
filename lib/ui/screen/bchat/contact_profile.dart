@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_provider.dart';
-import 'package:bvidya/core/constants/agora_config.dart';
-import 'package:bvidya/ui/dialog/basic_dialog.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/controller/providers/bchat/chat_conversation_provider.dart';
+import '/core/constants/agora_config.dart';
+import '/ui/dialog/basic_dialog.dart';
+import '/ui/screens.dart';
 import '/core/utils/chat_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
