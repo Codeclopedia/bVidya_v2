@@ -8,10 +8,8 @@ import 'package:pip_view/pip_view.dart';
 
 import '/core/utils.dart';
 import '/data/services/fcm_api_service.dart';
-// import '/controller/providers/call_end_provider.dart';
 import '/controller/providers/p2p_call_provider.dart';
 import '/controller/bchat_providers.dart';
-// import '/core/constants/colors.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
 import '/core/state.dart';
@@ -88,8 +86,7 @@ class ChatCallScreen extends ConsumerWidget {
                   ? _buildAudioBackground()
                   : _buildVideoBackground(provider),
               Visibility(
-                visible: provider.updateCallType == CallType.audio ||
-                    !provider.remoteVideoOn,
+                visible: provider.updateCallType == CallType.audio,
                 child: Padding(
                   padding: EdgeInsets.only(top: 15.h),
                   child: Align(
@@ -220,9 +217,7 @@ class ChatCallScreen extends ConsumerWidget {
     return SizedBox(
       height: double.infinity,
       width: double.infinity,
-      child: provider.remoteId < 0 ||
-              provider.engine == null ||
-              !provider.remoteVideoOn
+      child: provider.remoteId < 0 || provider.engine == null
           ? _buildAudioBackground()
           : _buildVideoRemote(provider.remoteId, provider.engine!),
     );
@@ -324,6 +319,7 @@ class ChatCallScreen extends ConsumerWidget {
                   if (user == null) {
                     return;
                   }
+                  
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
                       NotiConstants.actionCallEnd,

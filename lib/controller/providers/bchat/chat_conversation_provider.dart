@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
 import 'package:bvidya/data/repository/bchat_respository.dart';
 import '/data/services/bchat_api_service.dart';
 
@@ -146,7 +147,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<Contacts?> addContact(String userId,ContactStatus status) async {
+  Future<Contacts?> addContact(String userId, ContactStatus status) async {
     try {
       final user = await getMeAsUser();
       if (user == null) {
@@ -235,7 +236,8 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           final result = await BChatApiService.instance
               .getContactsByIds(user.authToken, id);
           if (result.body?.contacts?.isNotEmpty == true) {
-            contact = Contacts.fromContact(result.body!.contacts![0], ContactStatus.invited);
+            contact = Contacts.fromContact(
+                result.body!.contacts![0], ContactStatus.invited);
             _contactsMap.addAll({contact.userId: contact});
           } else {
             return;
@@ -291,4 +293,5 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       updateUi();
     }
   }
+
 }

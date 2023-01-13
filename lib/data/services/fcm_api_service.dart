@@ -32,7 +32,6 @@ class FCMApiService {
       'type': type.name,
       'notification': {},
       'data': {
-        // 'msg_id': chat.msgId,
         'content_type': chat.body.type.name,
         'body': jsonEncode(chat.toJson()),
         'from_id': fromUserId,
@@ -109,6 +108,7 @@ class FCMApiService {
     String fromName,
     bool hasVideo,
   ) async {
+
     //p2p_call
     _dio.options.headers['Authorization'] =
         'key=  ${' AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR'}';

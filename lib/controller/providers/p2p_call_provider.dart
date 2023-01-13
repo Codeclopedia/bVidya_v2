@@ -28,8 +28,8 @@ class P2PCallProvider extends ChangeNotifier {
   bool _remoteMute = false;
   bool get remoteMute => _remoteMute;
 
-  bool _remoteVideoOn = false;
-  bool get remoteVideoOn => _remoteVideoOn;
+  // bool _remoteVideoOn = false;
+  // bool get remoteVideoOn => _remoteVideoOn;
 
   bool _isInitialized = false;
 
@@ -52,9 +52,9 @@ class P2PCallProvider extends ChangeNotifier {
 
   CallConnectionStatus get status => _status;
 
-  CallType _currentCallType = CallType.audio;
+  // CallType _currentCallType = CallType.audio;
 
-  CallType get updateCallType => _currentCallType;
+  CallType get updateCallType => _callType;
 
   Timer? _timer;
 
@@ -77,7 +77,7 @@ class P2PCallProvider extends ChangeNotifier {
     // showOutGoingCall(body, callType == CallType.video);
     _isInitialized = true;
     _callType = callType;
-    _currentCallType = callType;
+    // _currentCallType = callType;
     _callDirection = type;
     _body = body;
     FirebaseMessaging.onMessage.listen((message) {
@@ -192,7 +192,7 @@ class P2PCallProvider extends ChangeNotifier {
       await engine.enableAudio();
 
       await engine.muteLocalAudioStream(_mute);
-      await engine.setDefaultAudioRouteToSpeakerphone(_speakerOn);
+      // await engine.setDefaultAudioRouteToSpeakerphone(_speakerOn);
 
       // await engine.setEnableSpeakerphone(_speakerOn);
       await engine.joinChannel(
@@ -236,7 +236,7 @@ class P2PCallProvider extends ChangeNotifier {
       //     token: _body.callToken,
       //   ),
       // );
-      _currentCallType = CallType.video;
+      // _currentCallType = CallType.video;
     } catch (e) {
       print('error in switching mode');
       return;

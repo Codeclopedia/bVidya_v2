@@ -78,6 +78,21 @@ class BchatGroupManager {
     return null;
   }
 
+  static Future<List<ChatGroup>> loadGroupList() async {
+    List<ChatGroup> groups = [];
+    try {
+      groups =
+          await ChatClient.getInstance.groupManager.fetchJoinedGroupsFromServer(
+        needMemberCount: true,
+        needRole: true,
+      );
+      // }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return groups;
+  }
+
   static Future<List<GroupConversationModel>> loadGroupConversationsList(
       {bool firstTime = false}) async {
     List<GroupConversationModel> conversations = [];

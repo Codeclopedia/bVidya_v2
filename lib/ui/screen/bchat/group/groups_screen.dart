@@ -254,9 +254,8 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
           if (result != null && result is ChatGroup) {
             ref.read(groupConversationProvider.notifier).addConveration(result);
-          } else {
-            ref.read(groupConversationProvider.notifier).update();
           }
+          ref.read(groupConversationProvider.notifier).update();
         },
         child: Row(
           children: [

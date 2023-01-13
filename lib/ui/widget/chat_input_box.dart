@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:permission_handler/permission_handler.dart';
+
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -115,8 +117,29 @@ class _ChatInputBoxState extends State<ChatInputBox>
                 Visibility(
                   visible: widget.onAttach != null,
                   child: IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       _showAttachDialog(context);
+                      // if (await handleStorage()) {
+                      // } else {
+                      //   if (await Permission.photos.isPermanentlyDenied) {
+                      //     AppSnackbar.instance.error(context,
+                      //         "Enable storage permission from app setting");
+                      //     openAppSettings();
+                      //   } else if (await Permission.storage.isDenied) {
+                      //     final status = await Permission.storage.request();
+                      //     debugPrint(status.name);
+                      //     if (status.isPermanentlyDenied) {
+                      //       AppSnackbar.instance.error(context,
+                      //           "Enable storage permission from app setting");
+                      //       openAppSettings();
+                      //     } else if (status.isGranted) {
+                      //       _showAttachDialog(context);
+                      //     }
+                      //   } else {
+                      //     print(
+                      //         '${await Permission.storage.isRestricted}  ${await Permission.storage.isDenied}');
+                      //   }
+                      // }
                     },
                     icon: getSvgIcon('icon_chat_attach.svg'),
                   ),
@@ -156,6 +179,12 @@ class _ChatInputBoxState extends State<ChatInputBox>
         ),
       ),
     );
+  }
+
+  Future<bool> handleStorage() async {
+    final status = await Permission.storage.request();
+    debugPrint(status.name);
+    return status == PermissionStatus.granted;
   }
 
   _showAttachDialog(BuildContext context) async {

@@ -1,6 +1,10 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 
@@ -173,6 +177,16 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       if (model.lastMessage!.body.type == MessageType.TXT) {
         final body = model.lastMessage!.body as ChatTextMessageBody;
         textMessage = body.content;
+      } else if (model.lastMessage!.body.type == MessageType.CUSTOM) {
+        ChatCustomMessageBody body =
+            model.lastMessage!.body as ChatCustomMessageBody;
+        print(body.event);
+        try {
+          final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+          textMessage = (callBody.callType == CallType.video)
+              ? 'Video Call'
+              : 'Audio call';
+        } catch (e) {}
       }
     }
     // final online = model.isOnline?.statusDescription ?? ' Unknown';

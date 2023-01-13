@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '/core/helpers/call_helper.dart';
+import '/data/models/call_message_body.dart';
 import '/data/models/contact_model.dart';
 import '/ui/screen/bchat/dash/models/reply_model.dart';
 import '/ui/widgets.dart';
@@ -70,15 +75,18 @@ class ChatMessageBubble extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (!isPreviousSameAuthor || isBeforeDateSeparator)
-                SizedBox(height: 1.5.h),
+                SizedBox(height: 1.2.h),
               if (showOtherUserName &&
                   !isOwnMessage &&
                   (!isPreviousSameAuthor || isAfterDateSeparator))
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
                   child: Text(
-                    S.current.bmeet_user_you,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    senderUser.name,
+                    style: TextStyle(
+                        fontFamily: kFontFamily,
+                        fontSize: 10,
+                        color: Colors.grey),
                   ),
                 ),
               _buildMessageBody()
@@ -116,7 +124,13 @@ class ChatMessageBubble extends StatelessWidget {
           ChatVideoMessageBody body = message.body as ChatVideoMessageBody;
           return _videoOnly(body);
         }
-        break;
+      case MessageType.CUSTOM:
+        {
+          ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
+          // print(body.event);
+          final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+          return _callBody(callBody);
+        }
       default:
       // return const SizedBox.shrink();
     }
@@ -124,8 +138,63 @@ class ChatMessageBubble extends StatelessWidget {
     // return message.body.type == MessageType.TXT ? _onlyText() : _imageOnly(me);
   }
 
+  Widget _callBody(CallMessegeBody body) {
+    String content =
+        '${isOwnMessage ? 'Outgoing' : 'Incoming'} ${body.callType == CallType.video ? 'Video Call' : 'Audio call'}';
+
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: 30.w,
+        maxWidth: 60.w,
+        minHeight: 5.h,
+        maxHeight: 30.h,
+      ),
+      // height: 10.w,
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+
+      decoration: _buildDecoration(),
+      margin: isOwnMessage
+          ? EdgeInsets.only(right: 2.w)
+          : EdgeInsets.only(left: 2.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              getSvgIcon(
+                body.callType == CallType.video
+                    ? 'icon_vcall.svg'
+                    : 'icon_acall.svg',
+                width: 4.w,
+                // color: Colors.white,
+              ),
+              SizedBox(width: 2.w),
+              _textMessage(content)
+            ],
+          ),
+          Container(
+              width: 18.w,
+              alignment: Alignment.topRight,
+              child: Text(
+                DateFormat('h:mm a').format(
+                    DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  fontSize: 8.sp,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxTimeMine
+                      : AppColors.chatBoxTimeOthers,
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
   Widget _imageOnly(ChatImageMessageBody body) {
-    // final bool isOwnMessage = message.from == currentUser.id;
     return Container(
       constraints: BoxConstraints(
         minWidth: 30.w,

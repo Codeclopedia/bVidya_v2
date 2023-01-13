@@ -3,7 +3,6 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -61,7 +60,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     initLoading();
     _firebase();
-    NotificationController.startListeningNotificationEvents();
+    // NotificationController.startListeningNotificationEvents();
     setupCallKit();
   }
 
@@ -98,14 +97,13 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
 
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
-
     FirebaseMessaging.onMessage.listen((message) {
       //For P2P Call
       debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
-          showIncomingCall(message);
+          handlShowIncomingCallNotification(message);
         } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
         }
@@ -136,10 +134,11 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
       }
     });
 
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      await NotificationController.displayNotification(context);
-    }
+    // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    // if (!isAllowed) {
+    //   await Future.delayed(const Duration(seconds: 3));
+    //   await NotificationController.displayNotification(context);
+    // }
   }
 
   @override

@@ -194,6 +194,10 @@ Future<GroupConversationModel?> getGroupConversationModel(
   }
 }
 
+openGroupChat(){
+  
+}
+
 openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
     {bool sendInviateMessage = false, String message = ''}) async {
   final conv = await ChatClient.getInstance.chatManager.getConversation(

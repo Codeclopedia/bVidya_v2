@@ -15,6 +15,7 @@ import '/data/services/bchat_api_service.dart';
 import '/data/repository/bchat_respository.dart';
 
 import 'providers/bchat/chat_conversation_provider.dart';
+import 'providers/bchat/groups_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
 // import '../core/sdk_helpers/bchat_sdk_controller.dart';
 // import 'providers/chat_conversations_provider.dart';
@@ -165,7 +166,13 @@ final groupMembersInfo =
     if (userIds.isNotEmpty) {
       final userId = (await getMeAsUser())!.id.toString();
       final contacts = await ref.read(bChatProvider).getContactsByIds(userIds);
-      return GroupMeberInfo( contacts?.map((e) => Contacts.fromContact(e, ContactStatus.group)).toList()??[], info, userId);
+      return GroupMeberInfo(
+          contacts
+                  ?.map((e) => Contacts.fromContact(e, ContactStatus.group))
+                  .toList() ??
+              [],
+          info,
+          userId);
     }
   } catch (e) {
     print('error in loading members of $groupId');
@@ -232,3 +239,40 @@ class GroupMeberInfo {
   final String userId;
   GroupMeberInfo(this.members, this.group, this.userId);
 }
+
+final joinedGroupsListProvier = FutureProvider<List<ChatGroup>>((ref) {
+  return BchatGroupManager.loadGroupList();
+});
+
+final commonGroupsProvider = FutureProvider.family
+    .autoDispose<List<ChatGroup>, String>((ref, contactId) async {
+  List<ChatGroup> groupList = [];
+  final list = ref.read(groupConversationProvider).groupConversationList;
+  if (list.isNotEmpty) {
+    for (var item in list) {
+      print(
+          'members:${item.groupInfo.memberList?.join(',')} -- ${item.groupInfo.owner}');
+      if (item.groupInfo.memberList?.contains(contactId) == true ||
+          item.groupInfo.owner == contactId) {
+        groupList.add(item.groupInfo);
+      }
+    }
+  } else {
+    final groups = ref.watch(joinedGroupsListProvier).valueOrNull;
+    if (groups?.isNotEmpty == true) {
+      for (var item in groups!) {
+        List<String> members = item.memberList ?? [];
+        if (members.isEmpty) {
+          item = await ChatClient.getInstance.groupManager
+              .fetchGroupInfoFromServer(item.groupId, fetchMembers: true);
+          members = item.memberList ?? [];
+        }
+        print('members2:${members.join(',')}   -- ${item.owner}');
+        if (members.contains(contactId) == true || item.owner == contactId) {
+          groupList.add(item);
+        }
+      }
+    }
+  }
+  return groupList;
+});

@@ -3,6 +3,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
+import '/controller/providers/user_auth_provider.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -124,23 +126,7 @@ class LoginOtpScreen extends HookWidget {
                                           S.current.signup_error_otp_empty);
                                       return;
                                     }
-                                    ref
-                                        .read(loginTimerProvider.notifier)
-                                        .reset();
-                                    EasyLoading.show();
-                                    final result = await ref
-                                        .read(loginRepositoryProvider)
-                                        .loginOtpVerify(enteredOTP);
-                                    EasyLoading.dismiss();
-                                    if (result != null) {
-                                      AppSnackbar.instance
-                                          .error(context, result);
-                                    } else {
-                                      AppSnackbar.instance.message(
-                                          context, 'Logged In successfully');
-                                      Navigator.pushReplacementNamed(
-                                          context, RouteList.home);
-                                    }
+                                    _onLogin(ref, context, enteredOTP);
                                   }
                                 }
                                 // ref.read(loginRepositoryProvider).
@@ -205,6 +191,35 @@ class LoginOtpScreen extends HookWidget {
         ),
       ),
     );
+  }
+
+  Future _onLogin(
+      WidgetRef ref, BuildContext context, String enteredOTP) async {
+    ref.read(loginTimerProvider.notifier).reset();
+    showLoading(ref);
+    final result =
+        await ref.read(loginRepositoryProvider).loginOtpVerify(enteredOTP);
+    if (result != null) {
+      hideLoading(ref);
+
+      AppSnackbar.instance.error(context, result);
+    } else {
+      final user = await ref.read(userAuthChangeProvider).loadUser();
+      if (user == null) {
+        hideLoading(ref);
+        AppSnackbar.instance
+            .error(context, 'Error occurred, Please restart app');
+        return;
+      }
+      await BChatSDKController.instance.initChatSDK(user);
+      await BChatSDKController.instance.loadAllContactsGroup();
+
+      hideLoading(ref);
+
+      // AppSnackbar.instance.message(
+      //     context, 'Logged In successfully');
+      Navigator.pushReplacementNamed(context, RouteList.home);
+    }
   }
 
   _buildOtpBox() {

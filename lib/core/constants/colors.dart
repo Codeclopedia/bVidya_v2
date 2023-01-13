@@ -85,7 +85,7 @@ class AppColors {
 
   static const Color chatBoxMessageOthers = Color(0xFF000E08);
 
-  static const Color chatBoxTimeOthers = Color(0xFFFFFFFF);
+  static const Color chatBoxTimeOthers = Color(0xBFFFFFFF);
 
   static const Color chatBoxMessageMine = Color(0xFFFFFFFF);
 

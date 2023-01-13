@@ -12,8 +12,8 @@ import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 import '../dash/models/attach_type.dart';
-import '../../../../core/sdk_helpers/bchat_handler.dart';
-// import '/controller/bchat_providers.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
+
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -478,6 +478,7 @@ class GroupChatScreen extends HookConsumerWidget {
                     isNextSameAuthor: isNextSameAuthor,
                     isAfterDateSeparator: isAfterDateSeparator,
                     isBeforeDateSeparator: isBeforeDateSeparator,
+                    showOtherUserName: true,
                   ),
                 ),
               ),

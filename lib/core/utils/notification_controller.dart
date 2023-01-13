@@ -12,7 +12,6 @@ import '../constants.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/utils.dart';
 import '/app.dart';
-// import '../constants/route_list.dart';
 import '../routes.dart';
 import '../ui_core.dart';
 import 'chat_utils.dart';
@@ -72,18 +71,18 @@ class NotificationController {
         return;
       }
       if (receivedAction.actionType == ActionType.SilentAction
-          //  ||receivedAction.actionType == ActionType.SilentBackgroundAction
+           ||receivedAction.actionType == ActionType.SilentBackgroundAction
           ) {
-        String? type = receivedAction.payload?['type'];
-        String? from = receivedAction.payload?['from'];
-        if (type == 'contact_invite' && from != null) {
-          // debugPrint('${receivedAction.buttonKeyPressed} ');
-          if (receivedAction.buttonKeyPressed == 'ACCEPT_CONTACT') {
-            await BChatContactManager.acceptRequest(from);
-          } else if (receivedAction.buttonKeyPressed == 'DECLINE_CONTACT') {
-            await BChatContactManager.declineRequest(from);
-          }
-        }
+        // String? type = receivedAction.payload?['type'];
+        // String? from = receivedAction.payload?['from'];
+        // if (type == 'contact_invite' && from != null) {
+        //   // debugPrint('${receivedAction.buttonKeyPressed} ');
+        //   if (receivedAction.buttonKeyPressed == 'ACCEPT_CONTACT') {
+        //     await BChatContactManager.acceptRequest(from);
+        //   } else if (receivedAction.buttonKeyPressed == 'DECLINE_CONTACT') {
+        //     await BChatContactManager.declineRequest(from);
+        //   }
+        // }
         return;
       }
       BuildContext? context = navigatorKey.currentContext;
@@ -123,6 +122,7 @@ class NotificationController {
 
   static Future<bool> displayNotification(BuildContext context) async {
     bool userAuthorized = false;
+    
 
     await showDialog(
         context: context,
@@ -334,42 +334,42 @@ class NotificationController {
       return;
     }
 
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) isAllowed = await displayNotificationRationale();
-    if (!isAllowed) return;
-    if ((await getMeAsUser()) == null) {
-      return;
-    }
-    int id = 'contact_invite$userId'.hashCode;
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: id,
-        channelKey: 'chat_channel',
-        title: 'You have received an invitation',
-        icon: 'resource://mipmap/ic_launcher',
-        body: content,
-        wakeUpScreen: true,
-        fullScreenIntent: false,
-        notificationLayout: NotificationLayout.BigText,
-        payload: {
-          'type': 'contact_invite',
-          'from': userId,
-          // 'msgId': message.data['m'] ?? ''
-        },
-      ),
-      actionButtons: [
-        NotificationActionButton(
-          key: 'ACCEPT_CONTACT',
-          label: 'Accept',
-          actionType: ActionType.SilentAction,
-        ),
-        NotificationActionButton(
-            key: 'DECLINE_CONTACT',
-            label: 'Decline',
-            actionType: ActionType.SilentAction,
-            isDangerousOption: true)
-      ],
-    );
+    // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    // if (!isAllowed) isAllowed = await displayNotificationRationale();
+    // if (!isAllowed) return;
+    // if ((await getMeAsUser()) == null) {
+    //   return;
+    // }
+    // int id = 'contact_invite$userId'.hashCode;
+    // AwesomeNotifications().createNotification(
+    //   content: NotificationContent(
+    //     id: id,
+    //     channelKey: 'chat_channel',
+    //     title: 'You have received an invitation',
+    //     icon: 'resource://mipmap/ic_launcher',
+    //     body: content,
+    //     wakeUpScreen: true,
+    //     fullScreenIntent: false,
+    //     notificationLayout: NotificationLayout.BigText,
+    //     payload: {
+    //       'type': 'contact_invite',
+    //       'from': userId,
+    //       // 'msgId': message.data['m'] ?? ''
+    //     },
+    //   ),
+    //   actionButtons: [
+    //     NotificationActionButton(
+    //       key: 'ACCEPT_CONTACT',
+    //       label: 'Accept',
+    //       actionType: ActionType.SilentAction,
+    //     ),
+    //     NotificationActionButton(
+    //         key: 'DECLINE_CONTACT',
+    //         label: 'Decline',
+    //         actionType: ActionType.SilentAction,
+    //         isDangerousOption: true)
+    //   ],
+    // );
   }
 
   static Future shouldShowChatNotification(RemoteMessage message) async {

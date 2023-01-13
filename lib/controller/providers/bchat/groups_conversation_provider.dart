@@ -1,5 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '/core/utils/chat_utils.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -22,13 +23,17 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  // bool _initialized = false;
+  bool _initialized = false;
+
+  // stop() {
+  //   _isLoading = true;
+  // }
 
   Future init() async {
-    // if (_initialized) {
-    //   return;
-    // }
-    // _initialized = true;
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
     _groupConversationMap.clear();
     final list = await BchatGroupManager.loadGroupConversationsList();
     for (var item in list) {
@@ -36,6 +41,11 @@ class GroupConversationChangeProvider extends ChangeNotifier {
     }
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<GroupConversationModel?> getGroupConversation(String groupId) async {
+    return _groupConversationMap[groupId] ??
+        (await getGroupConversationModel(groupId));
   }
 
   Future addConveration(ChatGroup grp) async {
@@ -136,9 +146,8 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   Future delete(String groupId) async {
     await BchatGroupManager.deleteGroup(groupId);
-     _groupConversationMap.remove(groupId);
+    _groupConversationMap.remove(groupId);
   }
-
 
   Future remove(String groupId) async {
     final model = _groupConversationMap.remove(groupId);

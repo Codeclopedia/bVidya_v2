@@ -1,20 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
+import '/controller/bchat_providers.dart';
 import '/core/constants/agora_config.dart';
 import '/ui/dialog/basic_dialog.dart';
 import '/ui/screens.dart';
 import '/core/utils/chat_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
-// import '../../../controller/providers/bchat/chat_conversation_provider.dart';
 import '/ui/screen/blearn/components/common.dart';
-import '/controller/bchat_providers.dart';
 import '../../../core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
-import '/core/constants/data.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
@@ -213,41 +213,69 @@ class ContactProfileScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.symmetric(horizontal: 2.w),
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return _contactRow(contacts[index]);
-          },
-          itemCount: 3,
-        ),
+        Consumer(builder: (context, ref, child) {
+          return ref
+              .watch(commonGroupsProvider(contact.userId.toString()))
+              .when(
+                data: ((data) {
+                  if (data.isEmpty) {
+                    return SizedBox(
+                        height: 12.h,
+                        child: buildEmptyPlaceHolder('No Common group'));
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(horizontal: 2.w),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                          onTap: () async {
+                            final model = await ref
+                                .read(groupConversationProvider)
+                                .getGroupConversation(data[index].groupId);
+                            if (model != null) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  RouteList.groupChatScreenDirect,
+                                  (route) => route.isFirst,
+                                  arguments: model);
+                            } else {
+                              print('Model is null');
+                            }
+                          },
+                          child: _contactRow(data[index]));
+                    },
+                    itemCount: data.length,
+                  );
+                }),
+                error: (error, stackTrace) => buildEmptyPlaceHolder('text'),
+                loading: () => buildLoading,
+              );
+        }),
       ],
     );
   }
 
-  Widget _contactRow(ContactModel contact) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1.h),
-        padding: EdgeInsets.symmetric(horizontal: 4.w),
-        child: Row(
-          children: [
-            getCicleAvatar(contact.name, contact.image),
-            SizedBox(width: 3.w),
-            Expanded(
-              child: Text(
-                contact.name,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  color: AppColors.contactNameTextColor,
-                  fontSize: 11.sp,
-                ),
+  Widget _contactRow(ChatGroup contact) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 1.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Row(
+        children: [
+          getCicleAvatar(
+              contact.name ?? '', BchatGroupManager.getGroupImage(contact)),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Text(
+              contact.name ?? '',
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: AppColors.contactNameTextColor,
+                fontSize: 11.sp,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -304,7 +332,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                   ),
                 ),
                 Visibility(
-                  visible: medias.hasValue,
+                  visible: medias.valueOrNull?.isNotEmpty == true,
                   child: TextButton(
                     onPressed: (() {}),
                     child: Text(

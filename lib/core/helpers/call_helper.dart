@@ -1,9 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '/data/services/fcm_api_service.dart';
+import 'dart:convert';
+
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '/data/models/call_message_body.dart';
+import '/data/services/fcm_api_service.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
@@ -21,16 +25,16 @@ enum CallDirectionType {
 
 enum CallType { audio, video }
 
-Future makeAudioCall(
+Future<ChatMessage?> makeAudioCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
   final user = await getMeAsUser();
   if (user == null) {
-    return;
+    return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
-      return;
+      return null;
     }
   }
   // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
@@ -55,30 +59,38 @@ Future makeAudioCall(
     }
 
     Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
+    return logCallEvent(
+      callBody.callId, user.name, contact.userId.toString(),
+      contact.name, CallType.audio, CallDirectionType.outgoing,
+      // fromFCM: user.fcmToken,
+      // toFCM: contact.fcmToken ?? '',
+      // image: contact.profileImage,
+    );
   } else {
     hideLoading(ref);
+    return null;
   }
   // ref.read(fcm)
   // FCMApiService.instance
   //     .sendChatPush(chat, toToken, fromUserId, senderName, type);
 }
 
-Future makeVideoCall(
+Future<ChatMessage?> makeVideoCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
   final user = await getMeAsUser();
   if (user == null) {
-    return;
+    return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
-      return;
+      return null;
     }
   }
   if (!await handleCameraAndMic(Permission.camera)) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AppSnackbar.instance.error(context, 'Need camera permission');
-      return;
+      return null;
     }
   }
   showLoading(ref);
@@ -101,10 +113,24 @@ Future makeVideoCall(
           callBody, user.id.toString(), user.name, user.image, true);
     }
     hideLoading(ref);
-    Navigator.pushNamed(context, RouteList.bChatVideoCall, arguments: map);
+
+    await Navigator.pushNamed(context, RouteList.bChatVideoCall,
+        arguments: map);
+    return logCallEvent(
+      callBody.callId,
+      user.name,
+      contact.userId.toString(),
+      contact.name,
+      CallType.video,
+      CallDirectionType.outgoing,
+      // fromFCM: user.fcmToken,
+      // toFCM: contact.fcmToken ?? '',
+      // image: contact.profileImage,
+    );
   } else {
     hideLoading(ref);
   }
+  return null;
   // ref.read(fcm)
   // FCMApiService.instance
   //     .sendChatPush(chat, toToken, fromUserId, senderName, type);
@@ -124,7 +150,7 @@ Future receiveCall(String authToken, String fcmToken, String callId,
       'call_direction_type': CallDirectionType.incoming
     };
 
-    Navigator.pushNamed(
+    await Navigator.pushNamed(
         context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
         arguments: map);
   }
@@ -196,3 +222,41 @@ Future receiveCall(String authToken, String fcmToken, String callId,
 //     hideLoading(ref);
 //   }
 // }
+
+Future<ChatMessage?> logCallEvent(String callId, String fromName, String toId,
+    String toName, CallType callType, CallDirectionType callDirectionType,
+    {
+    //   required String fromFCM,
+    // required String toFCM,
+    // required String image,
+    int duration = 0,
+    CallStatus status = CallStatus.ongoing}) async {
+  try {
+    final callMessageBody = CallMessegeBody(
+      callId: callId,
+      callType: callType,
+      // callDirectionType: callDirectionType,
+      duration: duration,
+      fromName: fromName,
+      // fromFCM: fromFCM,
+      // toFCM: toFCM,
+      // image: image,
+      toName: toName,
+      status: status,
+      ext: {},
+    );
+    final message = ChatMessage.createCustomSendMessage(
+        targetId: toId, event: jsonEncode(callMessageBody.toJson()));
+    // final conv = await ChatClient.getInstance.chatManager.getConversation(toId);
+    // if(conv!=null){
+    // }
+    message.attributes = {"em_force_notification": false};
+
+    return await ChatClient.getInstance.chatManager.sendMessage(message);
+
+// ref.read(chatConversationProvider).updateConversation(convId)
+  } catch (e) {
+    print('Error in logging call Event');
+  }
+  return null;
+}

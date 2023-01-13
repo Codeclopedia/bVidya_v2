@@ -75,9 +75,20 @@ class GroupChatChangeProvider extends ChangeNotifier {
         final chats = await grpModel.conversation
             ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
         if (chats != null) {
+          // for (var e in chats) {
+          //   _messagesMap.addAll({e.msgId: e});
+          // }
+           final newMaps = {};
           for (var e in chats) {
-            _messagesMap.addAll({e.msgId: e});
+            newMaps.addAll({e.msgId: e});
           }
+          newMaps.addAll({..._messagesMap});
+          // _messagesMap = {...newMaps,..._messagesMap};
+          // final oldMap = _messagesMap;
+          _messagesMap.clear();
+          _messagesMap.addAll({
+            ...newMaps,
+          });
         }
         _isLoadingMore = false;
         _hasMoreData = chats?.length == 20;

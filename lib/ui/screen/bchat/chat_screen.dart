@@ -96,14 +96,13 @@ class ChatScreen extends HookConsumerWidget {
     final user = await getMeAsUser();
     if (user != null) {
       _me = Contacts(
-        name: user.name,
-        profileImage: user.image,
-        userId: user.id,
-        email: user.email,
-        fcmToken: user.fcmToken,
-        phone: user.phone,
-        status: ContactStatus.self
-      );
+          name: user.name,
+          profileImage: user.image,
+          userId: user.id,
+          email: user.email,
+          fcmToken: user.fcmToken,
+          phone: user.phone,
+          status: ContactStatus.self);
       // _myChatPeerUserId =
       //     ChatClient.getInstance.currentUserId ?? user.id.toString();
     }
@@ -479,7 +478,7 @@ class ChatScreen extends HookConsumerWidget {
         bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from != model.id;
-        if (!isOwnMessage) _markRead(message);
+        isOwnMessage ? _markOwnRead(message) : _markRead(message);
 
         return Column(
           // crossAxisAlignment:
@@ -839,8 +838,11 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             IconButton(
-              onPressed: () {
-                makeAudioCall(model.contact, ref, context);
+              onPressed: () async {
+                final msg = await makeAudioCall(model.contact, ref, context);
+                if (msg != null) {
+                  ref.read(chatMessageListProvider.notifier).addChat(msg);
+                }
                 // Navigator.pushNamed(context, RouteList.bChatAudioCall);
               },
               icon: getSvgIcon(
@@ -850,14 +852,17 @@ class ChatScreen extends HookConsumerWidget {
             ),
             SizedBox(width: 2.w),
             IconButton(
-              onPressed: () {
+              onPressed: () async {
                 // receiveAudioCall(
                 //   'YcJ5uHP31M8sMyAZ1msC',
                 //   model.contact.profileImage,
                 //   ref,
                 //   context,
                 // );
-                makeVideoCall(model.contact, ref, context);
+                final msg = await makeVideoCall(model.contact, ref, context);
+                if (msg != null) {
+                  ref.read(chatMessageListProvider.notifier).addChat(msg);
+                }
                 // Navigator.pushNamed(context, RouteList.bChatVideoCall);
                 // makeFakeCallInComing();
               },
@@ -873,6 +878,13 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   void _markRead(ChatMessage message) async {
+    if (!message.hasRead) {
+      await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+      await model.conversation?.markMessageAsRead(message.msgId);
+    }
+  }
+
+  void _markOwnRead(ChatMessage message) async {
     if (!message.hasRead) {
       await model.conversation?.markMessageAsRead(message.msgId);
     }

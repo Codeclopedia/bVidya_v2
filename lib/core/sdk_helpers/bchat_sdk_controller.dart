@@ -118,7 +118,7 @@ class BChatSDKController {
           }
         } else {
           keyBody = token.body!;
-          await pref.setString('chat_body', jsonEncode(token.body!));
+          await pref.setString('chat_body', jsonEncode(keyBody));
         }
 
         print('should Login -  $shouldLogin');

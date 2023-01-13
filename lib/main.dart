@@ -16,14 +16,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await BChatSDKController.instance.setup();
+
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
   }
-
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
   await NotificationController.initializeLocalNotifications();
   runApp(
     const ProviderScope(
@@ -35,7 +36,6 @@ Future<void> main() async {
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
   debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
-
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {
@@ -45,16 +45,11 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   }
   // setupCallKeep();
   setupCallKit();
-  onNewFireabseMessage(message, false);
-}
-
-onNewFireabseMessage(RemoteMessage message, bool foreground) {
   try {
-    // print('onNewFirebaseMessage: ${message.data} $foreground');
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
       if (action == NotiConstants.actionCallStart) {
-        showIncomingCall(message);
+        handlShowIncomingCallNotification(message);
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
       }
