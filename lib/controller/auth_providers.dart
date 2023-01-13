@@ -22,7 +22,7 @@ final authLoadProvider = FutureProvider.autoDispose(
   (ref) async => ref.watch(loginRepositoryProvider).init(),
 );
 
-final loginEnteredOTPProvider = StateProvider.autoDispose<String>(
+final loginEnteredOTPProvider = StateProvider<String>(
   (_) => '',
 );
 

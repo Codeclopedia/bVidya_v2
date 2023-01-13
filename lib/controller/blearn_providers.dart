@@ -1,3 +1,4 @@
+import '../data/models/response/blearn/blearn_home_response.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/blearn_repository.dart';
@@ -13,9 +14,13 @@ final bLearnRepositoryProvider = Provider<BLearnRepository>((ref) {
   return BLearnRepository(ref.read(apiBLearnProvider), token);
 });
 
-final bLearnHomeProvider = FutureProvider.autoDispose<HomeBody?>((ref) {
+final bLearnHomeProvider = FutureProvider.autoDispose<BlearnHomeBody?>((ref) {
   return ref.read(bLearnRepositoryProvider).getHome();
 });
+
+// final bLearnHomeProvider = FutureProvider.autoDispose<HomeBody?>((ref) {
+//   return ref.read(bLearnRepositoryProvider).getHome();
+// });
 
 final bLearnCategoriesProvider = FutureProvider<Categories?>((ref) {
   return ref.read(bLearnRepositoryProvider).getCategories();
@@ -52,6 +57,7 @@ final bLearnInstructorProfileProvider =
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose
     .family<List<FollowedInstructor>, String>((ref, id) async {
   final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
+  print("results ${result}");
   ref.read(isFollowedInstructor(id));
   return result ?? [];
 });

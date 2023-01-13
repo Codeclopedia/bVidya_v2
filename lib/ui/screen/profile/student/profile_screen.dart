@@ -1,3 +1,5 @@
+import '../../../../controller/profile_providers.dart';
+import '../../../screens.dart';
 import '/ui/dialog/basic_dialog.dart';
 
 import '/core/constants/colors.dart';
@@ -7,11 +9,11 @@ import '/core/ui_core.dart';
 
 import '../../../widget/base_drawer_setting_screen.dart';
 
-class StudentProfileScreen extends StatelessWidget {
+class StudentProfileScreen extends ConsumerWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return BaseDrawerSettingScreen(
       showEmail: true,
       currentIndex: DrawerMenu.profile,
@@ -45,8 +47,24 @@ class StudentProfileScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 1.h),
-            _buildContent(S.current.profile_details, "profile_user.svg", () {
-              Navigator.pushNamed(context, RouteList.studentProfileDetail);
+            _buildContent(S.current.profile_details, "profile_user.svg",
+                () async {
+              showLoading(ref);
+              final profile =
+                  await ref.read(profileRepositoryProvider).getUserProfile();
+              hideLoading(ref);
+
+              if (profile != null) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => StudentProfileDetail(
+                        profile: profile,
+                      ),
+                    ));
+              } else {
+                AppSnackbar.instance.error(context, 'Error in loading profile');
+              }
             }),
             _buildContent(S.current.profile_learning, "profile_learning.svg",
                 () {
@@ -61,11 +79,11 @@ class StudentProfileScreen extends StatelessWidget {
               // );
             }),
             _buildContent(S.current.profile_instr, "profile_instru.svg", () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const HelpCenterScreen()),
-              // );
+              showLoading(ref);
+              Navigator.pushNamed(context, RouteList.webview, arguments: {
+                'url': "https://www.app.bvidya.com/",
+              });
+              hideLoading(ref);
             }),
             _buildContent(
                 S.current.profile_invite, "profile_invite.svg", () {}),

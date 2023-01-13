@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../../data/models/models.dart';
 import '/core/state.dart';
 import '/core/theme/appstyle.dart';
 import '/core/theme/inputstyle.dart';
@@ -8,14 +9,21 @@ import '/core/theme/textstyles.dart';
 import '../../../../generated/l10n.dart';
 import '../base_settings.dart';
 
-class StudentProfileDetail extends StatelessWidget {
-  const StudentProfileDetail({super.key});
-
-  //texteditingController
-  // final nameTextController = useTextEditingController(text: '');
+class StudentProfileDetail extends HookWidget {
+  final Profile profile;
+  const StudentProfileDetail({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {
+    final nameController = useTextEditingController(text: profile.name);
+    final emailController = useTextEditingController(text: profile.email);
+    final phoneController = useTextEditingController(text: profile.phone);
+    final ageController = useTextEditingController(text: profile.age);
+    final addressController = useTextEditingController(text: profile.address);
+
+    useEffect(
+      () {},
+    );
     return BaseSettings(
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
@@ -35,10 +43,11 @@ class StudentProfileDetail extends StatelessWidget {
               style: inputBoxCaptionStyle(context),
             ),
             TextFormField(
+              controller: nameController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: inputDirectionStyle.copyWith(
-                hintText: S.current.signup_fullname_hint,
+                hintText: profile.name,
               ),
             ),
             SizedBox(height: 2.h),
@@ -47,6 +56,7 @@ class StudentProfileDetail extends StatelessWidget {
               style: inputBoxCaptionStyle(context),
             ),
             TextFormField(
+              controller: emailController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: inputDirectionStyle.copyWith(
@@ -59,6 +69,7 @@ class StudentProfileDetail extends StatelessWidget {
               style: inputBoxCaptionStyle(context),
             ),
             TextFormField(
+              controller: phoneController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: inputDirectionStyle.copyWith(
@@ -71,6 +82,7 @@ class StudentProfileDetail extends StatelessWidget {
               style: inputBoxCaptionStyle(context),
             ),
             TextFormField(
+              controller: ageController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: inputDirectionStyle.copyWith(
@@ -83,6 +95,7 @@ class StudentProfileDetail extends StatelessWidget {
               style: inputBoxCaptionStyle(context),
             ),
             TextFormField(
+              controller: addressController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: inputDirectionStyle.copyWith(

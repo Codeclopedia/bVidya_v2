@@ -309,6 +309,18 @@
 
     "chat_replying":"Replying to {name}",
 
+    "request_class_title":"Request Class",
+    "request_class": "Request a class",
+    "request_class_topic": "Topic",
+    "request_class_topic_hint":"Enter class topic or subject",
+    "request_class_type":"Class Type",
+    "request_class_type_hint":"Select",
+    "request_class_group":"group",
+    "request_class_private":"private",
+    "request_class_description":"Description",
+    "request_class_description_hint":"Add Description",
+    "request_class_request":"Request",
+    
 
   "Account": "Account",
   "settingsNoti": "Notifications",

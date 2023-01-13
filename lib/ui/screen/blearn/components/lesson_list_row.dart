@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/state.dart';
+import 'package:bvidya/ui/screens.dart';
+
 import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
@@ -9,6 +12,7 @@ class LessonListRow extends StatelessWidget {
   final int index;
   final int openIndex;
   final Lesson lesson;
+  final WidgetRef ref;
   final Function(int) onExpand;
   final int courseId;
   final int instructorId;
@@ -18,6 +22,7 @@ class LessonListRow extends StatelessWidget {
       required this.index,
       required this.lesson,
       required this.openIndex,
+      required this.ref,
       required this.onExpand,
       required this.courseId,
       required this.instructorId})
@@ -50,7 +55,7 @@ class LessonListRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lesson $index',
+                        'Lesson ${index + 1}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 8.sp,
@@ -86,6 +91,7 @@ class LessonListRow extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 2.h),
               child: GestureDetector(
                 onTap: () async {
+                  showLoading(ref);
                   await sendVideoPlayback(lesson.id, instructorId);
                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       arguments: {
@@ -93,6 +99,7 @@ class LessonListRow extends StatelessWidget {
                         "course_id": courseId,
                         'instructor_id': instructorId
                       });
+                  hideLoading(ref);
                 },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

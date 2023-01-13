@@ -17,10 +17,27 @@ import '../helpers/call_helper.dart';
 import '../ui_core.dart';
 import '../utils.dart';
 
-setupCallKit() {
+_getActiveCall() async {
+  try {
+    print('loading active calls');
+
+    final List<dynamic>? list = await FlutterCallkitIncoming.activeCalls();
+    if (list?.isNotEmpty == true) {
+      final id = list![0]['id'];
+      print('id: $id -> ${list[0]}');
+    } else {
+      print('No Active calls');
+    }
+  } catch (e) {
+    print('error in getting active calls');
+  }
+}
+
+setupCallKit() async{
+  await _getActiveCall();
   FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
     if (event == null) {
-      print('onCall Event Null');
+      print('onCall Event Null');//
       return;
     }
     if (event.event == Event.ACTION_CALL_ENDED) {
@@ -269,6 +286,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     };
     final message = ChatMessage.createCmdSendMessage(
         targetId: callerIdFrom, action: content);
+    print('toID :$callerIdFrom  ${ChatClient.getInstance.currentUserId}');
     ChatClient.getInstance.chatManager.sendMessage(message);
   } catch (e) {}
 

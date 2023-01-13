@@ -39,68 +39,73 @@ class SubCategoriesScreen extends StatelessWidget {
   }
 
   _buildSubCategories(BuildContext context, List<SubCategory> subCategories) {
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: subCategories.length,
-      scrollDirection: Axis.vertical,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 5.0,
-          mainAxisSpacing: 1.w,
-          childAspectRatio: 1),
-      itemBuilder: (context, index) {
-        SubCategory item = subCategories[index];
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+      child: GridView.builder(
+        shrinkWrap: true,
+        itemCount: subCategories.length,
+        scrollDirection: Axis.vertical,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 5.0,
+            mainAxisSpacing: 1.w,
+            childAspectRatio: 1),
+        itemBuilder: (context, index) {
+          SubCategory item = subCategories[index];
 
-        return InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, RouteList.bLearnCoursesList,
-                arguments: item);
-          },
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: AppColors.chatInputBackground,
-                  borderRadius: BorderRadius.circular(15)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // SizedBox(width: 18.w),
-                  Container(
-                    decoration: BoxDecoration(
+          return InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.bLearnCoursesList,
+                  arguments: item);
+            },
+            child: Center(
+              child: Container(
+                height: 45.w,
+                width: 45.w,
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(
+                    color: AppColors.chatInputBackground,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // SizedBox(width: 18.w),
+                    ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(5.w)),
-                    ),
-                    width: 40.w,
-                    height: 40.w,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.w)),
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Image(
-                            image: getImageProvider(item.image ??
-                                'assets/images/dummy_profile.png')),
+                      child: SizedBox(
+                        height: 30.w,
+                        width: 40.w,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: Image(
+                              image: getImageProvider(item.image ??
+                                  'assets/images/dummy_profile.png')),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 1.w),
-                    child: Text(
-                      item.name ?? '',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: kFontFamily,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 9.sp,
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 1.w),
+                      child: Text(
+                        item.name ?? '',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontFamily: kFontFamily,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 9.sp,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';
 import '/controller/profile_providers.dart';
 import '/data/models/models.dart';
@@ -92,6 +93,9 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                             image: DecorationImage(
                                 image: getImageProvider(instructor.image ?? ''),
                                 fit: BoxFit.cover)),
+                      ),
+                      SizedBox(
+                        height: 2.w,
                       ),
                       Text(
                         instructor.name.toString(),
@@ -235,7 +239,13 @@ class TeacherProfileDetailScreen extends StatelessWidget {
         SizedBox(height: 2.h),
         InkWell(
           onTap: () {
-            Navigator.pushNamed(context, RouteList.teacherClassRequest);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RequestClassForm(
+                    instructor: instructor,
+                  ),
+                ));
           },
           child: Container(
             padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
@@ -261,7 +271,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        S.current.requestclass,
+                        S.current.request_class,
                         style: TextStyle(
                             fontSize: 12.sp,
                             fontFamily: kFontFamily,

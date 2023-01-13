@@ -6,13 +6,13 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../constants.dart';
 import '/data/models/call_message_body.dart';
 import '/data/services/fcm_api_service.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/ui/base_back_screen.dart';
-import '../constants/route_list.dart';
 import '../state.dart';
 import '../ui_core.dart';
 import '../utils.dart';
@@ -60,12 +60,17 @@ Future<ChatMessage?> makeAudioCall(
 
     Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
     return logCallEvent(
-      callBody.callId, user.name, contact.userId.toString(),
-      contact.name, CallType.audio, CallDirectionType.outgoing,
-      // fromFCM: user.fcmToken,
-      // toFCM: contact.fcmToken ?? '',
-      // image: contact.profileImage,
-    );
+        callBody.callId,
+        user.name,
+        contact.userId.toString(),
+        contact.name,
+        CallType.audio,
+        CallDirectionType.outgoing,
+        contact.fcmToken!
+        // fromFCM: user.fcmToken,
+        // toFCM: contact.fcmToken ?? '',
+        // image: contact.profileImage,
+        );
   } else {
     hideLoading(ref);
     return null;
@@ -117,16 +122,17 @@ Future<ChatMessage?> makeVideoCall(
     await Navigator.pushNamed(context, RouteList.bChatVideoCall,
         arguments: map);
     return logCallEvent(
-      callBody.callId,
-      user.name,
-      contact.userId.toString(),
-      contact.name,
-      CallType.video,
-      CallDirectionType.outgoing,
-      // fromFCM: user.fcmToken,
-      // toFCM: contact.fcmToken ?? '',
-      // image: contact.profileImage,
-    );
+        callBody.callId,
+        user.name,
+        contact.userId.toString(),
+        contact.name,
+        CallType.video,
+        CallDirectionType.outgoing,
+        contact.fcmToken!
+        // fromFCM: user.fcmToken,
+        // toFCM: contact.fcmToken ?? '',
+        // image: contact.profileImage,
+        );
   } else {
     hideLoading(ref);
   }
@@ -223,8 +229,14 @@ Future receiveCall(String authToken, String fcmToken, String callId,
 //   }
 // }
 
-Future<ChatMessage?> logCallEvent(String callId, String fromName, String toId,
-    String toName, CallType callType, CallDirectionType callDirectionType,
+Future<ChatMessage?> logCallEvent(
+    String callId,
+    String fromName,
+    String toId,
+    String toName,
+    CallType callType,
+    CallDirectionType callDirectionType,
+    String fcm,
     {
     //   required String fromFCM,
     // required String toFCM,
@@ -245,6 +257,28 @@ Future<ChatMessage?> logCallEvent(String callId, String fromName, String toId,
       status: status,
       ext: {},
     );
+
+    // try {
+    //   Map content = {
+    //     'type': NotiConstants.typeCall,
+    //     'action': NotiConstants.actionCallDecline,
+    //     'content': jsonEncode(callMessageBody.toJson()),
+    //     'from_id': ChatClient.getInstance.currentUserId,
+    //     'from_name': fromName,
+    //     'image': '',
+    //     'has_video': callType == CallType.video ? 'true' : 'false',
+    //     'caller_fcm': fcm,
+    //   };
+    //   final message = ChatMessage.createCmdSendMessage(
+    //       targetId: toId, action: jsonEncode(content));
+    //   print('toID :$toId  ${ChatClient.getInstance.currentUserId}');
+    //   message.attributes = {"em_force_notification": true};
+
+    //   ChatClient.getInstance.chatManager.sendMessage(message);
+    // } catch (e) {
+    //   print('Error in sending command message $e');
+    // }
+
     final message = ChatMessage.createCustomSendMessage(
         targetId: toId, event: jsonEncode(callMessageBody.toJson()));
     // final conv = await ChatClient.getInstance.chatManager.getConversation(toId);

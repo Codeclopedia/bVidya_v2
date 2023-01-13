@@ -1,5 +1,6 @@
 import 'dart:io';
 
+// import 'package:bvidya/core/utils/callkeep_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -7,7 +8,7 @@ import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
-import 'core/utils/call_utils.dart';
+import 'core/utils/callkit_utils.dart';
 import 'core/utils/notification_controller.dart';
 import 'firebase_options.dart';
 import 'app.dart';
@@ -44,7 +45,8 @@ Future<void> backgroundHandler(RemoteMessage message) async {
     );
   }
   // setupCallKeep();
-  setupCallKit();
+
+  // setupCallKit();
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];

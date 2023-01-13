@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import '../models/response/blearn/blearn_home_response.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -15,22 +16,40 @@ class BLearnApiService {
   }
 
   //Get
-  Future<HomeResponse> getHomeList(String token) async {
+  Future<BlearnHomeResponse> getHomeList(String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
-    try {
-      final response = await _dio.get(baseUrlApi + ApiList.lmsHome);
-      // print('response ${response.data} . ${response.realUri}');
-      if (response.statusCode == 200) {
-        return HomeResponse.fromJson(response.data);
-      } else {
-        return HomeResponse(
-            status: 'error',
-            message: '${response.statusCode}- ${response.statusMessage}');
-      }
-    } catch (e) {
-      return HomeResponse(status: 'error', message: 'Unknown error -$e');
+    final response = await _dio.get(baseUrlApi + ApiList.lmsHome);
+    print(response.data);
+    // print('response ${response.data} . ${response.realUri}');
+    if (response.statusCode == 200) {
+      return BlearnHomeResponse.fromJson(response.data);
+    } else {
+      print("inside 2");
+      return BlearnHomeResponse(
+        status: 'error',
+      );
     }
   }
+
+  // //Get
+  // Future<HomeResponse> getHomeList(String token) async {
+  //   _dio.options.headers['X-Auth-Token'] = token;
+  //   try {
+  //     final response = await _dio.get(baseUrlApi + ApiList.lmsHome);
+  //     // print('response ${response.data} . ${response.realUri}');
+  //     if (response.statusCode == 200) {
+  //       return HomeResponse.fromJson(response.data);
+  //     } else {
+  //       return HomeResponse(
+  //         status: 'error',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     return HomeResponse(
+  //       status: 'error',
+  //     );
+  //   }
+  // }
 
   Future<CategoriesResponse> getCategories(String token) async {
     _dio.options.headers["X-Auth-Token"] = token;
@@ -203,10 +222,10 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
-      print('$authToken $instructorId');
+      print('authtoken instructorId $authToken $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsFollowInstructor}$instructorId');
-      print('${jsonEncode(response.data)}');
+      print('response data ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return FollowInstructorResponse.fromJson(response.data);
       } else {
@@ -275,6 +294,4 @@ class BLearnApiService {
     } catch (e) {}
     return null;
   }
-
-  
 }

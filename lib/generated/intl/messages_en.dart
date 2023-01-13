@@ -516,6 +516,26 @@ class MessageLookup extends MessageLookupByLibrary {
         "report_title": MessageLookupByLibrary.simpleMessage("Report an issue"),
         "reposrtDesc": MessageLookupByLibrary.simpleMessage(
             "Report an issue you are facing in app"),
+        "request_class":
+            MessageLookupByLibrary.simpleMessage("Request a class"),
+        "request_class_description":
+            MessageLookupByLibrary.simpleMessage("Description"),
+        "request_class_description_hint":
+            MessageLookupByLibrary.simpleMessage("Add Description"),
+        "request_class_group": MessageLookupByLibrary.simpleMessage("group"),
+        "request_class_private":
+            MessageLookupByLibrary.simpleMessage("private"),
+        "request_class_request":
+            MessageLookupByLibrary.simpleMessage("Request"),
+        "request_class_title":
+            MessageLookupByLibrary.simpleMessage("Request Class"),
+        "request_class_topic": MessageLookupByLibrary.simpleMessage("Topic"),
+        "request_class_topic_hint": MessageLookupByLibrary.simpleMessage(
+            "Enter class topic or subject"),
+        "request_class_type":
+            MessageLookupByLibrary.simpleMessage("Class Type"),
+        "request_class_type_hint":
+            MessageLookupByLibrary.simpleMessage("Select"),
         "requestclass": MessageLookupByLibrary.simpleMessage("Request a class"),
         "resetDesc": MessageLookupByLibrary.simpleMessage(
             "Reset all notification setting"),

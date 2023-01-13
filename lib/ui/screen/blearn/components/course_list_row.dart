@@ -24,7 +24,7 @@ class CourseListRow extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(3.w),
               child: Image(
-                image: getImageProvider(course.image??''),
+                image: getImageProvider(course.image ?? ''),
                 height: 7.5.h,
                 width: 7.5.h,
                 fit: BoxFit.fill,
@@ -37,7 +37,7 @@ class CourseListRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    course.duration??'',
+                    "${course.duration} hours",
                     style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 8.sp,
@@ -46,8 +46,9 @@ class CourseListRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    course.name??'',
+                    course.name ?? '',
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         fontWeight: FontWeight.w600,

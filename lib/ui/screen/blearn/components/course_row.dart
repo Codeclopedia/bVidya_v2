@@ -28,14 +28,14 @@ class CourseRowItem extends StatelessWidget {
                 topRight: Radius.circular(2.3.h)),
             child: Image(
               image: getImageProvider(course.image ?? ''),
-              height: 20.w,
+              height: 30.w,
               width: double.infinity,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(2.w),
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 3.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -57,7 +57,7 @@ class CourseRowItem extends StatelessWidget {
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         fontSize: 7.sp,
-                        color: Colors.black),
+                        color: Color.fromARGB(184, 37, 37, 37)),
                   ),
                   // SizedBox(height: 0.5.h),
                   Row(

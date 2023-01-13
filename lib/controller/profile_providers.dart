@@ -32,7 +32,10 @@ final follwedInstructorsProvider =
 
 final isFollowedInstructor =
     FutureProvider.autoDispose.family<bool, String>((ref, id) async {
+  print("inside the loop");
   final list = await ref.read(profileRepositoryProvider).followedInstructor();
+  print("inside the loop");
+  print(list?.firstWhereOrNull((e) => e.instructorId?.toString() == id));
   return list?.firstWhereOrNull((e) => e.instructorId?.toString() == id) !=
       null;
 });

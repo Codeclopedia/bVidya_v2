@@ -1,3 +1,5 @@
+import 'package:bvidya/data/models/response/blearn/blearn_home_response.dart';
+
 import '../models/models.dart';
 import '../services/blearn_api_service.dart';
 
@@ -8,15 +10,26 @@ class BLearnRepository {
 
   BLearnRepository(this._api, this._authToken);
 
-  Future<HomeBody?> getHome() async {
+  Future<BlearnHomeBody?> getHome() async {
     final result = await _api.getHomeList(_authToken);
-    // print('result: ${result.status} ${result.body?.toJson()}');
+
+    print('result: ${result.status} ${result.body?.toJson()}');
     if (result.status == successfull && result.body != null) {
       return result.body;
     } else {
       return null;
     }
   }
+
+  // Future<HomeBody?> getHome() async {
+  //   final result = await _api.getHomeList(_authToken);
+  //   // print('result: ${result.status} ${result.body?.toJson()}');
+  //   if (result.status == successfull && result.body != null) {
+  //     return result.body;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   Future<Categories?> getCategories() async {
     final result = await _api.getCategories(_authToken);

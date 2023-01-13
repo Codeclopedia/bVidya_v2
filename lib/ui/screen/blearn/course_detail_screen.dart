@@ -22,7 +22,6 @@ final selectedIndexLessonProvider = StateProvider<int>((ref) => 0);
 
 final isModelSheetOpened = StateProvider.autoDispose<bool>((ref) => false);
 
-
 class CourseDetailScreen extends StatelessWidget {
   final Course course;
   const CourseDetailScreen({Key? key, required this.course}) : super(key: key);
@@ -138,13 +137,14 @@ class CourseDetailScreen extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return LessonListRow(
-          index: index + 1,
+          index: index,
           openIndex: selectedIndex,
           lesson: lessons[index],
           courseId: course.id!,
+          ref: ref,
           instructorId: course.userId!,
-          onExpand: (index) {
-            ref.read(selectedIndexLessonProvider.notifier).state = index;
+          onExpand: (index1) {
+            ref.read(selectedIndexLessonProvider.notifier).state = index1;
           },
           // ref: ref
         );

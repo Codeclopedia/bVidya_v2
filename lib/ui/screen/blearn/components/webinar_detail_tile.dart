@@ -1,9 +1,9 @@
-import '/data/models/response/blearn/live_classes_response.dart';
+import 'package:bvidya/data/models/response/blearn/blearn_home_response.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 
 class WebinarDetailTile extends StatelessWidget {
-  final LMSLiveClass broadcastData;
+  final UpcomingWebinar broadcastData;
   const WebinarDetailTile({super.key, required this.broadcastData});
 
   @override
@@ -41,24 +41,16 @@ class WebinarDetailTile extends StatelessWidget {
                 broadcastData.name.toString(),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10.sp),
+                style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600),
               ),
             ),
             SizedBox(
               height: 0.5.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  broadcastData.status.toString(),
-                  style: TextStyle(fontSize: 5.sp),
-                ),
-                Text("Starts in: ${broadcastData.startsAt}",
-                    style: TextStyle(
-                        fontSize: 5.sp, color: AppColors.primaryColor))
-              ],
-            ),
+            Text(
+                "Schduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",
+                style:
+                    TextStyle(fontSize: 6.sp, color: AppColors.primaryColor)),
             SizedBox(
               height: 2.w,
             ),

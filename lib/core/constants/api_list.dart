@@ -33,7 +33,7 @@ class ApiList {
   static const String fetchLiveRtm = 'live-chatroom/token/'; //GET
 
   //LMS
-  static const String lmsHome = 'home'; //GET
+  static const String lmsHome = 'v2/home'; //GET
   static const String lmsCategories = 'categories'; //GET
   static const String lmsSubCategories = 'subcategories/'; //GET
   static const String lmsCourses = 'courses'; //GET
@@ -44,7 +44,7 @@ class ApiList {
   static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET
   static const String lmsInstructorProfile = 'instructor/'; //GET
   static const String lmsFollowInstructor = 'follow/'; //GET
-  static const String lmsRecordVideoPlayback = 'watch-time/record';//POST
+  static const String lmsRecordVideoPlayback = 'watch-time/record'; //POST
 
   //Settings
   static const String reportProblem = 'report'; //POST

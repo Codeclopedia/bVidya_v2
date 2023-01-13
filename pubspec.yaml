@@ -23,7 +23,7 @@ dependencies:
   avatars: ^3.0.2
   awesome_notifications: ^0.7.2
   cached_network_image: ^3.2.2
-  callkeep: ^0.3.2
+  # callkeep: ^0.3.2
   carousel_slider: ^4.2.1
   chart_sparkline: ^1.0.12
   collection: ^1.16.0
@@ -33,11 +33,12 @@ dependencies:
   dotted_border: ^2.0.0+3
   easy_image_viewer: ^1.2.0
   file_picker: ^5.2.4
-  firebase_core: ^2.1.1
-  firebase_messaging: ^14.1.0
+  firebase_core: ^2.4.1
+  firebase_messaging: ^14.2.1
   flick_video_player: ^0.5.0
   flutter:
     sdk: flutter
+  # flutter_callkeep: ^0.3.0
   flutter_callkit_incoming: ^1.0.2+2
   flutter_easyloading: ^3.0.5
   flutter_hooks: ^0.18.5+1

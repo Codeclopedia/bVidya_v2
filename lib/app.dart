@@ -11,7 +11,8 @@ import 'core/constants.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
-import 'core/utils/call_utils.dart';
+// import 'core/utils/callkeep_utils.dart';
+import 'core/utils/callkit_utils.dart';
 import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
@@ -60,7 +61,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     initLoading();
     _firebase();
-    // NotificationController.startListeningNotificationEvents();
+    NotificationController.startListeningNotificationEvents();
     setupCallKit();
   }
 

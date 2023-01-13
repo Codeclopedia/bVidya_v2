@@ -1,4 +1,4 @@
-
+import 'package:bvidya/data/models/response/blearn/blearn_home_response.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import '/core/helpers/blive_helper.dart';
@@ -50,29 +50,33 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, HomeBody body, WidgetRef ref) {
+  Widget _buildContent(
+      BuildContext context, BlearnHomeBody body, WidgetRef ref) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 2.h),
-          _buildOngoing(body.popularCourses),
+          _buildOngoing(body.banners),
           _buildExploreCaption(context),
-          _buildCourses(body.featuredCategories),
+          _buildCourses(body.homeCategories),
           _buildRecommended(),
           _buildCriteriaCaption(),
-          _buildCriteriaList(body.popularCourses),
+          _buildCriteriaList(
+              trendingcourses: body.trendingCourses,
+              mostViewedcourses: body.mostViewedCourses,
+              topcourses: body.topCourses),
           _buildWebinarTitle(),
-          _buildWebinarContent(body.liveClasses, ref),
+          _buildWebinarContent(body.upcomingWebinars, ref),
           _buildLearnCaption(),
-          _buildLearnList(body.popularInstructors),
-          _buildComplementary(),
-          _buildComplementaryList(),
+          _buildLearnList(body.bestInstructors),
+          // _buildComplementary(),
+          // _buildComplementaryList(),
           _buildEnroll(context),
           _buildRecentCaption(),
-          _buildRecentList(body.featuredCourses),
+          _buildRecentList(body.recentlyAddedCourses),
           _buildTestimonialCaption(),
-          _buildTestimonialList(body.popularInstructors),
+          _buildTestimonialList(body.bestInstructors),
           SizedBox(height: 2.h),
         ],
       ),
@@ -94,7 +98,7 @@ class BLearnHomeScreen extends StatelessWidget {
   }
 
   Widget _buildWebinarContent(
-      List<LMSLiveClass>? broadcastData, WidgetRef ref) {
+      List<UpcomingWebinar?>? broadcastData, WidgetRef ref) {
     if (broadcastData == null) {
       return const SizedBox.shrink();
     }
@@ -110,11 +114,11 @@ class BLearnHomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () {
-                    joinBroadcast(
-                        context, ref, broadcastData[index].streamId ?? '');
+                    joinBroadcast(context, ref,
+                        broadcastData[index]?.id.toString() ?? "");
                   },
                   child:
-                      WebinarDetailTile(broadcastData: broadcastData[index]));
+                      WebinarDetailTile(broadcastData: broadcastData[index]!));
             },
           ),
         ));
@@ -127,11 +131,11 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOngoing(List<Course>? onGoingCoursesList) {
+  Widget _buildOngoing(List<BlearnBanner?>? bannerlist) {
     return CarouselSlider.builder(
-        itemCount: 5,
+        itemCount: bannerlist?.length,
         options: CarouselOptions(
-          aspectRatio: 16 / 7,
+          aspectRatio: 16 / 8,
           viewportFraction: 1,
           initialPage: 0,
           enableInfiniteScroll: true,
@@ -141,26 +145,37 @@ class BLearnHomeScreen extends StatelessWidget {
           autoPlayAnimationDuration: const Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           enlargeCenterPage: true,
-          enlargeFactor: 0.3,
+          enlargeFactor: 0,
           onPageChanged: (index, reason) {},
           scrollDirection: Axis.horizontal,
         ),
         itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
+          final bannerData = bannerlist?[itemIndex];
           return Container(
-            height: 42.w,
+            height: 44.w,
             width: double.infinity,
-            margin: EdgeInsets.only(left: 6.w, right: 6.w),
+            margin:
+                EdgeInsets.only(left: 6.w, right: 6.w, top: 2.w, bottom: 2.w),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5.w)),
-            ),
+                borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(45, 158, 158, 158),
+                    offset: Offset(
+                      3.0,
+                      3.0,
+                    ),
+                    blurRadius: 5.0,
+                    spreadRadius: 2.0,
+                  ),
+                ]),
             child: Stack(
               children: [
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.w),
                       image: DecorationImage(
-                          image: getImageProvider(
-                              onGoingCoursesList?[itemIndex].image ?? ""),
+                          image: getImageProvider(bannerData?.image ?? ""),
                           fit: BoxFit.cover)),
                 ),
                 Container(
@@ -168,7 +183,8 @@ class BLearnHomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       gradient: LinearGradient(colors: [
                     Colors.white,
-                    Colors.white.withOpacity(0.5),
+                    Colors.white.withOpacity(0.8),
+                    Colors.white.withOpacity(0.3),
                     Colors.transparent
                   ])),
                 ),
@@ -176,34 +192,13 @@ class BLearnHomeScreen extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.w),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Ongoing',
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                          color: Colors.black,
-                          fontFamily: kFontFamily,
-                        ),
+                      Text(bannerData?.name ?? ""),
+                      SizedBox(
+                        height: 2.w,
                       ),
-                      SizedBox(height: 0.4.h),
-                      Text(
-                        'Photoshop Beginners:\nZero to Hero',
-                        style: TextStyle(
-                            fontFamily: kFontFamily,
-                            fontSize: 11.sp,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w800),
-                      ),
-                      Text(
-                        '15/25 Lessons',
-                        style: TextStyle(
-                            fontFamily: kFontFamily,
-                            fontSize: 8.sp,
-                            color: Colors.black),
-                      ),
-                      SizedBox(height: 2.w),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           textStyle: TextStyle(
@@ -217,9 +212,13 @@ class BLearnHomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4.w)),
                           backgroundColor: const Color(0xFF65427A),
                         ),
-                        onPressed: () {},
-                        child: const Text(
-                          'Continue',
+                        onPressed: () => Navigator.pushNamed(
+                            context, RouteList.webview,
+                            arguments: {
+                              'url': bannerData?.actionWeb ?? "",
+                            }),
+                        child: Text(
+                          bannerData?.actionApp ?? "",
                         ),
                       ),
                     ],
@@ -270,12 +269,12 @@ class BLearnHomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildCourses(List<FeaturedCategories>? featuredCategories) {
+  Widget _buildCourses(List<HomeCategory?>? featuredCategories) {
     if (featuredCategories == null || featuredCategories.isEmpty) {
       return const SizedBox.shrink();
     }
     return Container(
-      height: 30.h,
+      height: 70.w,
       color: Colors.white,
       child: ListView.builder(
         padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
@@ -283,60 +282,81 @@ class BLearnHomeScreen extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           final category = featuredCategories[index];
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.all(Radius.circular(4.w)),
-            ),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
             child: Container(
-              padding: EdgeInsets.all(3.w),
-              width: 20.h,
-              height: 35.h,
+              width: 50.w,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: getImageProvider(category.image ?? ''),
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                  borderRadius: BorderRadius.circular(5.w),
+                  color: Colors.grey[50]),
+              child: Stack(
                 children: [
                   Container(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      category.name ?? '',
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.white,
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.bold),
+                      decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.w),
+                    image: DecorationImage(
+                      image: getImageProvider(category?.image ?? ''),
+                      fit: BoxFit.cover,
                     ),
+                  )),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.w),
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              AppColors.primaryColor.withOpacity(0.5)
+                            ])),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(
-                        context, RouteList.bLearnSubCategories,
-                        arguments: Category(
-                            id: category.id,
-                            name: category.name,
-                            image: category.image)),
-                    child: Container(
-                      width: 9.w,
-                      height: 9.w,
-                      padding: EdgeInsets.all(3.w),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFFDDDDDD),
-                            offset: Offset(0, 0),
-                            blurRadius: 1,
-                          )
-                        ],
-                      ),
-                      child: getSvgIcon('icon_next.svg'),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            category?.name ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.white,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                              context, RouteList.bLearnSubCategories,
+                              arguments: Category(
+                                  id: category?.id,
+                                  name: category?.name,
+                                  image: category?.image)),
+                          child: Container(
+                            width: 9.w,
+                            height: 9.w,
+                            padding: EdgeInsets.all(3.w),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xFFDDDDDD),
+                                  offset: Offset(0, 0),
+                                  blurRadius: 1,
+                                )
+                              ],
+                            ),
+                            child: getSvgIcon('icon_next.svg'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -409,34 +429,48 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCriteriaList(List<Course>? courses) {
-    if (courses == null || courses.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildCriteriaList({
+    required List<Course?>? trendingcourses,
+    required List<Course?>? mostViewedcourses,
+    required List<Course?>? topcourses,
+  }) {
+    List<Course?>? courses = [];
     return Consumer(builder: (context, ref, child) {
       final selected = ref.watch(recommenedSelectedProvider);
-      courses.sort(
-        (a, b) {
-          if (selected == CourseType.trending) {
-            return (a.numberOfLesson ?? '').compareTo(b.numberOfLesson ?? '');
-          } else if (selected == CourseType.mostViewed) {
-            return (b.duration ?? '').compareTo(
-                a.duration ?? ''); //TODO convert into minutes and compare
-          } else {
-            return (b.ratingCount ?? 0).compareTo(a.ratingCount ?? 0);
+      switch (selected) {
+        case CourseType.trending:
+          {
+            courses = trendingcourses;
           }
-        },
-      );
+          break;
+
+        case CourseType.mostViewed:
+          {
+            //statements;
+            courses = mostViewedcourses;
+          }
+          break;
+
+        default:
+          {
+            courses = topcourses;
+          }
+          break;
+      }
+      if (courses == null || courses!.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
       return Container(
         color: Colors.white,
         child: ListView.builder(
             padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
-            itemCount: 5,
+            itemCount: courses?.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
             itemBuilder: (BuildContext context, int index) {
-              Course course = courses[index];
+              Course course = courses?[index] ?? Course();
               return InkWell(
                 onTap: () => Navigator.pushNamed(
                     context, RouteList.bLearnCourseDetail,
@@ -484,7 +518,7 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLearnList(List<Instructor>? instructors) {
+  Widget _buildLearnList(List<Instructor?>? instructors) {
     if (instructors == null || instructors.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -498,7 +532,7 @@ class BLearnHomeScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            Instructor instructor = instructors[index];
+            Instructor instructor = instructors[index]!;
             return Container(
               margin: EdgeInsets.only(left: 4.w),
               child: GestureDetector(
@@ -563,7 +597,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 1.5.w),
-      height: 50.w,
+      height: 60.w,
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.all(2.w),
@@ -600,7 +634,7 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTestimonialList(List<Instructor>? instructors) {
+  Widget _buildTestimonialList(List<Instructor?>? instructors) {
     if (instructors == null || instructors.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -630,7 +664,7 @@ class BLearnHomeScreen extends StatelessWidget {
                 Row(
                   children: [
                     getCicleAvatar(
-                        instructor.name ?? 'AA', instructor.image ?? '',
+                        instructor?.name ?? 'AA', instructor?.image ?? '',
                         radius: 8.w),
                     SizedBox(width: 4.w),
                     Expanded(
@@ -639,7 +673,7 @@ class BLearnHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            instructor.name ?? '',
+                            instructor?.name ?? '',
                             style: TextStyle(
                                 fontSize: 11.sp,
                                 fontFamily: kFontFamily,
@@ -654,7 +688,7 @@ class BLearnHomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.w),
                 Text(
-                  instructor.specialization ?? '',
+                  instructor?.specialization ?? '',
                   maxLines: 4,
                   style: TextStyle(
                     fontFamily: kFontFamily,

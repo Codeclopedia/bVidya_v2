@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -47,7 +46,6 @@ class NotificationController {
         debug: true);
 
     // Get initial notification action is optional
-    // await startListeningNotificationEvents();
   }
 
   static Future<void> startListeningNotificationEvents() async {
@@ -447,10 +445,11 @@ class NotificationController {
   static Future<bool> handleChatNotificationAction(
       Map<String, String?> message, BuildContext context, bool replace) async {
     String? type = message['type'];
-    String? from = message['from'];
+    
 
     try {
       if (type == 'chat') {
+        String? from = message['from'];
         final model = await getConversationModel(from.toString());
         if (model != null) {
           if (replace) {
@@ -469,6 +468,7 @@ class NotificationController {
           return true;
         }
       } else if (type == 'group_chat') {
+        String? from = message['from'];
         final model = await getGroupConversationModel(from.toString());
         if (model != null) {
           if (replace) {

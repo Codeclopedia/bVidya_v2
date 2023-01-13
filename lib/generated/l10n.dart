@@ -2600,6 +2600,116 @@ class S {
     );
   }
 
+  /// `Request Class`
+  String get request_class_title {
+    return Intl.message(
+      'Request Class',
+      name: 'request_class_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request a class`
+  String get request_class {
+    return Intl.message(
+      'Request a class',
+      name: 'request_class',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Topic`
+  String get request_class_topic {
+    return Intl.message(
+      'Topic',
+      name: 'request_class_topic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter class topic or subject`
+  String get request_class_topic_hint {
+    return Intl.message(
+      'Enter class topic or subject',
+      name: 'request_class_topic_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Type`
+  String get request_class_type {
+    return Intl.message(
+      'Class Type',
+      name: 'request_class_type',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select`
+  String get request_class_type_hint {
+    return Intl.message(
+      'Select',
+      name: 'request_class_type_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `group`
+  String get request_class_group {
+    return Intl.message(
+      'group',
+      name: 'request_class_group',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `private`
+  String get request_class_private {
+    return Intl.message(
+      'private',
+      name: 'request_class_private',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get request_class_description {
+    return Intl.message(
+      'Description',
+      name: 'request_class_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Description`
+  String get request_class_description_hint {
+    return Intl.message(
+      'Add Description',
+      name: 'request_class_description_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request`
+  String get request_class_request {
+    return Intl.message(
+      'Request',
+      name: 'request_class_request',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Account`
   String get Account {
     return Intl.message(

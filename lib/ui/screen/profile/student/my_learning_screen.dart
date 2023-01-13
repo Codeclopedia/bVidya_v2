@@ -185,15 +185,18 @@ class MyLearningScreen extends ConsumerWidget {
   Widget _buildFollowed({required WidgetRef ref}) {
     return ref.watch(follwedInstructorsProvider).when(
           data: (data) {
+            if (data == null) {
+              return SizedBox.shrink();
+            }
             return Container(
               color: Colors.white,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: data?.length,
+                itemCount: data.length,
                 padding: EdgeInsets.only(top: 1.h),
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
-                  return _buldFollwedRow(data![index], context);
+                  return _buldFollwedRow(data[index], context);
                 },
               ),
             );
