@@ -1,9 +1,8 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
-import 'package:bvidya/data/repository/bchat_respository.dart';
+
+import '/data/repository/bchat_respository.dart';
 import '/data/services/bchat_api_service.dart';
 
-import '../../bchat_providers.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
@@ -35,11 +34,12 @@ class ChatConversationChangeProvider extends ChangeNotifier {
 
   bool _initialized = false;
 
-  Future init(BChatRepository reader) async {
-    if (_initialized && _contactsMap.isNotEmpty) {
+  Future setup(BChatRepository reader, User user) async {
+    if (_initialized) {
       return;
     }
-    await BChatSDKController.instance.init();
+    await BChatSDKController.instance.initChatSDK(user);
+    
     _initialized = true;
     _chatConversationMap.clear();
     try {
@@ -48,10 +48,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       final User? loginUser = await getMeAsUser();
       if (loginUser == null) {
         _isLoading = false;
-        try {
-          await Future.delayed(const Duration(seconds: 2));
-          notifyListeners();
-        } catch (e) {}
         return;
       }
 
@@ -81,7 +77,56 @@ class ChatConversationChangeProvider extends ChangeNotifier {
             contact: contact,
             conversation: conv,
             lastMessage: lastMessage,
-            // isOnline: null,
+          );
+        } catch (e) {
+          print('error $e');
+          continue;
+        }
+        _chatConversationMap.addAll({model.id: model});
+        // conversations.add(model);
+      }
+    } catch (e) {
+      print('error $e');
+    }
+    _isLoading = false;
+  }
+
+  Future init(BChatRepository reader) async {
+    if (_initialized && _contactsMap.isNotEmpty) {
+      return;
+    }
+    await BChatSDKController.instance.init();
+    _initialized = true;
+    _chatConversationMap.clear();
+    try {
+      _isLoading = true;
+
+      List<Contacts> contacts = [];
+      final ids = await BChatContactManager.getContacts();
+      if (ids.isNotEmpty) {
+        // BChatRepository reader = ref.read(bChatProvider);
+        List<Contact> friends = await reader.getContactsByIds(ids) ?? [];
+        contacts = friends
+            .map((e) => Contacts.fromContact(e, ContactStatus.friend))
+            .toList();
+      }
+
+      for (Contacts contact in contacts) {
+        _contactsMap.addAll({contact.userId: contact});
+        final ConversationModel model;
+        try {
+          final conv = await ChatClient.getInstance.chatManager.getConversation(
+              contact.userId.toString(),
+              type: ChatConversationType.Chat);
+          if (conv == null) continue;
+          final lastMessage = await conv.latestMessage();
+          if (lastMessage == null) continue;
+          model = ConversationModel(
+            id: contact.userId.toString(),
+            badgeCount: await conv.unreadCount(),
+            contact: contact,
+            conversation: conv,
+            lastMessage: lastMessage,
           );
         } catch (e) {
           print('error $e');
@@ -120,7 +165,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           contact: model.contact,
           conversation: conv,
           lastMessage: lastMessage,
-          // isOnline: null,
         );
         _chatConversationMap.update(convId, (v) => newModel,
             ifAbsent: () => newModel);
@@ -171,7 +215,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       } else {
         return null;
       }
-    } catch (e) {}
+    } catch (e) {
+      print('Error while loadin chats $e');
+    }
     return null;
   }
 
@@ -253,17 +299,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           );
           _chatConversationMap.addAll({id: newModel});
         }
-        // ref
-        //     .read(chatConversationProvider)
-        //     .addOrUpdateConversation(model);
-        // final newModel = ConversationModel(
-        //   id: id,
-        //   badgeCount: (await model.conversation?.unreadCount()) ?? 0,
-        //   contact: model.contact,
-        //   conversation: model.conversation,
-        //   lastMessage: lastMessage,
-        //   // isOnline: null,
-        // );
       }
     } catch (e) {
       return;
@@ -293,5 +328,4 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       updateUi();
     }
   }
-
 }

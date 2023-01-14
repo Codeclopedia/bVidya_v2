@@ -16,7 +16,7 @@ import '../ui_core.dart';
 import 'chat_utils.dart';
 
 class NotificationController {
-  // static ReceivedAction? initialAction;
+  static ReceivedAction? initialAction;
 
   ///  *********************************************
   ///     INITIALIZATIONS
@@ -44,6 +44,10 @@ class NotificationController {
           ),
         ],
         debug: true);
+
+         initialAction = await AwesomeNotifications()
+        .getInitialNotificationAction(removeFromActionEvents: false);
+    
 
     // Get initial notification action is optional
   }

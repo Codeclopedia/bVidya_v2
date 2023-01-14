@@ -3,10 +3,14 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/state.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
+import '../../controller/providers/bchat/call_list_provider.dart';
+import '../sdk_helpers/bchat_call_manager.dart';
 import '/core/helpers/extensions.dart';
 import '/app.dart';
 import '/data/models/response/auth/login_response.dart';
@@ -33,11 +37,11 @@ _getActiveCall() async {
   }
 }
 
-setupCallKit() async{
+setupCallKit() async {
   await _getActiveCall();
   FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
     if (event == null) {
-      print('onCall Event Null');//
+      print('onCall Event Null'); //
       return;
     }
     if (event.event == Event.ACTION_CALL_ENDED) {
@@ -78,9 +82,9 @@ setupCallKit() async{
 }
 
 Future<void> handlShowIncomingCallNotification(
-  RemoteMessage remoteMessage,
-  // FlutterCallkeep callKeep,
-) async {
+    RemoteMessage remoteMessage, {WidgetRef? ref}
+    // FlutterCallkeep callKeep,
+    ) async {
   // String uuid = remoteMessage.payload()["call_id"] as String;
   CallBody? body = remoteMessage.payload();
   if (body == null) {
@@ -93,7 +97,26 @@ Future<void> handlShowIncomingCallNotification(
   String image = remoteMessage.data['image'];
   bool hasVideo = remoteMessage.data['has_video'] == 'true';
   // makeFakeCallInComing();
-  _showIncomingCallScreen(body, fromName, fromId, fromFCM, image, hasVideo);
+  await _showIncomingCallScreen(
+      body, fromName, fromId, fromFCM, image, hasVideo);
+  try {
+    final user = await getMeAsUser();
+    if (user == null||ref==null) return;
+
+    final callMessageBody = CallMessegeBody(
+      callId: body.callId,
+      callType: hasVideo ? CallType.video : CallType.audio,
+      duration: 0,
+      fromName: fromName,
+      image: image,
+      toName: user.name,
+      status: CallStatus.ongoing,
+      ext: {},
+    );
+    CallListModel model = CallListModel(fromName, image, true,
+        DateTime.now().millisecondsSinceEpoch, callMessageBody);
+    ref.read(callListProvider.notifier).addCall(model);
+  } catch (e) {}
 }
 
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {

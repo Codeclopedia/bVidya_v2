@@ -32,6 +32,8 @@ class RouteList {
   static const String contactInfo = '/contact-info';
   static const String searchContact = '/search-contact';
   static const String groups = '/groups';
+  static const String groupCalls = '/groups-calls';
+
   static const String searchGroups = '/search-groups';
   static const String newGroupContacts = '/new-group-contacts';
   static const String createNewGroup = '/create-new-group-contacts';

@@ -1,16 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '/controller/providers/bchat/call_list_provider.dart';
+import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/utils/chat_utils.dart';
 import '/core/utils/notification_controller.dart';
-import '/core/sdk_helpers/bchat_sdk_controller.dart';
-import '/controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
+
+import '/controller/providers/user_auth_provider.dart';
+import '/controller/bchat_providers.dart';
+import '/controller/providers/bchat/chat_conversation_provider.dart';
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -23,8 +28,7 @@ class SplashScreen extends ConsumerWidget {
       });
       return;
     }
-    final initialAction = await AwesomeNotifications()
-        .getInitialNotificationAction(removeFromActionEvents: false);
+    final initialAction = NotificationController.initialAction;
     if (initialAction != null &&
         initialAction.payload != null &&
         initialAction.channelKey == 'chat_channel') {
@@ -47,10 +51,18 @@ class SplashScreen extends ConsumerWidget {
       authLoadProvider,
       (previous, next) async {
         if (next.value != null) {
-          ref.read(userAuthChangeProvider).loadUser();
+          await ref.read(userAuthChangeProvider).loadUser();
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
-          await BChatSDKController.instance.initChatSDK(next.value!);
+          // await BChatSDKController.instance.initChatSDK(next.value!);
+
+          await ref
+              .read(chatConversationProvider.notifier)
+              .setup(ref.read(bChatProvider), next.value!);
+
+          await ref.read(groupConversationProvider.notifier).setup();
+          await ref.read(callListProvider.notifier).setup();
+
           await _handleFirebaseMessages(context, ref, next.value);
         } else {
           Future.delayed(const Duration(seconds: 2), () {

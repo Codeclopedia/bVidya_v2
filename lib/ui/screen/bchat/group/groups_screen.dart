@@ -292,7 +292,7 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
   Widget _recentCallButton(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, RouteList.recentCalls);
+        Navigator.pushNamed(context, RouteList.groupCalls);
       },
       child: Row(
         children: [

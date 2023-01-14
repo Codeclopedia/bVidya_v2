@@ -128,8 +128,12 @@ class ChatMessageBubble extends StatelessWidget {
         {
           ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
           // print(body.event);
-          final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-          return _callBody(callBody);
+          try {
+            final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+            return _callBody(callBody);
+          } catch (e) {
+            break;
+          }
         }
       default:
       // return const SizedBox.shrink();

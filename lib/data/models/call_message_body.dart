@@ -7,9 +7,10 @@ class CallMessegeBody {
   final String callId;
   final String fromName;
   final String toName;
+  
   // final String fromFCM;
   // final String toFCM;
-  // final String image;
+  final String? image;
   final CallStatus status;
   final int duration;
   // final CallBody callBody;
@@ -23,14 +24,17 @@ class CallMessegeBody {
     required this.toName,
     // required this.fromFCM,
     // required this.toFCM,
-    // required this.image,
+     
     required this.status,
     required this.duration,
     // required this.callDirectionType,
     required this.callType,
     // required this.callBody,
     required this.ext,
+    required this.image,
   });
+
+  // CallMessegeBody.fromCustom(ChatCustomMessageBody body):
 
   CallMessegeBody.fromJson(Map<String, dynamic> json)
       : callId = json['call_id'],
@@ -38,7 +42,7 @@ class CallMessegeBody {
         toName = json['to_name'],
         // fromFCM = json['from_fcm'],
         // toFCM = json['to_fcm'],
-        // image = json['image'],
+        image = json['image'],
         // callBody = CallBody.fromJson(jsonDecode(json['call_body'])),
         duration = json['duration'] ?? 0,
         status = CallStatus.values[json['status'] as int],
@@ -54,7 +58,7 @@ class CallMessegeBody {
     data['to_name'] = toName;
     // data['from_fcm'] = fromFCM;
     // data['to_fcm'] = toFCM;
-    // data['image'] = image;
+    data['image'] = image;
     // data['call_body'] = jsonEncode(callBody.toJson());
     data['duration'] = duration;
     data['status'] = status.index;

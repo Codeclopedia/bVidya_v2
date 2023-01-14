@@ -1,5 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '/ui/screen/bchat/group/group_calls_screen.dart';
 import '/data/models/models.dart';
 import 'constants/route_list.dart';
 import 'helpers/call_helper.dart';
@@ -106,7 +107,9 @@ class Routes {
         } else {
           screen = _parameterMissing();
         }
-
+        break;
+      case RouteList.groupCalls:
+        screen = const GroupRecentCallScreen();
         break;
       case RouteList.chatScreen:
         if (settings.arguments is ConversationModel) {

@@ -1,16 +1,16 @@
+import 'package:bvidya/ui/screen/blearn/components/common.dart';
 import 'package:intl/intl.dart';
 
-import '../blearn/components/common.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/state.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/sdk_helpers/bchat_call_manager.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
-import '../../widgets.dart';
+import '../../../widgets.dart';
 
-class RecentCallScreen extends StatelessWidget {
-  const RecentCallScreen({Key? key}) : super(key: key);
+class GroupRecentCallScreen extends StatelessWidget {
+  const GroupRecentCallScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class RecentCallScreen extends StatelessWidget {
           ),
           Expanded(
             child: Consumer(builder: (context, ref, child) {
-              final callList = ref.watch(callListProvider);
+              final callList = ref.watch(groupCallListProvider);
               if (callList.isEmpty) {
                 return buildEmptyPlaceHolder('No Calls');
               }

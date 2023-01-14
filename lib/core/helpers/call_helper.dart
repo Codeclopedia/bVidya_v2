@@ -3,10 +3,13 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../constants.dart';
+import '../sdk_helpers/bchat_call_manager.dart';
+import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/call_message_body.dart';
 import '/data/services/fcm_api_service.dart';
 import '/controller/bchat_providers.dart';
@@ -60,13 +63,15 @@ Future<ChatMessage?> makeAudioCall(
 
     Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
     return logCallEvent(
+        ref,
         callBody.callId,
         user.name,
         contact.userId.toString(),
         contact.name,
         CallType.audio,
         CallDirectionType.outgoing,
-        contact.fcmToken!
+        contact.fcmToken!,
+        contact.profileImage
         // fromFCM: user.fcmToken,
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
@@ -122,13 +127,15 @@ Future<ChatMessage?> makeVideoCall(
     await Navigator.pushNamed(context, RouteList.bChatVideoCall,
         arguments: map);
     return logCallEvent(
+        ref,
         callBody.callId,
         user.name,
         contact.userId.toString(),
         contact.name,
         CallType.video,
         CallDirectionType.outgoing,
-        contact.fcmToken!
+        contact.fcmToken!,
+        contact.profileImage
         // fromFCM: user.fcmToken,
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
@@ -230,64 +237,40 @@ Future receiveCall(String authToken, String fcmToken, String callId,
 // }
 
 Future<ChatMessage?> logCallEvent(
-    String callId,
-    String fromName,
-    String toId,
-    String toName,
-    CallType callType,
-    CallDirectionType callDirectionType,
-    String fcm,
-    {
-    //   required String fromFCM,
-    // required String toFCM,
-    // required String image,
-    int duration = 0,
-    CallStatus status = CallStatus.ongoing}) async {
+  WidgetRef ref,
+  String callId,
+  String fromName,
+  String toId,
+  String toName,
+  CallType callType,
+  CallDirectionType callDirectionType,
+  String image,
+  String fcm, {
+  int duration = 0,
+  CallStatus status = CallStatus.ongoing,
+}) async {
   try {
     final callMessageBody = CallMessegeBody(
       callId: callId,
       callType: callType,
-      // callDirectionType: callDirectionType,
       duration: duration,
       fromName: fromName,
-      // fromFCM: fromFCM,
-      // toFCM: toFCM,
-      // image: image,
+      image: image,
       toName: toName,
       status: status,
       ext: {},
     );
 
-    // try {
-    //   Map content = {
-    //     'type': NotiConstants.typeCall,
-    //     'action': NotiConstants.actionCallDecline,
-    //     'content': jsonEncode(callMessageBody.toJson()),
-    //     'from_id': ChatClient.getInstance.currentUserId,
-    //     'from_name': fromName,
-    //     'image': '',
-    //     'has_video': callType == CallType.video ? 'true' : 'false',
-    //     'caller_fcm': fcm,
-    //   };
-    //   final message = ChatMessage.createCmdSendMessage(
-    //       targetId: toId, action: jsonEncode(content));
-    //   print('toID :$toId  ${ChatClient.getInstance.currentUserId}');
-    //   message.attributes = {"em_force_notification": true};
-
-    //   ChatClient.getInstance.chatManager.sendMessage(message);
-    // } catch (e) {
-    //   print('Error in sending command message $e');
-    // }
-
     final message = ChatMessage.createCustomSendMessage(
         targetId: toId, event: jsonEncode(callMessageBody.toJson()));
-    // final conv = await ChatClient.getInstance.chatManager.getConversation(toId);
-    // if(conv!=null){
-    // }
+
     message.attributes = {"em_force_notification": false};
 
-    return await ChatClient.getInstance.chatManager.sendMessage(message);
-
+    final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
+    CallListModel model = CallListModel(callMessageBody.fromName,
+        callMessageBody.image ?? '', true, msg.serverTime, callMessageBody);
+    ref.read(callListProvider.notifier).addCall(model);
+    return msg;
 // ref.read(chatConversationProvider).updateConversation(convId)
   } catch (e) {
     print('Error in logging call Event');

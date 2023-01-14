@@ -25,9 +25,14 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   bool _initialized = false;
 
-  // stop() {
-  //   _isLoading = true;
-  // }
+  Future setup() async{
+     _groupConversationMap.clear();
+    final list = await BchatGroupManager.loadGroupConversationsList();
+    for (var item in list) {
+      _groupConversationMap.addAll({item.id: item});
+    }
+    _isLoading = false;
+  }
 
   Future init() async {
     if (_initialized) {

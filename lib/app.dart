@@ -3,12 +3,14 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/state.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '/core/utils/chat_utils.dart';
 import 'core/constants.dart';
 import 'core/routes.dart';
+import 'core/sdk_helpers/bchat_call_manager.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 // import 'core/utils/callkeep_utils.dart';
@@ -47,14 +49,15 @@ initLoading() {
     ..dismissOnTap = false;
 }
 
-class BVidyaApp extends StatefulWidget {
+class BVidyaApp extends ConsumerStatefulWidget {
   const BVidyaApp({Key? key}) : super(key: key);
 
   @override
-  State<BVidyaApp> createState() => _BVidyaAppState();
+  ConsumerState<BVidyaApp> createState() => _BVidyaAppState();
 }
 
-class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
+class _BVidyaAppState extends ConsumerState<BVidyaApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -104,7 +107,7 @@ class _BVidyaAppState extends State<BVidyaApp> with WidgetsBindingObserver {
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
-          handlShowIncomingCallNotification(message);
+          handlShowIncomingCallNotification(message, ref: ref);
         } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
         }

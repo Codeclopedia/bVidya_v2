@@ -116,7 +116,16 @@ Future handleRemoteMessage(RemoteMessage message, BuildContext context,
           return;
         }
       } else if (type == 'group_chat') {
-        final model = await getGroupConversationModel(from.toString());
+        dynamic gId = message.data['g'];
+        print('From $gId');
+        if (gId == null) {
+          if (fallbackScreen.isNotEmpty) {
+            Navigator.pushReplacementNamed(context, fallbackScreen);
+          }
+          return;
+        }
+
+        final model = await getGroupConversationModel(gId.toString());
         if (ref != null) {
           hideLoading(ref);
         }
@@ -128,9 +137,7 @@ Future handleRemoteMessage(RemoteMessage message, BuildContext context,
         }
       }
       if (fallbackScreen.isNotEmpty) {
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.pushReplacementNamed(context, fallbackScreen);
-        });
+        Navigator.pushReplacementNamed(context, fallbackScreen);
       }
     }
   } catch (e) {
@@ -194,9 +201,7 @@ Future<GroupConversationModel?> getGroupConversationModel(
   }
 }
 
-openGroupChat(){
-  
-}
+openGroupChat() {}
 
 openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
     {bool sendInviateMessage = false, String message = ''}) async {
