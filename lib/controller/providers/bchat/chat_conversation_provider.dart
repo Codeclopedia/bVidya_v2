@@ -91,6 +91,53 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     _isLoading = false;
   }
 
+  Future setupWithoutInitSDK(BChatRepository reader,User loginUser)async{
+
+    _initialized = true;
+    _chatConversationMap.clear();
+    try {
+      _isLoading = true;
+      
+      List<Contacts> contacts = [];
+      final ids = await BChatContactManager.getContacts();
+      if (ids.isNotEmpty) {
+        // BChatRepository reader = ref.read(bChatProvider);
+        List<Contact> friends = await reader.getContactsByIds(ids) ?? [];
+        contacts = friends
+            .map((e) => Contacts.fromContact(e, ContactStatus.friend))
+            .toList();
+      }
+
+      for (Contacts contact in contacts) {
+        _contactsMap.addAll({contact.userId: contact});
+        final ConversationModel model;
+        try {
+          final conv = await ChatClient.getInstance.chatManager.getConversation(
+              contact.userId.toString(),
+              type: ChatConversationType.Chat);
+          if (conv == null) continue;
+          final lastMessage = await conv.latestMessage();
+          if (lastMessage == null) continue;
+          model = ConversationModel(
+            id: contact.userId.toString(),
+            badgeCount: await conv.unreadCount(),
+            contact: contact,
+            conversation: conv,
+            lastMessage: lastMessage,
+          );
+        } catch (e) {
+          print('error $e');
+          continue;
+        }
+        _chatConversationMap.addAll({model.id: model});
+        // conversations.add(model);
+      }
+    } catch (e) {
+      print('error $e');
+    }
+    _isLoading = false;
+  }
+
   Future init(BChatRepository reader) async {
     if (_initialized && _contactsMap.isNotEmpty) {
       return;

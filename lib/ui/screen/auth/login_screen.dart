@@ -2,6 +2,7 @@
 
 import 'package:flutter/gestures.dart';
 
+import '../../../core/sdk_helpers/common.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/user_auth_provider.dart';
 import '/core/constants.dart';
@@ -210,19 +211,15 @@ class LoginScreen extends HookWidget {
     final error = await ref.read(loginRepositoryProvider).login(email, pass);
 
     if (error == null) {
+      final error2 = await postLoginSetup(ref);
       // final user = await getMeAsUser();
-      final user = await ref.read(userAuthChangeProvider).loadUser();
-      if (user == null) {
+      // final user = await ref.read(userAuthChangeProvider).loadUser();
+      if (error2 != null) {
         hideLoading(ref);
-        AppSnackbar.instance
-            .error(context, 'Error occurred, Please restart app');
+        AppSnackbar.instance.error(context, error2);
         return;
       }
-      await BChatSDKController.instance.initChatSDK(user);
-      await BChatSDKController.instance.loadAllContactsGroup();
-
       hideLoading(ref);
-      // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);
     } else {
       hideLoading(ref);

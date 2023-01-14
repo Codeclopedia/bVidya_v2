@@ -63,15 +63,24 @@ class BChatSDKController {
 
   Future loadAllContactsGroup() async {
     final client = ChatClient.getInstance;
+
     try {
-      final list = await client.contactManager.getAllContactsFromServer();
       final conversations =
           await client.chatManager.getConversationsFromServer();
-
-      print(
-          'Loaded contacts  = ${list.join(',')} - ${conversations.join(',')}');
+      for (var c in conversations) {
+        await client.chatManager.fetchHistoryMessages(conversationId: c.id);
+      }
+      print('Loaded conversation  => - ${conversations.join(',')}');
     } catch (e) {
-      print('error contacts  = $e');
+      print('error loading conversation  = $e');
+    }
+
+    try {
+      final list = await client.contactManager.getAllContactsFromServer();
+
+      print('Loaded contacts  = ${list.join(',')}');
+    } catch (e) {
+      print('error loading contacts  = $e');
     }
     try {
       final list = await client.groupManager.fetchJoinedGroupsFromServer(
@@ -80,7 +89,7 @@ class BChatSDKController {
       );
       print('Loaded groups  = ${list.length}');
     } catch (e) {
-      print('error groups  = $e');
+      print('error loading groups  = $e');
     }
   }
 

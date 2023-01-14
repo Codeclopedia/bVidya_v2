@@ -137,22 +137,23 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         } catch (_) {}
       },
       onLongPress: (() async {
-        ChatPushRemindType remindType =
-            await BChatContactManager.fetchChatMuteStateFor(model.id);
-        bool mute = remindType != ChatPushRemindType.NONE;
-        final result = await showDialog(
-          context: context,
-          useSafeArea: true,
-          builder: (context) {
-            return Dialog(
-              // insetPadding: EdgeInsets.only(left: 6.w, top: 2.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(3.w),
-              ),
-              child: ConversationMenuDialog(model: model, muted: mute),
-            );
-          },
-        );
+        // ChatPushRemindType remindType =
+        //     await BChatContactManager.fetchChatMuteStateFor(model.id);
+        // bool mute = remindType != ChatPushRemindType.NONE;
+        // final result = await showDialog(
+        //   context: context,
+        //   useSafeArea: true,
+        //   builder: (context) {
+        //     return Dialog(
+        //       // insetPadding: EdgeInsets.only(left: 6.w, top: 2.h),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(3.w),
+        //       ),
+        //       child: ConversationMenuDialog(model: model, muted: mute),
+        //     );
+        //   },
+        // );
+        final result = await showConversationOptions(context, model);
         if (result == null) {
           return;
         }

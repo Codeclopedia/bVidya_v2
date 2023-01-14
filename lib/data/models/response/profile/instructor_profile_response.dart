@@ -30,7 +30,7 @@ class ProfileBody {
   List<Followers>? followers;
   List<Watchtime>? watchtime;
   List<InstructorCourse>? courses;
-  List<Meeting>? meetings;
+  // List<Meeting>? meetings;
   List<Webinar>? webinar;
   List<Liked>? liked;
 
@@ -39,7 +39,7 @@ class ProfileBody {
       this.followers,
       this.watchtime,
       this.courses,
-      this.meetings,
+      // this.meetings,
       this.webinar,
       this.liked});
 
@@ -63,12 +63,12 @@ class ProfileBody {
         courses?.add(InstructorCourse.fromJson(v));
       });
     }
-    if (json['meetings'] != null) {
-      meetings = <Meeting>[];
-      json['meetings'].forEach((v) {
-        meetings?.add(Meeting.fromJson(v));
-      });
-    }
+    // if (json['meetings'] != null) {
+    //   meetings = <Meeting>[];
+    //   json['meetings'].forEach((v) {
+    //     meetings?.add(Meeting.fromJson(v));
+    //   });
+    // }
     if (json['webinar'] != null) {
       webinar = <Webinar>[];
       json['webinar'].forEach((v) {
@@ -97,9 +97,9 @@ class ProfileBody {
     if (courses != null) {
       data['courses'] = courses?.map((v) => v.toJson()).toList();
     }
-    if (meetings != null) {
-      data['meetings'] = meetings?.map((v) => v.toJson()).toList();
-    }
+    // if (meetings != null) {
+    //   data['meetings'] = meetings?.map((v) => v.toJson()).toList();
+    // }
     if (webinar != null) {
       data['webinar'] = webinar?.map((v) => v.toJson()).toList();
     }
@@ -203,7 +203,7 @@ class Profile {
 }
 
 class Followers {
-  final int? count;
+  final dynamic count;
 
   Followers({this.count});
 
@@ -217,7 +217,7 @@ class Followers {
 }
 
 class Watchtime {
-  final String? total;
+  final dynamic total;
 
   Watchtime({this.total});
 

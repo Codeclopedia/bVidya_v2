@@ -45,6 +45,20 @@ String formatDateSeparator(DateTime date) {
   return DateFormat('HH:mm').format(date);
 }
 
+String formatDateCall(DateTime date) {
+  final DateTime today = DateTime.now();
+  // print('Date: ${date.day}');
+  if (date.year != today.year) {
+    return DateFormat('dd MMM yyyy, hh:mm a').format(date);
+  } else if (date.month != today.month ||
+      _getWeekOfYear(date) != _getWeekOfYear(today)) {
+    return DateFormat('dd MMM hh:mm a').format(date);
+  } else if (date.day != today.day) {
+    return DateFormat('EEEE hh:mm a').format(date);
+  }
+  return DateFormat('hh:mm a').format(date);
+}
+
 int _getWeekOfYear(DateTime date) {
   final int dayOfYear = int.parse(DateFormat('D').format(date));
   return ((dayOfYear - date.weekday + 10) / 7).floor();

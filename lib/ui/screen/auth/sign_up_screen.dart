@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/sdk_helpers/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
@@ -307,21 +308,14 @@ class SignUpScreen extends HookWidget {
       hideLoading(ref);
       AppSnackbar.instance.error(context, result);
     } else {
-      final user = await ref.read(userAuthChangeProvider).loadUser();
-      if (user == null) {
+      final error = await postLoginSetup(ref);
+      if (error != null) {
         hideLoading(ref);
-        AppSnackbar.instance
-            .error(context, 'Error occurred, Please restart app');
+        AppSnackbar.instance.error(context, error);
         return;
       }
       AppSnackbar.instance.message(context, 'Registration successfully');
-      // ref.read(signUpOTPGeneratedProvider.notifier).state = true;
-      // ref.read(signUpTimerProvider.notifier).reset();
-      await BChatSDKController.instance.initChatSDK(user);
-      await BChatSDKController.instance.loadAllContactsGroup();
-
       hideLoading(ref);
-      // ref.read(userAuthChangeProvider).setUserSigned(true);
       Navigator.pushReplacementNamed(context, RouteList.home);
     }
   }

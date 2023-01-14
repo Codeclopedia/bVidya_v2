@@ -2,19 +2,22 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../data/models/models.dart';
+import '/data/models/models.dart';
 
 class BchatGroupManager {
   BchatGroupManager._();
   static Future<ChatGroup?> createNewGroup(
-      String name, String? desc, List<String> ids, String image) async {
+      String name, String? desc, List<String> ids, String image,
+      {bool public = true}) async {
     try {
       ChatGroup group = await ChatClient.getInstance.groupManager.createGroup(
           groupName: name,
           desc: desc,
           inviteMembers: ids,
-          options:
-              ChatGroupOptions(style: ChatGroupStyle.PrivateOnlyOwnerInvite));
+          options: ChatGroupOptions(
+              style: public
+                  ? ChatGroupStyle.PublicOpenJoin
+                  : ChatGroupStyle.PrivateMemberCanInvite));
 
       Map<String, dynamic> ext = {'image': image};
       await ChatClient.getInstance.groupManager

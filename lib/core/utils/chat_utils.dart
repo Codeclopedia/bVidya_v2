@@ -42,17 +42,24 @@ String parseChatPresenceToReadable(ChatPresence? presence) {
   return formatSince(presence.lastTime);
 }
 
-String formatSince(int diffSecond) {
-  DateTime time = DateTime.fromMillisecondsSinceEpoch(diffSecond * 1000);
+String formatSince(int lastSeen) {
+  if (lastSeen == 0) {
+    return 'A long time ago';
+  }
+  DateTime time = DateTime.fromMillisecondsSinceEpoch(lastSeen * 1000);
   if (!DateTime.now().difference(time).isNegative) {
     if (DateTime.now().difference(time).inMinutes < 1) {
-      return "a few seconds ago";
+      return "last seen just now";
     } else if (DateTime.now().difference(time).inMinutes < 60) {
-      return "${DateTime.now().difference(time).inMinutes} minutes ago";
+      return "last seen ${DateTime.now().difference(time).inMinutes} min ago";
     } else if (DateTime.now().difference(time).inMinutes < 1440) {
-      return "${DateTime.now().difference(time).inHours} hours ago";
+      return "last seen ${DateTime.now().difference(time).inHours} hrs ago";
     } else if (DateTime.now().difference(time).inMinutes > 1440) {
-      return "${DateTime.now().difference(time).inDays} days ago";
+      return "last seen ${DateTime.now().difference(time).inDays} days ago";
+    } else if (DateTime.now().difference(time).inDays > 30) {
+      return 'last seen more than a month ago';
+    } else if (DateTime.now().difference(time).inDays > 60) {
+      return 'last seen a long time ago';
     }
   }
   return '';

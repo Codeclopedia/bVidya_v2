@@ -2,9 +2,14 @@
 
 // import 'package:awesome_notifications/awesome_notifications.dart';
 
+import 'dart:convert';
+
+import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/core/utils/callkit_utils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/utils/chat_utils.dart';
@@ -26,6 +31,27 @@ class SplashScreen extends ConsumerWidget {
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushReplacementNamed(context, RouteList.login);
       });
+      return;
+    }
+    if (activeCallMap != null) {
+      String fromName = activeCallMap!['from_name'];
+      String callerFCM = activeCallMap!['caller_fcm'];
+      String image = activeCallMap!['image'];
+      CallBody body = CallBody.fromJson(jsonDecode(activeCallMap!['body']));
+      bool hasVideo = activeCallMap!['has_video'];
+
+      Map<String, dynamic> callMap = {
+        'name': fromName,
+        'fcm_token': callerFCM,
+        'image': image,
+        'call_info': body,
+        'call_direction_type': CallDirectionType.incoming,
+        'direct': true
+      };
+
+      Navigator.pushReplacementNamed(context,
+          hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
+          arguments: callMap);
       return;
     }
     final initialAction = NotificationController.initialAction;

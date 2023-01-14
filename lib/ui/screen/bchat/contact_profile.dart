@@ -3,6 +3,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
+import '../../dialog/add_contact_dialog.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants/agora_config.dart';
@@ -556,127 +557,150 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _topBar(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: SizedBox(
-        width: 100.w,
-        // padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-        child: Stack(
-          children: [
-            Positioned(
-              left: 1.w,
-              top: 1.h,
-              child: IconButton(
-                icon: getSvgIcon('arrow_back.svg'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+    return SizedBox(
+      width: 100.w,
+      // padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+      child: Stack(
+        children: [
+          Positioned(
+            left: 1.w,
+            top: 1.h,
+            child: IconButton(
+              icon: getSvgIcon('arrow_back.svg'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            if (isInContact)
-              Positioned(
-                right: 1.w,
-                top: 1.h,
-                child: Consumer(builder: (context, ref, child) {
-                  return IconButton(
-                    // padding: EdgeInsets.all(1.w),
-                    icon: getSvgIcon('icon_delete_conv.svg',
-                        color: Colors.white, width: 5.w),
-                    onPressed: () async {
-                      await showBasicDialog(
-                          context, 'Delete Contact', 'Are you sure?', 'Yes',
-                          () async {
-                        await BChatContactManager.deleteContact(
-                            contact.userId.toString());
-                        await ref
-                            .read(chatConversationProvider)
-                            .removedContact(contact.userId);
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, RouteList.home, (route) => route.isFirst);
-                      }, negativeButton: 'No');
-                    },
-                  );
-                }),
-              ),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 2.h,
+          ),
+          if (isInContact)
+            Positioned(
+              right: 1.w,
+              top: 1.h,
+              child: Consumer(builder: (context, ref, child) {
+                return IconButton(
+                  // padding: EdgeInsets.all(1.w),
+                  icon: getSvgIcon('icon_delete_conv.svg',
+                      color: Colors.white, width: 5.w),
+                  onPressed: () async {
+                    await showBasicDialog(
+                        context, 'Delete Contact', 'Are you sure?', 'Yes',
+                        () async {
+                      await BChatContactManager.deleteContact(
+                          contact.userId.toString());
+                      await ref
+                          .read(chatConversationProvider)
+                          .removedContact(contact.userId);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, RouteList.home, (route) => route.isFirst);
+                    }, negativeButton: 'No');
+                  },
+                );
+              }),
+            ),
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  getRectFAvatar(contact.name, contact.profileImage,
+                      size: 20.w),
+                  SizedBox(
+                    height: 0.7.h,
+                  ),
+                  Text(
+                    contact.name,
+                    style: TextStyle(
+                      fontFamily: kFontFamily,
+                      fontSize: 13.sp,
+                      color: Colors.white,
                     ),
-                    getRectFAvatar(contact.name, contact.profileImage,
-                        size: 20.w),
-                    SizedBox(
-                      height: 0.7.h,
-                    ),
-                    Text(
-                      contact.name,
-                      style: TextStyle(
-                        fontFamily: kFontFamily,
-                        fontSize: 13.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 3.h),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Consumer(builder: (context, ref, child) {
-                          return InkWell(
-                              onTap: () async {
-                                if (fromChat) {
-                                  Navigator.pop(context);
+                  ),
+                  SizedBox(height: 3.h),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Consumer(builder: (context, ref, child) {
+                        return InkWell(
+                            onTap: () async {
+                              if (fromChat) {
+                                Navigator.pop(context);
+                              } else {
+                                if (isInContact) {
+                                  openChatScreen(context, contact, ref);
                                 } else {
-                                  if (isInContact) {
-                                    openChatScreen(context, contact, ref);
+                                  if (AgoraConfig.autoAcceptContact) {
+                                    _addContactSendRequest(
+                                        ref, context, contact);
                                   } else {
-                                    if (AgoraConfig.autoAcceptContact) {
-                                      showLoading(ref);
-                                      final result = await BChatContactManager
-                                          .sendRequestToAddContact(
-                                              contact.userId.toString());
-                                      if (result == null) {
-                                        AppSnackbar.instance.message(context,
-                                            'Request sent to ${contact.name} successfully');
-                                        openChatScreen(context, contact, ref,
-                                            sendInviateMessage: true);
-                                      } else {
-                                        hideLoading(ref);
-                                        AppSnackbar.instance
-                                            .error(context, result);
-                                      }
-                                    } else {
-                                      AppSnackbar.instance.message(
-                                          context, 'Send request to chat');
-                                    }
+                                    AppSnackbar.instance.message(
+                                        context, 'Send request to chat');
                                   }
                                 }
-                              },
-                              child: _buildIcon('icon_pr_chat.svg'));
-                        }),
-                        _buildIcon('icon_pr_vcall.svg'),
-                        _buildIcon('icon_pr_acall.svg'),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RouteList.searchContact);
-                          },
-                          child: _buildIcon('icon_pr_search.svg'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                              }
+                            },
+                            child: isInContact
+                                ? _buildIcon('icon_pr_chat.svg')
+                                : CircleAvatar(
+                                    radius: 6.w,
+                                    backgroundColor: AppColors.yellowAccent,
+                                    child: Icon(
+                                      Icons.person_add_alt_outlined,
+                                      color: AppColors.primaryColor,
+                                      size: 5.w,
+                                    ),
+                                  ));
+                      }),
+                      _buildIcon('icon_pr_vcall.svg'),
+                      _buildIcon('icon_pr_acall.svg'),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, RouteList.searchContact);
+                        },
+                        child: _buildIcon('icon_pr_search.svg'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  _addContactSendRequest(
+      WidgetRef ref, BuildContext context, Contacts item) async {
+    final input = await showAddContactDialog(context, item.userId, item.name);
+    if (input == null) {
+      return;
+    }
+
+    showLoading(ref);
+    final result = await BChatContactManager.sendRequestToAddContact(
+        item.userId.toString());
+
+    if (result == null) {
+      AppSnackbar.instance
+          .message(context, 'Request sent to ${item.name} successfully');
+      final contacts = await ref
+              .read(bChatProvider)
+              .getContactsByIds(item.userId.toString()) ??
+          [];
+      if (contacts.isNotEmpty) {
+        openChatScreen(context,
+            Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
+            sendInviateMessage: true, message: input);
+      }
+    } else {
+      hideLoading(ref);
+      AppSnackbar.instance.error(context, result);
+    }
   }
 
   Widget _buildIcon(String icon) {

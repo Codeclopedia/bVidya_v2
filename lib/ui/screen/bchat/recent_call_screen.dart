@@ -1,3 +1,4 @@
+import 'package:bvidya/core/utils/date_utils.dart';
 import 'package:intl/intl.dart';
 
 import '../blearn/components/common.dart';
@@ -74,6 +75,14 @@ class RecentCallScreen extends StatelessWidget {
   }
 
   Widget _contactRow(CallListModel model) {
+    final date = DateTime.fromMillisecondsSinceEpoch(model.time);
+    String time = formatDateCall(date);
+    // if (!DateUtils.isSameDay(date, DateTime.now())) {
+    //   time = DateFormat('EE, d MMM, yyyy').format(date);
+    // }
+    // time += DateFormat('h:mm a')
+    //     .format(DateTime.fromMillisecondsSinceEpoch(model.time))
+    //     .toUpperCase();
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
@@ -99,9 +108,7 @@ class RecentCallScreen extends StatelessWidget {
                   height: 0.5.h,
                 ),
                 Text(
-                  DateFormat('h:mm a')
-                      .format(DateTime.fromMillisecondsSinceEpoch(model.time))
-                      .toUpperCase(),
+                  time,
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     color: AppColors.contactNameTextColor,

@@ -170,14 +170,16 @@ class Routes {
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
+          bool direct = args['direct'] ?? false;
+
           screen = ChatCallScreen(
-            fcmToken: fcmToken,
-            name: name,
-            image: image,
-            callInfo: callInfo,
-            callDirection: direction,
-            callType: CallType.video,
-          );
+              fcmToken: fcmToken,
+              name: name,
+              image: image,
+              callInfo: callInfo,
+              callDirection: direction,
+              callType: CallType.video,
+              direct: direct);
         } else {
           screen = _parameterMissing();
         }
@@ -191,14 +193,15 @@ class Routes {
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
+          bool direct = args['direct'] ?? false;
           screen = ChatCallScreen(
-            fcmToken: fcmToken,
-            name: name,
-            image: image,
-            callInfo: callInfo,
-            callDirection: direction,
-            callType: CallType.audio,
-          );
+              fcmToken: fcmToken,
+              name: name,
+              image: image,
+              callInfo: callInfo,
+              callDirection: direction,
+              callType: CallType.audio,
+              direct: direct);
         } else {
           screen = _parameterMissing();
         }

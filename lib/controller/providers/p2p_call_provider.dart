@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:bvidya/core/utils/callkit_utils.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants/notification_const.dart';
 // import '/app.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -86,6 +88,7 @@ class P2PCallProvider extends ChangeNotifier {
         if (action == NotiConstants.actionCallDecline) {
           if (!_disconnected && !_endCall) {
             _endCall = true;
+            activeCallId = null;
             notifyListeners();
           }
         }
@@ -327,6 +330,7 @@ class P2PCallProvider extends ChangeNotifier {
   @override
   void dispose() {
     disconnect();
+    FlutterCallkitIncoming.endAllCalls();
     print('Dispose call screen');
     super.dispose();
   }

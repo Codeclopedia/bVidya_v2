@@ -92,18 +92,38 @@ class ContactMenuDialog extends StatelessWidget {
           ),
         ),
         if (!isInContact)
-          ..._buildOption(S.current.contact_menu_request, 'icon_mute_conv.svg',
-              () async {
+          ..._buildOption(
+              S.current.contact_menu_request,
+              // getSvgIcon('icon_mute_conv.svg', width: 4.w),
+              Icon(
+                Icons.person_add_alt_rounded,
+                color: AppColors.primaryColor,
+                size: 5.w,
+              ), () async {
             Navigator.pop(context, 0);
           }),
-        ..._buildOption(S.current.contact_menu_view, 'icon_mute_conv.svg',
-            () async {
+        ..._buildOption(
+            S.current.contact_menu_view,
+            Icon(
+              Icons.contact_page_rounded,
+              color: AppColors.primaryColor,
+              size: 5.w,
+            )
+            // getSvgIcon(
+            //   'icon_mute_conv.svg',
+            //   width: 20,
+            // )
+            , () async {
           Navigator.pop(context, 1);
         }, isLast: true),
         // Consumer(builder: (context, ref, child) {
         if (isInContact)
-          ..._buildOption(S.current.contact_menu_delete, 'icon_delete_conv.svg',
-              () async {
+          ..._buildOption(
+              S.current.contact_menu_delete,
+              getSvgIcon(
+                'icon_delete_conv.svg',
+                width: 4.w,
+              ), () async {
             await BChatContactManager.deleteContact(userId.toString());
 
             // await ref.read(chatConversationProvider).removedContact(userId);
@@ -118,7 +138,13 @@ class ContactMenuDialog extends StatelessWidget {
               blocked
                   ? S.current.contact_menu_unblock
                   : S.current.contact_menu_block,
-              'icon_mute_conv.svg', () async {
+              Icon(
+                Icons.block,
+                color: AppColors.primaryColor,
+                size: 5.w,
+              )
+              // getSvgIcon('icon_mute_conv.svg', width: 20)
+              , () async {
             if (blocked) {
               await BChatContactManager.unBlockUser(userId.toString());
             } else {
@@ -131,7 +157,7 @@ class ContactMenuDialog extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildOption(String title, String icon, Function() onOption,
+  List<Widget> _buildOption(String title, Widget icon, Function() onOption,
       {bool isLast = false}) {
     return [
       InkWell(
@@ -145,10 +171,7 @@ class ContactMenuDialog extends StatelessWidget {
               CircleAvatar(
                 radius: 5.w,
                 backgroundColor: const Color(0xFFF5F5F5),
-                child: getSvgIcon(
-                  icon,
-                  width: 20,
-                ),
+                child: icon,
               ),
               SizedBox(width: 3.w),
               Text(

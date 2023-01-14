@@ -39,7 +39,7 @@ class TeacherDashboard extends StatelessWidget {
     return BaseSettings(
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-        child: UserConsumer(builder: (context, user,ref) {
+        child: UserConsumer(builder: (context, user, ref) {
           final data =
               ref.watch(bLearnInstructorProfileProvider(user.id.toString()));
           return data.when(
@@ -393,9 +393,10 @@ class TeacherDashboard extends StatelessWidget {
             }),
       );
     } else {}
-    return Container(
-      height: 20.h,
-      color: Colors.grey,
+    return SizedBox(
+      height: 10.h,
+      // color: Colors.grey,
+      child: buildEmptyPlaceHolder('No Live Courses'),
     );
   }
 }

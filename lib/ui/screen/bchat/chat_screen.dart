@@ -450,6 +450,8 @@ class ChatScreen extends HookConsumerWidget {
         .watch(bhatMessagesProvider(model).select((value) => value.messages))
         .reversed
         .toList();
+    final selectedItems = ref.watch(selectedChatMessageListProvider);
+
     return ListView.builder(
       shrinkWrap: true,
       reverse: true,
@@ -474,11 +476,14 @@ class ChatScreen extends HookConsumerWidget {
         if (nextMessage?.from == message.from) {
           isNextSameAuthor = true;
         }
-        final selectedItems = ref.watch(selectedChatMessageListProvider);
         bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from != model.id;
         isOwnMessage ? _markOwnRead(message) : _markRead(message);
+
+        bool notReply = message.body.type == MessageType.CMD ||
+            message.body.type == MessageType.CUSTOM;
+        print('notReply -> $notReply , type=> ${message.chatType} ');
 
         return Column(
           // crossAxisAlignment:
@@ -499,14 +504,17 @@ class ChatScreen extends HookConsumerWidget {
                 ),
               ),
             SwipeTo(
-              onRightSwipe: () {
-                ref.read(chatModelProvider.notifier).setReplyOn(
-                    message,
-                    isOwnMessage
-                        ? S.current.bmeet_user_you
-                        : model.contact.name);
-                // print('open replyBox');
-              },
+              rightSwipeWidget: const SizedBox.shrink(),
+              onRightSwipe: notReply
+                  ? null
+                  : () {
+                      ref.read(chatModelProvider.notifier).setReplyOn(
+                          message,
+                          isOwnMessage
+                              ? S.current.bmeet_user_you
+                              : model.contact.name);
+                      // print('open replyBox');
+                    },
               child: GestureDetector(
                 onLongPress: () =>
                     _onMessageLongPress(message, isSelected, ref),
@@ -825,7 +833,7 @@ class ChatScreen extends HookConsumerWidget {
                               style: TextStyle(
                                 fontFamily: kFontFamily,
                                 color: AppColors.yellowAccent,
-                                fontSize: 11.sp,
+                                fontSize: 9.sp,
                                 fontWeight: FontWeight.w200,
                               ),
                             ),

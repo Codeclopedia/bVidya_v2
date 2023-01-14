@@ -25,16 +25,17 @@ class ChatCallScreen extends ConsumerWidget {
   final CallBody callInfo;
   final CallDirectionType callDirection;
   final CallType callType;
+  final bool direct;
 
-  const ChatCallScreen({
-    super.key,
-    required this.fcmToken,
-    required this.name,
-    required this.image,
-    required this.callInfo,
-    required this.callType,
-    required this.callDirection,
-  });
+  const ChatCallScreen(
+      {super.key,
+      required this.fcmToken,
+      required this.name,
+      required this.image,
+      required this.callInfo,
+      required this.callType,
+      required this.callDirection,
+      this.direct = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +50,12 @@ class ChatCallScreen extends ConsumerWidget {
     // final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
     ref.listen(audioCallChangeProvider, (previous, next) {
       if (next.isCallEnded && !provider.disconnected) {
-        Navigator.pop(context);
+        // Navigator.pop(context);
+        if (direct) {
+          Navigator.pushReplacementNamed(context, RouteList.home);
+        } else {
+          Navigator.pop(context);
+        }
       }
     });
     // valu.addListener(() {
@@ -319,7 +325,7 @@ class ChatCallScreen extends ConsumerWidget {
                   if (user == null) {
                     return;
                   }
-                  
+
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
                       NotiConstants.actionCallEnd,
@@ -328,7 +334,12 @@ class ChatCallScreen extends ConsumerWidget {
                       user.name,
                       callType == CallType.video);
                 }
-                Navigator.pop(context);
+
+                if (direct) {
+                  Navigator.pushReplacementNamed(context, RouteList.home);
+                } else {
+                  Navigator.pop(context);
+                }
               },
               child: Container(
                 height: 12.w,

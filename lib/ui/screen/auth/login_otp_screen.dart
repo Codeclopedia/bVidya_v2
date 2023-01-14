@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/sdk_helpers/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
@@ -204,20 +205,15 @@ class LoginOtpScreen extends HookWidget {
 
       AppSnackbar.instance.error(context, result);
     } else {
-      final user = await ref.read(userAuthChangeProvider).loadUser();
-      if (user == null) {
+      final error = await postLoginSetup(ref);
+      if (error != null) {
         hideLoading(ref);
         AppSnackbar.instance
-            .error(context, 'Error occurred, Please restart app');
+            .error(context, error);
         return;
       }
-      await BChatSDKController.instance.initChatSDK(user);
-      await BChatSDKController.instance.loadAllContactsGroup();
-
       hideLoading(ref);
-
-      // AppSnackbar.instance.message(
-      //     context, 'Logged In successfully');
+      AppSnackbar.instance.message(context, 'Logged In successfully');
       Navigator.pushReplacementNamed(context, RouteList.home);
     }
   }

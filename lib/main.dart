@@ -46,7 +46,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   }
   // setupCallKeep();
 
-  // setupCallKit();
+  setupCallKit();
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];

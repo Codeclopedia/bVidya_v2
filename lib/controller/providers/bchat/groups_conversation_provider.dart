@@ -25,8 +25,8 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   bool _initialized = false;
 
-  Future setup() async{
-     _groupConversationMap.clear();
+  Future setup() async {
+    _groupConversationMap.clear();
     final list = await BchatGroupManager.loadGroupConversationsList();
     for (var item in list) {
       _groupConversationMap.addAll({item.id: item});
@@ -35,10 +35,11 @@ class GroupConversationChangeProvider extends ChangeNotifier {
   }
 
   Future init() async {
-    if (_initialized) {
-      return;
-    }
+    // if (_initialized) {
+    //   return;
+    // }
     _initialized = true;
+    _isLoading = true;
     _groupConversationMap.clear();
     final list = await BchatGroupManager.loadGroupConversationsList();
     for (var item in list) {
@@ -160,7 +161,9 @@ class GroupConversationChangeProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // _initialized = false;
+    _initialized = false;
+    _isLoading = false;
+
     _groupConversationMap.clear();
 
     super.dispose();

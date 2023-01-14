@@ -21,6 +21,10 @@ import '../helpers/call_helper.dart';
 import '../ui_core.dart';
 import '../utils.dart';
 
+Map? activeCallMap;
+
+String? activeCallId;
+
 _getActiveCall() async {
   try {
     print('loading active calls');
@@ -29,12 +33,32 @@ _getActiveCall() async {
     if (list?.isNotEmpty == true) {
       final id = list![0]['id'];
       print('id: $id -> ${list[0]}');
+      final map = list[0]['extra'];
+      if (map == null) {
+        print('map: is null');
+        activeCallId = null;
+        activeCallMap = null;
+        return;
+      }
+      print('map: $id -> $map');
+      String? fromId = map['from_id'];
+      if (fromId == null) {
+        print('Not a valid Active calls');
+        activeCallId = null;
+        activeCallMap = null;
+        return;
+      }
+      activeCallMap = map;
+      activeCallId = id;
+      return;
     } else {
       print('No Active calls');
     }
   } catch (e) {
     print('error in getting active calls');
   }
+  activeCallMap = null;
+  activeCallId = null;
 }
 
 setupCallKit() async {
@@ -81,8 +105,8 @@ setupCallKit() async {
   });
 }
 
-Future<void> handlShowIncomingCallNotification(
-    RemoteMessage remoteMessage, {WidgetRef? ref}
+Future<void> handlShowIncomingCallNotification(RemoteMessage remoteMessage,
+    {WidgetRef? ref}
     // FlutterCallkeep callKeep,
     ) async {
   // String uuid = remoteMessage.payload()["call_id"] as String;
@@ -101,7 +125,7 @@ Future<void> handlShowIncomingCallNotification(
       body, fromName, fromId, fromFCM, image, hasVideo);
   try {
     final user = await getMeAsUser();
-    if (user == null||ref==null) return;
+    if (user == null || ref == null) return;
 
     final callMessageBody = CallMessegeBody(
       callId: body.callId,
@@ -122,6 +146,11 @@ Future<void> handlShowIncomingCallNotification(
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   CallBody? callBody = remoteMessage.payload();
   if (callBody == null) {
+    await FlutterCallkitIncoming.endAllCalls();
+    return;
+  }
+  await _getActiveCall();
+  if (activeCallId == null) {
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }

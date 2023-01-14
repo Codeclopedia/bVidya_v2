@@ -15,27 +15,30 @@ import '../../../widgets.dart';
 // class GroupsScreen extends StatelessWidget {
 //   const GroupsScreen({Key? key}) : super(key: key);
 
-class GroupsScreen extends ConsumerStatefulWidget {
+// class GroupsScreen extends ConsumerStatefulWidget {
+//   const GroupsScreen({Key? key}) : super(key: key);
+
+//   @override
+//   GroupsScreenState createState() => GroupsScreenState();
+// }
+
+// class GroupsScreenState extends ConsumerState<GroupsScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     // "ref" can be used in all life-cycles of a StatefulWidget.
+//     ref.read(groupConversationProvider.notifier).init();
+//   }
+
+class GroupsScreen extends ConsumerWidget {
   const GroupsScreen({Key? key}) : super(key: key);
 
   @override
-  GroupsScreenState createState() => GroupsScreenState();
-}
-
-class GroupsScreenState extends ConsumerState<GroupsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // "ref" can be used in all life-cycles of a StatefulWidget.
-    ref.read(groupConversationProvider.notifier).init();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final grpProvider = ref.watch(groupConversationProvider);
     return Scaffold(
       body: ColouredBoxBar(
-          topBar: _buildTopBar(context),
+          topBar: _buildTopBar(context, ref),
           body: Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -196,7 +199,7 @@ class GroupsScreenState extends ConsumerState<GroupsScreen> {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
+  Widget _buildTopBar(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(bottom: 2.h, top: 2.h, right: 4.w),

@@ -183,7 +183,7 @@ class BLearnApiService {
           .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
 
       if (response.statusCode == 200) {
-        // print('${jsonEncode(response.data)}');
+        print('${jsonEncode(response.data)}');
         return InstructorProfileResponse.fromJson(response.data);
       } else {
         return InstructorProfileResponse(
