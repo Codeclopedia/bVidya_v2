@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../dash/models/attach_type.dart';
+import '../models/attach_type.dart';
 import '/core/ui_core.dart';
 
 class AttachedFileView extends StatelessWidget {

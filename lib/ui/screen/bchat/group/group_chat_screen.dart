@@ -11,7 +11,7 @@ import '/controller/bchat_providers.dart';
 import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
-import '../dash/models/attach_type.dart';
+import '../models/attach_type.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 
 import '/core/constants.dart';
@@ -21,7 +21,7 @@ import '/core/utils.dart';
 import '/core/utils/date_utils.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
-import '../dash/models/reply_model.dart';
+import '../models/reply_model.dart';
 import '../../../widget/chat_input_box.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/typing_indicator.dart';

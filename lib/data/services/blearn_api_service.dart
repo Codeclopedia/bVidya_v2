@@ -174,7 +174,29 @@ class BLearnApiService {
     }
   }
 
-  Future<InstructorProfileResponse> getInstructorProfile(
+  // Future<InstructorProfileResponse> getInstructorProfile(
+  //     String authToken, String instructorId) async {
+  //   try {
+  //     _dio.options.headers["X-Auth-Token"] = authToken;
+  //     // print('$authToken - $instructorId');
+  //     final response = await _dio
+  //         .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
+
+  //     if (response.statusCode == 200) {
+  //       print('${jsonEncode(response.data)}');
+  //       return InstructorProfileResponse.fromJson(response.data);
+  //     } else {
+  //       return InstructorProfileResponse(
+  //           status: 'error',
+  //           message: '${response.statusCode}- ${response.statusMessage}');
+  //     }
+  //   } catch (e) {
+  //     print('error: $e');
+  //     return InstructorProfileResponse(
+  //         status: 'error', message: 'Unknown error - $e');
+  //   }
+  // }
+    Future<ProfileDetailResponse> getInstructorProfileDetail(
       String authToken, String instructorId) async {
     try {
       _dio.options.headers["X-Auth-Token"] = authToken;
@@ -184,15 +206,15 @@ class BLearnApiService {
 
       if (response.statusCode == 200) {
         print('${jsonEncode(response.data)}');
-        return InstructorProfileResponse.fromJson(response.data);
+        return ProfileDetailResponse.fromJson(response.data);
       } else {
-        return InstructorProfileResponse(
+        return ProfileDetailResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
       print('error: $e');
-      return InstructorProfileResponse(
+      return ProfileDetailResponse(
           status: 'error', message: 'Unknown error - $e');
     }
   }

@@ -9,24 +9,24 @@ import 'package:swipe_to/swipe_to.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
-
+import '/core/utils/chat_utils.dart';
 import '/core/helpers/call_helper.dart';
-import '../../../core/sdk_helpers/bchat_handler.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
 import '/core/utils.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
 import '/data/models/models.dart';
+import 'models/attach_type.dart';
+import 'models/reply_model.dart';
+import 'widgets/attached_file.dart';
+import 'widgets/chat_message_bubble.dart';
 
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
-import 'dash/models/attach_type.dart';
-import 'dash/models/reply_model.dart';
-import 'widgets/attached_file.dart';
-import 'widgets/chat_message_bubble.dart';
-import 'widgets/typing_indicator.dart';
+// import 'widgets/typing_indicator.dart';
 
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 
@@ -59,6 +59,7 @@ class ChatScreen extends HookConsumerWidget {
       });
       return () {
         unregisterForNewMessage('chat_screen');
+
         _scrollController.dispose();
       };
     }, const []);
@@ -622,46 +623,39 @@ class ChatScreen extends HookConsumerWidget {
     return 'Error while sending message';
   }
 
-  Widget _buildUserTyping(String name) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15, top: 25),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.only(right: 2),
-            child: TypingIndicator(),
-          ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: name,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const TextSpan(
-                  text: ' is typing',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildUserTyping(String name) {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(left: 15, top: 25),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.end,
+  //       children: <Widget>[
+  //         const Padding(
+  //           padding: EdgeInsets.only(right: 2),
+  //           child: TypingIndicator(),
+  //         ),
+  //         RichText(
+  //           text: TextSpan(
+  //             children: [
+  //               TextSpan(
+  //                   text: name,
+  //                   style: const TextStyle(
+  //                     fontSize: 12,
+  //                     fontWeight: FontWeight.bold,
+  //                   )),
+  //               const TextSpan(
+  //                 text: ' is typing',
+  //                 style: TextStyle(fontSize: 12),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
     ref.read(bhatMessagesProvider(model)).addChats(messages);
-    // for (var msg in messages) {
-    //   // print('msg: ${msg.from}');
-    //   if (msg.chatType == ChatType.Chat) {
-    //     ref.read(chatConversationProvider).updateConversationMessage(msg);
-    //   }
-    //   // ref.read()
-    // }
   }
 
   Future<void> _onScroll(
@@ -827,8 +821,9 @@ class ChatScreen extends HookConsumerWidget {
                             ),
                             SizedBox(height: 0.3.h),
                             Text(
-                              ref.watch(bhatMessagesProvider(model)
-                                  .select((value) => value.onlineStatus)),
+                              parseChatPresenceToReadable(ref.watch(
+                                  bhatMessagesProvider(model)
+                                      .select((value) => value.onlineStatus))),
                               // parseChatPresenceToReadable(value),
                               style: TextStyle(
                                 fontFamily: kFontFamily,

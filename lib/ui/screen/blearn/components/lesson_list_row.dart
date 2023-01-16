@@ -92,7 +92,8 @@ class LessonListRow extends StatelessWidget {
               child: GestureDetector(
                 onTap: () async {
                   showLoading(ref);
-                  await sendVideoPlayback(lesson.id, instructorId);
+                  ref.read(currentVideoIdProvider.notifier).state =
+                      lesson.videoId;
                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       arguments: {
                         "lesson": lesson,

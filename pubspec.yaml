@@ -54,6 +54,7 @@ dependencies:
   images_picker: ^1.2.11
   intl: ^0.17.0
   path: ^1.8.2
+  pausable_timer: ^1.0.0+6
   permission_handler: ^10.2.0
   pinput: ^2.2.16
   pip_view: ^0.9.7

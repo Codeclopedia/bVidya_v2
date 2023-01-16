@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
 import '/data/models/contact_model.dart';
-import '/ui/screen/bchat/dash/models/reply_model.dart';
+import '../models/reply_model.dart';
 import '/ui/widgets.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';

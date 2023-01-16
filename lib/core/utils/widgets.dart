@@ -97,16 +97,24 @@ ImageProvider getImageProviderFile(String url) {
   }
 }
 
-ImageProvider getImageProviderChatImage(ChatImageMessageBody body,{bool loadThumbFirst=true}) {
+ImageProvider getImageProviderChatImage(ChatImageMessageBody body,
+    {bool loadThumbFirst = true}) {
+  // print('thumbnailLocalPath:${body.thumbnailLocalPath}');
+  // print('localPath:${body.localPath}');
+  // print('thumbnailRemotePath:${body.thumbnailRemotePath}');
+  // print('remotePath:${body.remotePath}');
   if (body.thumbnailLocalPath?.isNotEmpty == true && loadThumbFirst) {
     return FileImage(
       File(body.thumbnailLocalPath!),
     );
   }
   if (body.localPath.isNotEmpty) {
-    return FileImage(
-      File(body.localPath),
-    );
+    File f = File(body.localPath);
+    if (f.existsSync()) {
+      return FileImage(
+        f,
+      );
+    }
   }
   if (body.thumbnailRemotePath?.isNotEmpty == true && loadThumbFirst) {
     return CachedNetworkImageProvider(body.thumbnailRemotePath!);

@@ -18,7 +18,7 @@ import '../../widgets.dart';
 
 final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
 
-final selectedIndexLessonProvider = StateProvider<int>((ref) => 0);
+final selectedIndexLessonProvider = StateProvider<int>((ref) => -1);
 
 final isModelSheetOpened = StateProvider.autoDispose<bool>((ref) => false);
 
@@ -115,7 +115,17 @@ class CourseDetailScreen extends StatelessWidget {
                       if (data?.lessons?.isNotEmpty == true) {
                         return _buildLessons(ref, data!.lessons!);
                       } else {
-                        return buildEmptyPlaceHolder('No Lessons');
+                        return Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 10.w,
+                            ),
+                            getSvgIcon("no-data-icon.svg"),
+                            buildEmptyPlaceHolder("No Lessons"),
+                          ],
+                        ));
                         // return _buildLessons();
                       }
                     },

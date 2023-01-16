@@ -28,8 +28,8 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   ChatMessagesChangeProvider(this.convModel);
 
   ChatPresence? _chatPresence;
-
-  String get onlineStatus => parseChatPresenceToReadable(_chatPresence);
+  ChatPresence? get onlineStatus => _chatPresence;
+  // String get onlineStatus => parseChatPresenceToReadable(_chatPresence);
 
   init() async {
     _chatPresence = await fetchOnlineStatus(convModel.id);

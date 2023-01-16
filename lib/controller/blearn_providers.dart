@@ -50,14 +50,13 @@ final bLearnInstructorCoursesProvider =
 });
 
 final bLearnInstructorProfileProvider =
-    FutureProvider.autoDispose.family<ProfileBody?, String>((ref, id) {
-  return ref.read(bLearnRepositoryProvider).getInstructorProfile(id);
+    FutureProvider.autoDispose.family<ProfileDataBody?, String>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).getTeacherProfileDetail(id);
 });
 
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose
     .family<List<FollowedInstructor>, String>((ref, id) async {
   final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
-  print("results ${result}");
-  ref.read(isFollowedInstructor(id));
+
   return result ?? [];
 });

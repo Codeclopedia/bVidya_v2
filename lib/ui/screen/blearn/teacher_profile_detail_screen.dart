@@ -147,16 +147,16 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(ProfileBody body, BuildContext context) {
-    String follwersCount = '0';
-    if (body.followers?.isNotEmpty == true) {
-      follwersCount = (body.followers?[0].count ?? 0).toString();
-    }
+  Widget _buildContent(ProfileDataBody body, BuildContext context) {
+    final follwersCount = (body.followersCount??0).toString();
+    // if (body.followers?.isNotEmpty == true) {
+    //   follwersCount = (body.followers?[0].count ?? 0).toString();
+    // }
 
-    String watchTotal = '0';
-    if (body.watchtime?.isNotEmpty == true) {
-      follwersCount = (body.watchtime?[0].total ?? '');
-    }
+    final watchTotal = body.totalWatchtime??'0';
+    // if (body.watchtime?.isNotEmpty == true) {
+    //   watchTotal = (body.watchtime?[0].total ?? '0');
+    // }
 
     return Column(
       children: [
@@ -207,12 +207,10 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     .when(
                       data: (data) {
                         return ElevatedButton(
-                            onPressed: data
-                                ? null
-                                : () async {
-                                    ref.read(bLearnFollowInstructorProvider(
-                                        instructor.id.toString()));
-                                  },
+                            onPressed: () async {
+                              ref.read(bLearnFollowInstructorProvider(
+                                  instructor.id.toString()));
+                            },
                             style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(data
@@ -359,7 +357,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCriteriaList(List<InstructorCourse>? courses) {
+  Widget _buildCriteriaList(List<Course>? courses) {
     if (courses == null || courses.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -385,7 +383,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
         });
   }
 
-  Widget _buildCoursesList(List<InstructorCourse>? courses) {
+  Widget _buildCoursesList(List<Course>? courses) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -455,7 +453,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAllCourseList(List<InstructorCourse>? courses) {
+  Widget _buildAllCourseList(List<Course>? courses) {
     if (courses == null || courses.isEmpty) {
       return buildEmptyPlaceHolder('No Courses');
     }
@@ -825,7 +823,7 @@ class InstructorProfileCourseRowItem extends StatelessWidget {
 }
 
 class InstructorCourseListRow extends StatelessWidget {
-  final InstructorCourse course;
+  final Course course;
   const InstructorCourseListRow({Key? key, required this.course})
       : super(key: key);
 

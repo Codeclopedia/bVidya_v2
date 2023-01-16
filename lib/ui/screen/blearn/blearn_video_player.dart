@@ -1,7 +1,11 @@
 // import 'package:chewie/chewie.dart';
+// import 'dart:async';
+
 import 'package:flick_video_player/flick_video_player.dart';
+import 'package:pausable_timer/pausable_timer.dart';
 import 'package:video_player/video_player.dart';
 
+import '/core/constants/colors.dart';
 import '/core/helpers/video_helper.dart';
 import '/controller/blearn_providers.dart';
 import '/core/state.dart';
@@ -11,8 +15,14 @@ import '../../screens.dart';
 import 'components/common.dart';
 import 'components/lesson_list_tile.dart';
 
-final videoStateProvider = StateProvider<bool>((ref) => false);
+final videoStateProvider = StateProvider.autoDispose<bool>((ref) => true);
+final currentVideoIdProvider = StateProvider<int>(
+  (ref) {
+    return 0;
+  },
+);
 
+// ignore: must_be_immutable
 class BlearnVideoPlayer extends HookConsumerWidget {
   final Lesson lesson;
   final int courseId;
@@ -26,61 +36,90 @@ class BlearnVideoPlayer extends HookConsumerWidget {
       : super(key: key);
 
   FlickManager? flickManager;
+  late final PausableTimer timer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      init(ref);
+      init();
 
+      timer = PausableTimer(const Duration(minutes: 1), () async {
+        await sendVideoPlayback(ref, instructorId);
+      });
+
+      flickManager?.flickVideoManager?.addListener(() {
+        flickManager?.flickVideoManager?.isPlaying ?? false
+            ? timer.start()
+            : timer.pause();
+      });
       return () {
         print('Disponse called');
         flickManager?.dispose();
         flickManager = null;
+        timer.cancel();
       };
 
       // return dispose();
     }, const ['KEY']);
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            !ref.watch(videoStateProvider) || flickManager == null
-                ? Container(
-                    width: double.infinity,
-                    color: Colors.black,
-                    height: 30.h,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Loading',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: kFontFamily,
-                              fontSize: 12.sp),
+        child: Stack(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                !ref.watch(videoStateProvider) || flickManager == null
+                    ? Container(
+                        width: double.infinity,
+                        color: Colors.black,
+                        height: 30.h,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Loading',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: kFontFamily,
+                                  fontSize: 12.sp),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )
-                : FlickVideoPlayer(flickManager: flickManager!),
-            Consumer(
-              builder: (context, ref, child) {
-                return ref.watch(bLearnLessonsProvider(courseId)).when(
-                    data: (data) {
-                      if (data?.lessons?.isNotEmpty == true) {
-                        return _buildLessons(ref, data!.lessons!);
-                      } else {
-                        return buildEmptyPlaceHolder('No Lessons');
-                        // return _buildLessons();
-                      }
-                    },
-                    error: (error, stackTrace) => buildEmptyPlaceHolder('text'),
-                    loading: () => buildLoading);
-              },
+                      )
+                    : FlickVideoPlayer(flickManager: flickManager!),
+                SizedBox(
+                  height: 4.w,
+                ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    return ref.watch(bLearnLessonsProvider(courseId)).when(
+                        data: (data) {
+                          if (data?.lessons?.isNotEmpty == true) {
+                            return _buildLessons(ref, data!.lessons!);
+                          } else {
+                            return buildEmptyPlaceHolder('No Lessons');
+                            // return _buildLessons();
+                          }
+                        },
+                        error: (error, stackTrace) =>
+                            buildEmptyPlaceHolder('text'),
+                        loading: () => buildLoading);
+                  },
+                ),
+              ],
             ),
+            Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.adaptive.arrow_back,
+                      color: AppColors.cardWhite,
+                    ))),
           ],
         ),
       ),
@@ -105,6 +144,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                 videoPlayerController:
                     VideoPlayerController.network(lessons[index].videoUrl),
               );
+
               // _chewieController?.pause();
               // showLoading(ref);
               // _videoPlayerController = VideoPlayerController.network(
@@ -113,9 +153,9 @@ class BlearnVideoPlayer extends HookConsumerWidget {
 
               // await _videoPlayerController.initialize();
               // _createChewieController();
-              await sendVideoPlayback(lessons[index].id, instructorId);
-              // hideLoading(ref);
 
+              // hideLoading(ref);
+              ref.read(currentVideoIdProvider.notifier).state = lesson.videoId;
               ref.read(videoStateProvider.notifier).state = true;
             },
             child: LessonListTile(
@@ -129,18 +169,18 @@ class BlearnVideoPlayer extends HookConsumerWidget {
     );
   }
 
-  init(WidgetRef ref) {
+  init() {
     print('Init called');
     flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.network(lesson.videoUrl),
     );
   }
 
-  dispose() {
-    print('Disponse called');
-    flickManager?.dispose();
-    flickManager = null;
-  }
+  // dispose() {
+  //   print('Disponse called');
+  //   flickManager?.dispose();
+  //   flickManager = null;
+  // }
 }
 
 // class BlearnVideoPlayer extends HookConsumerWidget {

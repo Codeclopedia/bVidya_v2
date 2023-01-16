@@ -43,7 +43,7 @@ class ApiList {
   static const String lmsSearch = 'search'; //POST
   static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET
   static const String lmsInstructorProfile = 'instructor/'; //GET
-  static const String lmsFollowInstructor = 'follow/'; //GET
+  static const String lmsFollowInstructor = 'follow-unfollow/'; //GET
   static const String lmsRecordVideoPlayback = 'watch-time/record'; //POST
 
   //Settings
