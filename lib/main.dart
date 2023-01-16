@@ -37,6 +37,7 @@ Future<void> main() async {
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
   debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
+  await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {
@@ -47,6 +48,8 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   // setupCallKeep();
 
   setupCallKit();
+  await NotificationController.initializeLocalNotifications();
+
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
@@ -54,7 +57,9 @@ Future<void> backgroundHandler(RemoteMessage message) async {
         handlShowIncomingCallNotification(message);
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
-      }
+      } else {}
+    } else {
+      NotificationController.handleRemoteMessage(message, false);
     }
   } catch (e) {
     // print('error $e');

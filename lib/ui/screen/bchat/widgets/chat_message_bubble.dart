@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
@@ -89,7 +90,7 @@ class ChatMessageBubble extends StatelessWidget {
                         color: Colors.grey),
                   ),
                 ),
-              _buildMessageBody()
+              _buildMessageBody(context)
             ],
           ),
           // if (isOwnMessage && !isPreviousSameAuthor)
@@ -107,7 +108,7 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageBody() {
+  Widget _buildMessageBody(BuildContext context) {
     switch (message.body.type) {
       case MessageType.TXT:
         {
@@ -117,12 +118,27 @@ class ChatMessageBubble extends StatelessWidget {
       case MessageType.IMAGE:
         {
           ChatImageMessageBody body = message.body as ChatImageMessageBody;
-          return _imageOnly(body);
+          return GestureDetector(
+              onTap: () {
+                showImageViewer(
+                    context,
+                    getImageProviderChatImage(
+                        message.body as ChatImageMessageBody,
+                        loadThumbFirst: false), onViewerDismissed: () {
+                  // print("dismissed");
+                });
+              },
+              child: _imageOnly(body));
         }
       case MessageType.VIDEO:
         {
           ChatVideoMessageBody body = message.body as ChatVideoMessageBody;
-          return _videoOnly(body);
+          return GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RouteList.bViewVideo,
+                    arguments: message.body as ChatVideoMessageBody);
+              },
+              child: _videoOnly(body));
         }
       case MessageType.CUSTOM:
         {

@@ -149,6 +149,8 @@ class GroupsScreen extends ConsumerWidget {
                 // if (textMessage.isNotEmpty)
                 Text(
                   textMessage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     fontWeight: model.badgeCount > 0

@@ -269,6 +269,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Chat history,themes,wallpapers"),
         "chat_input_hint":
             MessageLookupByLibrary.simpleMessage("Write your message"),
+        "chat_menu_copy": MessageLookupByLibrary.simpleMessage("Copy"),
+        "chat_menu_delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "chat_menu_forward": MessageLookupByLibrary.simpleMessage("Forward"),
+        "chat_menu_reply": MessageLookupByLibrary.simpleMessage("Reply"),
+        "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
         "chat_replying": m2,
         "confDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block conference reminder notifications"),

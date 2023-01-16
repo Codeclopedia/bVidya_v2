@@ -22,6 +22,7 @@ class RouteList {
   static const String forgotPassword = '/forgot-password';
 
   //Chat
+  static const String splash = '/';
   static const String home = '/home';
   static const String profile = '/profile';
   static const String chatScreen = '/chat-screen';

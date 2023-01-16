@@ -2,7 +2,11 @@
 
 import 'dart:convert';
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
+import 'package:bvidya/data/models/response/bchat/p2p_call_response.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -13,10 +17,12 @@ import '/core/utils.dart';
 import '/app.dart';
 import '../routes.dart';
 import '../ui_core.dart';
+import 'callkit_utils.dart';
 import 'chat_utils.dart';
 
 class NotificationController {
   static ReceivedAction? initialAction;
+  static ReceivedAction? clickAction;
 
   ///  *********************************************
   ///     INITIALIZATIONS
@@ -45,9 +51,8 @@ class NotificationController {
         ],
         debug: true);
 
-         initialAction = await AwesomeNotifications()
+    initialAction = await AwesomeNotifications()
         .getInitialNotificationAction(removeFromActionEvents: false);
-    
 
     // Get initial notification action is optional
   }
@@ -72,9 +77,8 @@ class NotificationController {
       if ((await getMeAsUser()) == null) {
         return;
       }
-      if (receivedAction.actionType == ActionType.SilentAction
-           ||receivedAction.actionType == ActionType.SilentBackgroundAction
-          ) {
+      if (receivedAction.actionType == ActionType.SilentAction ||
+          receivedAction.actionType == ActionType.SilentBackgroundAction) {
         // String? type = receivedAction.payload?['type'];
         // String? from = receivedAction.payload?['from'];
         // if (type == 'contact_invite' && from != null) {
@@ -88,9 +92,15 @@ class NotificationController {
         return;
       }
       BuildContext? context = navigatorKey.currentContext;
-      debugPrint('  payload: ${receivedAction.payload}');
+      debugPrint(
+          'onAction context:${context != null}  payload: ${receivedAction.payload}');
       if (context != null) {
-        handleChatNotificationAction(receivedAction.payload!, context, false);
+        clickAction = receivedAction;
+        // handleChatNotificationAction(receivedAction.payload!, context, true);
+      } else {
+        debugPrint(
+            'Context is null key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
+        //
       }
     } else {
       debugPrint(
@@ -124,7 +134,6 @@ class NotificationController {
 
   static Future<bool> displayNotification(BuildContext context) async {
     bool userAuthorized = false;
-    
 
     await showDialog(
         context: context,
@@ -449,8 +458,6 @@ class NotificationController {
   static Future<bool> handleChatNotificationAction(
       Map<String, String?> message, BuildContext context, bool replace) async {
     String? type = message['type'];
-    
-
     try {
       if (type == 'chat') {
         String? from = message['from'];
@@ -532,4 +539,376 @@ class NotificationController {
   static Future<void> cancelNotifications() async {
     await AwesomeNotifications().cancelAll();
   }
+
+  static handleRemoteMessage(RemoteMessage message, bool isForeground) async {
+    if ((await getMeAsUser()) == null) {
+      //Not a valid user to
+      return;
+    }
+    if (message.data.isNotEmpty &&
+        message.data['alert'] != null &&
+        message.data['e'] != null) {
+      final extra = jsonDecode(message.data['e']);
+      String? type = extra['type'];
+      if (type == NotiConstants.typeCall) {
+        _showCallingNotification(message);
+        return;
+      }
+      String? name = extra['name'];
+      String? image = extra['image'];
+      String? contentType = extra['content_type'];
+      MessageType msgType = getType(contentType);
+      dynamic from = message.data['f'];
+      dynamic m = message.data['m'];
+      String? groupName;
+      String? groupId;
+
+      BuildContext? context = navigatorKey.currentContext;
+
+      if (isForeground && context != null) {
+        String contentText = '';
+        switch (msgType) {
+          case MessageType.TXT:
+            ChatMessage? msg = await ChatClient.getInstance.chatManager
+                .loadMessage(m.toString());
+            if (msg == null) {
+              return;
+            }
+            contentText = (msg.body as ChatTextMessageBody).content;
+            break;
+          default:
+            contentText = msgType.name;
+            break;
+        }
+        bool showForegroudNotification = false;
+        String content = '';
+        if (type == 'group_chat') {
+          groupName = extra['group_name'];
+          groupId = message.data['g'];
+          content = '$groupName : $name sent you\n$contentText';
+          showForegroudNotification = !Routes.isChatScreen(groupId.toString());
+        } else if (type == 'chat') {
+          showForegroudNotification = !Routes.isChatScreen(from.toString());
+          content = '$name sent you\n$contentText';
+        }
+
+        if (showForegroudNotification) {
+          showTopSnackBar(
+            Overlay.of(context)!,
+            CustomSnackBar.info(
+              message: content,
+            ),
+            onTap: () {
+              handleChatNotificationAction({
+                'type': type,
+                'from':
+                    type == 'group_chat' ? groupId.toString() : from.toString(),
+              }, context, false);
+            },
+          );
+        }
+        return;
+      }
+      String contentText = '';
+      String url;
+      switch (msgType) {
+        case MessageType.TXT:
+          ChatMessage? msg = await ChatClient.getInstance.chatManager
+              .loadMessage(m.toString());
+          if (msg == null) {
+            return;
+          }
+          contentText = (msg.body as ChatTextMessageBody).content;
+          break;
+        case MessageType.IMAGE:
+          ChatMessage? msg = await ChatClient.getInstance.chatManager
+              .loadMessage(m.toString());
+          if (msg == null) {
+            return;
+          }
+          final body = msg.body as ChatImageMessageBody;
+          url = body.remotePath ?? body.thumbnailRemotePath ?? '';
+          if (url.isNotEmpty) {
+            if (type == 'group_chat') {
+              groupName = extra['group_name'];
+              groupId = message.data['g'];
+              _showGroupMediaMessageNotification(
+                  groupId!, name!, groupName!, url, image!);
+            } else if (type == 'chat') {
+              _showMediaMessageNotification(from, name!, url, image!);
+            }
+            return;
+          }
+          contentText = 'New image file';
+          break;
+        default:
+          contentText = 'New ${msgType.name} file';
+          break;
+      }
+      //Show notification
+      if (type == 'group_chat') {
+        groupName = extra['group_name'];
+        groupId = message.data['g'];
+        _showGroupTextMessageNotification(
+            groupId!, name!, groupName!, image!, contentText);
+      } else if (type == 'chat') {
+        _showTextMessageNotification(from, name!, image!, contentText);
+      }
+    }
+  }
+
+  static final Map<int, int> _messagePool = {};
+  static final Map<int, String> _messageBodyPool = {};
+  static void clearPool(int id) async {
+    if (_messagePool.containsKey(id)) {
+      _messagePool.remove(id);
+      _messageBodyPool.remove(id);
+      await AwesomeNotifications().cancel(id);
+    }
+  }
+
+  static _showTextMessageNotification(
+      String fromId, String fromName, String fromImage, String message) async {
+    int id = fromId.hashCode;
+    if (_messagePool.containsKey(id)) {
+      _messageBodyPool.update(id, (value) => "$message <br/>$value");
+      _messagePool.update(id, (value) {
+        return value + 1;
+      });
+    } else {
+      _messageBodyPool.putIfAbsent(id, () => message);
+      _messagePool.putIfAbsent(id, () => 1);
+    }
+    String title = '$fromName sent you a message';
+    String body = _messageBodyPool[id] ?? message;
+
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: title,
+        icon: 'resource://mipmap/ic_launcher',
+        body: body,
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        notificationLayout: NotificationLayout.BigText,
+        payload: {
+          'type': 'chat',
+          'from': fromId,
+        },
+      ),
+    );
+  }
+
+  static _showMediaMessageNotification(
+      String fromId, String fromName, String url, String fromImage) {
+    int id = (fromId + url).hashCode;
+    // if (_messagePool.containsKey(id)) {
+    //   _messageBodyPool.update(id, (value) => "$message <br/>$value");
+    //   _messagePool.update(id, (value) {
+    //     return value + 1;
+    //   });
+    // } else {
+    //   _messageBodyPool.putIfAbsent(id, () => message);
+    //   _messagePool.putIfAbsent(id, () => 1);
+    // }
+    String title = '$fromName sent you a message';
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: title,
+        icon: 'resource://mipmap/ic_launcher',
+        body: 'New Image',
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        bigPicture: url,
+        notificationLayout: NotificationLayout.BigPicture,
+        payload: {
+          'type': 'chat',
+          'from': fromId,
+        },
+      ),
+    );
+  }
+
+  // static _showDocMessageNotification(
+  //     String fromId, String fromName, String fromImage, String message) {
+  //   int id = fromId.hashCode;
+  //   String title = '';
+  //   AwesomeNotifications().createNotification(
+  //     content: NotificationContent(
+  //       id: id,
+  //       channelKey: 'chat_channel',
+  //       title: title,
+  //       icon: 'resource://mipmap/ic_launcher',
+  //       body: message,
+  //       wakeUpScreen: true,
+  //       fullScreenIntent: false,
+  //       notificationLayout: NotificationLayout.BigText,
+  //       payload: {
+  //         'type': 'chat',
+  //         'from': fromId,
+  //       },
+  //     ),
+  //   );
+  // }
+
+  static _showGroupTextMessageNotification(String groupId, String fromName,
+      String groupName, String fromImage, String message) {
+    int id = groupId.hashCode;
+    if (_messagePool.containsKey(id)) {
+      _messageBodyPool.update(id, (value) => "$message <br/>$value");
+      _messagePool.update(id, (value) {
+        return value + 1;
+      });
+    } else {
+      _messageBodyPool.putIfAbsent(id, () => message);
+      _messagePool.putIfAbsent(id, () => 1);
+    }
+    String body = _messageBodyPool[id] ?? message;
+
+    String title = '$fromName sent you a message in $groupName';
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: title,
+        icon: 'resource://mipmap/ic_launcher',
+        body: body,
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        notificationLayout: NotificationLayout.BigText,
+        payload: {
+          'type': 'group_chat',
+          'from': groupId,
+        },
+      ),
+    );
+  }
+
+  static _showGroupMediaMessageNotification(String groupId, String fromName,
+      String groupName, String url, String fromImage) {
+    int id = (groupId + url).hashCode;
+    // if (_messagePool.containsKey(id)) {
+    //   _messageBodyPool.update(id, (value) => "$message <br/>$value");
+    //   _messagePool.update(id, (value) {
+    //     return value + 1;
+    //   });
+    // } else {
+    //   _messageBodyPool.putIfAbsent(id, () => message);
+    //   _messagePool.putIfAbsent(id, () => 1);
+    // }
+
+    String title = '$fromName sent you a message in $groupName';
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'chat_channel',
+        title: title,
+        icon: 'resource://mipmap/ic_launcher',
+        body: 'New Image',
+        wakeUpScreen: true,
+        fullScreenIntent: false,
+        bigPicture: url,
+        notificationLayout: NotificationLayout.BigPicture,
+        payload: {
+          'type': 'group_chat',
+          'from': groupId,
+        },
+      ),
+    );
+  }
+
+  static MessageType getType(String? contentType) {
+    if (contentType == MessageType.TXT.name) {
+      return MessageType.TXT;
+    }
+    if (contentType == MessageType.FILE.name) {
+      return MessageType.FILE;
+    }
+
+    if (contentType == MessageType.IMAGE.name) {
+      return MessageType.IMAGE;
+    }
+    if (contentType == MessageType.VIDEO.name) {
+      return MessageType.VIDEO;
+    }
+    if (contentType == MessageType.VIDEO.name) {
+      return MessageType.VIDEO;
+    }
+    return MessageType.CUSTOM;
+  }
+
+  // static _showGroupDocMessageNotification(String groupId, String fromName,
+  //     String groupName, String fromImage, String message) {
+  //   int id = groupId.hashCode;
+  //   String title = '';
+  //   AwesomeNotifications().createNotification(
+  //     content: NotificationContent(
+  //       id: id,
+  //       channelKey: 'chat_channel',
+  //       title: title,
+  //       icon: 'resource://mipmap/ic_launcher',
+  //       body: message,
+  //       wakeUpScreen: true,
+  //       fullScreenIntent: false,
+  //       notificationLayout: NotificationLayout.BigText,
+  //       payload: {
+  //         'type': 'group_chat',
+  //         'from': groupId,
+  //       },
+  //     ),
+  //   );
+  // }
+
+  static _showCallingNotification(RemoteMessage message) async {
+    // final data = jsonDecode(message.data['e']);
+    dynamic mId = message.data['m'];
+    final msg =
+        await ChatClient.getInstance.chatManager.loadMessage(mId.toString());
+    if (msg == null || msg.body.type != MessageType.CUSTOM) {
+      return;
+    }
+    try {
+      final body = CallMessegeBody.fromJson(
+          jsonDecode((msg.body as ChatCustomMessageBody).event));
+      // CallBody? body = callBodys.callId;
+      // if (body == null) {
+      //   return;
+      // }
+
+      String fromId = message.data["f"].toString();
+      String fromName = body.fromName;
+      String fromFCM = body.ext['fcm'];
+      CallBody callBody = CallBody.fromJson(jsonDecode(body.ext['call_body']));
+      String image = body.image ?? '';
+      bool hasVideo = body.callType == CallType.video;
+      // makeFakeCallInComing();
+      await showIncomingCallScreen(
+          callBody, fromName, fromId, fromFCM, image, hasVideo);
+    } catch (e) {
+      print('Error in call notification');
+    }
+
+    // AwesomeNotifications().createNotification(
+    //   content: NotificationContent(
+    //     id: id,
+    //     channelKey: 'chat_channel',
+    //     title: (data['name'] ?? '') + 'Calling you',
+    //     icon: 'resource://mipmap/ic_launcher',
+    //     body: body,
+    //     wakeUpScreen: true,
+    //     fullScreenIntent: false,
+    //     notificationLayout: NotificationLayout.BigText,
+    //     payload: {
+    //       'type': 'group_chat',
+    //       'from': groupId,
+    //     },
+    //   ),
+    // );
+  }
 }
+
+
+//{senderId: null, category: null, collapseKey: hyphenate_chatuidemo_notification, contentAvailable: false, data: {t: 3, e: {"image":"eilni_P6TzaDwV5Z3SvuuS:APA91bEr_PHNAxQ0zW9-dOPv-kvJ7f6htqSW9VRmWpxcpiXcFmrugUdwR5oMTpWCnsFYZXzbWQ-TWrDzVe07guvOQtuRikbFjLWHVVUs7dboM7LGMwLGWx8VEXHlzZ72JsNQxHg6-XaS","content_type":"CUSTOM","name":"KUNAL PANDEY","type":"p2p_call"}, alert: You've got a new message, f: 1, m: 1100787828750552000, EPush: {"provider":"ANDROID","origin":"im-push","msg_id":"1100787828750552000"}}, from: 556221488660, messageId: 0:1673861938812849%005650c8f4b2283c, messageType: null, mutableContent: false, notification: null, sentTime: 1673861938806, threadId: null, ttl: 2419200}

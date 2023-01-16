@@ -28,9 +28,13 @@ class Routes {
     bool hasDrawer = false;
     currentScreen = settings.name ?? '';
     switch (settings.name) {
+      case RouteList.splash:
+        screen = const SplashScreen();
+        break;
       case RouteList.signup:
         screen = SignUpScreen();
         break;
+
       case RouteList.loginOtp:
         screen = LoginOtpScreen();
         break;

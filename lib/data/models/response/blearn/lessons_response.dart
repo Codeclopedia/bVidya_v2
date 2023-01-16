@@ -1,97 +1,212 @@
-class LessonsResponse {
-  final Lessons? body;
-  final String? status;
-  final String? message;
+// To parse this JSON data, do
+//
+//     final lessonsResponse = lessonsResponseFromJson(jsonString);
 
+import 'dart:convert';
+
+class LessonsResponse {
   LessonsResponse({
     this.body,
-    this.message,
     this.status,
+    this.message,
   });
 
-  LessonsResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body'] != null ? Lessons.fromJson(json['body']) : null,
-        status = json['status'],
-        message = json['message'];
+  Lessons? body;
+  String? status;
+  String? message;
 
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['body'] = body?.toJson();
-    data['status'] = status;
-    data['message'] = message;
-    return data;
-  }
+  factory LessonsResponse.fromRawJson(String str) =>
+      LessonsResponse.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory LessonsResponse.fromJson(Map<String, dynamic> json) =>
+      LessonsResponse(
+          body: Lessons.fromJson(json["body"]),
+          status: json["status"],
+          message: json["message"]);
+
+  Map<String, dynamic> toJson() => {
+        "body": body!.toJson(),
+        "status": status,
+        "message": message,
+      };
 }
 
 class Lessons {
-  final List<Lesson>? lessons;
   Lessons({
     this.lessons,
   });
 
-  Lessons.fromJson(Map<String, dynamic> json)
-      : lessons =
-            List.from(json['lessons']).map((e) => Lesson.fromJson(e)).toList();
+  List<Lesson>? lessons;
 
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['lessons'] = lessons?.map((e) => e.toJson()).toList();
-    return data;
-  }
+  factory Lessons.fromRawJson(String str) => Lessons.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory Lessons.fromJson(Map<String, dynamic> json) => Lessons(
+        lessons:
+            List<Lesson>.from(json["lessons"]!.map((x) => Lesson.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "lessons": lessons == null
+            ? []
+            : List<dynamic>.from(lessons!.map((x) => x.toJson())),
+      };
 }
 
 class Lesson {
-  int id;
-  String name;
-  dynamic courseId;
-  dynamic userId;
-  String description;
-  String image;
-  dynamic videoId;
-  String duration;
-  String createdAt;
-  String updatedAt;
-  String videoUrl;
+  Lesson({
+    this.id,
+    this.name,
+    this.courseId,
+    this.userId,
+    this.description,
+    this.image,
+    this.videoId,
+    this.duration,
+    this.createdAt,
+    this.updatedAt,
+    this.videoUrl,
+    this.playlist,
+  });
 
-  Lesson(
-      {required this.id,
-      required this.name,
-      required this.courseId,
-      required this.userId,
-      required this.description,
-      required this.image,
-      required this.videoId,
-      required this.duration,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.videoUrl});
+  int? id;
+  String? name;
+  int? courseId;
+  int? userId;
+  String? description;
+  String? image;
+  int? videoId;
+  String? duration;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? videoUrl;
+  List<Playlist?>? playlist;
 
-  Lesson.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        name = json['name'],
-        courseId = json['course_id'],
-        userId = json['user_id'],
-        description = json['description'],
-        image = json['image'],
-        videoId = json['video_id'],
-        duration = json['duration'],
-        createdAt = json['created_at'],
-        updatedAt = json['updated_at'],
-        videoUrl = json['video_url'];
+  factory Lesson.fromRawJson(String str) => Lesson.fromJson(json.decode(str));
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['id'] = id;
-    data['name'] = name;
-    data['course_id'] = courseId;
-    data['user_id'] = userId;
-    data['description'] = description;
-    data['image'] = image;
-    data['video_id'] = videoId;
-    data['duration'] = duration;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['video_url'] = videoUrl;
-    return data;
-  }
+  String toRawJson() => json.encode(toJson());
+
+  factory Lesson.fromJson(Map<String, dynamic> json) => Lesson(
+        id: json["id"],
+        name: json["name"],
+        courseId: json["course_id"],
+        userId: json["user_id"],
+        description: json["description"],
+        image: json["image"],
+        videoId: json["video_id"],
+        duration: json["duration"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        videoUrl: json["video_url"],
+        playlist: json["playlist"] == null
+            ? []
+            : List<Playlist?>.from(
+                json["playlist"]!.map((x) => Playlist.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "course_id": courseId,
+        "user_id": userId,
+        "description": description,
+        "image": image,
+        "video_id": videoId,
+        "duration": duration,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+        "video_url": videoUrl,
+        "playlist": playlist == null
+            ? []
+            : List<dynamic>.from(playlist!.map((x) => x!.toJson())),
+      };
+}
+
+class Playlist {
+  Playlist({
+    this.id,
+    this.lessonId,
+    this.videoId,
+    this.order,
+    this.title,
+    this.location,
+    this.duration,
+    this.createdAt,
+    this.updatedAt,
+    this.media,
+  });
+
+  int? id;
+  int? lessonId;
+  int? videoId;
+  int? order;
+  String? title;
+  String? location;
+  String? duration;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  MediaDetails? media;
+
+  factory Playlist.fromRawJson(String str) =>
+      Playlist.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory Playlist.fromJson(Map<String, dynamic> json) => Playlist(
+        id: json["id"],
+        lessonId: json["lesson_id"],
+        videoId: json["video_id"],
+        order: json["order"],
+        title: json["title"],
+        location: json["location"],
+        duration: json["duration"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        media: MediaDetails.fromJson(json["media"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "lesson_id": lessonId,
+        "video_id": videoId,
+        "order": order,
+        "title": title,
+        "location": location,
+        "duration": duration,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+        "media": media!.toJson(),
+      };
+}
+
+class MediaDetails {
+  MediaDetails({
+    this.id,
+    this.title,
+    this.location,
+  });
+
+  int? id;
+  String? title;
+  String? location;
+
+  factory MediaDetails.fromRawJson(String str) =>
+      MediaDetails.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory MediaDetails.fromJson(Map<String, dynamic> json) => MediaDetails(
+        id: json["id"],
+        title: json["title"],
+        location: json["location"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "title": title,
+        "location": location,
+      };
 }

@@ -56,10 +56,10 @@ Future<ChatMessage?> makeAudioCall(
       'call_direction_type': CallDirectionType.outgoing
     };
     hideLoading(ref);
-    if (contact.fcmToken?.isNotEmpty == true) {
-      FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
-          callBody, user.id.toString(), user.name, user.image, false);
-    }
+    // if (contact.fcmToken?.isNotEmpty == true) {
+    //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
+    //       callBody, user.id.toString(), user.name, user.image, false);
+    // }
 
     Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
     return logCallEvent(
@@ -70,8 +70,9 @@ Future<ChatMessage?> makeAudioCall(
         contact.name,
         CallType.audio,
         CallDirectionType.outgoing,
-        contact.fcmToken!,
-        contact.profileImage
+        user.fcmToken,
+        contact.profileImage,
+        callBody: callBody
         // fromFCM: user.fcmToken,
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
@@ -118,10 +119,10 @@ Future<ChatMessage?> makeVideoCall(
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing
     };
-    if (contact.fcmToken?.isNotEmpty == true) {
-      FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
-          callBody, user.id.toString(), user.name, user.image, true);
-    }
+    // if (contact.fcmToken?.isNotEmpty == true) {
+    //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
+    //       callBody, user.id.toString(), user.name, user.image, true);
+    // }
     hideLoading(ref);
 
     await Navigator.pushNamed(context, RouteList.bChatVideoCall,
@@ -134,8 +135,9 @@ Future<ChatMessage?> makeVideoCall(
         contact.name,
         CallType.video,
         CallDirectionType.outgoing,
-        contact.fcmToken!,
-        contact.profileImage
+        user.fcmToken,
+        contact.profileImage,
+        callBody: callBody
         // fromFCM: user.fcmToken,
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
@@ -237,18 +239,18 @@ Future receiveCall(String authToken, String fcmToken, String callId,
 // }
 
 Future<ChatMessage?> logCallEvent(
-  WidgetRef ref,
-  String callId,
-  String fromName,
-  String toId,
-  String toName,
-  CallType callType,
-  CallDirectionType callDirectionType,
-  String image,
-  String fcm, {
-  int duration = 0,
-  CallStatus status = CallStatus.ongoing,
-}) async {
+    WidgetRef ref,
+    String callId,
+    String fromName,
+    String toId,
+    String toName,
+    CallType callType,
+    CallDirectionType callDirectionType,
+    String fcm,
+    String image,
+    {int duration = 0,
+    CallStatus status = CallStatus.ongoing,
+    required CallBody callBody}) async {
   try {
     final callMessageBody = CallMessegeBody(
       callId: callId,
@@ -258,13 +260,22 @@ Future<ChatMessage?> logCallEvent(
       image: image,
       toName: toName,
       status: status,
-      ext: {},
+      ext: {'fcm': fcm, 'call_body': jsonEncode(callBody)},
     );
 
     final message = ChatMessage.createCustomSendMessage(
         targetId: toId, event: jsonEncode(callMessageBody.toJson()));
 
-    message.attributes = {"em_force_notification": false};
+    message.attributes = {
+      "em_apns_ext": {
+        'type': NotiConstants.typeCall,
+        'name': fromName,
+        'image': image,
+        'content_type': message.body.type.name,
+      },
+      "em_force_notification": true
+    };
+    // message.attributes = {"em_force_notification": true};
 
     final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
     CallListModel model = CallListModel(callMessageBody.fromName,

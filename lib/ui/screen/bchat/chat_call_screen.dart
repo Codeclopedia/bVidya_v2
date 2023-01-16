@@ -52,7 +52,7 @@ class ChatCallScreen extends ConsumerWidget {
       if (next.isCallEnded && !provider.disconnected) {
         // Navigator.pop(context);
         if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.home);
+          Navigator.pushReplacementNamed(context, RouteList.splash);
         } else {
           Navigator.pop(context);
         }

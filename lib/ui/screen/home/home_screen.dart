@@ -11,8 +11,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 
 // import '/core/sdk_helpers/bchat_sdk_controller.dart';
+// import '/core/sdk_helpers/bchat_contact_manager.dart';
+
 import '/controller/bchat_providers.dart';
-import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
@@ -219,6 +220,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 Text(
                   textMessage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     fontWeight: model.badgeCount > 0

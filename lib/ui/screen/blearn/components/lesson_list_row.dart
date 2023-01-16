@@ -3,7 +3,7 @@
 import 'package:bvidya/core/state.dart';
 import 'package:bvidya/ui/screens.dart';
 
-import '/core/helpers/video_helper.dart';
+// import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
@@ -64,7 +64,7 @@ class LessonListRow extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        lesson.name,
+                        lesson.name??'',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 11.sp,
@@ -93,7 +93,7 @@ class LessonListRow extends StatelessWidget {
                 onTap: () async {
                   showLoading(ref);
                   ref.read(currentVideoIdProvider.notifier).state =
-                      lesson.videoId;
+                      lesson.videoId!;
                   Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       arguments: {
                         "lesson": lesson,
@@ -109,7 +109,7 @@ class LessonListRow extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 1.h),
-                        child: Text(lesson.description),
+                        child: Text(lesson.description??''),
                       ),
                     ),
                     const Icon(Icons.play_circle)

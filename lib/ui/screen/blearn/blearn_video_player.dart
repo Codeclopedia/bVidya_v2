@@ -47,11 +47,6 @@ class BlearnVideoPlayer extends HookConsumerWidget {
         await sendVideoPlayback(ref, instructorId);
       });
 
-      flickManager?.flickVideoManager?.addListener(() {
-        flickManager?.flickVideoManager?.isPlaying ?? false
-            ? timer.start()
-            : timer.pause();
-      });
       return () {
         print('Disponse called');
         flickManager?.dispose();
@@ -137,14 +132,17 @@ class BlearnVideoPlayer extends HookConsumerWidget {
           return GestureDetector(
             onTap: () async {
               ref.read(videoStateProvider.notifier).state = false;
-              await flickManager?.dispose();
-              flickManager = null;
-              ref.read(selectedIndexLessonProvider.notifier).state = index;
-              flickManager = FlickManager(
-                videoPlayerController:
-                    VideoPlayerController.network(lessons[index].videoUrl),
-              );
 
+              // await flickManager?.dispose();
+              // flickManager = null;
+              ref.read(selectedIndexLessonProvider.notifier).state = index;
+              timer.pause();
+              flickManager?.handleChangeVideo(
+                  VideoPlayerController.network(lessons[index].videoUrl ?? ''));
+              // flickManager = FlickManager(
+              //   videoPlayerController: VideoPlayerController.network(
+              //       lessons[index].videoUrl ?? ""),
+              // );
               // _chewieController?.pause();
               // showLoading(ref);
               // _videoPlayerController = VideoPlayerController.network(
@@ -155,8 +153,10 @@ class BlearnVideoPlayer extends HookConsumerWidget {
               // _createChewieController();
 
               // hideLoading(ref);
-              ref.read(currentVideoIdProvider.notifier).state = lesson.videoId;
+              ref.read(currentVideoIdProvider.notifier).state =
+                  lesson.videoId ?? 0;
               ref.read(videoStateProvider.notifier).state = true;
+              timer.start();
             },
             child: LessonListTile(
               index: index,
@@ -172,8 +172,14 @@ class BlearnVideoPlayer extends HookConsumerWidget {
   init() {
     print('Init called');
     flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.network(lesson.videoUrl),
+      videoPlayerController:
+          VideoPlayerController.network(lesson.videoUrl ?? ""),
     );
+    flickManager?.flickVideoManager?.addListener(() {
+      flickManager?.flickVideoManager?.isPlaying ?? false
+          ? timer.start()
+          : timer.pause();
+    });
   }
 
   // dispose() {

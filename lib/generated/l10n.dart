@@ -880,6 +880,56 @@ class S {
     );
   }
 
+  /// `Options`
+  String get chat_menu_title {
+    return Intl.message(
+      'Options',
+      name: 'chat_menu_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy`
+  String get chat_menu_copy {
+    return Intl.message(
+      'Copy',
+      name: 'chat_menu_copy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forward`
+  String get chat_menu_forward {
+    return Intl.message(
+      'Forward',
+      name: 'chat_menu_forward',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reply`
+  String get chat_menu_reply {
+    return Intl.message(
+      'Reply',
+      name: 'chat_menu_reply',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get chat_menu_delete {
+    return Intl.message(
+      'Delete',
+      name: 'chat_menu_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Display Name`
   String get pr_name {
     return Intl.message(

@@ -33,35 +33,21 @@ class SplashScreen extends ConsumerWidget {
       });
       return;
     }
-    if (activeCallMap != null) {
-      String fromName = activeCallMap!['from_name'];
-      String callerFCM = activeCallMap!['caller_fcm'];
-      String image = activeCallMap!['image'];
-      CallBody body = CallBody.fromJson(jsonDecode(activeCallMap!['body']));
-      bool hasVideo = activeCallMap!['has_video'];
 
-      Map<String, dynamic> callMap = {
-        'name': fromName,
-        'fcm_token': callerFCM,
-        'image': image,
-        'call_info': body,
-        'call_direction_type': CallDirectionType.incoming,
-        'direct': true
-      };
-
-      Navigator.pushReplacementNamed(context,
-          hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
-          arguments: callMap);
-      return;
-    }
-    final initialAction = NotificationController.initialAction;
+    final initialAction = NotificationController.clickAction;
     if (initialAction != null &&
         initialAction.payload != null &&
         initialAction.channelKey == 'chat_channel') {
+      debugPrint(
+          'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
+
       if (await NotificationController.handleChatNotificationAction(
           initialAction.payload!, context, true)) {
+        debugPrint('  initialAction is not null');
         return;
       }
+    } else {
+      debugPrint('  initialAction is null ${initialAction != null}');
     }
     final message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null && message.data.isNotEmpty) {
@@ -81,7 +67,9 @@ class SplashScreen extends ConsumerWidget {
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
-
+          if (!_handleCallScreen(context)) {
+            return;
+          }
           await ref
               .read(chatConversationProvider.notifier)
               .setup(ref.read(bChatProvider), next.value!);
@@ -108,6 +96,31 @@ class SplashScreen extends ConsumerWidget {
     // return const Scaffold(
     //   body: SafeArea(child: CustomCalendar()),
     // );
+  }
+
+  bool _handleCallScreen(BuildContext context) {
+    if (activeCallMap != null && activeCallId!=null) {
+      String fromName = activeCallMap!['from_name'];
+      String callerFCM = activeCallMap!['caller_fcm'];
+      String image = activeCallMap!['image'];
+      CallBody body = CallBody.fromJson(jsonDecode(activeCallMap!['body']));
+      bool hasVideo = activeCallMap!['has_video'];
+
+      Map<String, dynamic> callMap = {
+        'name': fromName,
+        'fcm_token': callerFCM,
+        'image': image,
+        'call_info': body,
+        'call_direction_type': CallDirectionType.incoming,
+        'direct': true
+      };
+
+      Navigator.pushReplacementNamed(context,
+          hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
+          arguments: callMap);
+      return true;
+    }
+    return false;
   }
 
   Widget get _splashScreen => Scaffold(

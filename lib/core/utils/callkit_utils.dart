@@ -121,7 +121,7 @@ Future<void> handlShowIncomingCallNotification(RemoteMessage remoteMessage,
   String image = remoteMessage.data['image'];
   bool hasVideo = remoteMessage.data['has_video'] == 'true';
   // makeFakeCallInComing();
-  await _showIncomingCallScreen(
+  await showIncomingCallScreen(
       body, fromName, fromId, fromFCM, image, hasVideo);
   try {
     final user = await getMeAsUser();
@@ -201,7 +201,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }
 
-_showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
+showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
     String fromFCM, String image, bool hasVideo) async {
   final kitParam = CallKitParams(
     appName: 'bVidya',

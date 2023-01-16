@@ -43,7 +43,7 @@ class LessonListTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      lesson.name,
+                      lesson.name ?? '',
                       style: TextStyle(
                         color: openIndex == index ? Colors.white : Colors.black,
                         fontSize: 11.sp,

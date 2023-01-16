@@ -100,7 +100,7 @@ class CourseDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${course.numberOfLesson} Lessons | ${course.duration!.replaceAll(":", ".")} Hours',
+              '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 8.sp,
@@ -113,7 +113,7 @@ class CourseDetailScreen extends StatelessWidget {
                 return ref.watch(bLearnLessonsProvider(course.id!)).when(
                     data: (data) {
                       if (data?.lessons?.isNotEmpty == true) {
-                        return _buildLessons(ref, data!.lessons!);
+                        return _buildLessons(ref, data!.lessons ?? []);
                       } else {
                         return Center(
                             child: Column(

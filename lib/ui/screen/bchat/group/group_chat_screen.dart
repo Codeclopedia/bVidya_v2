@@ -201,11 +201,14 @@ class GroupChatScreen extends HookConsumerWidget {
 
         msg.attributes = {
           "em_apns_ext": {
-            "em_push_title":
-                "${model.groupInfo.name}: ${_me.name} sent you a message",
-            "em_push_content": input,
+            // "em_push_title":
+            //     "${model.groupInfo.name}: ${_me.name} sent you a message",
+            // "em_push_content": input,
             'type': 'group_chat',
-            'fId': _me.userId
+            'name': _me.name,
+            'image': model.image,
+            'group_name': model.groupInfo.name,
+            'content_type': msg.body.type.name,
           },
           // Adds the push template to the message.
           // "em_push_template": {
@@ -291,11 +294,14 @@ class GroupChatScreen extends HookConsumerWidget {
                       }
                       msg.attributes = {
                         "em_apns_ext": {
-                          "em_push_title":
-                              "${model.groupInfo.name}: ${_me.name} sent you a message",
-                          "em_push_content": content,
+                          // "em_push_title":
+                          //     "${model.groupInfo.name}: ${_me.name} sent you a message",
+                          // "em_push_content": content,
                           'type': 'group_chat',
-                          'fId': _me.userId
+                          'name': _me.name,
+                          'image': model.image,
+                          'group_name': model.groupInfo.name,
+                          'content_type': msg.body.type.name,
                         },
                         // Adds the push template to the message.
                         // "em_push_template": {

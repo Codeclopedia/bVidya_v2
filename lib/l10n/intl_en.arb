@@ -96,6 +96,11 @@
     "contact_menu_block":"Block Contact",
     "contact_menu_unblock":"Unblock Contact",
     
+    "chat_menu_title":"Options",
+    "chat_menu_copy":"Copy",
+    "chat_menu_forward":"Forward",
+    "chat_menu_reply":"Reply",
+    "chat_menu_delete":"Delete",
 
     "pr_name":"Display Name",
     "pr_email":"Email Address",

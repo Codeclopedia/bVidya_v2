@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/ui/dialog/message_menu_popup.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
@@ -234,11 +235,13 @@ class ChatScreen extends HookConsumerWidget {
                       }
                       msg.attributes = {
                         "em_apns_ext": {
-                          "em_push_title":
-                              "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
-                          "em_push_content": content,
+                          // "em_push_title":
+                          //     "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
+                          // "em_push_content": content,
                           'type': 'chat',
-                          'fId': _me.userId
+                          'name': _me.name,
+                          'image': _me.profileImage,
+                          'content_type': msg.body.type.name,
                         },
                         // Adds the push template to the message.
                         // "em_push_template": {
@@ -342,10 +345,12 @@ class ChatScreen extends HookConsumerWidget {
             // ..from = _myChatPeerUserId;
             msg.attributes = {
               "em_apns_ext": {
-                "em_push_title": "${_me.name} sent you a message",
-                "em_push_content": input,
+                // "em_push_title": "${_me.name} sent you a message",
+                // "em_push_content": input,
                 'type': 'chat',
-                'fId': _me.userId
+                'name': _me.name,
+                'image': _me.profileImage,
+                'content_type': msg.body.type.name,
               },
               //   // Adds the push template to the message.
               //   // "em_push_template": {
@@ -484,7 +489,7 @@ class ChatScreen extends HookConsumerWidget {
 
         bool notReply = message.body.type == MessageType.CMD ||
             message.body.type == MessageType.CUSTOM;
-        print('notReply -> $notReply , type=> ${message.chatType} ');
+        // print('notReply -> $notReply , type=> ${message.chatType} ');
 
         return Column(
           // crossAxisAlignment:
@@ -517,11 +522,14 @@ class ChatScreen extends HookConsumerWidget {
                       // print('open replyBox');
                     },
               child: GestureDetector(
-                onLongPress: () =>
-                    _onMessageLongPress(message, isSelected, ref),
-                onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTapSelect(message, isSelected, ref)
-                    : _onMessageTap(message, context),
+                onLongPress: notReply
+                    ? null
+                    : () => _onMessageLongPress(message, isSelected, ref),
+                onTap: () => notReply
+                    ? null
+                    : selectedItems.isNotEmpty
+                        ? _onMessageTapSelect(message, isSelected, ref)
+                        : _onMessageTap(message, context, ref),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
@@ -553,22 +561,44 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  _onMessageTap(ChatMessage message, BuildContext context) {
-    if (message.body.type == MessageType.IMAGE) {
-      //open image
-      showImageViewer(
-          context,
-          getImageProviderChatImage(message.body as ChatImageMessageBody,
-              loadThumbFirst: false), onViewerDismissed: () {
-        // print("dismissed");
-      });
+  _onMessageTap(
+      ChatMessage message, BuildContext context, WidgetRef ref) async {
+    // if (message.body.type == MessageType.IMAGE) {
+    //   //open image
+    //   showImageViewer(
+    //       context,
+    //       getImageProviderChatImage(message.body as ChatImageMessageBody,
+    //           loadThumbFirst: false), onViewerDismissed: () {
+    //     // print("dismissed");
+    //   });
 
-      // Navigator.pushNamed(context, RouteList.bViewImage,
-      //     arguments: message.body as ChatImageMessageBody);
-    } else if (message.body.type == MessageType.VIDEO) {
-      Navigator.pushNamed(context, RouteList.bViewVideo,
-          arguments: message.body as ChatVideoMessageBody);
-    } else if (message.body.type == MessageType.FILE) {}
+    //   // Navigator.pushNamed(context, RouteList.bViewImage,
+    //   //     arguments: message.body as ChatImageMessageBody);
+    // } else if (message.body.type == MessageType.VIDEO) {
+    //   Navigator.pushNamed(context, RouteList.bViewVideo,
+    //       arguments: message.body as ChatVideoMessageBody);
+    // } else if (message.body.type == MessageType.FILE) {
+    // } else
+    {
+      final action = await showMessageMenu(context, message);
+      if (action == 0) {
+        //Copy
+        AppSnackbar.instance.message(context, 'Need to implement');
+      } else if (action == 1) {
+        //Forward
+        AppSnackbar.instance.message(context, 'Need to implement');
+      } else if (action == 2) {
+        //Reply
+        bool isOwnMessage = message.from != model.id;
+        ref.read(chatModelProvider.notifier).setReplyOn(message,
+            isOwnMessage ? S.current.bmeet_user_you : model.contact.name);
+      } else if (action == 3) {
+        //Delete
+        ref
+            .read(bhatMessagesProvider(model).notifier)
+            .deleteMessages([message]);
+      }
+    }
   }
 
   _onMessageTapSelect(ChatMessage message, bool selected, WidgetRef ref) {

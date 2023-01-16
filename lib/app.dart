@@ -112,7 +112,8 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           closeIncomingCall(message);
         }
       } else {
-        NotificationController.shouldShowChatNotification(message);
+        NotificationController.handleRemoteMessage(message, true);
+        // NotificationController.shouldShowChatNotification(message);
       }
     });
 
