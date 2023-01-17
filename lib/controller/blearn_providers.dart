@@ -36,6 +36,16 @@ final bLearnCoursesProvider =
   return ref.read(bLearnRepositoryProvider).getCourses(id);
 });
 
+final blearnSubscribeCourseProvider =
+    FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).subscribeCourse(id);
+});
+
+final blearnAddorRemoveinWishlistProvider =
+    FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).changeinWishlist(id);
+});
+
 final bLearnLessonsProvider = FutureProvider.family<Lessons?, int>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getLessons(id);
 });
@@ -57,14 +67,12 @@ final bLearnInstructorProfileProvider =
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose
     .family<List<FollowedInstructor>, String>((ref, id) async {
   final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
+  await ref.refresh(isFollowedInstructor(id));
 
   return result ?? [];
 });
 
-
-
 final bLearnCourseDetailProvider =
     FutureProvider.autoDispose.family<CourseDetailBody?, int>((ref, id) {
-  
   return ref.read(bLearnRepositoryProvider).getCourseDetail(id);
 });

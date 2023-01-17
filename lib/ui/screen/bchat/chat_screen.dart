@@ -5,8 +5,11 @@ import 'package:bvidya/app.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
@@ -374,12 +377,87 @@ class ChatScreen extends HookConsumerWidget {
             return await _sendMessage(msg, ref);
           },
           onCamera: () {
-            _pickFiles(AttachType.cameraPhoto, ref);
+            _pickFile(AttachType.cameraPhoto, ref, context);
           },
-          onAttach: (type) => _pickFiles(type, ref),
+          onAttach: (type) => _pickFile(type, ref, context),
         );
       },
     );
+  }
+
+  _pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
+    ImagePicker picker = ImagePicker();
+    switch (type) {
+      case AttachType.cameraPhoto:
+        // SelectedImagesDetails? details =
+        //     await picker.pickImage(source: ImageSource.camera);
+        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+        if (xFile != null) {
+          // File file = xFile.path;
+          final Media media = Media(
+              path: xFile.path,
+              size: (await xFile.length()).toDouble(),
+              thumbPath: xFile.path);
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.IMAGE);
+        }
+        break;
+      case AttachType.cameraVideo:
+        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+        if (xFile != null) {
+          final thumb = await VideoThumbnail.thumbnailFile(
+            video: xFile.path,
+            thumbnailPath: Directory.systemTemp.path,
+            imageFormat: ImageFormat.JPEG,
+            maxWidth: 128,
+            quality: 25,
+          );
+          final Media media = Media(
+              path: xFile.path,
+              size: (await xFile.length()).toDouble(),
+              thumbPath: thumb);
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.VIDEO);
+        }
+        break;
+      case AttachType.media:
+        ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
+        ipp.SelectedImagesDetails? details =
+            await pickerPlus.pickBoth(source: ipp.ImageSource.gallery);
+        if (details != null && details.selectedFiles.isNotEmpty) {
+          File file = details.selectedFiles.first.selectedFile;
+          bool isImage = file.path.toLowerCase().endsWith('png') ||
+              file.path.toLowerCase().endsWith('jpg') ||
+              file.path.toLowerCase().endsWith('jpeg');
+          if (isImage) {
+            final Media media = Media(
+                path: file.absolute.path,
+                size: (await file.length()).toDouble(),
+                thumbPath: file.absolute.path);
+            ref.read(attachedFile.notifier).state =
+                AttachedFile(media, MessageType.IMAGE);
+          } else {
+            final thumb = await VideoThumbnail.thumbnailFile(
+              video: file.path,
+              thumbnailPath: Directory.systemTemp.path,
+              imageFormat: ImageFormat.JPEG,
+              maxWidth: 128,
+              quality: 25,
+            );
+            final Media media = Media(
+                path: file.absolute.path,
+                size: (await file.length()).toDouble(),
+                thumbPath: thumb);
+            ref.read(attachedFile.notifier).state =
+                AttachedFile(media, MessageType.VIDEO);
+          }
+        }
+        break;
+      case AttachType.audio:
+        break;
+      case AttachType.docs:
+        break;
+    }
   }
 
   _pickFiles(AttachType type, WidgetRef ref) async {

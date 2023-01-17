@@ -104,7 +104,6 @@ class BLearnApiService {
     }
   }
 
-
   Future<CourseDetailResponse> getCourseDetail(
       String token, int courseId) async {
     _dio.options.headers["X-Auth-Token"] = token;
@@ -128,6 +127,25 @@ class BLearnApiService {
     }
   }
 
+//to add or remove course in wishlist
+  Future<BaseResponse> wishlistAddorRemove(String token, int courseId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      // print('requst id ${courseId}');
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.lmswishlist}$courseId');
+      if (response.statusCode == 200) {
+        print(response);
+        print(BaseResponse.fromJson(response.data));
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(message: "Something went wrong", status: "error");
+      }
+    } catch (e) {
+      return BaseResponse(message: "Something went wrong", status: "error");
+    }
+  }
+
   Future<LessonsResponse> getLessons(String token, int courseId) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {
@@ -143,6 +161,28 @@ class BLearnApiService {
       }
     } catch (e) {
       return LessonsResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+//to subscribe course
+  Future<BaseResponse> subscribeCourse(String token, int courseId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      // print('requst id ${courseId}');
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.lmsSubscribeCourse}$courseId');
+      if (response.statusCode == 200) {
+        print(response.statusCode);
+        print(response);
+        print(response.data);
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
 
@@ -220,7 +260,7 @@ class BLearnApiService {
   //         status: 'error', message: 'Unknown error - $e');
   //   }
   // }
-    Future<ProfileDetailResponse> getInstructorProfileDetail(
+  Future<ProfileDetailResponse> getInstructorProfileDetail(
       String authToken, String instructorId) async {
     try {
       _dio.options.headers["X-Auth-Token"] = authToken;

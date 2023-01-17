@@ -85,6 +85,8 @@ class Routes {
 
       case RouteList.groupChatScreen:
         if (settings.arguments is GroupConversationModel) {
+          currentId = (settings.arguments as GroupConversationModel).id;
+
           screen = GroupChatScreen(
             model: settings.arguments as GroupConversationModel,
           );
@@ -97,6 +99,7 @@ class Routes {
           currentId = (settings.arguments as GroupConversationModel).id;
           screen = GroupChatScreen(
             model: settings.arguments as GroupConversationModel,
+            direct: true,
           );
         } else {
           screen = _parameterMissing();

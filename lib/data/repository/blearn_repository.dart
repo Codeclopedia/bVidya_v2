@@ -67,6 +67,24 @@ class BLearnRepository {
     }
   }
 
+  Future<BaseResponse?> subscribeCourse(int courseId) async {
+    final result = await _api.subscribeCourse(_authToken, courseId);
+    if (result.status == "success" && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
+  Future<BaseResponse?> changeinWishlist(int courseId) async {
+    final result = await _api.wishlistAddorRemove(_authToken, courseId);
+    if (result.status == "success" && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
   Future<Instructors?> getInstructors() async {
     final result = await _api.getIntructors(_authToken);
     if (result.status == successfull && result.body != null) {

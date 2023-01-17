@@ -14,7 +14,7 @@ class LessonListRow extends StatelessWidget {
   final Lesson lesson;
   final WidgetRef ref;
   final Function(int) onExpand;
-  final int courseId;
+  final Course course;
   final int instructorId;
 
   const LessonListRow(
@@ -24,7 +24,7 @@ class LessonListRow extends StatelessWidget {
       required this.openIndex,
       required this.ref,
       required this.onExpand,
-      required this.courseId,
+      required this.course,
       required this.instructorId})
       : super(key: key);
 
@@ -39,84 +39,170 @@ class LessonListRow extends StatelessWidget {
       padding: EdgeInsets.only(top: 2.h, left: 4.w, bottom: 2.h, right: 4.w),
       child: Column(
         children: [
-          GestureDetector(
-            onTap: () {
-              onExpand(openIndex == index ? -1 : index);
-              // openIndex == index
-              //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
-              //     : ref.read(selectedIndexLessonProvider.notifier).state =
-              //         index;
-            },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
+          lesson.playlist?.isEmpty == true
+              ? GestureDetector(
+                  onTap: () {
+                    showLoading(ref);
+                    ref.read(currentVideoIdProvider.notifier).state =
+                        lesson.videoId!;
+                    Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                        arguments: {
+                          "lesson": lesson,
+                          "course": course,
+                          'instructor_id': instructorId
+                        });
+                    ref.read(selectedIndexLessonProvider.notifier).state =
+                        index;
+                    hideLoading(ref);
+                  },
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Lesson ${index + 1}',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 8.sp,
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.w300,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Lesson ${index + 1}',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 8.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            Text(
+                              lesson.name ?? '',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 11.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        lesson.name??'',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 11.sp,
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.h),
+                        child: const Icon(Icons.play_circle_outline_sharp),
+                      ),
+                    ],
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    onExpand(openIndex == index ? -1 : index);
+                    // openIndex == index
+                    //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
+                    //     : ref.read(selectedIndexLessonProvider.notifier).state =
+                    //         index;
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Lesson ${index + 1}',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 8.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            Text(
+                              lesson.name ?? '',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 11.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.h),
+                        child: Icon(
+                          openIndex == index
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 2.h),
-                  child: Icon(
-                    openIndex == index
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
-                ),
-              ],
-            ),
-          ),
           if (openIndex == index)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.h),
-              child: GestureDetector(
-                onTap: () async {
-                  showLoading(ref);
-                  ref.read(currentVideoIdProvider.notifier).state =
-                      lesson.videoId!;
-                  Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                      arguments: {
-                        "lesson": lesson,
-                        "course_id": courseId,
-                        'instructor_id': instructorId
-                      });
-                  hideLoading(ref);
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.ondemand_video),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 1.h),
-                        child: Text(lesson.description??''),
-                      ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: lesson.playlist?.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 2.h),
+                  child: GestureDetector(
+                    onTap: () async {
+                      showLoading(ref);
+                      ref.read(currentVideoIdProvider.notifier).state =
+                          lesson.videoId!;
+                      Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                          arguments: {
+                            "lesson": lesson,
+                            "course": course,
+                            'instructor_id': instructorId
+                          });
+                      hideLoading(ref);
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.play_circle_outline_sharp),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 1.h),
+                            child: Text(lesson.playlist?[index]?.title ?? ''),
+                          ),
+                        ),
+                      ],
                     ),
-                    const Icon(Icons.play_circle)
-                  ],
-                ),
-              ),
-            )
+                  ),
+                );
+              },
+            ),
+          // if (openIndex == index)
+          //   Padding(
+          //     padding: EdgeInsets.symmetric(vertical: 2.h),
+          //     child: GestureDetector(
+          //       onTap: () async {
+          //         showLoading(ref);
+          //         ref.read(currentVideoIdProvider.notifier).state =
+          //             lesson.videoId!;
+          //         Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+          //             arguments: {
+          //               "lesson": lesson,
+          //               "course_id": courseId,
+          //               'instructor_id': instructorId
+          //             });
+          //         hideLoading(ref);
+          //       },
+          //       child: Row(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           const Icon(Icons.play_circle_outline_sharp),
+          //           Expanded(
+          //             child: Padding(
+          //               padding: EdgeInsets.symmetric(horizontal: 1.h),
+          //               child: Text(lesson.description ?? ''),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   )
         ],
       ),
     );

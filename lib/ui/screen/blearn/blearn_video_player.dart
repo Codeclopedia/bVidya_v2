@@ -1,10 +1,12 @@
 // import 'package:chewie/chewie.dart';
 // import 'dart:async';
 
+import 'package:bvidya/ui/screen/blearn/components/lesson_list_row.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../data/models/response/blearn/courses_response.dart';
 import '/core/constants/colors.dart';
 import '/core/helpers/video_helper.dart';
 import '/controller/blearn_providers.dart';
@@ -25,13 +27,13 @@ final currentVideoIdProvider = StateProvider<int>(
 // ignore: must_be_immutable
 class BlearnVideoPlayer extends HookConsumerWidget {
   final Lesson lesson;
-  final int courseId;
+  final Course course;
   final int instructorId;
 
   BlearnVideoPlayer(
       {Key? key,
       required this.lesson,
-      required this.courseId,
+      required this.course,
       required this.instructorId})
       : super(key: key);
 
@@ -61,6 +63,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
         child: Stack(
           children: [
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 !ref.watch(videoStateProvider) || flickManager == null
@@ -87,20 +90,105 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                 SizedBox(
                   height: 4.w,
                 ),
+                Consumer(builder: (context, ref, child) {
+                  int selectedIndex =
+                      ref.watch(selectedTabCourseDetailProvider);
+                  return ref
+                      .watch(bLearnCourseDetailProvider(course.id ?? 0))
+                      .when(
+                          data: (data) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.w),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      data?.courses?[0].name ?? '',
+                                      style: TextStyle(
+                                          fontFamily: kFontFamily,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  InkWell(
+                                    onTap: () async {
+                                      ref.watch(
+                                          blearnAddorRemoveinWishlistProvider(
+                                              data?.courses?[0].id ?? 0));
+                                      ref.refresh(bLearnCourseDetailProvider(
+                                          course.id ?? 0));
+                                    },
+                                    child: Container(
+                                      width: 12.w,
+                                      height: 12.w,
+                                      decoration: BoxDecoration(
+                                          color: data?.isWishlisted == true
+                                              ? Colors.pink[100]
+                                              : AppColors.cardWhite,
+                                          shape: BoxShape.circle,
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.grey,
+                                              // offset: Offset(0, 0),
+                                              // blurRadius: 1,
+                                            )
+                                          ]),
+                                      child: data?.isWishlisted == true
+                                          ? Icon(
+                                              Icons.favorite,
+                                              color: Colors.pink[400],
+                                            )
+                                          : Icon(
+                                              Icons.favorite_outline,
+                                              size: 8.w,
+                                              color: AppColors.iconGreyColor,
+                                            ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          error: ((error, stackTrace) =>
+                              buildEmptyPlaceHolder('Error')),
+                          loading: () => buildLoading);
+                }),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Text(
+                    '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
+                    style: TextStyle(
+                      fontFamily: kFontFamily,
+                      fontSize: 8.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 3.w,
+                ),
                 Consumer(
                   builder: (context, ref, child) {
-                    return ref.watch(bLearnLessonsProvider(courseId)).when(
-                        data: (data) {
-                          if (data?.lessons?.isNotEmpty == true) {
-                            return _buildLessons(ref, data!.lessons!);
-                          } else {
-                            return buildEmptyPlaceHolder('No Lessons');
-                            // return _buildLessons();
-                          }
-                        },
-                        error: (error, stackTrace) =>
-                            buildEmptyPlaceHolder('text'),
-                        loading: () => buildLoading);
+                    return ref
+                        .watch(bLearnLessonsProvider(course.id ?? 0))
+                        .when(
+                            data: (data) {
+                              if (data?.lessons?.isNotEmpty == true) {
+                                return _buildLessons(ref, data!.lessons!);
+                              } else {
+                                return buildEmptyPlaceHolder('No Lessons');
+                                // return _buildLessons();
+                              }
+                            },
+                            error: (error, stackTrace) =>
+                                buildEmptyPlaceHolder('text'),
+                            loading: () => buildLoading);
                   },
                 ),
               ],
@@ -125,46 +213,55 @@ class BlearnVideoPlayer extends HookConsumerWidget {
     final selectedIndex = ref.watch(selectedIndexLessonProvider);
 
     return Expanded(
-      child: ListView.builder(
-        itemCount: lessons.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () async {
-              ref.read(videoStateProvider.notifier).state = false;
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4.w),
+        child: ListView.builder(
+          itemCount: lessons.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () async {
+                showLoading(ref);
+                ref.read(videoStateProvider.notifier).state = false;
 
-              // await flickManager?.dispose();
-              // flickManager = null;
-              ref.read(selectedIndexLessonProvider.notifier).state = index;
-              timer.pause();
-              flickManager?.handleChangeVideo(
-                  VideoPlayerController.network(lessons[index].videoUrl ?? ''));
-              // flickManager = FlickManager(
-              //   videoPlayerController: VideoPlayerController.network(
-              //       lessons[index].videoUrl ?? ""),
-              // );
-              // _chewieController?.pause();
-              // showLoading(ref);
-              // _videoPlayerController = VideoPlayerController.network(
-              //     lessons[index].videoUrl.toString());
-              // // await Future.wait([]);
+                // await flickManager?.dispose();
+                // flickManager = null;
+                ref.read(selectedIndexLessonProvider.notifier).state = index;
+                timer.pause();
+                flickManager?.handleChangeVideo(VideoPlayerController.network(
+                    lessons[index].videoUrl ?? ''));
+                // flickManager = FlickManager(
+                //   videoPlayerController: VideoPlayerController.network(
+                //       lessons[index].videoUrl ?? ""),
+                // );
+                // _chewieController?.pause();
+                // showLoading(ref);
+                // _videoPlayerController = VideoPlayerController.network(
+                //     lessons[index].videoUrl.toString());
+                // // await Future.wait([]);
 
-              // await _videoPlayerController.initialize();
-              // _createChewieController();
+                // await _videoPlayerController.initialize();
+                // _createChewieController();
 
-              // hideLoading(ref);
-              ref.read(currentVideoIdProvider.notifier).state =
-                  lesson.videoId ?? 0;
-              ref.read(videoStateProvider.notifier).state = true;
-              timer.start();
-            },
-            child: LessonListTile(
-              index: index,
-              openIndex: selectedIndex,
-              lesson: lessons[index],
-            ),
-          );
-        },
+                // hideLoading(ref);
+                ref.read(currentVideoIdProvider.notifier).state =
+                    lesson.videoId ?? 0;
+                ref.read(videoStateProvider.notifier).state = true;
+                timer.start();
+                hideLoading(ref);
+              },
+              child: LessonListTile(
+                index: index,
+                courseId: course.id ?? 0,
+                instructorId: instructorId,
+                onExpand: (p0) {},
+                ref: ref,
+                openIndex: selectedIndex,
+                lesson: lessons[index],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

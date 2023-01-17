@@ -34,7 +34,7 @@ import '../../../widgets.dart';
 import '../models/reply_model.dart';
 import '../../../widget/chat_input_box.dart';
 import '../widgets/chat_message_bubble.dart';
-import '../widgets/typing_indicator.dart';
+// import '../widgets/typing_indicator.dart';
 
 final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 final sendingGroupFileProgress = StateProvider.autoDispose<int>((_) => 0);
@@ -237,7 +237,7 @@ class GroupChatScreen extends HookConsumerWidget {
         return await _sendMessage(msg, ref);
       },
       onCamera: () {
-        _pickFiles(AttachType.cameraPhoto, ref);
+        _pickFile(AttachType.cameraPhoto, ref,context);
       },
       onAttach: (type) => _pickFile(type, ref, context),
     );
@@ -355,7 +355,6 @@ class GroupChatScreen extends HookConsumerWidget {
       case AttachType.cameraPhoto:
         // SelectedImagesDetails? details =
         //     await picker.pickImage(source: ImageSource.camera);
-
         XFile? xFile = await picker.pickImage(source: ImageSource.camera);
         if (xFile != null) {
           // File file = xFile.path;

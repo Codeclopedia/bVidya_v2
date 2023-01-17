@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/ui/screens.dart';
 import 'package:spring/spring.dart';
 
 import '/ui/widget/sliding_tab.dart';
@@ -28,84 +29,105 @@ class CourseDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.cardWhite,
-      floatingActionButton: Consumer(builder: (context, ref, child) {
-        bool modelSheetOpened = ref.watch(isModelSheetOpened);
-        return CustomFeedbackButton(
-          isOpen: modelSheetOpened,
-          callback: (modelSheetState) {
-            ref.read(isModelSheetOpened.notifier).state = modelSheetState;
-          },
-        );
-      }),
-      body: SafeArea(
-        child: Stack(
-          // clipBehavior: Clip.none,
-          children: [
-            Consumer(builder: (context, ref, child) {
-              // ref.watch(bLearnCourseDetailProvider(course.id ?? 0)).when(
-              //     data: (data) {
-              //       if (data != null) {
-              //         print('data is not null');
-              //       } else {
-              //         print('data is  null');
-              //       }
-              //       return Text('data');
-              //     },
-              //     error: ((error, stackTrace) =>
-              //         buildEmptyPlaceHolder('Error')),
-              //     loading: () => buildLoading);
+    return Consumer(builder: (context, ref, child) {
+      int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
+      bool modelSheetOpened = ref.watch(isModelSheetOpened);
 
-              int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
-              return Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  _topImage(context),
-                  _subjectDetail(),
-                  SlidingTab(
-                    label1: 'Description',
-                    label2: 'Curriculum',
-                    selectedIndex: selectedIndex,
-                    callback: (index) {
-                      ref.read(selectedTabCourseDetailProvider.notifier).state =
-                          index;
-                    },
-                  ),
-                  // _toggleItems(),
-                  SizedBox(height: 2.h),
-                  selectedIndex == 0 ? _buildDescView() : _builCurriculumView(),
-                ],
-              );
-            }),
-            Consumer(builder: (context, ref, child) {
-              bool modelSheetOpened = ref.watch(isModelSheetOpened);
-              return Visibility(
-                visible: modelSheetOpened,
-                child: Spring.slide(
-                  slideType: SlideType.slide_in_bottom,
-                  curve: Curves.easeIn,
-                  // startOpacity: 0.5,
-                  // endOpacity: 1,
-                  withFade: true,
-                  animDuration: const Duration(milliseconds: 300),
-                  child: FeedbackPopup(
-                      course: course,
-                      onClose: () {
-                        ref.read(isModelSheetOpened.notifier).state = false;
-                      }),
+      return ref.watch(bLearnCourseDetailProvider(course.id ?? 0)).when(
+          data: (data) {
+            return Scaffold(
+              backgroundColor: AppColors.cardBackground,
+              floatingActionButton: selectedIndex == 0
+                  ? CustomFeedbackButton(
+                      isOpen: modelSheetOpened,
+                      callback: (modelSheetState) {
+                        ref.read(isModelSheetOpened.notifier).state =
+                            modelSheetState;
+                      },
+                    )
+                  : Container(),
+              body: SafeArea(
+                child: Stack(
+                  // clipBehavior: Clip.none,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        _topImage(context),
+                        _subjectDetail(data, ref),
+                        SlidingTab(
+                          label1: 'Description',
+                          label2: 'Curriculum',
+                          selectedIndex: selectedIndex,
+                          callback: (index) {
+                            ref
+                                .read(selectedTabCourseDetailProvider.notifier)
+                                .state = index;
+                          },
+                        ),
+                        // _toggleItems(),
+                        SizedBox(height: 2.h),
+                        selectedIndex == 0
+                            ? _buildDescView(data)
+                            : _builCurriculumView(data),
+                      ],
+                    ),
+                    selectedIndex == 0
+                        ? Container()
+                        : data?.isSubscribed == true
+                            ? Container()
+                            : Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 3.w, vertical: 2.w),
+                                child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showLoading(ref);
+                                        ref.read(blearnSubscribeCourseProvider(
+                                            course.id ?? 0));
+                                        ref.refresh(bLearnCourseDetailProvider(
+                                            course.id ?? 0));
+                                        hideLoading(ref);
+                                      },
+                                      child: Text("Start Learning"),
+                                      style: ElevatedButton.styleFrom(
+                                          fixedSize: Size(100.w, 15.w)),
+                                    )),
+                              ),
+                    Visibility(
+                      visible: modelSheetOpened,
+                      child: Spring.slide(
+                        slideType: SlideType.slide_in_bottom,
+                        curve: Curves.easeIn,
+                        // startOpacity: 0.5,
+                        // endOpacity: 1,
+                        withFade: true,
+                        animDuration: const Duration(milliseconds: 300),
+                        child: FeedbackPopup(
+                            course: course,
+                            onClose: () {
+                              ref.read(isModelSheetOpened.notifier).state =
+                                  false;
+                            }),
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            })
-          ],
-        ),
-      ),
-    );
+              ),
+            );
+          },
+          error: ((error, stackTrace) => buildEmptyPlaceHolder('Error')),
+          loading: () => buildLoading);
+    });
   }
 
-  Widget _builCurriculumView() {
+  Widget _builCurriculumView(CourseDetailBody? coursedata) {
     return Expanded(
         child: SingleChildScrollView(
+      physics: coursedata?.isSubscribed == true
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
         child: Column(
@@ -121,30 +143,52 @@ class CourseDetailScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            Consumer(
-              builder: (context, ref, child) {
-                return ref.watch(bLearnLessonsProvider(course.id!)).when(
-                    data: (data) {
-                      if (data?.lessons?.isNotEmpty == true) {
-                        return _buildLessons(ref, data!.lessons ?? []);
-                      } else {
-                        return Center(
-                            child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 10.w,
-                            ),
-                            getSvgIcon("no-data-icon.svg"),
-                            buildEmptyPlaceHolder("No Lessons"),
-                          ],
-                        ));
-                        // return _buildLessons();
-                      }
-                    },
-                    error: (error, stackTrace) => buildEmptyPlaceHolder('text'),
-                    loading: () => buildLoading);
-              },
+            Stack(
+              children: [
+                Consumer(
+                  builder: (context, ref, child) {
+                    return ref.watch(bLearnLessonsProvider(course.id!)).when(
+                        data: (data) {
+                          if (data?.lessons?.isNotEmpty == true) {
+                            return _buildLessons(ref, data!.lessons ?? []);
+                          } else {
+                            return Center(
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 10.w,
+                                ),
+                                getSvgIcon("no-data-icon.svg"),
+                                buildEmptyPlaceHolder("No Lessons"),
+                              ],
+                            ));
+                            // return _buildLessons();
+                          }
+                        },
+                        error: (error, stackTrace) =>
+                            buildEmptyPlaceHolder('text'),
+                        loading: () => buildLoading);
+                  },
+                ),
+                coursedata?.isSubscribed == false
+                    ? Container(
+                        height: 100.w,
+                        color: Colors.white.withOpacity(0.9),
+                        alignment: Alignment.center,
+                        child: Column(children: [
+                          SizedBox(
+                            height: 35.w,
+                          ),
+                          Icon(
+                            Icons.lock,
+                            size: 14.w,
+                          ),
+                          const Text("Subscribe to unlock content")
+                        ]),
+                      )
+                    : Container(),
+              ],
             )
           ],
         ),
@@ -163,7 +207,7 @@ class CourseDetailScreen extends StatelessWidget {
           index: index,
           openIndex: selectedIndex,
           lesson: lessons[index],
-          courseId: course.id!,
+          course: course,
           ref: ref,
           instructorId: course.userId!,
           onExpand: (index1) {
@@ -175,7 +219,7 @@ class CourseDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescView() {
+  Widget _buildDescView(CourseDetailBody? coursedetail) {
     return Expanded(
         child: Padding(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
@@ -189,6 +233,10 @@ class CourseDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
+                      _buildDetailItem(
+                          "Views: ",
+                          coursedetail?.courses?[0].views ?? "",
+                          Icons.remove_red_eye_outlined),
                       _buildDetailItem(
                           'Duration:', ' ${course.duration}', Icons.history),
                       const Divider(
@@ -204,6 +252,10 @@ class CourseDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
+                      _buildDetailItem(
+                          "Subscribers: ",
+                          coursedetail?.subscribers.toString() ?? "",
+                          Icons.group_outlined),
                       _buildDetailItem(
                           'Level:', ' ${course.level}', Icons.sort),
                       const Divider(
@@ -231,6 +283,22 @@ class CourseDetailScreen extends StatelessWidget {
             _getText(),
             SizedBox(height: 10.w),
             const TwoColorText(
+              first: 'Reviews',
+              second: '',
+            ),
+            coursedetail?.courseFeedback?.isNotEmpty == true
+                ? _buildTestimonialList(coursedetail?.courseFeedback)
+                : Container(
+                    margin: EdgeInsets.only(top: 0.8.h),
+                    height: 20.w,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "No feedback yet. \n Add the first one.",
+                      style: TextStyle(color: AppColors.iconGreyColor),
+                    ),
+                  ),
+            SizedBox(height: 10.w),
+            const TwoColorText(
               first: 'Related',
               second: 'Courses',
             ),
@@ -242,6 +310,75 @@ class CourseDetailScreen extends StatelessWidget {
 
   Widget _getText() {
     return Text(course.description ?? '');
+  }
+
+  Widget _buildTestimonialList(List<CourseFeedback>? feedbackList) {
+    if (feedbackList == null || feedbackList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      margin: EdgeInsets.only(top: 0.8.h),
+      height: 22.h,
+      child: ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.all(0.5.h),
+        itemCount: feedbackList.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (BuildContext context, int index) {
+          final feedback = feedbackList[index];
+          return Container(
+            width: 70.w,
+            margin: EdgeInsets.only(right: 3.w, left: 2.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.all(Radius.circular(5.w)),
+              border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    getCicleAvatar(feedback.name ?? 'AA', feedback.image ?? '',
+                        radius: 8.w),
+                    SizedBox(width: 4.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            feedback.name ?? '',
+                            style: TextStyle(
+                                fontSize: 11.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          buildRatingBar(feedback.rating?.toDouble() ?? 0.0),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2.w),
+                Text(
+                  feedback.comment ?? '',
+                  maxLines: 4,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 10.sp,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildGridView() {
@@ -330,7 +467,7 @@ class CourseDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _subjectDetail() {
+  Widget _subjectDetail(CourseDetailBody? coursedata, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 5.w),
       child: Column(
@@ -341,7 +478,7 @@ class CourseDetailScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  course.name ?? '',
+                  coursedata?.courses?[0].name ?? '',
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       fontSize: 14.sp,
@@ -350,23 +487,37 @@ class CourseDetailScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12.w),
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        // offset: Offset(0, 0),
-                        // blurRadius: 1,
-                      )
-                    ]),
-                child: Icon(
-                  Icons.favorite_outline,
-                  size: 8.w,
-                  color: Colors.black,
+              InkWell(
+                onTap: () {
+                  ref.watch(blearnAddorRemoveinWishlistProvider(
+                      coursedata?.courses?[0].id ?? 0));
+                  ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+                },
+                child: Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: BoxDecoration(
+                      color: coursedata?.isWishlisted == true
+                          ? Colors.pink[100]
+                          : AppColors.cardWhite,
+                      shape: BoxShape.circle,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          // offset: Offset(0, 0),
+                          // blurRadius: 1,
+                        )
+                      ]),
+                  child: coursedata?.isWishlisted == true
+                      ? Icon(
+                          Icons.favorite,
+                          color: Colors.pink[400],
+                        )
+                      : Icon(
+                          Icons.favorite_outline,
+                          size: 8.w,
+                          color: AppColors.iconGreyColor,
+                        ),
                 ),
               ),
             ],
@@ -381,8 +532,8 @@ class CourseDetailScreen extends StatelessWidget {
               _buildMeta(
                   'Launguage', course.language ?? '', 'icon_language.svg'),
               const Spacer(),
-              _buildMeta(
-                  'Category', course.level.toString(), 'icon_category.svg'),
+              _buildMeta('Category', coursedata?.courses?[0].categoryName ?? "",
+                  'icon_category.svg'),
             ],
           )
         ],

@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/notification_controller.dart';
 import '/core/utils/chat_utils.dart';
 
 import '/data/models/conversation_model.dart';
@@ -33,6 +34,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
 
   init() async {
     _chatPresence = await fetchOnlineStatus(convModel.id);
+    NotificationController.clearPool(convModel.contact.userId);
     _registerPresence();
     try {
       await convModel.conversation?.markAllMessagesAsRead();

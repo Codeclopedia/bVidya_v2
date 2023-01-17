@@ -40,6 +40,8 @@ class ApiList {
   static const String lmsCoursesDetail = 'course-detail/'; //GET
   static const String lmsLiveClasses = 'live-classes'; //GET
   static const String lmsLessons = 'lessons/playlist/'; //GET
+  static const String lmsSubscribeCourse = 'subscribe-course/'; //GET
+  static const String lmswishlist = 'wishlist-course/'; //GET
   static const String lmsInstructors = 'instructors'; //GET
   static const String lmsSearch = 'search'; //POST
   static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET

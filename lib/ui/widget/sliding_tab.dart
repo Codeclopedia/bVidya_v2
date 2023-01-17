@@ -34,7 +34,7 @@ class SlidingTab extends StatelessWidget {
         ),
       },
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: AppColors.cardWhite,
         borderRadius: BorderRadius.circular(3.w),
       ),
       thumbDecoration: BoxDecoration(

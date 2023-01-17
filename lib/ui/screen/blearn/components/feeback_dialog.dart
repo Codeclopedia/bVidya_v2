@@ -167,11 +167,13 @@ class FeedbackPopup extends HookWidget {
                                   .state = '';
                               feedbackMessageController.text = '';
                               showLoading(ref);
-                              
+
                               final BaseResponse response = await ref
                                   .read(bLearnRepositoryProvider)
                                   .setfeedback(
                                       course.id.toString(), rating, input);
+                              ref.refresh(
+                                  bLearnCourseDetailProvider(course.id ?? 0));
 
                               // ref.read(isModelSheetOpened.notifier).state = false;
                               debugPrint(response.status);

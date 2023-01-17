@@ -670,6 +670,8 @@ class NotificationController {
     }
   }
 
+  static void clean() {}
+
   static _showTextMessageNotification(
       String fromId, String fromName, String fromImage, String message) async {
     int id = fromId.hashCode;
@@ -694,6 +696,7 @@ class NotificationController {
         body: body,
         wakeUpScreen: true,
         fullScreenIntent: false,
+        largeIcon: '$baseImageApi$fromImage',
         notificationLayout: NotificationLayout.BigText,
         payload: {
           'type': 'chat',
@@ -715,14 +718,14 @@ class NotificationController {
     //   _messageBodyPool.putIfAbsent(id, () => message);
     //   _messagePool.putIfAbsent(id, () => 1);
     // }
-    String title = '$fromName sent you a message';
+    String title = '$fromName sent you a photo';
     AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: id,
         channelKey: 'chat_channel',
         title: title,
         icon: 'resource://mipmap/ic_launcher',
-        body: 'New Image',
+        body: 'New Photo',
         wakeUpScreen: true,
         fullScreenIntent: false,
         bigPicture: url,
@@ -780,6 +783,7 @@ class NotificationController {
         title: title,
         icon: 'resource://mipmap/ic_launcher',
         body: body,
+        largeIcon: '$baseImageApi$fromImage',
         wakeUpScreen: true,
         fullScreenIntent: false,
         notificationLayout: NotificationLayout.BigText,
@@ -804,14 +808,14 @@ class NotificationController {
     //   _messagePool.putIfAbsent(id, () => 1);
     // }
 
-    String title = '$fromName sent you a message in $groupName';
+    String title = '$fromName sent you a photo in $groupName';
     AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: id,
         channelKey: 'chat_channel',
         title: title,
         icon: 'resource://mipmap/ic_launcher',
-        body: 'New Image',
+        body: 'New Photo',
         wakeUpScreen: true,
         fullScreenIntent: false,
         bigPicture: url,

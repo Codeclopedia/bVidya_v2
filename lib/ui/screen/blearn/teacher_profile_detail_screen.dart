@@ -148,12 +148,12 @@ class TeacherProfileDetailScreen extends StatelessWidget {
   }
 
   Widget _buildContent(ProfileDataBody body, BuildContext context) {
-    final follwersCount = (body.followersCount??0).toString();
+    final follwersCount = (body.followersCount ?? 0).toString();
     // if (body.followers?.isNotEmpty == true) {
     //   follwersCount = (body.followers?[0].count ?? 0).toString();
     // }
 
-    final watchTotal = body.totalWatchtime??'0';
+    final watchTotal = body.totalWatchtime ?? '0';
     // if (body.watchtime?.isNotEmpty == true) {
     //   watchTotal = (body.watchtime?[0].total ?? '0');
     // }
@@ -210,6 +210,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                             onPressed: () async {
                               ref.read(bLearnFollowInstructorProvider(
                                   instructor.id.toString()));
+                              // ref.refresh(isFollowedInstructor(
+                              //     instructor.id.toString()));
                             },
                             style: ButtonStyle(
                                 backgroundColor:
