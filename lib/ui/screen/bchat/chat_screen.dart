@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/dialog/message_menu_popup.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:bvidya/app.dart';
+
+// import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -23,13 +24,14 @@ import 'models/attach_type.dart';
 import 'models/reply_model.dart';
 import 'widgets/attached_file.dart';
 import 'widgets/chat_message_bubble.dart';
-
+import '/ui/dialog/message_menu_popup.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
 // import 'widgets/typing_indicator.dart';
 
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
+final sendingFileProgress = StateProvider.autoDispose<int>((_) => 0);
 
 // ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
@@ -78,7 +80,7 @@ class ChatScreen extends HookConsumerWidget {
           return false;
         }
         if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.home);
+          Navigator.pushReplacementNamed(context, RouteList.splash);
           return false;
         }
         return true;
@@ -169,6 +171,7 @@ class ChatScreen extends HookConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         AttachedFile? attFile = ref.watch(attachedFile);
+        int progress = ref.watch(sendingFileProgress);
         return attFile == null
             ? _buildChatInputBox()
             : Row(
@@ -202,6 +205,11 @@ class ChatScreen extends HookConsumerWidget {
                               icon: const Icon(Icons.close, color: Colors.red),
                             ),
                           ),
+                          if (progress > 0)
+                            Center(
+                              child: CircularProgressIndicator(
+                                  value: progress.toDouble()),
+                            )
                         ],
                       ),
                     ),
@@ -210,28 +218,28 @@ class ChatScreen extends HookConsumerWidget {
                   InkWell(
                     onTap: () async {
                       final ChatMessage msg;
-                      final String content;
+                      // final String content;
                       if (attFile.messageType == MessageType.IMAGE) {
                         msg = ChatMessage.createImageSendMessage(
                           targetId: model.contact.userId.toString(),
                           filePath: attFile.file.path,
                           fileSize: attFile.file.size.toInt(),
                         );
-                        content = 'Image file';
+                        // content = 'Image file';
                       } else if (attFile.messageType == MessageType.VIDEO) {
                         msg = ChatMessage.createVideoSendMessage(
                           targetId: model.contact.userId.toString(),
                           filePath: attFile.file.path,
                           fileSize: attFile.file.size.toInt(),
                         );
-                        content = 'Video file';
+                        // content = 'Video file';
                       } else {
                         msg = ChatMessage.createFileSendMessage(
                           targetId: model.contact.userId.toString(),
                           filePath: attFile.file.path,
                           fileSize: attFile.file.size.toInt(),
                         );
-                        content = 'File';
+                        // content = 'File';
                       }
                       msg.attributes = {
                         "em_apns_ext": {
@@ -364,6 +372,9 @@ class ChatScreen extends HookConsumerWidget {
             };
             // ref.read(chatMessageListProvider.notifier).addChat(msg);
             return await _sendMessage(msg, ref);
+          },
+          onCamera: () {
+            _pickFiles(AttachType.cameraPhoto, ref);
           },
           onAttach: (type) => _pickFiles(type, ref),
         );
@@ -522,13 +533,12 @@ class ChatScreen extends HookConsumerWidget {
                       // print('open replyBox');
                     },
               child: GestureDetector(
-                onLongPress: notReply
-                    ? null
-                    : () => _onMessageLongPress(message, isSelected, ref),
-                onTap: () => notReply
-                    ? null
-                    : selectedItems.isNotEmpty
-                        ? _onMessageTapSelect(message, isSelected, ref)
+                onLongPress: () =>
+                    _onMessageLongPress(message, isSelected, ref),
+                onTap: () => selectedItems.isNotEmpty
+                    ? _onMessageTapSelect(message, isSelected, ref)
+                    : notReply
+                        ? null
                         : _onMessageTap(message, context, ref),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
@@ -611,44 +621,61 @@ class ChatScreen extends HookConsumerWidget {
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
     // if (_me == null) return 'User details not loaded yet';
-    msg.attributes?.addAll({"em_force_notification": true});
-    ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
-    if (replyOf != null) {
-      msg.attributes?.addAll({'reply_of': replyOf.toJson()});
-      ref.read(chatModelProvider).clearReplyBox();
-    }
+    try {
+      msg.attributes?.addAll({"em_force_notification": true});
+      ReplyModel? replyOf = ref.read(chatModelProvider).replyOn;
+      if (replyOf != null) {
+        msg.attributes?.addAll({'reply_of': replyOf.toJson()});
+        ref.read(chatModelProvider).clearReplyBox();
+      }
 
-    msg.setMessageStatusCallBack(
-      MessageStatusCallBack(
-        onSuccess: () {
-          hideLoading(ref);
-          // FCMApiService.instance.sendChatPush(
-          //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
-          // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
-        },
-        onError: (error) {
-          hideLoading(ref);
-          // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
-        },
-        onProgress: (progress) {
-          showLoading(ref);
-          // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
-        },
-      ),
-    );
-    // final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-    final chat =
-        await ref.read(bhatMessagesProvider(model).notifier).sendMessage(msg);
-    if (chat != null) {
-      ref
-          .read(chatConversationProvider.notifier)
-          .updateConversationMessage(msg);
-      _scrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+      msg.setMessageStatusCallBack(
+        MessageStatusCallBack(
+          onSuccess: () {
+            hideLoading(ref);
+            ref.read(sendingFileProgress.notifier).state = 0;
+            // FCMApiService.instance.sendChatPush(
+            //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
+            // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
+          },
+          onError: (error) {
+            hideLoading(ref);
+            ref.read(sendingFileProgress.notifier).state = 0;
+            AppSnackbar.instance
+                .error(navigatorKey.currentContext!, error.description);
+            // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
+          },
+          onProgress: (progress) {
+            showLoading(ref);
+            ref.read(sendingFileProgress.notifier).state = progress;
+            // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
+          },
+        ),
       );
-      return null;
+      // final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
+      final chat =
+          await ref.read(bhatMessagesProvider(model).notifier).sendMessage(msg);
+      if (chat != null) {
+        ref
+            .read(chatConversationProvider.notifier)
+            .updateConversationMessage(msg);
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        return null;
+      }
+    } on ChatError catch (e) {
+      print("send failed, code: ${e.code}, desc: ${e.description}");
+      AppSnackbar.instance.error(navigatorKey.currentContext!,
+          "Error while sending message: ${e.code}");
+      return e.description;
+    } catch (e) {
+      print("send failed, code: $e");
+      AppSnackbar.instance
+          .error(navigatorKey.currentContext!, "Error while sending message");
+      return e.toString();
     }
     return 'Error while sending message';
   }
@@ -764,30 +791,119 @@ class ChatScreen extends HookConsumerWidget {
       child: Row(
         children: [
           // SizedBox(width: 6.w,)
-          Text(
-            selectedItems.length > 1
-                ? '${selectedItems.length} Messages selected'
-                : '${selectedItems.length} Message selected',
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              fontSize: 14.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              selectedItems.length > 1
+                  ? '${selectedItems.length} Messages selected'
+                  : '${selectedItems.length} Message',
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          const Spacer(),
-          IconButton(
+          // const Spacer(),
+          Visibility(
+            visible: (selectedItems
+                .where((e) => e.body.type != MessageType.TXT)
+                .isEmpty),
+            child: IconButton(
               onPressed: () async {
-                ref
-                    .read(bhatMessagesProvider(model).notifier)
-                    .deleteMessages(selectedItems);
+                // ref
+                //     .read(bhatMessagesProvider(model).notifier)
+                //     .deleteMessages(selectedItems);
                 ref.read(selectedChatMessageListProvider.notifier).clear();
+                AppSnackbar.instance.message(context, 'Need to implement');
                 // ChatClient.getInstance.chatManager.del
               },
-              icon: const Icon(
-                Icons.delete,
+              padding: EdgeInsets.all(1.w),
+              tooltip: S.current.chat_menu_copy,
+              icon: getSvgIcon(
+                'icon_chat_copy.svg',
+                width: 5.w,
                 color: Colors.white,
-              ))
+              ),
+            ),
+          ),
+          Visibility(
+            visible: selectedItems.length == 1 &&
+                selectedItems.first.body.type != MessageType.CUSTOM,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    // ref
+                    //     .read(bhatMessagesProvider(model).notifier)
+                    //     .deleteMessages(selectedItems);
+                    ref.read(selectedChatMessageListProvider.notifier).clear();
+                    AppSnackbar.instance.message(context, 'Need to implement');
+                    // ChatClient.getInstance.chatManager.del
+                  },
+                  padding: EdgeInsets.all(1.w),
+                  tooltip: S.current.chat_menu_forward,
+                  icon: getSvgIcon(
+                    'icon_chat_forward.svg',
+                    width: 5.w,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    ChatMessage message = selectedItems.first;
+                    bool isOwnMessage = message.from != model.id;
+                    ref.read(chatModelProvider.notifier).setReplyOn(
+                        message,
+                        isOwnMessage
+                            ? S.current.bmeet_user_you
+                            : model.contact.name);
+                    // ref
+                    //     .read(bhatMessagesProvider(model).notifier)
+                    //     .deleteMessages(selectedItems);
+                    ref.read(selectedChatMessageListProvider.notifier).clear();
+                    // ChatClient.getInstance.chatManager.del
+                  },
+                  padding: EdgeInsets.all(1.w),
+                  tooltip: S.current.chat_menu_reply,
+                  icon: getSvgIcon(
+                    'icon_chat_reply.svg',
+                    width: 5.w,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              ref
+                  .read(bhatMessagesProvider(model).notifier)
+                  .deleteMessages(selectedItems);
+              ref.read(selectedChatMessageListProvider.notifier).clear();
+              // ChatClient.getInstance.chatManager.del
+            },
+            padding: EdgeInsets.all(1.w),
+            tooltip: S.current.chat_menu_delete,
+            icon: getSvgIcon(
+              'icon_delete_conv.svg',
+              width: 5.w,
+              color: Colors.white,
+            ),
+          ),
+          // IconButton(
+          //   onPressed: () async {
+          //     ref
+          //         .read(bhatMessagesProvider(model).notifier)
+          //         .deleteMessages(selectedItems);
+          //     ref.read(selectedChatMessageListProvider.notifier).clear();
+          //     // ChatClient.getInstance.chatManager.del
+          //   },
+          //   icon: const Icon(
+          //     Icons.delete,
+          //     color: Colors.white,
+          //   ),
+          // )
         ],
       ),
     );
@@ -806,7 +922,7 @@ class ChatScreen extends HookConsumerWidget {
             IconButton(
               onPressed: (() {
                 if (direct) {
-                  Navigator.pushReplacementNamed(context, RouteList.home);
+                  Navigator.pushReplacementNamed(context, RouteList.splash);
                 } else {
                   Navigator.pop(context);
                 }

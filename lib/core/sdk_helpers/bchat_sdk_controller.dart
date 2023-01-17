@@ -193,12 +193,11 @@ class BChatSDKController {
         phone: currentUser.phone,
       );
 
-      final pushtemplate =
-          await ChatClient.getInstance.pushManager.getPushTemplate();
-      print('pushtemplate: $pushtemplate');
-
-      ChatClient.getInstance.pushManager
-          .updatePushDisplayStyle(DisplayStyle.Simple);
+      // final pushtemplate =
+      //     await ChatClient.getInstance.pushManager.getPushTemplate();
+      // print('pushtemplate: $pushtemplate');
+      // ChatClient.getInstance.pushManager
+      //     .updatePushDisplayStyle(DisplayStyle.Simple);
       // registerForPresence();
       // await loadConversations(ref);
 

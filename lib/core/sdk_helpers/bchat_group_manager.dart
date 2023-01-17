@@ -154,8 +154,7 @@ class BchatGroupManager {
     final ext = group.extension;
     String? image;
     if (ext?.isNotEmpty == true) {
-      print('ext : ${group.extension} - ${group.name}');
-
+      // print('ext : ${group.extension} - ${group.name}');
       final map = jsonDecode(ext!);
       image = map['image'];
     }

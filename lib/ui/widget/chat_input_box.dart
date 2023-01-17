@@ -13,11 +13,10 @@ class ChatInputBox extends StatefulWidget {
   /// Current user using the chat
   // final User currentUser;
   final Function(AttachType type)? onAttach;
-  const ChatInputBox({
-    Key? key,
-    required this.onSend,
-    this.onAttach,
-  }) : super(key: key);
+  final Function()? onCamera;
+  const ChatInputBox(
+      {Key? key, required this.onSend, this.onAttach, this.onCamera})
+      : super(key: key);
 
   @override
   State<ChatInputBox> createState() => _ChatInputBoxState();
@@ -144,10 +143,12 @@ class _ChatInputBoxState extends State<ChatInputBox>
                     icon: getSvgIcon('icon_chat_attach.svg'),
                   ),
                 ),
-                if (input.isEmpty)
+                if (input.isEmpty && widget.onCamera != null)
                   IconButton(
                     splashColor: Colors.grey,
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.onCamera!();
+                    },
                     icon: getSvgIcon('icon_chat_camera.svg'),
                   ),
                 if (input.isNotEmpty)

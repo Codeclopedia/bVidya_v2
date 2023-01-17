@@ -100,6 +100,8 @@ class GroupChatChangeProvider extends ChangeNotifier {
     } catch (e) {}
   }
 
+  void deleteMessages(List<ChatMessage> selectedItems) {}
+
   // setIsLoadingMore(bool value) {
   //   _isLoadingMore = value;
   //   notifyListeners();

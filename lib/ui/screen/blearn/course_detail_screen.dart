@@ -44,6 +44,19 @@ class CourseDetailScreen extends StatelessWidget {
           // clipBehavior: Clip.none,
           children: [
             Consumer(builder: (context, ref, child) {
+              // ref.watch(bLearnCourseDetailProvider(course.id ?? 0)).when(
+              //     data: (data) {
+              //       if (data != null) {
+              //         print('data is not null');
+              //       } else {
+              //         print('data is  null');
+              //       }
+              //       return Text('data');
+              //     },
+              //     error: ((error, stackTrace) =>
+              //         buildEmptyPlaceHolder('Error')),
+              //     loading: () => buildLoading);
+
               int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
               return Column(
                 mainAxisSize: MainAxisSize.max,

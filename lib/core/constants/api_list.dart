@@ -37,6 +37,7 @@ class ApiList {
   static const String lmsCategories = 'categories'; //GET
   static const String lmsSubCategories = 'subcategories/'; //GET
   static const String lmsCourses = 'courses'; //GET
+  static const String lmsCoursesDetail = 'course-detail/'; //GET
   static const String lmsLiveClasses = 'live-classes'; //GET
   static const String lmsLessons = 'lessons/playlist/'; //GET
   static const String lmsInstructors = 'instructors'; //GET

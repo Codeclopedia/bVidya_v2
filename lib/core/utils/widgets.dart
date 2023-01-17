@@ -104,22 +104,27 @@ ImageProvider getImageProviderChatImage(ChatImageMessageBody body,
   // print('thumbnailRemotePath:${body.thumbnailRemotePath}');
   // print('remotePath:${body.remotePath}');
   if (body.thumbnailLocalPath?.isNotEmpty == true && loadThumbFirst) {
-    return FileImage(
-      File(body.thumbnailLocalPath!),
-    );
+    File f = File(body.thumbnailLocalPath!);
+    if (f.existsSync()) {
+      return FileImage(f);
+    }
   }
   if (body.localPath.isNotEmpty) {
     File f = File(body.localPath);
     if (f.existsSync()) {
-      return FileImage(
-        f,
-      );
+      return FileImage(f);
     }
   }
   if (body.thumbnailRemotePath?.isNotEmpty == true && loadThumbFirst) {
     return CachedNetworkImageProvider(body.thumbnailRemotePath!);
   }
-  return CachedNetworkImageProvider(body.remotePath!);
+  if (body.remotePath?.isNotEmpty == true) {
+    return CachedNetworkImageProvider(body.remotePath!);
+  }
+  // return CachedNetworkImageProvider(body.remotePath!);
+
+  return const CachedNetworkImageProvider(
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg');
 }
 
 ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body) {

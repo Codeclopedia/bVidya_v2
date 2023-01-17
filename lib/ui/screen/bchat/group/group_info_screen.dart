@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
@@ -15,7 +16,6 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
-
 //Mute
 final groupMuteProvider = StateProvider.autoDispose<bool>(
   ((_) => true),
@@ -303,7 +303,20 @@ class GroupInfoScreen extends HookConsumerWidget {
                         return Visibility(
                           visible: items.isNotEmpty,
                           child: TextButton(
-                            onPressed: (() {}),
+                            onPressed: (() {
+                              final list = items
+                                  .map((e) => getImageProviderFile(
+                                      e.filePath!.absolute.path))
+                                  .toList();
+                              MultiImageProvider multiImageProvider =
+                                  MultiImageProvider(list);
+                              showImageViewerPager(context, multiImageProvider,
+                                  onPageChanged: (page) {
+                                print("page changed to $page");
+                              }, onViewerDismissed: (page) {
+                                print("dismissed while on page $page");
+                              });
+                            }),
                             child: Text(
                               S.current.pr_btx_all,
                               style: TextStyle(

@@ -86,15 +86,27 @@ class BLearnRepository {
     }
   }
 
-  Future<ProfileDataBody?> getTeacherProfileDetail(String instructorId)async{
-  final result = await _api.getInstructorProfileDetail(_authToken, instructorId);
+  Future<ProfileDataBody?> getTeacherProfileDetail(String instructorId) async {
+    final result =
+        await _api.getInstructorProfileDetail(_authToken, instructorId);
     if (result.status == successfull && result.body != null) {
       return result.body!;
     } else {
       return null;
     }
-  
-   // 
+
+    //
+  }
+
+  Future<CourseDetailBody?> getCourseDetail(int courseId) async {
+    final result = await _api.getCourseDetail(_authToken, courseId);
+    // print("result in course detail is ${result.body?.course?.createdAt}");
+    // print(result.body?.toJson());
+    if (result.status == 'success' && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
   }
 
   // Future<ProfileBody?> getInstructorProfile(String instructorId) async {

@@ -6,13 +6,13 @@ import 'dart:convert';
 
 import 'package:bvidya/core/helpers/call_helper.dart';
 import 'package:bvidya/core/utils/callkit_utils.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
-import '/core/utils/chat_utils.dart';
+// import '/core/utils/chat_utils.dart';
 import '/core/utils/notification_controller.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -34,27 +34,28 @@ class SplashScreen extends ConsumerWidget {
       return;
     }
 
-    final initialAction = NotificationController.clickAction;
-    if (initialAction != null &&
-        initialAction.payload != null &&
-        initialAction.channelKey == 'chat_channel') {
-      debugPrint(
-          'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
+    // final initialAction = NotificationController.clickAction;
+    // if (initialAction != null &&
+    //     initialAction.payload != null &&
+    //     initialAction.channelKey == 'chat_channel') {
+    //   debugPrint(
+    //       'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
 
-      if (await NotificationController.handleChatNotificationAction(
-          initialAction.payload!, context, true)) {
-        debugPrint('  initialAction is not null');
-        return;
-      }
-    } else {
-      debugPrint('  initialAction is null ${initialAction != null}');
-    }
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null && message.data.isNotEmpty) {
-      handleRemoteMessage(message, context);
-    } else {
-      Navigator.pushReplacementNamed(context, RouteList.home);
-    }
+    //   if (await NotificationController.handleChatNotificationAction(
+    //       initialAction.payload!, context, true)) {
+    //     debugPrint('  initialAction is not null');
+    //     return;
+    //   }
+    // } else {
+    //   debugPrint('  initialAction is null ${initialAction != null}');
+    // }
+    Navigator.pushReplacementNamed(context, RouteList.home);
+    // final message = await FirebaseMessaging.instance.getInitialMessage();
+    // if (message != null && message.data.isNotEmpty) {
+    //   handleRemoteMessage(message, context);
+    // } else {
+    //   Navigator.pushReplacementNamed(context, RouteList.home);
+    // }
   }
 
   @override
@@ -63,11 +64,14 @@ class SplashScreen extends ConsumerWidget {
       authLoadProvider,
       (previous, next) async {
         if (next.value != null) {
+          final startTime = DateTime.now().millisecondsSinceEpoch;
           await ref.read(userAuthChangeProvider).loadUser();
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
-          if (!_handleCallScreen(context)) {
+          if (await _handleNotificationClickScreen(context)) {
+            final diff = DateTime.now().millisecondsSinceEpoch - startTime;
+            print('Time taken: $diff ms Notification');
             return;
           }
           await ref
@@ -78,6 +82,8 @@ class SplashScreen extends ConsumerWidget {
           await ref.read(callListProvider.notifier).setup();
 
           await _handleFirebaseMessages(context, ref, next.value);
+          final diff = DateTime.now().millisecondsSinceEpoch - startTime;
+          print('Time taken: $diff ms');
         } else {
           Future.delayed(const Duration(seconds: 2), () {
             Navigator.pushReplacementNamed(context, RouteList.login);
@@ -98,8 +104,8 @@ class SplashScreen extends ConsumerWidget {
     // );
   }
 
-  bool _handleCallScreen(BuildContext context) {
-    if (activeCallMap != null && activeCallId!=null) {
+  Future<bool> _handleNotificationClickScreen(BuildContext context) async {
+    if (activeCallMap != null && activeCallId != null) {
       String fromName = activeCallMap!['from_name'];
       String callerFCM = activeCallMap!['caller_fcm'];
       String image = activeCallMap!['image'];
@@ -119,6 +125,22 @@ class SplashScreen extends ConsumerWidget {
           hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
           arguments: callMap);
       return true;
+    }
+    final initialAction = NotificationController.clickAction;
+    if (initialAction != null &&
+        initialAction.payload != null &&
+        initialAction.channelKey == 'chat_channel') {
+      debugPrint(
+          'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
+      if (await NotificationController.handleChatNotificationAction(
+          initialAction.payload!, context, true)) {
+        NotificationController.clickAction = null;
+        debugPrint('  initialAction is not null');
+        return true;
+      }
+      NotificationController.clickAction = null;
+    } else {
+      debugPrint('  initialAction is null ${initialAction == null}');
     }
     return false;
   }

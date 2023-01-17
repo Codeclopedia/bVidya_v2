@@ -104,6 +104,30 @@ class BLearnApiService {
     }
   }
 
+
+  Future<CourseDetailResponse> getCourseDetail(
+      String token, int courseId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      // print('requst id ${courseId}');
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.lmsCoursesDetail}$courseId');
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return CourseDetailResponse.fromJson(response.data);
+      } else {
+        return CourseDetailResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print('error $e');
+      return CourseDetailResponse(
+        status: 'error',
+      );
+    }
+  }
+
   Future<LessonsResponse> getLessons(String token, int courseId) async {
     _dio.options.headers["X-Auth-Token"] = token;
     try {

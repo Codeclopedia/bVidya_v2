@@ -51,6 +51,7 @@ dependencies:
   grouped_list: ^5.1.2
   hooks_riverpod: ^2.0.2
   image_picker: ^0.8.6
+  image_picker_plus: ^0.5.5+2
   images_picker: ^1.2.11
   intl: ^0.17.0
   path: ^1.8.2
@@ -69,6 +70,7 @@ dependencies:
   url_launcher: ^6.1.7
   uuid: ^3.0.7
   video_player: ^2.4.10
+  video_thumbnail: ^0.5.3
   webview_flutter: ^4.0.1
 
 dev_dependencies:

@@ -180,13 +180,13 @@ final groupMembersInfo =
   return null;
 });
 
-final groupMediaProvier =
-    FutureProvider.family<List<ChatGroupSharedFileEx>, String>(
-        (ref, groupId) async {
+final groupMediaProvier = FutureProvider.autoDispose
+    .family<List<ChatGroupSharedFileEx>, String>((ref, groupId) async {
   final list = await ChatClient.getInstance.groupManager
       .fetchGroupFileListFromServer(groupId);
   final List<ChatGroupSharedFileEx> results = [];
   if (list.isNotEmpty) {
+    // print('file list count ${results.length} ');
     int count = 0;
     for (var fId in list) {
       if (fId.fileId != null) {

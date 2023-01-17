@@ -1,11 +1,21 @@
 // import 'dart:io';
 
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/ui/screens.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:bvidya/app.dart';
+import 'package:bvidya/ui/base_back_screen.dart';
+import 'package:bvidya/ui/dialog/message_menu_popup.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
+// import '/ui/screens.dart';
+// import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '/controller/bchat_providers.dart';
 import '../widgets/attached_file.dart';
@@ -27,6 +37,7 @@ import '../widgets/chat_message_bubble.dart';
 import '../widgets/typing_indicator.dart';
 
 final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
+final sendingGroupFileProgress = StateProvider.autoDispose<int>((_) => 0);
 
 class GroupChatScreen extends HookConsumerWidget {
   final GroupConversationModel model;
@@ -75,7 +86,7 @@ class GroupChatScreen extends HookConsumerWidget {
           return false;
         }
         if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.home);
+          Navigator.pushReplacementNamed(context, RouteList.splash);
           return false;
         }
 
@@ -83,7 +94,9 @@ class GroupChatScreen extends HookConsumerWidget {
       },
       child: Scaffold(
         body: ColouredBoxBar(
-          topBar: _topBar(context),
+          topBar: selectedItems.isNotEmpty
+              ? _menuBar(context, selectedItems, ref)
+              : _topBar(context),
           body: _chatList(context),
         ),
       ),
@@ -192,7 +205,7 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildChatInputBox(WidgetRef ref) {
+  Widget _buildChatInputBox(WidgetRef ref, BuildContext context) {
     return ChatInputBox(
       onSend: (input) async {
         final msg = ChatMessage.createTxtSendMessage(
@@ -223,7 +236,10 @@ class GroupChatScreen extends HookConsumerWidget {
 
         return await _sendMessage(msg, ref);
       },
-      onAttach: (type) => _pickFiles(type, ref),
+      onCamera: () {
+        _pickFiles(AttachType.cameraPhoto, ref);
+      },
+      onAttach: (type) => _pickFile(type, ref, context),
     );
   }
 
@@ -231,8 +247,9 @@ class GroupChatScreen extends HookConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         AttachedFile? attFile = ref.watch(attachedGroupFile);
+        int progress = ref.watch(sendingGroupFileProgress);
         return attFile == null
-            ? _buildChatInputBox(ref)
+            ? _buildChatInputBox(ref, context)
             : Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -257,11 +274,18 @@ class GroupChatScreen extends HookConsumerWidget {
                             top: 0,
                             child: IconButton(
                               onPressed: () {
-                                ref.read(attachedFile.notifier).state = null;
+                                ref.read(attachedGroupFile.notifier).state =
+                                    null;
                               },
                               icon: const Icon(Icons.close, color: Colors.red),
                             ),
                           ),
+                          if (progress > 0)
+                            Center(
+                              child: CircularProgressIndicator(
+                                value: progress.toDouble(),
+                              ),
+                            )
                         ],
                       ),
                     ),
@@ -269,28 +293,29 @@ class GroupChatScreen extends HookConsumerWidget {
                   InkWell(
                     onTap: () async {
                       final ChatMessage msg;
-                      final String content;
+                      // final String content;
                       if (attFile.messageType == MessageType.IMAGE) {
                         msg = ChatMessage.createImageSendMessage(
-                          targetId: model.id.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        content = 'Image file';
+                            targetId: model.id.toString(),
+                            filePath: attFile.file.path,
+                            fileSize: attFile.file.size.toInt(),
+                            chatType: ChatType.GroupChat);
+                        // content = 'Image file';
                       } else if (attFile.messageType == MessageType.VIDEO) {
                         msg = ChatMessage.createVideoSendMessage(
-                          targetId: model.id.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        content = 'Video file';
+                            targetId: model.id.toString(),
+                            filePath: attFile.file.path,
+                            fileSize: attFile.file.size.toInt(),
+                            thumbnailLocalPath: attFile.file.thumbPath,
+                            chatType: ChatType.GroupChat);
+                        // content = 'Video file';
                       } else {
                         msg = ChatMessage.createFileSendMessage(
-                          targetId: model.id.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        content = 'File';
+                            targetId: model.id.toString(),
+                            filePath: attFile.file.path,
+                            fileSize: attFile.file.size.toInt(),
+                            chatType: ChatType.GroupChat);
+                        // content = 'File';
                       }
                       msg.attributes = {
                         "em_apns_ext": {
@@ -303,15 +328,6 @@ class GroupChatScreen extends HookConsumerWidget {
                           'group_name': model.groupInfo.name,
                           'content_type': msg.body.type.name,
                         },
-                        // Adds the push template to the message.
-                        // "em_push_template": {
-                        //   // Sets the template name.
-                        //   "name": "default",
-                        //   // Sets the template title by specifying the variable.
-                        //   "title_args": ["${model.contact.name} sent you a message"],
-                        //   // Sets the template content by specifying the variable.
-                        //   "content_args": [input],
-                        // }
                       };
 
                       await _sendMessage(msg, ref);
@@ -333,6 +349,82 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
+  _pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
+    ImagePicker picker = ImagePicker();
+    switch (type) {
+      case AttachType.cameraPhoto:
+        // SelectedImagesDetails? details =
+        //     await picker.pickImage(source: ImageSource.camera);
+
+        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+        if (xFile != null) {
+          // File file = xFile.path;
+          final Media media = Media(
+              path: xFile.path,
+              size: (await xFile.length()).toDouble(),
+              thumbPath: xFile.path);
+          ref.read(attachedGroupFile.notifier).state =
+              AttachedFile(media, MessageType.IMAGE);
+        }
+        break;
+      case AttachType.cameraVideo:
+        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+        if (xFile != null) {
+          final thumb = await VideoThumbnail.thumbnailFile(
+            video: xFile.path,
+            thumbnailPath: Directory.systemTemp.path,
+            imageFormat: ImageFormat.JPEG,
+            maxWidth: 128,
+            quality: 25,
+          );
+          final Media media = Media(
+              path: xFile.path,
+              size: (await xFile.length()).toDouble(),
+              thumbPath: thumb);
+          ref.read(attachedGroupFile.notifier).state =
+              AttachedFile(media, MessageType.VIDEO);
+        }
+        break;
+      case AttachType.media:
+        ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
+        ipp.SelectedImagesDetails? details =
+            await pickerPlus.pickBoth(source: ipp.ImageSource.gallery);
+        if (details != null && details.selectedFiles.isNotEmpty) {
+          File file = details.selectedFiles.first.selectedFile;
+          bool isImage = file.path.toLowerCase().endsWith('png') ||
+              file.path.toLowerCase().endsWith('jpg') ||
+              file.path.toLowerCase().endsWith('jpeg');
+          if (isImage) {
+            final Media media = Media(
+                path: file.absolute.path,
+                size: (await file.length()).toDouble(),
+                thumbPath: file.absolute.path);
+            ref.read(attachedGroupFile.notifier).state =
+                AttachedFile(media, MessageType.IMAGE);
+          } else {
+            final thumb = await VideoThumbnail.thumbnailFile(
+              video: file.path,
+              thumbnailPath: Directory.systemTemp.path,
+              imageFormat: ImageFormat.JPEG,
+              maxWidth: 128,
+              quality: 25,
+            );
+            final Media media = Media(
+                path: file.absolute.path,
+                size: (await file.length()).toDouble(),
+                thumbPath: thumb);
+            ref.read(attachedGroupFile.notifier).state =
+                AttachedFile(media, MessageType.VIDEO);
+          }
+        }
+        break;
+      case AttachType.audio:
+        break;
+      case AttachType.docs:
+        break;
+    }
+  }
+
   _pickFiles(AttachType type, WidgetRef ref) async {
     switch (type) {
       case AttachType.cameraPhoto:
@@ -344,7 +436,7 @@ class GroupChatScreen extends HookConsumerWidget {
         // print(res);
         if (res != null) {
           final Media media = res.first;
-          ref.read(attachedFile.notifier).state =
+          ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.IMAGE);
         }
         return;
@@ -356,7 +448,7 @@ class GroupChatScreen extends HookConsumerWidget {
         );
         if (res != null) {
           final Media media = res.first;
-          ref.read(attachedFile.notifier).state =
+          ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.VIDEO);
         }
         return;
@@ -369,11 +461,19 @@ class GroupChatScreen extends HookConsumerWidget {
         );
         if (res != null) {
           final Media media = res.first;
-          bool isImage = media.path.toLowerCase().endsWith('png') ||
-              media.path.toLowerCase().endsWith('jpg') ||
-              media.path.toLowerCase().endsWith('jpeg');
-          ref.read(attachedFile.notifier).state = AttachedFile(
-              media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
+          print('path ${media.path}');
+          final f = File(media.path);
+          if (await f.exists()) {
+            bool isImage = media.path.toLowerCase().endsWith('png') ||
+                media.path.toLowerCase().endsWith('jpg') ||
+                media.path.toLowerCase().endsWith('jpeg');
+            ref.read(attachedGroupFile.notifier).state = AttachedFile(
+                media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
+          } else {
+            print('path ${media.path} is not exist ');
+          }
+          // File('Fil')
+
         }
         break;
 
@@ -384,19 +484,6 @@ class GroupChatScreen extends HookConsumerWidget {
         // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
         break;
     }
-    // FilePickerResult? result = await FilePicker.platform.pickFiles(
-    //   type: FileType.custom,
-    //   allowedExtensions: ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'],
-    // );
-    // if (result != null) {
-    //   for (var file in result.files) {
-    //     print(file.name);
-    //     print(file.bytes);
-    //     print(file.size);
-    //     print(file.extension);
-    //     print(file.path);
-    //   }
-    // }
   }
 
   Widget _buildMessageList(WidgetRef ref) {
@@ -441,7 +528,8 @@ class GroupChatScreen extends HookConsumerWidget {
             name: name,
             profileImage: image,
             status: ContactStatus.group);
-
+        bool notReply = message.body.type == MessageType.CMD ||
+            message.body.type == MessageType.CUSTOM;
         return Column(
           // crossAxisAlignment:
           //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -461,17 +549,24 @@ class GroupChatScreen extends HookConsumerWidget {
                 ),
               ),
             SwipeTo(
-              onRightSwipe: () {
-                ref.read(chatModelProvider.notifier).setReplyOn(message,
-                    isOwnMessage ? S.current.bmeet_user_you : contact.name);
-                // print('open replyBox');
-              },
+              onRightSwipe: notReply
+                  ? null
+                  : () {
+                      ref.read(chatModelProvider.notifier).setReplyOn(
+                          message,
+                          isOwnMessage
+                              ? S.current.bmeet_user_you
+                              : contact.name);
+                      // print('open replyBox');
+                    },
               child: GestureDetector(
                 onLongPress: () =>
                     _onMessageLongPress(message, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
                     ? _onMessageTapSelect(message, isSelected, ref)
-                    : _onMessageTap(message, context),
+                    : notReply
+                        ? null
+                        : _onMessageTap(message, context, ref),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
@@ -512,25 +607,40 @@ class GroupChatScreen extends HookConsumerWidget {
     }
   }
 
-  _onMessageTap(ChatMessage message, BuildContext context) {
-    if (message.body.type == MessageType.IMAGE) {
-      //open image
-      // Navigator.pushNamed(context, RouteList.bViewImage,
-      //     arguments: message.body as ChatImageMessageBody);
-      showImageViewer(
-          context,
-          getImageProviderChatImage(message.body as ChatImageMessageBody,
-              loadThumbFirst: false), onViewerDismissed: () {
-        // print("dismissed");
-      });
-    } else if (message.body.type == MessageType.VIDEO) {
-      Navigator.pushNamed(context, RouteList.bViewVideo,
-          arguments: message.body as ChatVideoMessageBody);
-    } else if (message.body.type == MessageType.FILE) {}
-  }
-
-  _showMessageOption(ChatMessage message) {
-    // ChatClient.getInstance.chatManager.a
+  _onMessageTap(
+      ChatMessage message, BuildContext context, WidgetRef ref) async {
+    final action = await showMessageMenu(context, message);
+    if (action == 0) {
+      //Copy
+      AppSnackbar.instance.message(context, 'Need to implement');
+    } else if (action == 1) {
+      //Forward
+      AppSnackbar.instance.message(context, 'Need to implement');
+    } else if (action == 2) {
+      //Reply
+      String name = message.attributes?['from_name'] ?? '';
+      bool isOwnMessage = message.from != model.id;
+      ref
+          .read(chatModelProvider.notifier)
+          .setReplyOn(message, isOwnMessage ? S.current.bmeet_user_you : name);
+    } else if (action == 3) {
+      //Delete
+      ref.read(groupChatProvider(model).notifier).deleteMessages([message]);
+    }
+    // if (message.body.type == MessageType.IMAGE) {
+    //   //open image
+    //   // Navigator.pushNamed(context, RouteList.bViewImage,
+    //   //     arguments: message.body as ChatImageMessageBody);
+    //   showImageViewer(
+    //       context,
+    //       getImageProviderChatImage(message.body as ChatImageMessageBody,
+    //           loadThumbFirst: false), onViewerDismissed: () {
+    //     // print("dismissed");
+    //   });
+    // } else if (message.body.type == MessageType.VIDEO) {
+    //   Navigator.pushNamed(context, RouteList.bViewVideo,
+    //       arguments: message.body as ChatVideoMessageBody);
+    // } else if (message.body.type == MessageType.FILE) {}
   }
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
@@ -546,14 +656,23 @@ class GroupChatScreen extends HookConsumerWidget {
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {
+            hideLoading(ref);
+            ref.read(sendingGroupFileProgress.notifier).state = 0;
             // FCMApiService.instance.sendChatPush(
             //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
             // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
           },
           onError: (error) {
+            hideLoading(ref);
+            ref.read(sendingGroupFileProgress.notifier).state = 0;
+            AppSnackbar.instance
+                .error(navigatorKey.currentContext!, error.description);
             // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
           },
           onProgress: (progress) {
+            hideLoading(ref);
+            ref.read(sendingGroupFileProgress.notifier).state = progress;
+            print('progress=> $progress');
             // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
           },
         ),
@@ -561,14 +680,20 @@ class GroupChatScreen extends HookConsumerWidget {
 
       final sentMessage =
           await ChatClient.getInstance.chatManager.sendMessage(msg);
+
+      ref.read(groupChatProvider(model).notifier).addChat(sentMessage);
       ref
           .read(groupConversationProvider)
           .updateConversationMessage(sentMessage, model.id);
-
-      ref.read(groupChatProvider(model).notifier).addChat(sentMessage);
     } on ChatError catch (e) {
       print("send failed, code: ${e.code}, desc: ${e.description}");
+      AppSnackbar.instance.error(navigatorKey.currentContext!,
+          "send failed, code: ${e.code}, desc: ${e.description}");
       return e.description;
+    } catch (e) {
+      print("send failed, code: $e");
+      AppSnackbar.instance.error(navigatorKey.currentContext!, "$e");
+      return e.toString();
     }
     _scrollController.animateTo(
       0.0,
@@ -578,90 +703,35 @@ class GroupChatScreen extends HookConsumerWidget {
     return null;
   }
 
-  Widget _buildUserTyping(String name) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15, top: 25),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.only(right: 2),
-            child: TypingIndicator(),
-          ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: name,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const TextSpan(
-                  text: ' is typing',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Future<void> onLoadEarlier(WidgetRef ref) async {
-  //   await Future.delayed(const Duration(seconds: 2));
-  //   try {
-  //     final message = ref.read(chatMessageListProvider.notifier).getLast();
-  //     if (message == null) return;
-  //     if (model.conversation != null) {
-  //       print('next_chat_id ${message.msgId}');
-  //       await Future.delayed(const Duration(seconds: 2));
-  //       final chats = await model.conversation
-  //           ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
-  //       ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
-  //       ref.read(chatHasMoreOldMessageProvider.notifier).state =
-  //           chats?.length == 20;
-  //       return;
-  //     }
-
-  //     // final message = ref.read(chatMessageListProvider.notifier).getLast();
-  //     // if (message == null) return;
-  //     // // ChatTextMessageBody body = message.body as ChatTextMessageBody;
-  //     // // print('last message ${body.content}');
-
-  //     // String? cursor = ref.read(chatMessageListProvider.notifier).cursor;
-  //     // if (cursor == null || cursor.isEmpty) return;
-  //     // final oldResult = await ChatClient.getInstance.chatManager
-  //     //     .fetchHistoryMessages(
-  //     //         conversationId: _otherUserId,
-  //     //         pageSize: 20,
-  //     //         startMsgId: message.msgId);
-
-  //     // debugPrint('older cursor :$cursor -  ${oldResult.cursor} ');
-  //     // if (oldResult.cursor == null ||
-  //     //     cursor == oldResult.cursor ||
-  //     //     oldResult.cursor?.isEmpty == true) {
-  //     //   debugPrint('Not a new cursor : ${oldResult.cursor}');
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-  //     //   return;
-  //     // }
-  //     // // ref.read(chatChatCursorMessageProvider.notifier).state = oldResult.cursor;
-  //     // debugPrint('old data list ${oldResult.data.length}');
-  //     // if (oldResult.data.isNotEmpty) {
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state =
-  //     //       oldResult.data.length == 20;
-  //     //   print('Set has More Data :${(oldResult.data.length == 20)})');
-  //     //   ref
-  //     //       .read(chatMessageListProvider.notifier)
-  //     //       .addChats(oldResult.data, oldResult.cursor);
-  //     // } else {
-  //     //   ref.read(chatHasMoreOldMessageProvider.notifier).state = false;
-  //     //   print('Set has More Data :false');
-  //     // }
-  //   } catch (e) {}
-
-  //   return;
+  // Widget _buildUserTyping(String name) {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(left: 15, top: 25),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.end,
+  //       children: <Widget>[
+  //         const Padding(
+  //           padding: EdgeInsets.only(right: 2),
+  //           child: TypingIndicator(),
+  //         ),
+  //         RichText(
+  //           text: TextSpan(
+  //             children: [
+  //               TextSpan(
+  //                   text: name,
+  //                   style: const TextStyle(
+  //                     fontSize: 12,
+  //                     fontWeight: FontWeight.bold,
+  //                   )),
+  //               const TextSpan(
+  //                 text: ' is typing',
+  //                 style: TextStyle(fontSize: 12),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
   // }
 
   Future<void> _onScroll(ScrollController scrollController,
@@ -713,6 +783,113 @@ class GroupChatScreen extends HookConsumerWidget {
     // }
   }
 
+  Widget _menuBar(BuildContext context, final List<ChatMessage> selectedItems,
+      WidgetRef ref) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+      // color: AppColors.primaryColor,
+      child: Row(
+        children: [
+          // SizedBox(width: 6.w,)
+          Expanded(
+            child: Text(
+              selectedItems.length > 1
+                  ? '${selectedItems.length} Messages selected'
+                  : '${selectedItems.length} Message',
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // const Spacer(),
+          Visibility(
+            visible: (selectedItems
+                .where((e) => e.body.type != MessageType.TXT)
+                .isEmpty),
+            child: IconButton(
+              onPressed: () async {
+                // ref
+                //     .read(bhatMessagesProvider(model).notifier)
+                //     .deleteMessages(selectedItems);
+                ref.read(selectedChatMessageListProvider.notifier).clear();
+                AppSnackbar.instance.message(context, 'Need to implement');
+                // ChatClient.getInstance.chatManager.del
+              },
+              padding: EdgeInsets.all(1.w),
+              tooltip: S.current.chat_menu_copy,
+              icon: getSvgIcon(
+                'icon_chat_copy.svg',
+                width: 5.w,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Visibility(
+            visible: selectedItems.length == 1 &&
+                selectedItems.first.body.type != MessageType.CUSTOM,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    // ref
+                    //     .read(bhatMessagesProvider(model).notifier)
+                    //     .deleteMessages(selectedItems);
+                    ref.read(selectedChatMessageListProvider.notifier).clear();
+                    AppSnackbar.instance.message(context, 'Need to implement');
+                    // ChatClient.getInstance.chatManager.del
+                  },
+                  padding: EdgeInsets.all(1.w),
+                  tooltip: S.current.chat_menu_forward,
+                  icon: getSvgIcon(
+                    'icon_chat_forward.svg',
+                    width: 5.w,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    ChatMessage message = selectedItems.first;
+                    String name = message.attributes?['from_name'] ?? '';
+                    bool isOwnMessage = message.from != model.id;
+                    ref.read(chatModelProvider.notifier).setReplyOn(message,
+                        isOwnMessage ? S.current.bmeet_user_you : name);
+
+                    ref.read(selectedChatMessageListProvider.notifier).clear();
+                  },
+                  padding: EdgeInsets.all(1.w),
+                  tooltip: S.current.chat_menu_reply,
+                  icon: getSvgIcon(
+                    'icon_chat_reply.svg',
+                    width: 5.w,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              ref
+                  .read(groupChatProvider(model).notifier)
+                  .deleteMessages(selectedItems);
+              ref.read(selectedChatMessageListProvider.notifier).clear();
+            },
+            padding: EdgeInsets.all(1.w),
+            tooltip: S.current.chat_menu_delete,
+            icon: getSvgIcon(
+              'icon_delete_conv.svg',
+              width: 5.w,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _topBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
@@ -723,7 +900,7 @@ class GroupChatScreen extends HookConsumerWidget {
           IconButton(
             onPressed: (() {
               if (direct) {
-                Navigator.pushReplacementNamed(context, RouteList.home);
+                Navigator.pushReplacementNamed(context, RouteList.splash);
               } else {
                 Navigator.pop(context);
               }
@@ -810,8 +987,7 @@ class GroupChatScreen extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      S.current.chat_replying(replyOf.fromName),
-                      // 'Replying to ${replyOf.fromName}',
+                      'Replying to ${replyOf.fromName}',
                       style: textStyleWhite,
                     ),
                     InkWell(
@@ -824,19 +1000,14 @@ class GroupChatScreen extends HookConsumerWidget {
                 ),
                 SizedBox(height: 1.h),
                 Container(
-                  // padding: EdgeInsets.all(1.w),
-                  constraints: BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.chatBoxBackgroundOthers,
-                    borderRadius: BorderRadius.all(Radius.circular(3.w)),
-                  ),
-                  //  Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     ChatMessageBodyWidget(message: replyOf.message)
-                  //   ],
-                  // ),
-                ),
+                    // padding: EdgeInsets.all(1.w),
+                    constraints:
+                        BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.chatBoxBackgroundOthers,
+                      borderRadius: BorderRadius.all(Radius.circular(3.w)),
+                    ),
+                    child: ChatMessageBodyWidget(message: replyOf.message)),
               ],
             ),
           );

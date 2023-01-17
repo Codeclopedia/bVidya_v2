@@ -60,3 +60,11 @@ final bLearnFollowInstructorProvider = FutureProvider.autoDispose
 
   return result ?? [];
 });
+
+
+
+final bLearnCourseDetailProvider =
+    FutureProvider.autoDispose.family<CourseDetailBody?, int>((ref, id) {
+  
+  return ref.read(bLearnRepositoryProvider).getCourseDetail(id);
+});

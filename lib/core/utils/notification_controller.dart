@@ -4,12 +4,13 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
-import 'package:bvidya/data/models/response/bchat/p2p_call_response.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
+import '/core/helpers/call_helper.dart';
+import '/data/models/call_message_body.dart';
+import '/data/models/response/bchat/p2p_call_response.dart';
 
 import '../constants.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
@@ -74,9 +75,9 @@ class NotificationController {
 
     if (receivedAction.payload != null &&
         receivedAction.channelKey == 'chat_channel') {
-      if ((await getMeAsUser()) == null) {
-        return;
-      }
+      // if ((await getMeAsUser()) == null) {
+      //   return;
+      // }
       if (receivedAction.actionType == ActionType.SilentAction ||
           receivedAction.actionType == ActionType.SilentBackgroundAction) {
         // String? type = receivedAction.payload?['type'];
@@ -91,17 +92,19 @@ class NotificationController {
         // }
         return;
       }
-      BuildContext? context = navigatorKey.currentContext;
-      debugPrint(
-          'onAction context:${context != null}  payload: ${receivedAction.payload}');
-      if (context != null) {
-        clickAction = receivedAction;
-        // handleChatNotificationAction(receivedAction.payload!, context, true);
-      } else {
-        debugPrint(
-            'Context is null key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
-        //
-      }
+
+      clickAction = receivedAction;
+      clearPool(receivedAction.id ?? 0);
+      // BuildContext? context = navigatorKey.currentContext;
+      // debugPrint(
+      //     'onAction context:${context != null}  payload: ${receivedAction.payload}');
+      // if (context != null) {
+      //   // handleChatNotificationAction(receivedAction.payload!, context, true);
+      // } else {
+      //   debugPrint(
+      //       'Context is null key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
+      //   //
+      // }
     } else {
       debugPrint(
           'key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
@@ -383,77 +386,77 @@ class NotificationController {
     // );
   }
 
-  static Future shouldShowChatNotification(RemoteMessage message) async {
-    try {
-      if (message.data.isNotEmpty &&
-          message.data['alert'] != null &&
-          message.data['e'] != null) {
-        String title = message.notification?.title ?? '';
-        String content = message.notification?.body ?? '';
-        String? type = jsonDecode(message.data['e'])['type'];
-        // print('type: $type');
-        dynamic from = message.data['f'];
-        // print('From $from');
+  // static Future shouldShowChatNotification(RemoteMessage message) async {
+  //   try {
+  //     if (message.data.isNotEmpty &&
+  //         message.data['alert'] != null &&
+  //         message.data['e'] != null) {
+  //       String title = message.notification?.title ?? '';
+  //       String content = message.notification?.body ?? '';
+  //       String? type = jsonDecode(message.data['e'])['type'];
+  //       // print('type: $type');
+  //       dynamic from = message.data['f'];
+  //       // print('From $from');
 
-        if (title.isNotEmpty &&
-            content.isNotEmpty &&
-            from != null &&
-            type != null) {
-          bool showNotification = false;
-          if (type == 'chat') {
-            showNotification = !Routes.isChatScreen(from.toString());
-          } else if (type == 'group_chat') {
-            showNotification = !Routes.isGroupChatScreen(from.toString());
-          }
-          if (showNotification) {
-            BuildContext? context = navigatorKey.currentContext;
-            if (context != null) {
-              showTopSnackBar(
-                Overlay.of(context)!,
-                CustomSnackBar.info(
-                  message: "$title\n$content",
-                ),
-                onTap: () {
-                  handleChatNotificationAction({
-                    'type': type,
-                    'from': from.toString(),
-                  }, context, false);
-                },
-              );
-              return;
-            }
+  //       if (title.isNotEmpty &&
+  //           content.isNotEmpty &&
+  //           from != null &&
+  //           type != null) {
+  //         bool showNotification = false;
+  //         if (type == 'chat') {
+  //           showNotification = !Routes.isChatScreen(from.toString());
+  //         } else if (type == 'group_chat') {
+  //           showNotification = !Routes.isGroupChatScreen(from.toString());
+  //         }
+  //         if (showNotification) {
+  //           BuildContext? context = navigatorKey.currentContext;
+  //           if (context != null) {
+  //             showTopSnackBar(
+  //               Overlay.of(context)!,
+  //               CustomSnackBar.info(
+  //                 message: "$title\n$content",
+  //               ),
+  //               onTap: () {
+  //                 handleChatNotificationAction({
+  //                   'type': type,
+  //                   'from': from.toString(),
+  //                 }, context, false);
+  //               },
+  //             );
+  //             return;
+  //           }
 
-            bool isAllowed =
-                await AwesomeNotifications().isNotificationAllowed();
-            if (!isAllowed) isAllowed = await displayNotificationRationale();
-            if (!isAllowed) return;
-            if ((await getMeAsUser()) == null) {
-              return;
-            }
+  //           bool isAllowed =
+  //               await AwesomeNotifications().isNotificationAllowed();
+  //           if (!isAllowed) isAllowed = await displayNotificationRationale();
+  //           if (!isAllowed) return;
+  //           if ((await getMeAsUser()) == null) {
+  //             return;
+  //           }
 
-            int id = DateTime.now().hashCode;
-            // print('  showing notification id $id');
-            AwesomeNotifications().createNotification(
-              content: NotificationContent(
-                id: id,
-                channelKey: 'chat_channel',
-                title: title,
-                icon: 'resource://mipmap/ic_launcher',
-                body: content,
-                wakeUpScreen: true,
-                fullScreenIntent: false,
-                notificationLayout: NotificationLayout.BigText,
-                payload: {
-                  'type': type,
-                  'from': from.toString(),
-                },
-              ),
-            );
-          }
-        }
-      }
-    } catch (e) {}
-  }
+  //           int id = DateTime.now().hashCode;
+  //           // print('  showing notification id $id');
+  //           AwesomeNotifications().createNotification(
+  //             content: NotificationContent(
+  //               id: id,
+  //               channelKey: 'chat_channel',
+  //               title: title,
+  //               icon: 'resource://mipmap/ic_launcher',
+  //               body: content,
+  //               wakeUpScreen: true,
+  //               fullScreenIntent: false,
+  //               notificationLayout: NotificationLayout.BigText,
+  //               payload: {
+  //                 'type': type,
+  //                 'from': from.toString(),
+  //               },
+  //             ),
+  //           );
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {}
+  // }
 
   static Future<bool> handleChatNotificationAction(
       Map<String, String?> message, BuildContext context, bool replace) async {
@@ -475,7 +478,6 @@ class NotificationController {
               (route) => route.isFirst,
             );
           }
-
           return true;
         }
       } else if (type == 'group_chat') {
@@ -647,8 +649,8 @@ class NotificationController {
       }
       //Show notification
       if (type == 'group_chat') {
-        groupName = extra['group_name'];
-        groupId = message.data['g'];
+        groupName = extra['group_name'] ?? '';
+        groupId = message.data['g'] ?? '';
         _showGroupTextMessageNotification(
             groupId!, name!, groupName!, image!, contentText);
       } else if (type == 'chat') {
@@ -659,6 +661,7 @@ class NotificationController {
 
   static final Map<int, int> _messagePool = {};
   static final Map<int, String> _messageBodyPool = {};
+
   static void clearPool(int id) async {
     if (_messagePool.containsKey(id)) {
       _messagePool.remove(id);
@@ -723,6 +726,7 @@ class NotificationController {
         wakeUpScreen: true,
         fullScreenIntent: false,
         bigPicture: url,
+        largeIcon: '$baseImageApi$fromImage',
         notificationLayout: NotificationLayout.BigPicture,
         payload: {
           'type': 'chat',
@@ -811,6 +815,7 @@ class NotificationController {
         wakeUpScreen: true,
         fullScreenIntent: false,
         bigPicture: url,
+        largeIcon: '$baseImageApi$fromImage',
         notificationLayout: NotificationLayout.BigPicture,
         payload: {
           'type': 'group_chat',
