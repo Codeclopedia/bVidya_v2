@@ -379,11 +379,11 @@ class Routes {
         if (settings.arguments is Map<String, dynamic>) {
           final arg = settings.arguments as Map<String, dynamic>;
           Lesson lesson = arg["lesson"];
-          int courseId = arg["course_id"];
+          Course course = arg["course"];
           int instructorId = arg['instructor_id'];
           screen = BlearnVideoPlayer(
             lesson: lesson,
-            courseId: courseId,
+            course: course,
             instructorId: instructorId,
           );
         } else {
