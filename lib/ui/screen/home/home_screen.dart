@@ -33,7 +33,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     // "ref" can be used in all life-cycles of a StatefulWidget.
     // ref.read(groupConversationProvider.notifier).init();
-    ref.read(chatConversationProvider.notifier).init(ref.read(bChatProvider));
+    ref.read(chatConversationProvider.notifier).reset(ref.read(bChatProvider));
     _addHandler(ref);
   }
 
@@ -136,6 +136,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.chatScreen,
             arguments: model);
+        setScreen(RouteList.home);
         try {
           ref.read(chatConversationProvider).updateConversationOnly(model.id);
         } catch (_) {}
@@ -300,7 +301,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 // } catch (e) {
                 //   print('error :$e');
                 // }
-                Navigator.pushNamed(context, RouteList.groups);
+                await Navigator.pushNamed(context, RouteList.groups);
+                setScreen(RouteList.home);
                 // Navigator.push(
                 //     context,
                 //     MaterialPageRoute(
@@ -333,6 +335,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         onTap: () async {
           final model =
               await Navigator.pushNamed(context, RouteList.contactList);
+          setScreen(RouteList.home);
           if (model != null) {
             ref.read(chatConversationProvider).updateUi();
             // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
@@ -381,8 +384,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _recentCallButton(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, RouteList.recentCalls);
+      onTap: () async {
+        await Navigator.pushNamed(context, RouteList.recentCalls);
+        setScreen(RouteList.home);
       },
       child: Row(
         children: [
@@ -421,21 +425,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               SizedBox(width: 7.w),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   if (user.role == 'teacher' || user.role == 'admin') {
-                    Navigator.pushNamed(context, RouteList.teacherProfile);
+                    await Navigator.pushNamed(
+                        context, RouteList.teacherProfile);
                   } else {
-                    Navigator.pushNamed(context, RouteList.studentProfile);
+                    await Navigator.pushNamed(
+                        context, RouteList.studentProfile);
                   }
+                  setScreen(RouteList.home);
                 },
                 // onTap: (() => Navigator.pushNamed(
                 //     context, RouteList.contactProfile,
                 //     arguments: user)),
                 child: getRectFAvatar(user.name, user.image),
               ),
-              SizedBox(
-                width: 3.w,
-              ),
+              SizedBox(width: 3.w),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -467,6 +472,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       context, RouteList.searchContact);
                   // if (result == true) {
                   ref.read(chatConversationProvider).updateUi();
+                  setScreen(RouteList.home);
                   // ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   // }
                 },

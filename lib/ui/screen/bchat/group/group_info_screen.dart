@@ -548,8 +548,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                             await Navigator.pushNamed(
                                 context, RouteList.editGroup,
                                 arguments: group.groupInfo);
-
-                            ref.read(groupConversationProvider).update();
+                            // ref.read(groupConversationProvider.notifier).update();
                           }
                         },
                       ),
@@ -561,7 +560,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                               context, 'Delete group', 'Are you sure?', 'Yes',
                               () async {
                             await ref
-                                .read(groupConversationProvider)
+                                .read(groupConversationProvider.notifier)
                                 .delete(group.groupInfo.groupId);
 
                             Navigator.pushNamedAndRemoveUntil(context,

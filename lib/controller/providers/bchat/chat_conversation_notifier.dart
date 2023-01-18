@@ -12,11 +12,9 @@ class ChatConversationNotifier extends StateNotifier<List<ConversationModel>> {
   setup(WidgetRef ref) async {
     models.clear();
 
-    final conversations = await BChatContactManager.getChatConversations();
-    if(conversations.isNotEmpty){
-      for( var conv in conversations){
-        
-      }
+    final conversations = await BChatContactManager.getChatConversationsIds();
+    if (conversations.isNotEmpty) {
+      for (var conv in conversations) {}
     }
   }
 }

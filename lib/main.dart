@@ -1,8 +1,8 @@
 import 'dart:io';
 
-// import 'package:bvidya/core/utils/callkeep_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
 
 import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
@@ -40,6 +40,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
+    SharedPreferencesAndroid.registerWith();
   } else {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -49,17 +50,20 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
   setupCallKit();
   await NotificationController.initializeLocalNotifications();
+  
 
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
       if (action == NotiConstants.actionCallStart) {
-        handlShowIncomingCallNotification(message);
+        // handlShowIncomingCallNotification(message);
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
       } else {}
     } else {
-      NotificationController.handleRemoteMessage(message, false);
+      // NotificationController.showErrorMessage('New Background : ${message.senderId}');
+      // await BChatSDKController.instance.loginOnlyInBackground();
+      NotificationController.handleRemoteMessageBackground(message);
     }
   } catch (e) {
     // print('error $e');

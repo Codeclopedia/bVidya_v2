@@ -19,6 +19,7 @@ class BChatSDKController {
 
   bool _initialized = false;
 
+//from main
   Future setup() async {
     try {
       ChatOptions options = ChatOptions(
@@ -41,25 +42,25 @@ class BChatSDKController {
     }
   }
 
-  Future init() async {
-    if (!_initialized) {
-      _initialized = true;
-      User? currentUser = await getMeAsUser();
-      if (currentUser == null) {
-        print('user not logged in, Abort initializing sdk');
-        try {
-          bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
-          if (alreadyLoggedIn) {
-            await ChatClient.getInstance.logout(false);
-          }
-        } catch (e) {
-          print('$e');
-        }
-        return;
-      }
-      await initChatSDK(currentUser);
-    }
-  }
+  // Future init() async {
+  //   if (!_initialized) {
+  //     _initialized = true;
+  //     User? currentUser = await getMeAsUser();
+  //     if (currentUser == null) {
+  //       print('user not logged in, Abort initializing sdk');
+  //       try {
+  //         bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
+  //         if (alreadyLoggedIn) {
+  //           await ChatClient.getInstance.logout(true);
+  //         }
+  //       } catch (e) {
+  //         print('$e');
+  //       }
+  //       return;
+  //     }
+  //     await initChatSDK(currentUser);
+  //   }
+  // }
 
   Future loadAllContactsGroup() async {
     final client = ChatClient.getInstance;
@@ -93,48 +94,90 @@ class BChatSDKController {
     }
   }
 
-  Future initChatSDK(User currentUser) async {
-    print('initChatSDK $_initialized');
-    // if (_initialized) {
-    //   return;
-    // }
-    // _initialized = true;
-    print('_initialized');
+  bool _logging = false;
+  // bool _loggingOut = false;
+  // Future logoutOnlyInBackground() async {
+  //   if (_loggingOut) return;
+  //   _loggingOut = true;
+  //   try {
+  //     bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
+  //     if (alreadyLoggedIn) {
+  //       await ChatClient.getInstance.logout(false);
+  //     }
+  //   } catch (e) {
+  //     print('$e');
+  //   }
+  //   _loggingOut = false;
+  // }
 
-    final pref = await SharedPreferences.getInstance();
-    int? login = pref.getInt('last_login');
+  int count = 0;
+  Future loginOnlyInBackground() async {
+    count = 0;
+    _loginOnlyInForeground();
+  }
 
-    String? oldChatBodyStr = pref.getString('chat_body');
-    bool shouldFetchNewToken =
-        (DateTime.now().millisecondsSinceEpoch - (login ?? 0)) > 60 * 60 * 1000;
-    bool shouldLogin = false;
-
-    // String appKey;
-    ChatTokenBody? keyBody;
-    if (oldChatBodyStr != null) {
-      keyBody = ChatTokenBody.fromJson(jsonDecode(oldChatBodyStr));
-    }
-    if (shouldFetchNewToken || keyBody == null) {
-      final token =
-          await BChatApiService.instance.fetchChatToken(currentUser.authToken);
-      if (token.body != null) {
-        shouldLogin = true;
-        if (keyBody != null) {
-          shouldLogin = keyBody.appKey != token.body!.appKey ||
-              keyBody.userId != token.body!.userId;
-          if (shouldLogin) {
-            await pref.setString('chat_body', jsonEncode(token.body!));
-          }
-        } else {
+  Future _loginOnlyInForeground({bool loadApi = false}) async {
+    if (_logging) return;
+    _logging = true;
+    count++;
+    try {
+      User? currentUser = await getMeAsUser();
+      if (currentUser == null) {
+        _logging = false;
+        return;
+      }
+      ChatTokenBody? keyBody;
+      if (!loadApi) {
+        final pref = await SharedPreferences.getInstance();
+        String? oldChatBodyStr = pref.getString('chat_body');
+        if (oldChatBodyStr != null) {
+          keyBody = ChatTokenBody.fromJson(jsonDecode(oldChatBodyStr));
+        }
+      }
+      if (loadApi || keyBody == null) {
+        final token = await BChatApiService.instance
+            .fetchChatToken(currentUser.authToken);
+        if (token.body != null) {
           keyBody = token.body!;
-          await pref.setString('chat_body', jsonEncode(keyBody));
+        }
+      }
+
+      if (keyBody != null) {
+        if ('61420261#491569' != keyBody.appKey) {
+          await ChatClient.getInstance.changeAppKey(newAppKey: keyBody.appKey);
         }
 
-        print('should Login -  $shouldLogin');
-        print('old Chat Body -  $oldChatBodyStr');
-        print('new Chat Body -  ${token.body?.toJson()}');
-        // appKey = token.body!.appKey;
+        await ChatClient.getInstance.loginWithAgoraToken(
+          keyBody.userId.toString(),
+          keyBody.userToken,
+        );
       }
+    } catch (e) {
+      if (count < 2) {
+        _loginOnlyInForeground(loadApi: true);
+      }
+    }
+
+    _logging = false;
+  }
+
+//from splash
+  Future initChatSDK(User currentUser) async {
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+    print('initChatSDK $_initialized');
+    print('_initialized');
+    final pref = await SharedPreferences.getInstance();
+    bool shouldLogin = false;
+    ChatTokenBody? keyBody;
+    final tokenResponse =
+        await BChatApiService.instance.fetchChatToken(currentUser.authToken);
+    if (tokenResponse.body != null) {
+      shouldLogin = true;
+      keyBody = tokenResponse.body!;
+      await pref.setString('chat_body', jsonEncode(keyBody));
     }
     if (keyBody == null) {
       return;
@@ -145,11 +188,6 @@ class BChatSDKController {
 
     bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
     if (alreadyLoggedIn) {
-      if (!shouldLogin) {
-        await ChatClient.getInstance.contactManager.getAllContactsFromDB();
-        await ChatClient.getInstance.startCallback();
-        return;
-      }
       try {
         await ChatClient.getInstance.logout(false);
       } catch (e) {
@@ -207,6 +245,10 @@ class BChatSDKController {
         // await loadConversations(ref);
       }
     }
+  }
+
+  destroyed() {
+    _initialized = false;
   }
 
   // void signOut() async {

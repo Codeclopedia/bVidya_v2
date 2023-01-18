@@ -3,21 +3,20 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/core/utils.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '/core/sdk_helpers/bchat_handler.dart';
+import '/core/state.dart';
+import '/core/utils.dart';
 import '/core/utils/chat_utils.dart';
 import 'controller/providers/bchat/chat_conversation_provider.dart';
 import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'core/constants.dart';
 import 'core/routes.dart';
-// import 'core/sdk_helpers/bchat_call_manager.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
-// import 'core/utils/callkeep_utils.dart';
 import 'core/utils/callkit_utils.dart';
 import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
@@ -41,14 +40,14 @@ initLoading() {
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 2000)
     ..indicatorType = EasyLoadingIndicatorType.hourGlass
-    ..loadingStyle = EasyLoadingStyle.dark
+    ..loadingStyle = EasyLoadingStyle.custom
     ..indicatorSize = 45.0
     ..radius = 10.0
-    ..progressColor = Colors.yellow
-    ..backgroundColor = Colors.green
-    ..indicatorColor = Colors.yellow
-    ..textColor = Colors.yellow
-    ..maskColor = Colors.blue.withOpacity(0.5)
+    ..progressColor = AppColors.yellowAccent
+    ..backgroundColor = AppColors.primaryColor
+    ..indicatorColor = AppColors.yellowAccent
+    ..textColor = AppColors.yellowAccent
+    ..maskColor = AppColors.primaryColor
     ..userInteractions = false
     ..dismissOnTap = false;
 }
@@ -77,10 +76,11 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
       debugPrint('Hello I m here foreground');
+      // BChatSDKController.instance.loginOnlyInForeground();
       // AndroidForegroundService.stopForeground();
-    }
-    if (state == AppLifecycleState.paused) {
+    } else if (state == AppLifecycleState.paused) {
       debugPrint('Hello I m here background');
+      // BChatSDKController.instance.logoutOnlyInBackground();
     }
 
     if (state == AppLifecycleState.detached) {
@@ -110,15 +110,16 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     FirebaseMessaging.onMessage.listen((message) async {
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
-      // debugPrint('firebase:onMessage -> ${message.toMap()} ');
+      debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
-          handlShowIncomingCallNotification(message, ref: ref);
+          // handlShowIncomingCallNotification(message, ref: ref);
         } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
         }
       } else {
+        // NotificationController.showErrorMessage('New Foreground : ${message.senderId}');
         NotificationController.handleRemoteMessage(message, true);
         // NotificationController.shouldShowChatNotification(message);
       }
@@ -153,18 +154,21 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           if (lastMessage.conversationId != null) {
             if (lastMessage.conversationId != null) {
               if (lastMessage.chatType == ChatType.Chat) {
+                if (lastMessage.body.type == MessageType.CUSTOM) {
+                  // NotificationController.handleCallNotification(lastMessage);
+                }
                 // print('on Chat Message=> ${lastMessage.body.toJson()} ');
                 ref
                     .read(chatConversationProvider.notifier)
                     .updateConversationMessage(lastMessage,
-                        update: Routes.currentScreen == RouteList.home);
+                        update: Routes.getCurrentScreen() == RouteList.home);
               } else if (lastMessage.chatType == ChatType.GroupChat) {
                 // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
                 ref
                     .read(groupConversationProvider.notifier)
                     .updateConversationMessage(
                         lastMessage, lastMessage.conversationId!,
-                        update: Routes.currentScreen == RouteList.groups);
+                        update: Routes.getCurrentScreen() == RouteList.groups);
               }
               // NotificationController.handleForegroundMessage(lastMessage);
             }
@@ -203,11 +207,12 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
 
   @override
   void dispose() {
+    debugPrint('Hello I m here dispose');
     try {
       unregisterForNewMessage('bVidyaApp');
-      ChatClient.getInstance.logout(false);
-      Routes.currentScreen = '';
-      Routes.currentId = '';
+      BChatSDKController.instance.destroyed();
+      // ChatClient.getInstance.logout(false);
+      Routes.resetScreen();
     } catch (e) {
       print('object $e');
     }

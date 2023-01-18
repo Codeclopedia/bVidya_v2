@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
 import 'package:bvidya/core/utils/callkit_utils.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -66,6 +67,7 @@ class SplashScreen extends ConsumerWidget {
         if (next.value != null) {
           final startTime = DateTime.now().millisecondsSinceEpoch;
           await ref.read(userAuthChangeProvider).loadUser();
+          await BChatSDKController.instance.initChatSDK(next.value!);
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
@@ -74,6 +76,7 @@ class SplashScreen extends ConsumerWidget {
             print('Time taken: $diff ms Notification');
             return;
           }
+
           await ref
               .read(chatConversationProvider.notifier)
               .setup(ref.read(bChatProvider), next.value!);

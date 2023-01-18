@@ -147,7 +147,7 @@ class GroupChatScreen extends HookConsumerWidget {
       print('msg: ${msg.from}');
       if (msg.chatType == ChatType.GroupChat && msg.conversationId != null) {
         ref
-            .read(groupConversationProvider)
+            .read(groupConversationProvider.notifier)
             .updateConversationMessage(msg, msg.conversationId!);
       }
       // ref.read()
@@ -220,6 +220,7 @@ class GroupChatScreen extends HookConsumerWidget {
             // "em_push_title":
             //     "${model.groupInfo.name}: ${_me.name} sent you a message",
             // "em_push_content": input,
+            'content': input,
             'type': 'group_chat',
             'name': _me.name,
             'image': model.image,
@@ -682,7 +683,7 @@ class GroupChatScreen extends HookConsumerWidget {
 
       ref.read(groupChatProvider(model).notifier).addChat(sentMessage);
       ref
-          .read(groupConversationProvider)
+          .read(groupConversationProvider.notifier)
           .updateConversationMessage(sentMessage, model.id);
     } on ChatError catch (e) {
       print("send failed, code: ${e.code}, desc: ${e.description}");
@@ -911,9 +912,10 @@ class GroupChatScreen extends HookConsumerWidget {
           ),
           Expanded(
             child: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, RouteList.groupInfo,
+              onTap: () async {
+                await Navigator.pushNamed(context, RouteList.groupInfo,
                     arguments: model);
+                setScreen(RouteList.chatScreen);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

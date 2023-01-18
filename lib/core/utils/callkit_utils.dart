@@ -3,12 +3,12 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
+import '/core/state.dart';
+import '/data/models/call_message_body.dart';
 import '../../controller/providers/bchat/call_list_provider.dart';
 import '../sdk_helpers/bchat_call_manager.dart';
 import '/core/helpers/extensions.dart';
@@ -203,6 +203,13 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
 
 showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
     String fromFCM, String image, bool hasVideo) async {
+  if (activeCallId != null) {
+    if (activeCallId == callBody.callId) {
+      return;
+    }
+    FlutterCallkitIncoming.endAllCalls();
+  }
+  activeCallId = callBody.callId;
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: '$baseImageApi$image',
@@ -288,11 +295,11 @@ showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
 
 onCallAccept(String fromId, String fcmToken, String callerName,
     String callerImage, CallBody body, bool hasVideo) async {
-  User? user = await getMeAsUser();
-  if (user == null) {
-    print('User is NULL');
-    return;
-  }
+  // User? user = await getMeAsUser();
+  // if (user == null) {
+  //   print('User is NULL');
+  //   return;
+  // }
   BuildContext? context = navigatorKey.currentContext;
   if (context == null) {
     print(' Context is NULL');
@@ -322,9 +329,17 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     String image, CallBody body, bool hasVideo) async {
   print('declining call');
   User? user = await getMeAsUser();
+  String userId;
+  String userName;
   if (user == null) {
-    return;
+    userId = ChatClient.getInstance.currentUserId ?? '';
+    userName = body.calleeName;
+    // return;
+  } else {
+    userId = user.id.toString();
+    userName = user.name;
   }
+
   try {
     Map content = {
       'type': NotiConstants.typeCall,
@@ -342,12 +357,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     ChatClient.getInstance.chatManager.sendMessage(message);
   } catch (e) {}
 
-  FCMApiService.instance.sendCallEndPush(
-      senderFCM,
-      NotiConstants.actionCallDecline,
-      body,
-      user.id.toString(),
-      user.name,
-      hasVideo);
+  FCMApiService.instance.sendCallEndPush(senderFCM,
+      NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
   await FlutterCallkitIncoming.endAllCalls();
 }

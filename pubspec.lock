@@ -876,7 +876,7 @@ packages:
     source: hosted
     version: "2.0.15"
   shared_preferences_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences_android
       url: "https://pub.dartlang.org"

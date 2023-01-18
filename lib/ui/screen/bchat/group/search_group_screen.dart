@@ -2,7 +2,6 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/controller/bchat_providers.dart';
@@ -118,8 +117,7 @@ class GroupSearchScreen extends StatelessWidget {
             ),
             Consumer(builder: (context, ref, child) {
               final result = ref.watch(searchGroupProvider);
-              final groups = ref.watch(groupConversationProvider
-                  .select((value) => value.groupConversationList));
+              final groups = ref.watch(groupConversationProvider);
               final contactIds = groups.map((e) => e.id).toList();
               return result.when(
                   data: ((data) {

@@ -14,7 +14,7 @@ class CallListModel {
   CallListModel(this.name, this.image, this.outgoing, this.time, this.body);
 }
 
-Future<List<CallListModel>> getCallList() async {
+Future<Map<String, CallListModel>> getCallList() async {
   try {
     final me = (await getMeAsUser())!;
     final list =
@@ -39,18 +39,18 @@ Future<List<CallListModel>> getCallList() async {
             model =
                 CallListModel(me.name, me.image, true, m.serverTime, callBody);
           }
-          maps.addAll({m.msgId: model});
+          maps.addAll({callBody.callId: model});
         } catch (e) {
           break;
         }
       }
     }
-    return maps.values.toList();
+    return maps;
   } catch (e) {}
-  return [];
+  return {};
 }
 
-Future<List<CallListModel>> getGroupCallList() async {
+Future<Map<String, CallListModel>> getGroupCallList() async {
   try {
     final me = (await getMeAsUser())!;
     final list =
@@ -75,13 +75,13 @@ Future<List<CallListModel>> getGroupCallList() async {
             model =
                 CallListModel(me.name, me.image, true, m.serverTime, callBody);
           }
-          maps.addAll({m.msgId: model});
+          maps.addAll({callBody.callId: model});
         } catch (e) {
           break;
         }
       }
     }
-    return maps.values.toList();
+    return maps;
   } catch (e) {}
-  return [];
+  return {};
 }

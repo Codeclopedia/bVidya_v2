@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
@@ -360,6 +361,7 @@ class ChatScreen extends HookConsumerWidget {
                 // "em_push_content": input,
                 'type': 'chat',
                 'name': _me.name,
+                'content': input,
                 'image': _me.profileImage,
                 'content_type': msg.body.type.name,
               },
@@ -1015,9 +1017,10 @@ class ChatScreen extends HookConsumerWidget {
             // ),
             Expanded(
               child: InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, RouteList.contactProfile,
+                onTap: () async {
+                  await Navigator.pushNamed(context, RouteList.contactProfile,
                       arguments: model.contact);
+                  setScreen(RouteList.chatScreen);
                 },
                 child: Padding(
                   padding: EdgeInsets.only(left: 2.w, top: 1.h, bottom: 1.h),
@@ -1070,6 +1073,7 @@ class ChatScreen extends HookConsumerWidget {
                 if (msg != null) {
                   ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
                 }
+                setScreen(RouteList.chatScreen);
                 // Navigator.pushNamed(context, RouteList.bChatAudioCall);
               },
               icon: getSvgIcon(
@@ -1090,6 +1094,7 @@ class ChatScreen extends HookConsumerWidget {
                 if (msg != null) {
                   ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
                 }
+                setScreen(RouteList.chatScreen);
                 // Navigator.pushNamed(context, RouteList.bChatVideoCall);
                 // makeFakeCallInComing();
               },

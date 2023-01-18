@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/app.dart';
 
 import '/ui/screen/bchat/group/group_calls_screen.dart';
 import '/data/models/models.dart';
@@ -7,26 +8,52 @@ import 'helpers/call_helper.dart';
 import 'ui_core.dart';
 import '/ui/screens.dart';
 
+
+
 class Routes {
   static bool isChatScreen(String fromId) {
-    return currentScreen == RouteList.home ||
-        (currentScreen == RouteList.chatScreen && fromId == currentId) ||
-        (currentScreen == RouteList.chatScreenDirect && fromId == currentId);
+    String cName = getCurrentScreen();
+
+    return cName == RouteList.home ||
+        (cName == RouteList.chatScreen && fromId == _currentId) ||
+        (cName == RouteList.chatScreenDirect && fromId == _currentId);
   }
 
   static bool isGroupChatScreen(String fromId) {
-    return currentScreen == RouteList.groups ||
-        (currentScreen == RouteList.groupChatScreen && fromId == currentId) ||
-        (currentScreen == RouteList.groupChatScreenDirect &&
-            fromId == currentId);
+    String cName = getCurrentScreen();
+
+    return cName == RouteList.groups ||
+        (cName == RouteList.groupChatScreen && fromId == _currentId) ||
+        (cName == RouteList.groupChatScreenDirect && fromId == _currentId);
   }
 
-  static String currentScreen = '';
-  static String currentId = '';
+  static void setToScreen(String name) {
+    _currentScreen = name;
+  }
+
+  static resetScreen() {
+    _currentScreen = '';
+    _currentId = '';
+  }
+
+  static String getCurrentScreen() {
+    String cName = _currentScreen;
+    if (navigatorKey.currentContext != null) {
+      cName = ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
+          _currentScreen;
+      print('current screen $cName  # $_currentScreen');
+    } else {
+      print('null context screen $cName  # $_currentScreen');
+    }
+    return cName;
+  }
+
+  static String _currentScreen = '';
+  static String _currentId = '';
   static Route generateRoute(RouteSettings settings) {
     final Widget screen;
     bool hasDrawer = false;
-    currentScreen = settings.name ?? '';
+    _currentScreen = settings.name ?? '';
     switch (settings.name) {
       case RouteList.splash:
         screen = const SplashScreen();
@@ -85,7 +112,7 @@ class Routes {
 
       case RouteList.groupChatScreen:
         if (settings.arguments is GroupConversationModel) {
-          currentId = (settings.arguments as GroupConversationModel).id;
+          _currentId = (settings.arguments as GroupConversationModel).id;
 
           screen = GroupChatScreen(
             model: settings.arguments as GroupConversationModel,
@@ -96,7 +123,7 @@ class Routes {
         break;
       case RouteList.groupChatScreenDirect:
         if (settings.arguments is GroupConversationModel) {
-          currentId = (settings.arguments as GroupConversationModel).id;
+          _currentId = (settings.arguments as GroupConversationModel).id;
           screen = GroupChatScreen(
             model: settings.arguments as GroupConversationModel,
             direct: true,
@@ -107,7 +134,7 @@ class Routes {
         break;
       case RouteList.groupInfo:
         if (settings.arguments is GroupConversationModel) {
-          currentId = (settings.arguments as GroupConversationModel).id;
+          _currentId = (settings.arguments as GroupConversationModel).id;
           screen = GroupInfoScreen(
             group: settings.arguments as GroupConversationModel,
           );
@@ -120,7 +147,7 @@ class Routes {
         break;
       case RouteList.chatScreen:
         if (settings.arguments is ConversationModel) {
-          currentId = (settings.arguments as ConversationModel).id;
+          _currentId = (settings.arguments as ConversationModel).id;
           screen = ChatScreen(
             model: settings.arguments as ConversationModel,
           );
@@ -134,7 +161,7 @@ class Routes {
         break;
       case RouteList.chatScreenDirect:
         if (settings.arguments is ConversationModel) {
-          currentId = (settings.arguments as ConversationModel).id;
+          _currentId = (settings.arguments as ConversationModel).id;
           screen = ChatScreen(
             model: settings.arguments as ConversationModel,
             direct: true,

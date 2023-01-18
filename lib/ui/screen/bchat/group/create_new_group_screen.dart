@@ -378,7 +378,7 @@ class CreateNewGroupScreen extends HookWidget {
     hideLoading(ref);
     if (groupCreated != null) {
       // print('group : ${groupCreated.toJson()}');
-      ref.read(groupConversationProvider).addConveration(groupCreated);
+      ref.read(groupConversationProvider.notifier).addConveration(groupCreated);
       Navigator.pop(context, groupCreated);
     } else {
       AppSnackbar.instance.error(context, S.current.group_error_creating);

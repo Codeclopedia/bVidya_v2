@@ -5,12 +5,13 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 class BChatContactManager {
   BChatContactManager._();
 
-  static Future<List<ChatConversation>> getChatConversations() async {
+  static Future<List<String>> getChatConversationsIds() async {
     try {
       var list =
           await ChatClient.getInstance.chatManager.loadAllConversations();
       return list
           .where((element) => element.type == ChatConversationType.Chat)
+          .map((e) => e.id)
           .toList();
     } on ChatError catch (e) {
       print('chatError: ${e.code}- ${e.description}');
@@ -19,7 +20,6 @@ class BChatContactManager {
     }
     return [];
   }
-
 
   static Future<List<ChatConversation>> getGroupChatConversations() async {
     try {
@@ -38,7 +38,6 @@ class BChatContactManager {
 
   static Future<List<String>> getContactList({bool fromServer = false}) async {
     try {
-      // final sd = ChatContactManager();
       var list =
           await ChatClient.getInstance.contactManager.getAllContactsFromDB();
       if (list.isEmpty || fromServer) {

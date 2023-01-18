@@ -10,45 +10,35 @@ final groupCallListProvider =
     StateNotifierProvider<CallMessageNotifier, List<CallListModel>>(
         (ref) => CallMessageNotifier());
 
-
 class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
   CallMessageNotifier() : super([]); //listMessages.reversed.toList()
 
-  String? _cursor;
-  String? get cursor => _cursor;
+  final Map<String, CallListModel> _callListMap = {};
+  bool _loading = false;
 
-  CallListModel? getLast() {
-    if (state.isEmpty) return null;
-    return state[0];
-    // int length = state.length;
-    // return state[length - 1];
-  }
-
-  void addCall(CallListModel todo) {
-    state = [...state, todo];
-  }
-
-  void addCalls(List<CallListModel> chats, String? cur) {
-    for (var c in chats) {
-      state = [...state, c];
-    }
-    _cursor = cur;
-  }
-
-  // void addCallOnly(List<CallListModel> chats) {
-  //   for (var c in chats) {
-  //     state = [...state, c];
-  //   }
+  // CallListModel? getLast() {
+  //   if (state.isEmpty) return null;
+  //   return state[0];
+  //   // return state[length - 1];
   // }
 
+  void addCall(CallListModel message) {
+    // state = [...state, todo];
+    _callListMap.addAll({message.body.callId: message});
+    state = _callListMap.values.toList();
+  }
+
   void remove(CallListModel message) {
-    List<CallListModel> newState = [];
-    for (var c in state) {
-      if (c.body.callId != message.body.callId) {
-        newState.add(c);
-      }
-    }
-    state = newState;
+    _callListMap.remove(message.body.callId);
+    state = _callListMap.values.toList();
+
+    // List<CallListModel> newState = [];
+    // for (var c in state) {
+    //   if (c.body.callId != message.body.callId) {
+    //     newState.add(c);
+    //   }
+    // }
+    // state = newState;
     // state = [...state, todo];
   }
 
@@ -57,12 +47,21 @@ class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
   }
 
   setup() async {
-    state = [...await getCallList()];
+    if (_loading) return;
+    _loading = true;
+    _callListMap.clear();
+    _callListMap.addAll({...await getCallList()});
+    state = _callListMap.values.toList();
+    _loading = false;
     // ref.read(callListLoading.notifier).state = false;
   }
 
   setupGroup() async {
-    state = [...await getCallList()];
-    // ref.read(callListLoading.notifier).state = false;
+    if (_loading) return;
+    _loading = true;
+    _callListMap.clear();
+    _callListMap.addAll({...await getGroupCallList()});
+    state = _callListMap.values.toList();
+    _loading = false;
   }
 }

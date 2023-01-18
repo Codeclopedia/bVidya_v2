@@ -13,7 +13,7 @@ import '/core/utils/chat_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/ui/screen/blearn/components/common.dart';
-import '../../../core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -232,7 +232,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                       return InkWell(
                           onTap: () async {
                             final model = await ref
-                                .read(groupConversationProvider)
+                                .read(groupConversationProvider.notifier)
                                 .getGroupConversation(data[index].groupId);
                             if (model != null) {
                               Navigator.pushNamedAndRemoveUntil(

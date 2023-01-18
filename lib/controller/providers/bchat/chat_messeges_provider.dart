@@ -57,7 +57,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   void _registerPresence() {
     try {
       ChatClient.getInstance.presenceManager
-          .subscribe(members: [convModel.id], expiry: 100);
+          .subscribe(members: [convModel.id], expiry: 60);
       ChatClient.getInstance.presenceManager.addEventHandler(
         "user_presence_chat_screen",
         ChatPresenceEventHandler(

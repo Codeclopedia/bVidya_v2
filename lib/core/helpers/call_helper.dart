@@ -270,12 +270,12 @@ Future<ChatMessage?> logCallEvent(
       "em_apns_ext": {
         'type': NotiConstants.typeCall,
         'name': fromName,
-        'image': image,
+        'content': jsonEncode(callMessageBody.toJson()),
         'content_type': message.body.type.name,
       },
-      "em_force_notification": true
+      // "em_force_notification": true
     };
-    // message.attributes = {"em_force_notification": true};
+    message.attributes?.addAll({"em_force_notification": true});
 
     final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
     CallListModel model = CallListModel(callMessageBody.fromName,

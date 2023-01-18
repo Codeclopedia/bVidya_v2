@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '/data/models/models.dart';
 
 bool isValidEmail(String email) => RegExp(
@@ -12,12 +11,15 @@ bool isValidEmail(String email) => RegExp(
 // final timeFormat = DateFormat()
 
 Future<User?> getMeAsUser() async {
-  final pref = await SharedPreferences.getInstance();
-  final userStr = pref.getString("user");
-  if (userStr != null) {
-    final user = User.fromJson(jsonDecode(userStr) as Map<String, dynamic>);
-    return user;
-  }
+  try {
+    final pref = await SharedPreferences.getInstance();
+    final userStr = pref.getString("user");
+    if (userStr != null) {
+      final user = User.fromJson(jsonDecode(userStr) as Map<String, dynamic>);
+      return user;
+    }
+  } catch (e) {}
+
   return null;
 }
 

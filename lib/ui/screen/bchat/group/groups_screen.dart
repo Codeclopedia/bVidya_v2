@@ -37,6 +37,7 @@ class GroupsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
+      ref.read(groupConversationProvider.notifier).reset(ref);
       registerForNewMessage('group_screens', (msgs) {
         for (var lastMessage in msgs) {
           if (lastMessage.conversationId != null &&
@@ -53,7 +54,7 @@ class GroupsScreen extends HookConsumerWidget {
         unregisterForNewMessage('group_screens');
       };
     }, []);
-    final grpProvider = ref.watch(groupConversationProvider);
+    // final grpProvider = ref.watch(groupConversationProvider);
     return Scaffold(
       body: ColouredBoxBar(
           topBar: _buildTopBar(context, ref),
@@ -66,9 +67,9 @@ class GroupsScreen extends HookConsumerWidget {
               Expanded(
                   child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                child: grpProvider.isLoading
+                child: ref.watch(groupLoadingStateProvider)
                     ? const Center(child: CircularProgressIndicator())
-                    : _buildList(grpProvider.groupConversationList, ref),
+                    : _buildList(ref.watch(groupConversationProvider), ref),
               ))
             ],
           )),
@@ -81,9 +82,10 @@ class GroupsScreen extends HookConsumerWidget {
         ? buildEmptyPlaceHolder('No Groups')
         : ListView.separated(
             itemBuilder: (context, index) => GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteList.groupInfo,
+                  onTap: () async {
+                    await Navigator.pushNamed(context, RouteList.groupInfo,
                         arguments: conversationList[index]);
+                    setScreen(RouteList.groups);
                   },
                   child: _buildConversationItem(
                       context, conversationList[index], ref),
@@ -101,7 +103,7 @@ class GroupsScreen extends HookConsumerWidget {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.groupChatScreen,
             arguments: model);
-
+        setScreen(RouteList.groups);
         ref
             .read(groupConversationProvider.notifier)
             .updateConversationOnly(model.id);
@@ -233,7 +235,7 @@ class GroupsScreen extends HookConsumerWidget {
             InkWell(
               onTap: () async {
                 await Navigator.pushNamed(context, RouteList.searchGroups);
-                ref.read(groupConversationProvider).update();
+                ref.read(groupConversationProvider.notifier).update();
               },
               child: Container(
                 padding: EdgeInsets.all(0.7.w),
@@ -275,6 +277,7 @@ class GroupsScreen extends HookConsumerWidget {
           ref.read(selectedContactProvider.notifier).clear();
           final result =
               await Navigator.pushNamed(context, RouteList.newGroupContacts);
+          setScreen(RouteList.groups);
           if (result != null && result is ChatGroup) {
             ref.read(groupConversationProvider.notifier).addConveration(result);
           }
@@ -314,8 +317,9 @@ class GroupsScreen extends HookConsumerWidget {
 
   Widget _recentCallButton(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, RouteList.groupCalls);
+      onTap: () async {
+        await Navigator.pushNamed(context, RouteList.groupCalls);
+        setScreen(RouteList.groups);
       },
       child: Row(
         children: [

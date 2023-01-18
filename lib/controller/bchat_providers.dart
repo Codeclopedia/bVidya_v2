@@ -16,42 +16,10 @@ import '/data/repository/bchat_respository.dart';
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/bchat/groups_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
-import 'providers/chat_messagelist_provider.dart';
+// import 'providers/chat_messagelist_provider.dart';
 
 final apiBChatProvider =
     Provider<BChatApiService>((_) => BChatApiService.instance);
-
-// final bChatSDKControllerProvider = Provider<BChatSDKController>((ref) {
-//   return BChatSDKController.instance;
-// });
-
-// final bChatSDKProvider = Provider<BChatSDKRepository>((ref) {
-//   User? user = ref.read(loginRepositoryProvider).user;
-//   final api = ref.read(apiBChatProvider);
-//   return BChatSDKRepository(api, user?.authToken ?? '');
-// });
-
-
-// final bChatConvListProvider = FutureProvider<List<ConversationModel>>((ref) {
-//   return ref.read(bChatSDKProvider).getConversations();
-// });
-
-// final bChatListProvider = StateProvider<List<ConversationModel>>((ref) {
-//   return ref.watch(bChatRepositoryProvider).conversations;
-// });
-
-// final chatConversationListProvider =
-//     StateNotifierProvider<ChatConversationNotifier, List<ConversationModel>>(
-//         (ref) => ChatConversationNotifier());
-
-// final groupChatConversationListProvider = StateNotifierProvider<
-//     GroupChatConversationNotifier, List<GroupConversationModel>>(
-//   (ref) {
-//     final List<GroupConversationModel> empty = [];
-//     final initial = ref.watch(groupListProvider).maybeWhen(orElse: () => empty);
-//     return GroupChatConversationNotifier(initial);
-//   },
-// );
 
 //Loading Previous Chat
 final chatLoadingPreviousProvider = StateProvider.autoDispose<bool>(
@@ -62,11 +30,6 @@ final chatLoadingPreviousProvider = StateProvider.autoDispose<bool>(
 final chatHasMoreOldMessageProvider = StateProvider.autoDispose<bool>(
   (ref) => true,
 );
-
-// final chatMessageListProvider =
-//     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
-//   (ref) => ChatMessageNotifier(),
-// );
 
 final loadingChatProvider = StateProvider<bool>(
   (_) => true,
@@ -241,7 +204,7 @@ final joinedGroupsListProvier = FutureProvider<List<ChatGroup>>((ref) {
 final commonGroupsProvider = FutureProvider.family
     .autoDispose<List<ChatGroup>, String>((ref, contactId) async {
   List<ChatGroup> groupList = [];
-  final list = ref.read(groupConversationProvider).groupConversationList;
+  final list = ref.read(groupConversationProvider);
   if (list.isNotEmpty) {
     for (var item in list) {
       print(
