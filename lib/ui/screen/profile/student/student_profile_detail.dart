@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+// import 'package:flutter/material.dart';
+// import 'package:sizer/sizer.dart';
 
-import '../../../../data/models/models.dart';
+import '/core/ui_core.dart';
+import '/data/models/models.dart';
 import '/core/state.dart';
-import '/core/theme/appstyle.dart';
-import '/core/theme/inputstyle.dart';
-import '/core/theme/textstyles.dart';
-import '../../../../generated/l10n.dart';
+// import '/core/theme/appstyle.dart';
+// import '/core/theme/inputstyle.dart';
+// import '/core/theme/textstyles.dart';
+// import '../../../../generated/l10n.dart';
 import '../base_settings.dart';
 
 class StudentProfileDetail extends HookWidget {

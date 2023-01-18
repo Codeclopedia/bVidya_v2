@@ -95,16 +95,17 @@ class NotificationController {
 
       clickAction = receivedAction;
       clearPool(receivedAction.id ?? 0);
-      // BuildContext? context = navigatorKey.currentContext;
+
+      BuildContext? context = navigatorKey.currentContext;
       // debugPrint(
       //     'onAction context:${context != null}  payload: ${receivedAction.payload}');
-      // if (context != null) {
-      //   // handleChatNotificationAction(receivedAction.payload!, context, true);
-      // } else {
-      //   debugPrint(
-      //       'Context is null key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
-      //   //
-      // }
+      if (context != null && Routes.currentScreen.isNotEmpty) {
+        handleChatNotificationAction(receivedAction.payload!, context, true);
+      } else {
+        // debugPrint(
+        //     'Context is null key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
+        //
+      }
     } else {
       debugPrint(
           'key:${receivedAction.channelKey}, payload: ${receivedAction.payload}');
@@ -542,6 +543,46 @@ class NotificationController {
     await AwesomeNotifications().cancelAll();
   }
 
+  static handleForegroundMessage(ChatMessage message) async {
+    String contentText = '';
+
+    switch (message.body.type) {
+      case MessageType.TXT:
+        contentText = (message.body as ChatTextMessageBody).content;
+        break;
+      default:
+        contentText = message.body.type.name;
+        break;
+    }
+
+    bool showForegroudNotification = false;
+    if (message.chatType == ChatType.Chat) {
+      showForegroudNotification =
+          !Routes.isChatScreen(message.from!.toString());
+      // content = '$groupName : $name sent you\n$contentText';
+    } else if (message.chatType == ChatType.GroupChat) {
+      showForegroudNotification =
+          !Routes.isGroupChatScreen(message.conversationId.toString());
+    } else {
+      return;
+    }
+    BuildContext? context = navigatorKey.currentContext;
+    if (showForegroudNotification && context != null) {
+      showTopSnackBar(
+        Overlay.of(context)!,
+        CustomSnackBar.info(
+          message: contentText,
+        ),
+        onTap: () {
+          handleChatNotificationAction({
+            'type': message.chatType == ChatType.Chat ? 'chat' : 'group_chat',
+            'from': message.conversationId!,
+          }, context, false);
+        },
+      );
+    }
+  }
+
   static handleRemoteMessage(RemoteMessage message, bool isForeground) async {
     if ((await getMeAsUser()) == null) {
       //Not a valid user to
@@ -588,7 +629,8 @@ class NotificationController {
           groupName = extra['group_name'];
           groupId = message.data['g'];
           content = '$groupName : $name sent you\n$contentText';
-          showForegroudNotification = !Routes.isChatScreen(groupId.toString());
+          showForegroudNotification =
+              !Routes.isGroupChatScreen(groupId.toString());
         } else if (type == 'chat') {
           showForegroudNotification = !Routes.isChatScreen(from.toString());
           content = '$name sent you\n$contentText';

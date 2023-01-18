@@ -9,7 +9,6 @@ import '../core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/helpers/duration.dart';
 
 import '/core/state.dart';
-// import '/data/repository/bchat_sdk_repository.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/data/repository/bchat_respository.dart';
@@ -17,8 +16,6 @@ import '/data/repository/bchat_respository.dart';
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/bchat/groups_conversation_provider.dart';
 import 'providers/p2p_call_provider.dart';
-// import '../core/sdk_helpers/bchat_sdk_controller.dart';
-// import 'providers/chat_conversations_provider.dart';
 import 'providers/chat_messagelist_provider.dart';
 
 final apiBChatProvider =
@@ -34,9 +31,6 @@ final apiBChatProvider =
 //   return BChatSDKRepository(api, user?.authToken ?? '');
 // });
 
-final selectedChatMessageListProvider =
-    StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
-        (ref) => ChatMessageNotifier());
 
 // final bChatConvListProvider = FutureProvider<List<ConversationModel>>((ref) {
 //   return ref.read(bChatSDKProvider).getConversations();
@@ -69,10 +63,10 @@ final chatHasMoreOldMessageProvider = StateProvider.autoDispose<bool>(
   (ref) => true,
 );
 
-final chatMessageListProvider =
-    StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
-  (ref) => ChatMessageNotifier(),
-);
+// final chatMessageListProvider =
+//     StateNotifierProvider.autoDispose<ChatMessageNotifier, List<ChatMessage>>(
+//   (ref) => ChatMessageNotifier(),
+// );
 
 final loadingChatProvider = StateProvider<bool>(
   (_) => true,

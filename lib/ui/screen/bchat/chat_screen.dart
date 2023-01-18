@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/app.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
@@ -11,7 +10,8 @@ import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
-import '/controller/bchat_providers.dart';
+import '/app.dart';
+import '/controller/providers/chat_messagelist_provider.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/utils/chat_utils.dart';
@@ -1068,7 +1068,7 @@ class ChatScreen extends HookConsumerWidget {
               onPressed: () async {
                 final msg = await makeAudioCall(model.contact, ref, context);
                 if (msg != null) {
-                  ref.read(chatMessageListProvider.notifier).addChat(msg);
+                  ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
                 }
                 // Navigator.pushNamed(context, RouteList.bChatAudioCall);
               },
@@ -1088,7 +1088,7 @@ class ChatScreen extends HookConsumerWidget {
                 // );
                 final msg = await makeVideoCall(model.contact, ref, context);
                 if (msg != null) {
-                  ref.read(chatMessageListProvider.notifier).addChat(msg);
+                  ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
                 }
                 // Navigator.pushNamed(context, RouteList.bChatVideoCall);
                 // makeFakeCallInComing();

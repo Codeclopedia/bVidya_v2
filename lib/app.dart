@@ -3,11 +3,15 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
 import 'package:bvidya/core/state.dart';
+import 'package:bvidya/core/utils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '/core/utils/chat_utils.dart';
+import 'controller/providers/bchat/chat_conversation_provider.dart';
+import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'core/constants.dart';
 import 'core/routes.dart';
 // import 'core/sdk_helpers/bchat_call_manager.dart';
@@ -99,11 +103,14 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     // );
     // print('User granted permission: ${settings.authorizationStatus}');
 
+    // FirebaseMessaging.instance.subscribeToTopic('news');
+
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
-    FirebaseMessaging.onMessage.listen((message) {
+    FirebaseMessaging.onMessage.listen((message) async {
+      if ((await getMeAsUser()) == null) return;
       //For P2P Call
-      debugPrint('firebase:onMessage -> ${message.toMap()} ');
+      // debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
@@ -138,6 +145,33 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         handleRemoteMessage(message, context, fallbackScreen: '');
       }
     });
+    if ((await getMeAsUser()) == null) return;
+    registerForNewMessage(
+      'bVidyaApp',
+      (msgs) {
+        for (var lastMessage in msgs) {
+          if (lastMessage.conversationId != null) {
+            if (lastMessage.conversationId != null) {
+              if (lastMessage.chatType == ChatType.Chat) {
+                // print('on Chat Message=> ${lastMessage.body.toJson()} ');
+                ref
+                    .read(chatConversationProvider.notifier)
+                    .updateConversationMessage(lastMessage,
+                        update: Routes.currentScreen == RouteList.home);
+              } else if (lastMessage.chatType == ChatType.GroupChat) {
+                // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
+                ref
+                    .read(groupConversationProvider.notifier)
+                    .updateConversationMessage(
+                        lastMessage, lastMessage.conversationId!,
+                        update: Routes.currentScreen == RouteList.groups);
+              }
+              // NotificationController.handleForegroundMessage(lastMessage);
+            }
+          }
+        }
+      },
+    );
 
     // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     // if (!isAllowed) {
@@ -170,8 +204,10 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   @override
   void dispose() {
     try {
-      // unregisterForNewMessage('app_message_handler');
+      unregisterForNewMessage('bVidyaApp');
       ChatClient.getInstance.logout(false);
+      Routes.currentScreen = '';
+      Routes.currentId = '';
     } catch (e) {
       print('object $e');
     }

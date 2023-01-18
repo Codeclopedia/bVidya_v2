@@ -1,5 +1,6 @@
-import 'package:sizer/sizer.dart';
+// import 'package:sizer/sizer.dart';
 
+import '/core/utils/sizer.dart';
 import '../constants/route_list.dart';
 import '../state.dart';
 

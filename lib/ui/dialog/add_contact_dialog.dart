@@ -7,7 +7,7 @@ Future<String?> showAddContactDialog(
     BuildContext context, int userId, String name) async {
   return await showModalBottomSheet(
     context: context,
-    elevation: 1,
+    elevation: 0,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     barrierColor: Colors.transparent,
@@ -75,7 +75,7 @@ class AddContactDialog extends HookWidget {
             children: [
               TextButton(
                   style: TextButton.styleFrom(
-                    fixedSize: Size(22.w, 4.w),
+                    // fixedSize: Size(22.w, 4.w),
                     foregroundColor: Colors.black87,
                     textStyle: TextStyle(
                       fontFamily: kFontFamily,
@@ -88,10 +88,10 @@ class AddContactDialog extends HookWidget {
                     Navigator.pop(context);
                   },
                   child: Text('Cancel'.toUpperCase())),
-              SizedBox(width: 3.w),
+              SizedBox(width: 6.w),
               TextButton(
                   style: TextButton.styleFrom(
-                    fixedSize: Size(22.w, 4.w),
+                    // fixedSize: Size(22.w, 4.w),
                     foregroundColor: AppColors.primaryColor,
                     textStyle: TextStyle(
                       fontFamily: kFontFamily,

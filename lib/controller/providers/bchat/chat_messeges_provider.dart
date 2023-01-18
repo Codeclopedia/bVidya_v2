@@ -36,8 +36,9 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
     _chatPresence = await fetchOnlineStatus(convModel.id);
     NotificationController.clearPool(convModel.contact.userId);
     _registerPresence();
+    await readAll();
     try {
-      await convModel.conversation?.markAllMessagesAsRead();
+      // await convModel.conversation?.markAllMessagesAsRead();
       final chats = await convModel.conversation?.loadMessages(loadCount: 20);
       if (chats != null) {
         for (var e in chats) {
@@ -159,7 +160,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   }
 
   void deleteMessages(List<ChatMessage> msgs) {
-    print('before usersize :${_messagesMap.length}');
+
     for (ChatMessage m in msgs) {
       try {
         convModel.conversation?.deleteMessage(m.msgId);
@@ -170,12 +171,18 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
         debugPrint('other error in deleting chat: $e');
       }
     }
-    print('after usersize :${_messagesMap.length}');
     notifyListeners();
+  }
+
+  Future readAll() async {
+    try {
+      await convModel.conversation?.markAllMessagesAsRead();
+    } catch (e) {}
   }
 
   @override
   void dispose() {
+    readAll();
     _unRegisterPresence();
     super.dispose();
   }

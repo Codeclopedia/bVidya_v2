@@ -86,7 +86,7 @@ class BChatApiService {
       };
       final response = await _dio
           .post('$baseUrlApi${ApiList.groupContactsByIds}', data: data);
-      print('groups ${jsonEncode(response.data)}');
+      // print('groups ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         // return ContactListResponse(
         //     status: 'error', message: '${response.statusCode}- Data');
@@ -107,7 +107,7 @@ class BChatApiService {
       final data = {'user_id': userId};
       final response =
           await _dio.post('$baseUrlApi${ApiList.addContact}', data: data);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return BaseResponse.fromJson(response.data);
       } else {
@@ -126,7 +126,7 @@ class BChatApiService {
       final data = {'term': term};
       final response =
           await _dio.post('$baseUrlApi${ApiList.searchContact}', data: data);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return SearchContactResponse.fromJson(response.data);
       } else {
@@ -145,7 +145,7 @@ class BChatApiService {
       final data = {'user_id': userId};
       final response =
           await _dio.post('$baseUrlApi${ApiList.deleteContact}', data: data);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return BaseResponse.fromJson(response.data);
       } else {
@@ -168,7 +168,7 @@ class BChatApiService {
       };
       final response =
           await _dio.post('$baseUrlApi${ApiList.makeCall}', data: data);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return P2PCallResponse.fromJson(response.data);
       } else {
@@ -186,7 +186,7 @@ class BChatApiService {
     try {
       final response =
           await _dio.get('$baseUrlApi${ApiList.receiveCall}$callId');
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return P2PCallResponse.fromJson(response.data);
       } else {

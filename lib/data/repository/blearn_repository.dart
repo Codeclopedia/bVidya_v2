@@ -13,7 +13,7 @@ class BLearnRepository {
   Future<BlearnHomeBody?> getHome() async {
     final result = await _api.getHomeList(_authToken);
 
-    print('result: ${result.status} ${result.body?.toJson()}');
+    // print('result: ${result.status} ${result.body?.toJson()}');
     if (result.status == successfull && result.body != null) {
       return result.body;
     } else {

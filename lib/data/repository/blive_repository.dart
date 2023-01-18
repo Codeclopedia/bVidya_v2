@@ -50,7 +50,7 @@ class BLiveRepository {
     final result = await _api.getLiveClasses(_authToken);
     // print('result: ${result.status} ${result.message}');
     if (result.status == successfull && result.body != null) {
-      print('result: ${result.status} ${result.body?.toJson()}');
+      // print('result: ${result.status} ${result.body?.toJson()}');
       return result.body;
     } else {
       return null;

@@ -5,9 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/app.dart';
-import 'package:bvidya/ui/base_back_screen.dart';
-import 'package:bvidya/ui/dialog/message_menu_popup.dart';
+import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 // import '/ui/screens.dart';
@@ -17,10 +15,13 @@ import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-import '/controller/bchat_providers.dart';
+import '/app.dart';
+import '/controller/providers/chat_messagelist_provider.dart';
+import '/ui/base_back_screen.dart';
+import '/ui/dialog/message_menu_popup.dart';
+
 import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
-import '/controller/providers/bchat/group_chats_provider.dart';
 import '../models/attach_type.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 
@@ -55,15 +56,12 @@ class GroupChatScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(groupChatProvider(model));
+    // final provider = ref.watch(groupChatProvider(model));
     useEffect(() {
-      ref.read(groupChatProvider(model)).init();
-
+      ref.read(groupChatProvider(model).notifier).init(ref);
       _scrollController = ScrollController();
       _myUserId = ChatClient.getInstance.currentUserId ?? '';
-
-      _scrollController
-          .addListener(() => _onScroll(_scrollController, provider));
+      _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
       _loadMembers(ref);
       _addHandler(ref);
@@ -71,10 +69,16 @@ class GroupChatScreen extends HookConsumerWidget {
       return disposeAll;
     }, []);
 
-    ref.listen(groupChatProvider(model), (previous, next) {
-      _hasMoreData = next.hasMoreData;
-      _isLoadingMore = next.isLoadingMore;
+    ref.listen(hasMoreStateProvider, (previous, next) {
+      _hasMoreData = next;
     });
+    ref.listen(loadingMoreStateProvider, (previous, next) {
+      _isLoadingMore = next;
+    });
+    // ref.listen(groupChatProvider(model), (previous, next) {
+    //   _hasMoreData = next.hasMoreData;
+    //   _isLoadingMore = next.isLoadingMore;
+    // });
     // ref.listen(chatHasMoreOldMessageProvider, (previous, next) {
     //   _hasMoreData = next;
     // });
@@ -138,7 +142,7 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    ref.read(groupChatProvider(model)).addChats(messages);
+    ref.read(groupChatProvider(model).notifier).addChats(messages);
     for (var msg in messages) {
       print('msg: ${msg.from}');
       if (msg.chatType == ChatType.GroupChat && msg.conversationId != null) {
@@ -182,8 +186,7 @@ class GroupChatScreen extends HookConsumerWidget {
                   left: 0,
                   child: Consumer(
                     builder: (context, ref, child) {
-                      bool isLoadingMore = ref.watch(groupChatProvider(model)
-                          .select((value) => value.isLoadingMore));
+                      bool isLoadingMore = ref.watch(loadingMoreStateProvider);
                       return isLoadingMore
                           ? const Center(
                               child: SizedBox(
@@ -237,7 +240,7 @@ class GroupChatScreen extends HookConsumerWidget {
         return await _sendMessage(msg, ref);
       },
       onCamera: () {
-        _pickFile(AttachType.cameraPhoto, ref,context);
+        _pickFile(AttachType.cameraPhoto, ref, context);
       },
       onAttach: (type) => _pickFile(type, ref, context),
     );
@@ -486,10 +489,7 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   Widget _buildMessageList(WidgetRef ref) {
-    final chatList = ref
-        .watch(groupChatProvider(model).select((value) => value.messages))
-        .reversed
-        .toList();
+    final chatList = ref.watch(groupChatProvider(model)).reversed.toList();
     return ListView.builder(
       shrinkWrap: true,
       reverse: true,
@@ -733,8 +733,8 @@ class GroupChatScreen extends HookConsumerWidget {
   //   );
   // }
 
-  Future<void> _onScroll(ScrollController scrollController,
-      GroupChatChangeProvider provider) async {
+  Future<void> _onScroll(
+      ScrollController scrollController, WidgetRef ref) async {
     // print('has _isLoadingMore :$_isLoadingMore');
     // print('has More Data :$_hasMoreData');
     if (!_isLoadingMore && _hasMoreData) {
@@ -742,11 +742,7 @@ class GroupChatScreen extends HookConsumerWidget {
               scrollController.position.maxScrollExtent &&
           !scrollController.position.outOfRange;
       if (topReached) {
-        provider.loadMore();
-        // ref.watch(chatLoadingPreviousProvider.notifier).state = true;
-        // showScrollToBottom();
-        // await onLoadEarlier(ref);
-        // ref.watch(chatLoadingPreviousProvider.notifier).state = false;
+        ref.read(groupChatProvider(model).notifier).loadMore(ref);
       }
     }
 

@@ -39,7 +39,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       return;
     }
     await BChatSDKController.instance.initChatSDK(user);
-    
+
     _initialized = true;
     _chatConversationMap.clear();
     try {
@@ -91,13 +91,12 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     _isLoading = false;
   }
 
-  Future setupWithoutInitSDK(BChatRepository reader,User loginUser)async{
-
+  Future setupWithoutInitSDK(BChatRepository reader, User loginUser) async {
     _initialized = true;
     _chatConversationMap.clear();
     try {
       _isLoading = true;
-      
+
       List<Contacts> contacts = [];
       final ids = await BChatContactManager.getContacts();
       if (ids.isNotEmpty) {
@@ -374,5 +373,11 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     if (model != null) {
       updateUi();
     }
+  }
+
+  @override
+  void dispose() {
+    _chatConversationMap.clear();
+    super.dispose();
   }
 }

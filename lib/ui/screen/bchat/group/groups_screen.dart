@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/contacts_select_notifier.dart';
@@ -30,11 +31,28 @@ import '../../../widgets.dart';
 //     ref.read(groupConversationProvider.notifier).init();
 //   }
 
-class GroupsScreen extends ConsumerWidget {
+class GroupsScreen extends HookConsumerWidget {
   const GroupsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      registerForNewMessage('group_screens', (msgs) {
+        for (var lastMessage in msgs) {
+          if (lastMessage.conversationId != null &&
+              lastMessage.chatType == ChatType.GroupChat) {
+            ref
+                .read(groupConversationProvider.notifier)
+                .updateConversationMessage(
+                    lastMessage, lastMessage.conversationId!,
+                    update: true);
+          }
+        }
+      });
+      return () {
+        unregisterForNewMessage('group_screens');
+      };
+    }, []);
     final grpProvider = ref.watch(groupConversationProvider);
     return Scaffold(
       body: ColouredBoxBar(

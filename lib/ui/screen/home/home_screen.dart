@@ -3,16 +3,12 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
-
 import 'package:dotted_border/dotted_border.dart';
-
 import 'package:intl/intl.dart';
 
-// import '/core/sdk_helpers/bchat_sdk_controller.dart';
-// import '/core/sdk_helpers/bchat_contact_manager.dart';
-
+import '/controller/providers/bchat/groups_conversation_provider.dart';
+import '/core/helpers/call_helper.dart';
+import '/data/models/call_message_body.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
@@ -63,11 +59,18 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       for (var lastMessage in msgs) {
         print(
             'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
-        if (lastMessage.conversationId != null &&
-            lastMessage.chatType == ChatType.Chat) {
-          ref
-              .read(chatConversationProvider.notifier)
-              .updateConversationMessage(lastMessage, update: true);
+        if (lastMessage.conversationId != null) {
+          if (lastMessage.chatType == ChatType.Chat) {
+            ref
+                .read(chatConversationProvider.notifier)
+                .updateConversationMessage(lastMessage, update: true);
+          } else if (lastMessage.chatType == ChatType.GroupChat) {
+            ref
+                .read(groupConversationProvider.notifier)
+                .updateConversationMessage(
+                    lastMessage, lastMessage.conversationId!,
+                    update: false);
+          }
         }
       }
     });

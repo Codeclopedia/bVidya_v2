@@ -19,6 +19,7 @@ dependencies:
   agora_rtc_engine: ^6.0.0
   agora_rtm: ^1.5.0
   animate_icons: ^2.0.0
+  assets_audio_player: ^3.0.6
   audioplayers: ^1.1.1
   avatars: ^3.0.2
   awesome_notifications: ^0.7.2
@@ -62,7 +63,7 @@ dependencies:
   provider: ^6.0.5
   shared_preferences: ^2.0.15
   shimmer: ^2.0.0
-  sizer: ^2.0.15
+  # sizer: ^2.0.15
   spring: ^2.0.2
   sqflite: ^2.1.0+1
   swipe_to: ^1.0.2
