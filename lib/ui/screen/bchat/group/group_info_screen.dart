@@ -16,6 +16,7 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
+
 //Mute
 final groupMuteProvider = StateProvider.autoDispose<bool>(
   ((_) => true),
@@ -68,12 +69,27 @@ class GroupInfoScreen extends HookConsumerWidget {
               });
             }),
             // SizedBox(height: 1.h),
-            _buildButton(Icons.exit_to_app, S.current.grp_btx_exit, () {
-              showBasicDialog(
-                  context, S.current.grp_btx_exit, 'Are you sure?', 'Yes',
-                  () async {
-                await ChatClient.getInstance.groupManager
-                    .leaveGroup(group.groupInfo.groupId);
+            Consumer(builder: (context, ref, child) {
+              return _buildButton(Icons.exit_to_app, S.current.grp_btx_exit,
+                  () {
+                showBasicDialog(
+                    context, S.current.grp_btx_exit, 'Are you sure?', 'Yes',
+                    () async {
+                  final result = await ref
+                      .read(groupConversationProvider.notifier)
+                      .leave(group.id);
+                  if (result == null) {
+                    // Navigator.popUntil(context, (route) {
+                    //   print('screen names=> ${route.settings.name}');
+                    //   // return route.isFirst ||
+                    //   //     route.settings.name == RouteList.groups;
+                    //   return route.isFirst;
+                    // });
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, RouteList.groups, (route) => route.isFirst);
+                    return;
+                  }
+                });
               });
             }),
             // SizedBox(height: 1.h),

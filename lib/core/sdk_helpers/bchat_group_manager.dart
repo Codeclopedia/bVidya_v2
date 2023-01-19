@@ -236,11 +236,15 @@ class BchatGroupManager {
   static Future addPublicGroup(String groupId) async {
     try {
       await ChatClient.getInstance.groupManager.joinPublicGroup(groupId);
+      return null;
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');
+      // return  '${e.code}- ${e.description} ';
     } catch (e) {
       print('Error2: ${e} ');
+      // return  'Error while joining group';
     }
+    return 'Error while joining group';
   }
 
   static Future<List<ChatGroup>> loadPublicGroupsInfo(

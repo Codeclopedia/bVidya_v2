@@ -61,7 +61,7 @@ class ChatCallScreen extends HookConsumerWidget {
     if (direct) {
       // await FlutterCallkitIncoming.endAllCalls();
       clearCall();
-      Navigator.pushReplacementNamed(context, RouteList.splash);
+      Navigator.pushReplacementNamed(context, RouteList.homeDirect);
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.splash, (route) => route.isFirst);
     } else {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/routes.dart';
+// import 'package:bvidya/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
@@ -84,7 +84,7 @@ class ChatScreen extends HookConsumerWidget {
           return false;
         }
         if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.splash);
+          Navigator.pushReplacementNamed(context, RouteList.homeDirect);
           return false;
         }
         return true;
@@ -1002,7 +1002,7 @@ class ChatScreen extends HookConsumerWidget {
             IconButton(
               onPressed: (() {
                 if (direct) {
-                  Navigator.pushReplacementNamed(context, RouteList.splash);
+                  Navigator.pushReplacementNamed(context, RouteList.homeDirect);
                 } else {
                   Navigator.pop(context);
                 }

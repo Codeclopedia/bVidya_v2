@@ -107,7 +107,7 @@ class GroupSearchScreen extends StatelessWidget {
           children: [
             SizedBox(height: 2.h),
             Text(
-              S.current.search_contact_ppl,
+              'Groups',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 color: Colors.black,
@@ -122,7 +122,7 @@ class GroupSearchScreen extends StatelessWidget {
               return result.when(
                   data: ((data) {
                     if (data.isEmpty) {
-                      return buildEmptyPlaceHolder('No User found');
+                      return buildEmptyPlaceHolder('No Group found');
                     }
                     return ListView.builder(
                       shrinkWrap: true,
@@ -146,8 +146,16 @@ class GroupSearchScreen extends StatelessWidget {
                                         userResult.groupId);
 
                                 if (result == null) {
+                                  final grpConv = await ref
+                                      .read(groupConversationProvider.notifier)
+                                      .addConveration(item);
                                   AppSnackbar.instance.message(context,
                                       'Added to group ${userResult.name} successfully');
+                                  if (grpConv != null) {
+                                    Navigator.pushReplacementNamed(
+                                        context, RouteList.groupChatScreen,
+                                        arguments: grpConv);
+                                  }
                                   // Navigator.pop(context, true);
                                 } else {
                                   AppSnackbar.instance.error(context, result);
@@ -158,7 +166,7 @@ class GroupSearchScreen extends StatelessWidget {
                       },
                     );
                   }),
-                  error: (e, t) => buildEmptyPlaceHolder('No User found'),
+                  error: (e, t) => buildEmptyPlaceHolder('No Group found'),
                   loading: () => buildLoading);
             }),
           ],

@@ -3,6 +3,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/call_list_provider.dart';
+import 'package:bvidya/core/utils.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +23,8 @@ import '/ui/dialog/conversation_menu_dialog.dart';
 import '/ui/widget/base_drawer_appbar_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final bool direct;
+  const HomeScreen({Key? key, this.direct = false}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -33,8 +36,31 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     // "ref" can be used in all life-cycles of a StatefulWidget.
     // ref.read(groupConversationProvider.notifier).init();
-    ref.read(chatConversationProvider.notifier).reset(ref.read(bChatProvider));
+    handleInit();
+
     _addHandler(ref);
+  }
+
+  handleInit() async {
+    //initialized
+    if (widget.direct &&
+        !ref.read(chatConversationProvider.notifier).initialized) {
+      print('setting up again');
+      final user = await getMeAsUser();
+      if (user == null) {
+        return;
+      }
+      await ref
+          .read(chatConversationProvider.notifier)
+          .setup(ref.read(bChatProvider), user, update: true);
+      await ref.read(groupConversationProvider.notifier).setup();
+      await ref.read(callListProvider.notifier).setup();
+    } else {
+      print('reseting chat only');
+      ref
+          .read(chatConversationProvider.notifier)
+          .reset(ref.read(bChatProvider));
+    }
   }
 
   @override
@@ -96,11 +122,17 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final loading = ref.watch(chatConversationProvider
-                    .select((value) => value.isLoading));
+                final provider = ref.watch(chatConversationProvider);
 
-                final conversationList = ref.watch(chatConversationProvider
-                    .select((value) => value.chatConversationList));
+                final loading = provider.isLoading;
+
+                // ref.watch(chatConversationProvider
+                //     .select((value) => value.isLoading));
+
+                final conversationList = provider.chatConversationList;
+
+                // ref.watch(chatConversationProvider
+                //     .select((value) => value.chatConversationList));
                 conversationList.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
                     .compareTo((a.lastMessage?.serverTime ?? 1)));
 

@@ -19,8 +19,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
 
   ChatConversationChangeProvider._();
 
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool get initialized => _initialized;
 
   final Map<int, Contacts> _contactsMap = {};
 
@@ -28,8 +29,12 @@ class ChatConversationChangeProvider extends ChangeNotifier {
 
   final Map<String, ConversationModel> _chatConversationMap = {};
 
-  List<ConversationModel> get chatConversationList =>
-      _chatConversationMap.values.toList();
+  // List<ConversationModel> get chatConversationList =>
+  //     _chatConversationMap.values.toList();
+
+  List<ConversationModel> chatConversationList = [];
+  // List<ConversationModel> get chatConversationList =>
+  //     _chatConversationMap.values.toList();
 
   bool _initialized = false;
 
@@ -76,20 +81,20 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     }
   }
 
-  Future setup(BChatRepository reader, User user) async {
-    if (_initialized) {
+  Future setup(BChatRepository reader, User user, {bool update = false}) async {
+    print(
+        'setup called => _initialized:$_initialized ,update: $update, size:${_chatConversationMap.length} isLoading: $_isLoading');
+    if (_initialized && _chatConversationMap.isNotEmpty) {
+      _isLoading = false;
+      if (update) {
+        updateUi();
+      }
       return;
     }
     _initialized = true;
-    _chatConversationMap.clear();
+
     try {
       _isLoading = true;
-      final User? loginUser = await getMeAsUser();
-      if (loginUser == null) {
-        _isLoading = false;
-        return;
-      }
-
       final ids = await BChatContactManager.getContactList();
       List<String> otherIds = [];
       final chatIds = await BChatContactManager.getChatConversationsIds();
@@ -98,16 +103,23 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           otherIds.add(id);
         }
       }
-      if (otherIds.isNotEmpty) {
+      if (otherIds.isNotEmpty || ids.isNotEmpty) {
+        _chatConversationMap.clear();
         await _addConversations(reader, ids, otherIds);
       }
     } catch (e) {
       print('error $e');
     }
     _isLoading = false;
+    print('setup finished');
+    chatConversationList = _chatConversationMap.values.toList();
+    if (update) {
+      updateUi();
+    }
   }
 
   void reset(BChatRepository reader) async {
+    print('reset started');
     final allIds = await BChatContactManager.getContactList();
     final List<String> ids = [];
     for (String id in allIds) {
@@ -125,6 +137,9 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     if (otherIds.isNotEmpty) {
       await _addConversations(reader, ids, otherIds);
     }
+    chatConversationList = _chatConversationMap.values.toList();
+    _isLoading = false;
+    print('reset finished');
     updateUi();
   }
 
@@ -326,6 +341,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     } catch (e) {
       return;
     }
+    chatConversationList = _chatConversationMap.values.toList();
   }
 
   Future<ConversationModel?> updateConversationMessage(ChatMessage lastMessage,
@@ -354,7 +370,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
         if (update) {
           updateUi();
         }
-        
       } else {
         final user = await getMeAsUser();
         if (user == null) {
@@ -388,6 +403,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     } catch (e) {
       return null;
     }
+    chatConversationList = _chatConversationMap.values.toList();
     if (update) {
       updateUi();
     }
@@ -399,7 +415,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     try {
       notifyListeners();
     } catch (e) {
-      print('Error in notify the ui');
+      print('Error in notify the ui $e');
     }
   }
 

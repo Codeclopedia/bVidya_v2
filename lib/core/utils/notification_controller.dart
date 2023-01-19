@@ -44,7 +44,7 @@ class NotificationController {
         debug: true);
 
     initialAction = await AwesomeNotifications()
-        .getInitialNotificationAction(removeFromActionEvents: false);
+        .getInitialNotificationAction(removeFromActionEvents: true);
 
     // Get initial notification action is optional
   }

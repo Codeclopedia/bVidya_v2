@@ -22,8 +22,9 @@ class RouteList {
   static const String forgotPassword = '/forgot-password';
 
   //Chat
-  static const String splash = '/';
+  // static const String splash = '/';
   static const String home = '/home';
+  static const String homeDirect = '/home-direct';
   static const String profile = '/profile';
   static const String chatScreen = '/chat-screen';
   static const String chatScreenDirect = '/chat-screen-direct';
@@ -48,7 +49,6 @@ class RouteList {
 
   // static const String bChatVideoCallDirect = '/chat_video_call-direct';
   // static const String bChatAudioCallDirect = '/chat_audio_call-direct';
-
 
   static const String bViewImage = '/chat_view_image';
   static const String bViewVideo = '/chat_watch_video';

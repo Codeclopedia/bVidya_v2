@@ -90,7 +90,7 @@ class GroupChatScreen extends HookConsumerWidget {
           return false;
         }
         if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.splash);
+          Navigator.pushReplacementNamed(context, RouteList.homeDirect);
           return false;
         }
 
@@ -896,7 +896,7 @@ class GroupChatScreen extends HookConsumerWidget {
           IconButton(
             onPressed: (() {
               if (direct) {
-                Navigator.pushReplacementNamed(context, RouteList.splash);
+                Navigator.pushReplacementNamed(context, RouteList.homeDirect);
               } else {
                 Navigator.pop(context);
               }

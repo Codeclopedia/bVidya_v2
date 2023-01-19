@@ -55,9 +55,9 @@ class Routes {
 
     print('opening screen $_currentScreen ');
     switch (settings.name) {
-      case RouteList.splash:
-        screen = const SplashScreen();
-        break;
+      // case RouteList.splash:
+      //   screen = const SplashScreen();
+      //   break;
       case RouteList.signup:
         screen = SignUpScreen();
         break;
@@ -83,6 +83,10 @@ class Routes {
       //   break;
       case RouteList.home:
         screen = const HomeScreen();
+        hasDrawer = true;
+        break;
+      case RouteList.homeDirect:
+        screen = const HomeScreen(direct: true);
         hasDrawer = true;
         break;
       case RouteList.groups:

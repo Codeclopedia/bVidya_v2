@@ -18,7 +18,7 @@ class GroupConversationChangeNotifier
     extends StateNotifier<List<GroupConversationModel>> {
   GroupConversationChangeNotifier() : super([]);
   final Map<String, GroupConversationModel> _groupConversationMap = {};
-  bool _isLoading = true;
+  bool _isLoading = false;
 
   Future setup() async {
     if (_isLoading) return;
@@ -37,12 +37,12 @@ class GroupConversationChangeNotifier
         (await getGroupConversationModel(groupId));
   }
 
-  Future addConveration(ChatGroup grp) async {
+  Future<GroupConversationModel?> addConveration(ChatGroup grp) async {
     GroupConversationModel model;
     try {
       final conv = await ChatClient.getInstance.chatManager
           .getConversation(grp.groupId, type: ChatConversationType.GroupChat);
-      if (conv == null) return;
+      if (conv == null) return null;
       final lastMessage = await conv.latestMessage();
 
       model = GroupConversationModel(
@@ -53,11 +53,12 @@ class GroupConversationChangeNotifier
           lastMessage: lastMessage,
           image: BchatGroupManager.getGroupImage(grp));
     } catch (e) {
-      return;
+      return null;
     }
     _groupConversationMap.addAll({grp.groupId: model});
     // notifyListeners();
     state = _groupConversationMap.values.toList();
+    return model;
   }
 
   Future updateConversation(ChatGroup grp) async {
@@ -141,22 +142,32 @@ class GroupConversationChangeNotifier
     state = _groupConversationMap.values.toList();
   }
 
-  Future remove(String groupId) async {
-    _groupConversationMap.remove(groupId);
-    state = _groupConversationMap.values.toList();
+  Future leave(String groupId) async {
+    try {
+      await ChatClient.getInstance.groupManager.leaveGroup(groupId);
+      _groupConversationMap.remove(groupId);
+      state = _groupConversationMap.values.toList();
+      return null;
+    } catch (e) {
+      return 'Error in leaving group';
+    }
   }
 
   void reset(WidgetRef ref) async {
+    print('Loading groups $_isLoading');
     if (_isLoading) return;
     _isLoading = true;
-    ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
+    // ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
     _groupConversationMap.clear();
+
     final list = await BchatGroupManager.loadGroupConversationsList();
     for (var item in list) {
       _groupConversationMap.addAll({item.id: item});
     }
     _isLoading = false;
-    ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
+    // ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
+    print('Loaded groups : ${list.length}');
+    state = _groupConversationMap.values.toList();
   }
 
   void update() {
