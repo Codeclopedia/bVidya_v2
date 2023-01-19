@@ -72,29 +72,33 @@ class P2PCallProvider extends ChangeNotifier {
 
   AudioPlayer? _player;
 
-  init(CallBody body, CallDirectionType type, CallType callType) {
-    if (_isInitialized) {
-      return;
-    }
+  init(CallBody body, CallDirectionType type, CallType callType) async {
+    // if (_isInitialized) {
+    //   return;
+    // }
     // showOutGoingCall(body, callType == CallType.video);
     _isInitialized = true;
     _callType = callType;
+    // _read.reset();
     // _currentCallType = callType;
     _callDirection = type;
     _body = body;
     FirebaseMessaging.onMessage.listen((message) {
+      print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallDecline) {
           if (!_disconnected && !_endCall) {
             _endCall = true;
-            activeCallId = null;
+            _read.reset();
+            clearCall();
+            // activeCallId = null;
             notifyListeners();
           }
         }
       }
     });
-    _initEngine();
+    await _initEngine();
   }
 
   _outgoingTimer() async {
@@ -106,6 +110,8 @@ class P2PCallProvider extends ChangeNotifier {
 
     _timer = Timer(const Duration(seconds: 30), () {
       _endCall = true;
+      _read.reset();
+      print('Timer ended here');
       notifyListeners();
     });
     try {
@@ -163,13 +169,13 @@ class P2PCallProvider extends ChangeNotifier {
           _status = CallConnectionStatus.ended;
           notifyListeners();
         },
-        onRemoteAudioStateChanged:
-            (connection, remoteUid, state, reason, elapsed) {
-          if (remoteId == _remoteId) {
-            _remoteMute = state != RemoteAudioState.remoteAudioStateDecoding;
-            print('remote audio state: $state ');
-          }
-        },
+        // onRemoteAudioStateChanged:
+        //     (connection, remoteUid, state, reason, elapsed) {
+        //   if (remoteId == _remoteId) {
+        //     _remoteMute = state != RemoteAudioState.remoteAudioStateDecoding;
+        //     print('remote audio state: $state ');
+        //   }
+        // },
         // onRemoteVideoStateChanged:
         //     (connection, remoteUid, state, reason, elapsed) {
         //   if (remoteId == _remoteId) {
@@ -330,6 +336,7 @@ class P2PCallProvider extends ChangeNotifier {
   @override
   void dispose() {
     disconnect();
+    _isInitialized = false;
     FlutterCallkitIncoming.endAllCalls();
     print('Dispose call screen');
     super.dispose();

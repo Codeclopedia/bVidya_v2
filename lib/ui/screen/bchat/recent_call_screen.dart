@@ -1,7 +1,7 @@
-import 'package:bvidya/core/utils/date_utils.dart';
-import 'package:intl/intl.dart';
+
 
 import '../blearn/components/common.dart';
+import '/core/utils/date_utils.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/state.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -89,7 +89,7 @@ class RecentCallScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          getCicleAvatar(model.name, ''),
+          getCicleAvatar(model.name, model.image),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(

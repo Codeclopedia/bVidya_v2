@@ -184,10 +184,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         final body = model.lastMessage!.body as ChatTextMessageBody;
         textMessage = body.content;
       } else if (model.lastMessage!.body.type == MessageType.CUSTOM) {
-        ChatCustomMessageBody body =
-            model.lastMessage!.body as ChatCustomMessageBody;
-        print(body.event);
         try {
+          ChatCustomMessageBody body =
+              model.lastMessage!.body as ChatCustomMessageBody;
           final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
           textMessage = (callBody.callType == CallType.video)
               ? 'Video Call'

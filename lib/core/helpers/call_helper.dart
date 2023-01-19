@@ -14,7 +14,7 @@ import '/data/models/call_message_body.dart';
 // import '/data/services/fcm_api_service.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
-import '/data/services/bchat_api_service.dart';
+// import '/data/services/bchat_api_service.dart';
 import '/ui/base_back_screen.dart';
 import '../state.dart';
 import '../ui_core.dart';
@@ -53,7 +53,8 @@ Future<ChatMessage?> makeAudioCall(
       'image': contact.profileImage,
       'fcm_token': contact.fcmToken,
       'call_info': callBody,
-      'call_direction_type': CallDirectionType.outgoing
+      'call_direction_type': CallDirectionType.outgoing,
+      'direct': false
     };
     hideLoading(ref);
     // if (contact.fcmToken?.isNotEmpty == true) {
@@ -117,7 +118,8 @@ Future<ChatMessage?> makeVideoCall(
       'fcm_token': contact.fcmToken,
       'image': contact.profileImage,
       'call_info': callBody,
-      'call_direction_type': CallDirectionType.outgoing
+      'call_direction_type': CallDirectionType.outgoing,
+      'direct': false
     };
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
@@ -151,25 +153,25 @@ Future<ChatMessage?> makeVideoCall(
   //     .sendChatPush(chat, toToken, fromUserId, senderName, type);
 }
 
-Future receiveCall(String authToken, String fcmToken, String callId,
-    String image, bool hasVideo, BuildContext context) async {
-  final response =
-      await BChatApiService.instance.receiveCall(authToken, callId);
-  if (response.status == 'successfull' && response.body != null) {
-    final CallBody callBody = response.body!;
-    Map<String, dynamic> map = {
-      'fcm_token': fcmToken,
-      'name': callBody.callerName,
-      'image': image,
-      'call_info': callBody,
-      'call_direction_type': CallDirectionType.incoming
-    };
+// Future receiveCall(String authToken, String fcmToken, String callId,
+//     String image, bool hasVideo, BuildContext context) async {
+//   final response =
+//       await BChatApiService.instance.receiveCall(authToken, callId);
+//   if (response.status == 'successfull' && response.body != null) {
+//     final CallBody callBody = response.body!;
+//     Map<String, dynamic> map = {
+//       'fcm_token': fcmToken,
+//       'name': callBody.callerName,
+//       'image': image,
+//       'call_info': callBody,
+//       'call_direction_type': CallDirectionType.incoming,
+//     };
 
-    await Navigator.pushNamed(
-        context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
-        arguments: map);
-  }
-}
+//     await Navigator.pushNamed(
+//         context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
+//         arguments: map);
+//   }
+// }
 
 // Future receiveAudioCall(
 //     String callId, String image, WidgetRef ref, BuildContext context) async {

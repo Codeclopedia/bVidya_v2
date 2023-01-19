@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:bvidya/core/utils/callkit_utils.dart';
+// import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
@@ -9,7 +11,7 @@ import 'package:pip_view/pip_view.dart';
 import '/core/utils.dart';
 import '/data/services/fcm_api_service.dart';
 import '/controller/providers/p2p_call_provider.dart';
-import '/controller/bchat_providers.dart';
+// import '/controller/bchat_providers.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
 import '/core/state.dart';
@@ -18,7 +20,20 @@ import '/data/models/models.dart';
 import '../../base_back_screen.dart';
 import '../home/home_screen.dart';
 
-class ChatCallScreen extends ConsumerWidget {
+final audioCallTimerProvider =
+    StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
+  (_) => DurationNotifier(),
+);
+
+final audioCallChangeProvider =
+    ChangeNotifierProvider.autoDispose<P2PCallProvider>(
+  (ref) => P2PCallProvider(
+    ref.read(audioCallTimerProvider.notifier),
+  ),
+);
+bool _endingCall = false;
+
+class ChatCallScreen extends HookConsumerWidget {
   final String fcmToken;
   final String name;
   final String image;
@@ -37,8 +52,33 @@ class ChatCallScreen extends ConsumerWidget {
       required this.callDirection,
       this.direct = false});
 
+  _finish(BuildContext context) async {
+    if (_endingCall) {
+      return;
+    }
+    _endingCall = true;
+    print('is Directly => $direct');
+    if (direct) {
+      // await FlutterCallkitIncoming.endAllCalls();
+      clearCall();
+      Navigator.pushReplacementNamed(context, RouteList.splash);
+      // Navigator.pushNamedAndRemoveUntil(
+      //     context, RouteList.splash, (route) => route.isFirst);
+    } else {
+      Navigator.pop(context);
+    }
+    _endingCall = false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      print('Init Directly => $direct');
+      ref
+          .read(audioCallChangeProvider.notifier)
+          .init(callInfo, callDirection, callType);
+      return () {};
+    }, []);
     final provider = ref.watch(audioCallChangeProvider);
     // useEffect(() {
     //   return () {
@@ -46,16 +86,14 @@ class ChatCallScreen extends ConsumerWidget {
     //   };
     // }, const []);
 
-    provider.init(callInfo, callDirection, callType);
+    // provider.init(callInfo, callDirection, callType);
     // final valu = pr.Provider.of<ClassEndProvider>(context, listen: true);
     ref.listen(audioCallChangeProvider, (previous, next) {
+      // if (previous?.isCallEnded == next.isCallEnded) {
+      //   return;
+      // }
       if (next.isCallEnded && !provider.disconnected) {
-        // Navigator.pop(context);
-        if (direct) {
-          Navigator.pushReplacementNamed(context, RouteList.splash);
-        } else {
-          Navigator.pop(context);
-        }
+        _finish(context);
       }
     });
     // valu.addListener(() {
@@ -335,11 +373,12 @@ class ChatCallScreen extends ConsumerWidget {
                       callType == CallType.video);
                 }
 
-                if (direct) {
-                  Navigator.pushReplacementNamed(context, RouteList.home);
-                } else {
-                  Navigator.pop(context);
-                }
+                _finish(context);
+                // if (direct) {
+                //   Navigator.pushReplacementNamed(context, RouteList.home);
+                // } else {
+                //   Navigator.pop(context);
+                // }
               },
               child: Container(
                 height: 12.w,

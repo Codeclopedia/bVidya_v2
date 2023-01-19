@@ -3,7 +3,9 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/foreground_message_helper.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -110,7 +112,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     FirebaseMessaging.onMessage.listen((message) async {
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
-      debugPrint('firebase:onMessage -> ${message.toMap()} ');
+      // debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
@@ -120,7 +122,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
       } else {
         // NotificationController.showErrorMessage('New Foreground : ${message.senderId}');
-        NotificationController.handleRemoteMessage(message, true);
+        // NotificationController.handleForegroundRemoteMessage(message);
         // NotificationController.shouldShowChatNotification(message);
       }
     });
@@ -146,22 +148,27 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         handleRemoteMessage(message, context, fallbackScreen: '');
       }
     });
-    if ((await getMeAsUser()) == null) return;
+    // if ((await getMeAsUser()) == null) return;
     registerForNewMessage(
       'bVidyaApp',
-      (msgs) {
+      (msgs) async {
+        // if ((await getMeAsUser()) == null) return;
         for (var lastMessage in msgs) {
           if (lastMessage.conversationId != null) {
             if (lastMessage.conversationId != null) {
               if (lastMessage.chatType == ChatType.Chat) {
                 if (lastMessage.body.type == MessageType.CUSTOM) {
-                  // NotificationController.handleCallNotification(lastMessage);
+                  ForegroundMessageHelper.handleCallNotification(lastMessage,ref);
                 }
                 // print('on Chat Message=> ${lastMessage.body.toJson()} ');
-                ref
+                final value = await ref
                     .read(chatConversationProvider.notifier)
                     .updateConversationMessage(lastMessage,
                         update: Routes.getCurrentScreen() == RouteList.home);
+                if (value != null) {
+                  ForegroundMessageHelper.handleChatNotification(
+                      value, lastMessage);
+                }
               } else if (lastMessage.chatType == ChatType.GroupChat) {
                 // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
                 ref
@@ -169,6 +176,17 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
                     .updateConversationMessage(
                         lastMessage, lastMessage.conversationId!,
                         update: Routes.getCurrentScreen() == RouteList.groups);
+                // final values = ref.read(groupConversationProvider);
+                final value = ref
+                    .read(groupConversationProvider)
+                    .firstWhereOrNull(
+                        (element) => element.id == lastMessage.conversationId);
+                if (value != null) {
+                  ForegroundMessageHelper.handleGroupChatNotification(
+                      value, lastMessage);
+                }
+                // if(values.l.contains(lastMessage.conversationId)){
+                // }
               }
               // NotificationController.handleForegroundMessage(lastMessage);
             }

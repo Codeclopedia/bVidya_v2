@@ -178,18 +178,6 @@ final chatImageFiles = FutureProvider.autoDispose
   return BChatContactManager.loadMediaFiles(convId);
 });
 
-final audioCallTimerProvider =
-    StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
-  (_) => DurationNotifier(),
-);
-
-final audioCallChangeProvider =
-    ChangeNotifierProvider.autoDispose<P2PCallProvider>(
-  (ref) => P2PCallProvider(
-    ref.read(audioCallTimerProvider.notifier),
-  ),
-);
-
 class GroupMeberInfo {
   final List<Contacts> members;
   final ChatGroup group;

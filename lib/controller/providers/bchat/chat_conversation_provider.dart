@@ -328,19 +328,20 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     }
   }
 
-  Future updateConversationMessage(ChatMessage lastMessage,
+  Future<ConversationModel?> updateConversationMessage(ChatMessage lastMessage,
       {bool update = false}) async {
+    ConversationModel? newModel;
     try {
       final id = lastMessage.conversationId;
       if (id == null) {
         print('Conversation id is null');
-        return;
+        return null;
       }
 
       final model = _chatConversationMap[id];
       if (model != null) {
         print('Conversation id  ${model.lastMessage!.from.toString()} $update');
-        final newModel = ConversationModel(
+        newModel = ConversationModel(
           id: model.id,
           badgeCount: (await model.conversation?.unreadCount()) ?? 0,
           contact: model.contact,
@@ -348,15 +349,16 @@ class ChatConversationChangeProvider extends ChangeNotifier {
           lastMessage: lastMessage,
           // isOnline: null,
         );
-        _chatConversationMap.update(id, (v) => newModel,
-            ifAbsent: () => newModel);
+        _chatConversationMap.update(id, (v) => newModel!,
+            ifAbsent: () => newModel!);
         if (update) {
           updateUi();
         }
+        
       } else {
         final user = await getMeAsUser();
         if (user == null) {
-          return;
+          return null;
         }
         final Contacts contact;
         if (_contactsMap.containsKey(id)) {
@@ -369,26 +371,27 @@ class ChatConversationChangeProvider extends ChangeNotifier {
                 result.body!.contacts![0], ContactStatus.invited);
             _contactsMap.addAll({contact.userId: contact});
           } else {
-            return;
+            return null;
           }
-          final conv = await ChatClient.getInstance.chatManager
-              .getConversation(id, type: ChatConversationType.Chat);
-          ConversationModel newModel = ConversationModel(
-            id: id,
-            badgeCount: (await conv?.unreadCount()) ?? 0,
-            contact: contact,
-            conversation: conv,
-            lastMessage: await conv?.latestMessage(),
-          );
-          _chatConversationMap.addAll({id: newModel});
         }
+        final conv = await ChatClient.getInstance.chatManager
+            .getConversation(id, type: ChatConversationType.Chat);
+        newModel = ConversationModel(
+          id: id,
+          badgeCount: (await conv?.unreadCount()) ?? 0,
+          contact: contact,
+          conversation: conv,
+          lastMessage: await conv?.latestMessage(),
+        );
+        _chatConversationMap.addAll({id: newModel});
       }
     } catch (e) {
-      return;
+      return null;
     }
     if (update) {
       updateUi();
     }
+    return newModel;
     //
   }
 

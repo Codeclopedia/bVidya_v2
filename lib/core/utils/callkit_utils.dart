@@ -7,10 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
-import '/core/state.dart';
-import '/data/models/call_message_body.dart';
-import '../../controller/providers/bchat/call_list_provider.dart';
-import '../sdk_helpers/bchat_call_manager.dart';
+import '../routes.dart';
 import '/core/helpers/extensions.dart';
 import '/app.dart';
 import '/data/models/response/auth/login_response.dart';
@@ -21,9 +18,21 @@ import '../helpers/call_helper.dart';
 import '../ui_core.dart';
 import '../utils.dart';
 
-Map? activeCallMap;
+Map? _activeCallMap;
+String? _activeCallId;
+String? _lastCallId;
 
-String? activeCallId;
+Map? get activeCallMap => _activeCallMap;
+String? get activeCallId => _activeCallId;
+String? get lastCallId => _lastCallId;
+
+clearCall() {
+  if (_activeCallId != null) {
+    _lastCallId = _activeCallId;
+  }
+  _activeCallId = null;
+  _activeCallMap = null;
+}
 
 _getActiveCall() async {
   try {
@@ -36,20 +45,21 @@ _getActiveCall() async {
       final map = list[0]['extra'];
       if (map == null) {
         print('map: is null');
-        activeCallId = null;
-        activeCallMap = null;
+        _activeCallId = null;
+        _activeCallMap = null;
         return;
       }
       print('map: $id -> $map');
       String? fromId = map['from_id'];
       if (fromId == null) {
         print('Not a valid Active calls');
-        activeCallId = null;
-        activeCallMap = null;
+        _activeCallId = null;
+        _activeCallMap = null;
         return;
       }
-      activeCallMap = map;
-      activeCallId = id;
+      _activeCallMap = map;
+      _activeCallId = id;
+
       return;
     } else {
       print('No Active calls');
@@ -57,8 +67,8 @@ _getActiveCall() async {
   } catch (e) {
     print('error in getting active calls');
   }
-  activeCallMap = null;
-  activeCallId = null;
+  _activeCallMap = null;
+  _activeCallId = null;
 }
 
 setupCallKit() async {
@@ -87,7 +97,7 @@ setupCallKit() async {
     CallBody body = CallBody.fromJson(jsonDecode(map['body']));
     bool hasVideo = map['has_video'];
 
-    print('onCall Event ${event.event}  - $map');
+    // print('onCall Event ${event.event}  - $map');
 
     switch (event.event) {
       case Event.ACTION_CALL_ACCEPT:
@@ -105,43 +115,43 @@ setupCallKit() async {
   });
 }
 
-Future<void> handlShowIncomingCallNotification(RemoteMessage remoteMessage,
-    {WidgetRef? ref}
-    // FlutterCallkeep callKeep,
-    ) async {
-  // String uuid = remoteMessage.payload()["call_id"] as String;
-  CallBody? body = remoteMessage.payload();
-  if (body == null) {
-    return;
-  }
+// Future<void> handlShowIncomingCallNotification(RemoteMessage remoteMessage,
+//     {WidgetRef? ref}
+//     // FlutterCallkeep callKeep,
+//     ) async {
+//   // String uuid = remoteMessage.payload()["call_id"] as String;
+//   CallBody? body = remoteMessage.payload();
+//   if (body == null) {
+//     return;
+//   }
 
-  String fromId = remoteMessage.data["from_id"];
-  String fromName = remoteMessage.data["from_name"];
-  String fromFCM = remoteMessage.data['caller_fcm'];
-  String image = remoteMessage.data['image'];
-  bool hasVideo = remoteMessage.data['has_video'] == 'true';
-  // makeFakeCallInComing();
-  await showIncomingCallScreen(
-      body, fromName, fromId, fromFCM, image, hasVideo);
-  try {
-    final user = await getMeAsUser();
-    if (user == null || ref == null) return;
+//   String fromId = remoteMessage.data["from_id"];
+//   String fromName = remoteMessage.data["from_name"];
+//   String fromFCM = remoteMessage.data['caller_fcm'];
+//   String image = remoteMessage.data['image'];
+//   bool hasVideo = remoteMessage.data['has_video'] == 'true';
+//   // makeFakeCallInComing();
+//   await showIncomingCallScreen(
+//       body, fromName, fromId, fromFCM, image, hasVideo);
+//   try {
+//     final user = await getMeAsUser();
+//     if (user == null || ref == null) return;
 
-    final callMessageBody = CallMessegeBody(
-      callId: body.callId,
-      callType: hasVideo ? CallType.video : CallType.audio,
-      duration: 0,
-      fromName: fromName,
-      image: image,
-      toName: user.name,
-      status: CallStatus.ongoing,
-      ext: {},
-    );
-    CallListModel model = CallListModel(fromName, image, true,
-        DateTime.now().millisecondsSinceEpoch, callMessageBody);
-    ref.read(callListProvider.notifier).addCall(model);
-  } catch (e) {}
-}
+//     final callMessageBody = CallMessegeBody(
+//       callId: body.callId,
+//       callType: hasVideo ? CallType.video : CallType.audio,
+//       duration: 0,
+//       fromName: fromName,
+//       image: image,
+//       toName: user.name,
+//       status: CallStatus.ongoing,
+//       ext: {},
+//     );
+//     CallListModel model = CallListModel(fromName, image, true,
+//         DateTime.now().millisecondsSinceEpoch, callMessageBody);
+//     ref.read(callListProvider.notifier).addCall(model);
+//   } catch (e) {}
+// }
 
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   CallBody? callBody = remoteMessage.payload();
@@ -150,11 +160,11 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     return;
   }
   await _getActiveCall();
-  if (activeCallId == null) {
+  if (_activeCallId == null) {
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }
-
+  _lastCallId = callBody.callId;
   String fromId = remoteMessage.data["from_id"];
   String callerName = remoteMessage.data["from_name"];
   String callerImage = remoteMessage.data['image'];
@@ -203,13 +213,13 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
 
 showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
     String fromFCM, String image, bool hasVideo) async {
-  if (activeCallId != null) {
-    if (activeCallId == callBody.callId) {
+  if (_activeCallId != null) {
+    if (_activeCallId == callBody.callId) {
       return;
     }
     FlutterCallkitIncoming.endAllCalls();
   }
-  activeCallId = callBody.callId;
+  _activeCallId = callBody.callId;
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: '$baseImageApi$image',
@@ -310,10 +320,16 @@ onCallAccept(String fromId, String fcmToken, String callerName,
     'fcm_token': fcmToken,
     'image': callerImage,
     'call_info': body,
-    'call_direction_type': CallDirectionType.incoming
+    'call_direction_type': CallDirectionType.incoming,
+    'direct': false
   };
   print('hasVideo:::: > $hasVideo');
 
+  if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
+      Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
+    print(' Already on call screen');
+    return;
+  }
   Navigator.pushNamed(
       context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
       arguments: map);
@@ -340,22 +356,22 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     userName = user.name;
   }
 
-  try {
-    Map content = {
-      'type': NotiConstants.typeCall,
-      'action': NotiConstants.actionCallDecline,
-      'content': jsonEncode(body.toJson()),
-      'from_id': callerIdFrom,
-      'from_name': callerName,
-      'image': '',
-      'has_video': hasVideo ? 'true' : 'false',
-      'caller_fcm': '',
-    };
-    final message = ChatMessage.createCmdSendMessage(
-        targetId: callerIdFrom, action: content);
-    print('toID :$callerIdFrom  ${ChatClient.getInstance.currentUserId}');
-    ChatClient.getInstance.chatManager.sendMessage(message);
-  } catch (e) {}
+  // try {
+  //   Map content = {
+  //     'type': NotiConstants.typeCall,
+  //     'action': NotiConstants.actionCallDecline,
+  //     'content': jsonEncode(body.toJson()),
+  //     'from_id': callerIdFrom,
+  //     'from_name': callerName,
+  //     'image': '',
+  //     'has_video': hasVideo ? 'true' : 'false',
+  //     'caller_fcm': '',
+  //   };
+  //   final message = ChatMessage.createCmdSendMessage(
+  //       targetId: callerIdFrom, action: content);
+  //   print('toID :$callerIdFrom  ${ChatClient.getInstance.currentUserId}');
+  //   ChatClient.getInstance.chatManager.sendMessage(message);
+  // } catch (e) {}
 
   FCMApiService.instance.sendCallEndPush(senderFCM,
       NotiConstants.actionCallDecline, body, userId, userName, hasVideo);

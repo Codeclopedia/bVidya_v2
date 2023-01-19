@@ -33,11 +33,11 @@ Future<Map<String, CallListModel>> getCallList() async {
           bool isOwnMessage = m.from == me.id.toString();
           CallListModel model;
           if (isOwnMessage) {
-            model = CallListModel(callBody.fromName, callBody.image ?? '', true,
+            model = CallListModel(callBody.toName, callBody.image ?? '', true,
                 m.serverTime, callBody);
           } else {
-            model =
-                CallListModel(me.name, me.image, true, m.serverTime, callBody);
+            model = CallListModel(callBody.fromName, callBody.image ?? '',
+                false, m.serverTime, callBody);
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {

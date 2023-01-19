@@ -4,16 +4,17 @@
 
 import 'dart:convert';
 
-import 'package:bvidya/core/helpers/call_helper.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
-import 'package:bvidya/core/utils/callkit_utils.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../data/models/models.dart';
+//import '/app.dart';
+import '/core/helpers/call_helper.dart';
+import '/core/helpers/foreground_message_helper.dart';
+import '/core/routes.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
+import '/core/utils/callkit_utils.dart';
+import '/data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
-// import '/core/utils/chat_utils.dart';
 import '/core/utils/notification_controller.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -67,11 +68,11 @@ class SplashScreen extends ConsumerWidget {
         if (next.value != null) {
           final startTime = DateTime.now().millisecondsSinceEpoch;
           await ref.read(userAuthChangeProvider).loadUser();
-          await BChatSDKController.instance.initChatSDK(next.value!);
+
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
-          if (await _handleNotificationClickScreen(context)) {
+          if (await _handleNotificationClickScreen(context, next.value!)) {
             final diff = DateTime.now().millisecondsSinceEpoch - startTime;
             print('Time taken: $diff ms Notification');
             return;
@@ -107,8 +108,10 @@ class SplashScreen extends ConsumerWidget {
     // );
   }
 
-  Future<bool> _handleNotificationClickScreen(BuildContext context) async {
+  Future<bool> _handleNotificationClickScreen(
+      BuildContext context, User user) async {
     if (activeCallMap != null && activeCallId != null) {
+      
       String fromName = activeCallMap!['from_name'];
       String callerFCM = activeCallMap!['caller_fcm'];
       String image = activeCallMap!['image'];
@@ -124,18 +127,27 @@ class SplashScreen extends ConsumerWidget {
         'direct': true
       };
 
+      if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
+          Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
+        // BuildContext ctx = navigatorKey.currentContext ?? context;
+
+        print('Already on call screen');
+        // Navigator.pop(ctx);
+        return true;
+      }
       Navigator.pushReplacementNamed(context,
           hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
           arguments: callMap);
       return true;
     }
+    await BChatSDKController.instance.initChatSDK(user);
     final initialAction = NotificationController.clickAction;
     if (initialAction != null &&
         initialAction.payload != null &&
         initialAction.channelKey == 'chat_channel') {
       debugPrint(
           'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
-      if (await NotificationController.handleChatNotificationAction(
+      if (await ForegroundMessageHelper.handleChatNotificationAction(
           initialAction.payload!, context, true)) {
         NotificationController.clickAction = null;
         debugPrint('  initialAction is not null');

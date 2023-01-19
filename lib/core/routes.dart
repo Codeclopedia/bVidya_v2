@@ -8,8 +8,6 @@ import 'helpers/call_helper.dart';
 import 'ui_core.dart';
 import '/ui/screens.dart';
 
-
-
 class Routes {
   static bool isChatScreen(String fromId) {
     String cName = getCurrentScreen();
@@ -54,6 +52,8 @@ class Routes {
     final Widget screen;
     bool hasDrawer = false;
     _currentScreen = settings.name ?? '';
+
+    print('opening screen $_currentScreen ');
     switch (settings.name) {
       case RouteList.splash:
         screen = const SplashScreen();

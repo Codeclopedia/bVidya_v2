@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
+import 'core/helpers/background_helper.dart';
 import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
 import 'core/state.dart';
@@ -50,7 +51,6 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
   setupCallKit();
   await NotificationController.initializeLocalNotifications();
-  
 
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
@@ -63,7 +63,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
     } else {
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');
       // await BChatSDKController.instance.loginOnlyInBackground();
-      NotificationController.handleRemoteMessageBackground(message);
+      BackgroundHelper.handleRemoteMessageBackground(message);
     }
   } catch (e) {
     // print('error $e');

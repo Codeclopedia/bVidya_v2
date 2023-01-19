@@ -143,7 +143,6 @@ class ChatMessageBubble extends StatelessWidget {
       case MessageType.CUSTOM:
         {
           ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
-          // print(body.event);
           try {
             final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
             return _callBody(callBody);
