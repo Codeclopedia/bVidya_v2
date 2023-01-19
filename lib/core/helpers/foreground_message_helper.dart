@@ -3,8 +3,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/call_list_provider.dart';
-import 'package:bvidya/data/models/conversation_model.dart';
+import '/controller/providers/bchat/call_list_provider.dart';
+import '/data/models/conversation_model.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 

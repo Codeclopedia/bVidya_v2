@@ -1,5 +1,5 @@
-import 'package:bvidya/core/constants/colors.dart';
-import 'package:bvidya/core/state.dart';
+import '/core/constants/colors.dart';
+import '/core/state.dart';
 
 import '/core/ui_core.dart';
 

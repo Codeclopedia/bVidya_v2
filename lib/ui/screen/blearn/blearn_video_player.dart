@@ -1,12 +1,11 @@
 // import 'package:chewie/chewie.dart';
 // import 'dart:async';
-
-import 'package:bvidya/ui/screen/blearn/components/lesson_list_row.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:pausable_timer/pausable_timer.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../data/models/response/blearn/courses_response.dart';
+import '/data/models/response/blearn/courses_response.dart';
 import '/core/constants/colors.dart';
 import '/core/helpers/video_helper.dart';
 import '/controller/blearn_providers.dart';
@@ -38,22 +37,32 @@ class BlearnVideoPlayer extends HookConsumerWidget {
       : super(key: key);
 
   FlickManager? flickManager;
-  late final PausableTimer timer;
+  PausableTimer? timer;
+  AutoScrollController? controller;
+
+  final scrollDirection = Axis.vertical;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
       init();
-
+//AutoScrollController for scroll to index feature
+      controller = AutoScrollController(
+        viewportBoundaryGetter: () =>
+            Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+        axis: scrollDirection,
+      );
+//timer for calling watch time api after eevery 1 minute
       timer = PausableTimer(const Duration(minutes: 1), () async {
         await sendVideoPlayback(ref, instructorId);
       });
+      setcontrollervalue(ref);
 
       return () {
         print('Disponse called');
         flickManager?.dispose();
         flickManager = null;
-        timer.cancel();
+        timer?.cancel();
       };
 
       // return dispose();
@@ -91,8 +100,6 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                   height: 4.w,
                 ),
                 Consumer(builder: (context, ref, child) {
-                  int selectedIndex =
-                      ref.watch(selectedTabCourseDetailProvider);
                   return ref
                       .watch(bLearnCourseDetailProvider(course.id ?? 0))
                       .when(
@@ -210,51 +217,46 @@ class BlearnVideoPlayer extends HookConsumerWidget {
   }
 
   Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
-    final selectedIndex = ref.watch(selectedIndexLessonProvider);
+    final selectedIndex = ref.watch(selectedLessonIndexProvider);
 
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.w),
         child: ListView.builder(
           itemCount: lessons.length,
+          scrollDirection: scrollDirection,
+          controller: controller,
+          padding: EdgeInsets.symmetric(vertical: 3.w),
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () async {
-                showLoading(ref);
-                ref.read(videoStateProvider.notifier).state = false;
-
-                // await flickManager?.dispose();
-                // flickManager = null;
-                ref.read(selectedIndexLessonProvider.notifier).state = index;
-                timer.pause();
-                flickManager?.handleChangeVideo(VideoPlayerController.network(
-                    lessons[index].videoUrl ?? ''));
-                // flickManager = FlickManager(
-                //   videoPlayerController: VideoPlayerController.network(
-                //       lessons[index].videoUrl ?? ""),
-                // );
-                // _chewieController?.pause();
-                // showLoading(ref);
-                // _videoPlayerController = VideoPlayerController.network(
-                //     lessons[index].videoUrl.toString());
-                // // await Future.wait([]);
-
-                // await _videoPlayerController.initialize();
-                // _createChewieController();
-
-                // hideLoading(ref);
-                ref.read(currentVideoIdProvider.notifier).state =
-                    lesson.videoId ?? 0;
-                ref.read(videoStateProvider.notifier).state = true;
-                timer.start();
-                hideLoading(ref);
-              },
+            return AutoScrollTag(
+              index: index,
+              controller: controller!,
+              key: ValueKey(key),
               child: LessonListTile(
                 index: index,
                 courseId: course.id ?? 0,
                 instructorId: instructorId,
-                onExpand: (p0) {},
+                onExpand: (p0) {
+                  ref.read(selectedLessonIndexProvider.notifier).state = p0;
+                },
+                onplay: (videoUrl, videoId) {
+                  showLoading(ref);
+                  ref.read(videoStateProvider.notifier).state = false;
+
+                  // await flickManager?.dispose();
+                  // flickManager = null;
+                  ref.read(selectedLessonIndexProvider.notifier).state = index;
+                  timer?.pause();
+                  flickManager?.handleChangeVideo(
+                      VideoPlayerController.network(videoUrl));
+
+                  ref.read(currentVideoIdProvider.notifier).state =
+                      lesson.videoId ?? 0;
+                  ref.read(videoStateProvider.notifier).state = true;
+                  timer?.start();
+                  hideLoading(ref);
+                },
                 ref: ref,
                 openIndex: selectedIndex,
                 lesson: lessons[index],
@@ -266,6 +268,14 @@ class BlearnVideoPlayer extends HookConsumerWidget {
     );
   }
 
+  Future setcontrollervalue(WidgetRef ref) async {
+    int selectedIndex = ref.read(selectedLessonIndexProvider);
+
+    await controller?.scrollToIndex(selectedIndex,
+        duration: const Duration(milliseconds: 300),
+        preferPosition: AutoScrollPosition.begin);
+  }
+
   init() {
     print('Init called');
     flickManager = FlickManager(
@@ -274,8 +284,8 @@ class BlearnVideoPlayer extends HookConsumerWidget {
     );
     flickManager?.flickVideoManager?.addListener(() {
       flickManager?.flickVideoManager?.isPlaying ?? false
-          ? timer.start()
-          : timer.pause();
+          ? timer?.start()
+          : timer?.pause();
     });
   }
 

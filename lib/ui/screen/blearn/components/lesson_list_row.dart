@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/core/state.dart';
+import '/ui/screens.dart';
 
 // import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
@@ -51,7 +51,7 @@ class LessonListRow extends StatelessWidget {
                           "course": course,
                           'instructor_id': instructorId
                         });
-                    ref.read(selectedIndexLessonProvider.notifier).state =
+                    ref.read(selectedLessonIndexProvider.notifier).state =
                         index;
                     hideLoading(ref);
                   },
@@ -140,21 +140,24 @@ class LessonListRow extends StatelessWidget {
           if (openIndex == index)
             ListView.builder(
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: lesson.playlist?.length,
-              itemBuilder: (context, index) {
+              itemBuilder: (context, playlistindex) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 2.h),
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: () async {
                       showLoading(ref);
                       ref.read(currentVideoIdProvider.notifier).state =
-                          lesson.videoId!;
+                          lesson.playlist?[playlistindex]?.id ?? 0;
                       Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                           arguments: {
                             "lesson": lesson,
                             "course": course,
                             'instructor_id': instructorId
                           });
+                      ref.read(selectedLessonIndexProvider.notifier).state =
+                          index;
                       hideLoading(ref);
                     },
                     child: Row(
@@ -164,7 +167,8 @@ class LessonListRow extends StatelessWidget {
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 1.h),
-                            child: Text(lesson.playlist?[index]?.title ?? ''),
+                            child: Text(
+                                lesson.playlist?[playlistindex]?.title ?? ''),
                           ),
                         ),
                       ],

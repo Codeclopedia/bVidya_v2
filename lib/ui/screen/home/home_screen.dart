@@ -3,8 +3,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/call_list_provider.dart';
-import 'package:bvidya/core/utils.dart';
+import '/controller/providers/bchat/call_list_provider.dart';
+import '/core/utils.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
 

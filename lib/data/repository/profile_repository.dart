@@ -1,4 +1,5 @@
 import '../models/models.dart';
+// import '../models/response/profile/subscribed_Courses_Response.dart';
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -20,6 +21,16 @@ class ProfileRepository {
   Future<Profile?> getUserProfile() async {
     final result = await _api.getUserProfile(_authToken);
     if (result.status == successfull) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
+  Future<SubscribedCourseBody?> getSubscribeCourses() async {
+    final result = await _api.getSubscribedCourses(_authToken);
+    print("result inside repo :${result.body?.toJson()}");
+    if (result.status == "success") {
       return result.body;
     } else {
       return null;

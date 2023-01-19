@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+
 import 'package:dio/dio.dart';
 
 import '/core/constants.dart';
@@ -40,6 +41,7 @@ class ProfileApiService {
   }
 
   Future<UserProfileResponse> getUserProfile(String token) async {
+    print(token);
     _dio.options.headers['X-Auth-Token'] = token;
     try {
       final response = await _dio.get(baseUrlApi + ApiList.userProfile);
@@ -56,13 +58,31 @@ class ProfileApiService {
     }
   }
 
+  Future<SubscribedCoursesResponse> getSubscribedCourses(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
 
-  Future<FollowInstructorResponse> followedInstructor(
-      String authToken) async {
+    try {
+      final response = await _dio.get(baseUrlApi + ApiList.subscribedList);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return SubscribedCoursesResponse.fromJson(response.data);
+      } else {
+        return SubscribedCoursesResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return SubscribedCoursesResponse(status: 'error');
+    }
+  }
+
+  Future<FollowInstructorResponse> followedInstructor(String authToken) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
-      final response = await _dio
-          .get('$baseUrlApi${ApiList.instructorFollowed}');
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.instructorFollowed}');
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return FollowInstructorResponse.fromJson(response.data);

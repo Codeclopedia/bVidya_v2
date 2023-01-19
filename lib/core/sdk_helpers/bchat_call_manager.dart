@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
+import '/core/utils.dart';
+import '/data/models/call_message_body.dart';
 
 class CallListModel {
   final String name;

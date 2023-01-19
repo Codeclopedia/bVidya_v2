@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/contacts_select_notifier.dart';

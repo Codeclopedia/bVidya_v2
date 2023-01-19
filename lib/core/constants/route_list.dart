@@ -73,6 +73,8 @@ class RouteList {
   static const String bLearnCoursesList = '/b-learn-courses-lists';
   static const String bLearnCourseDetail = '/b-learn-course-detail';
   static const String bLearnLessionVideo = '/blearn_video_player';
+  static const String bLearnAllCourses = '/blearn-all-courses';
+  static const String bLearnWishList = '/blearn-wish-list';
 
   //Settings
   static const String settings = '/settings';

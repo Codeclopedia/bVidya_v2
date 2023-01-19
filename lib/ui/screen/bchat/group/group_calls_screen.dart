@@ -1,4 +1,4 @@
-import 'package:bvidya/ui/screen/blearn/components/common.dart';
+import '/ui/screen/blearn/components/common.dart';
 import 'package:intl/intl.dart';
 
 import '/core/helpers/call_helper.dart';

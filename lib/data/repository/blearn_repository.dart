@@ -1,5 +1,3 @@
-import 'package:bvidya/data/models/response/blearn/blearn_home_response.dart';
-
 import '../models/models.dart';
 import '../services/blearn_api_service.dart';
 
@@ -13,7 +11,7 @@ class BLearnRepository {
   Future<BlearnHomeBody?> getHome() async {
     final result = await _api.getHomeList(_authToken);
 
-    // print('result: ${result.status} ${result.body?.toJson()}');
+    print('result: ${result.status} ${result.body?.toJson()}');
     if (result.status == successfull && result.body != null) {
       return result.body;
     } else {
@@ -58,6 +56,25 @@ class BLearnRepository {
     }
   }
 
+//post method to filter search
+  Future<SearchResults?> getSearchedCourses(String searchTerm) async {
+    final result = await _api.loadSearch(_authToken, searchTerm);
+    if (result.status == successfull && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
+  Future<Courses?> getAllCourses() async {
+    final result = await _api.getAllCourses(_authToken);
+    if (result.status == "successfully" && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
   Future<Lessons?> getLessons(int courseId) async {
     final result = await _api.getLessons(_authToken, courseId);
     if (result.status == successfull && result.body != null) {
@@ -78,6 +95,15 @@ class BLearnRepository {
 
   Future<BaseResponse?> changeinWishlist(int courseId) async {
     final result = await _api.wishlistAddorRemove(_authToken, courseId);
+    if (result.status == "success" && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
+  Future<WishlistCoursesBody?> getWishlistCourses() async {
+    final result = await _api.getWishlistCoursesList(_authToken);
     if (result.status == "success" && result.body != null) {
       return result.body;
     } else {
@@ -118,8 +144,8 @@ class BLearnRepository {
 
   Future<CourseDetailBody?> getCourseDetail(int courseId) async {
     final result = await _api.getCourseDetail(_authToken, courseId);
-    // print("result in course detail is ${result.body?.course?.createdAt}");
-    // print(result.body?.toJson());
+    print("result in course detail is ${result.body?.courses}");
+    print(result.body?.toJson());
     if (result.status == 'success' && result.body != null) {
       return result.body;
     } else {

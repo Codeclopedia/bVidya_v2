@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/core/state.dart';
+import '/ui/screens.dart';
 
 // import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
@@ -14,6 +14,7 @@ class LessonListTile extends StatelessWidget {
   final Lesson lesson;
   final WidgetRef ref;
   final Function(int) onExpand;
+  final Function(String, int) onplay;
   final int courseId;
   final int instructorId;
 
@@ -24,12 +25,15 @@ class LessonListTile extends StatelessWidget {
       required this.openIndex,
       required this.ref,
       required this.onExpand,
+      required this.onplay,
       required this.courseId,
       required this.instructorId})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final currentVideoId = ref.read(currentVideoIdProvider);
+    print(currentVideoId);
     return Container(
       margin: EdgeInsets.only(top: 2.h),
       decoration: BoxDecoration(
@@ -46,18 +50,7 @@ class LessonListTile extends StatelessWidget {
           lesson.playlist?.isEmpty == true
               ? GestureDetector(
                   onTap: () {
-                    showLoading(ref);
-                    ref.read(currentVideoIdProvider.notifier).state =
-                        lesson.videoId!;
-                    Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                        arguments: {
-                          "lesson": lesson,
-                          "course_id": courseId,
-                          'instructor_id': instructorId
-                        });
-                    ref.read(selectedIndexLessonProvider.notifier).state =
-                        index;
-                    hideLoading(ref);
+                    onplay(lesson.videoUrl ?? "", lesson.videoId ?? 0);
                   },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,6 +137,7 @@ class LessonListTile extends StatelessWidget {
           if (openIndex == index)
             ListView.builder(
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: lesson.playlist?.length,
               itemBuilder: (context, index) {
                 return Padding(
@@ -152,13 +146,15 @@ class LessonListTile extends StatelessWidget {
                     onTap: () async {
                       showLoading(ref);
                       ref.read(currentVideoIdProvider.notifier).state =
-                          lesson.videoId!;
-                      Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                          arguments: {
-                            "lesson": lesson,
-                            "course_id": courseId,
-                            'instructor_id': instructorId
-                          });
+                          lesson.playlist?[index]?.id ?? 0;
+                      onplay(lesson.playlist?[index]?.media?.location ?? "",
+                          lesson.videoId ?? 0);
+                      // Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
+                      //     arguments: {
+                      //       "lesson": lesson,
+                      //       "course_id": courseId,
+                      //       'instructor_id': instructorId
+                      //     });
                       hideLoading(ref);
                     },
                     child: Row(

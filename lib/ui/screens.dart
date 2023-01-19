@@ -44,6 +44,8 @@ export 'screen/blearn/subjects_screen.dart';
 export 'screen/blearn/course_list_screen.dart';
 export 'screen/blearn/course_detail_screen.dart';
 export 'screen/blearn/blearn_video_player.dart';
+export 'screen/blearn/wishlist_courses_screen.dart';
+export 'screen/blearn/all_courses_page.dart';
 
 export 'screen/profile/settings/settings_screen.dart';
 export 'screen/profile/settings/account_setting_screen.dart';

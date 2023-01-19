@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/core/state.dart';
 import '/data/models/models.dart';

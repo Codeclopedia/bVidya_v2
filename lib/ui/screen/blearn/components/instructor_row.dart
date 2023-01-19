@@ -10,6 +10,7 @@ class InstructorRowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           height: 40.w,
@@ -32,18 +33,14 @@ class InstructorRowItem extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.black),
         ),
-        Row(
-          children: [
-            Text(
-              '2K Followers',
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 6.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-          ],
+        Text(
+          '2k Followers',
+          style: TextStyle(
+            fontFamily: kFontFamily,
+            fontSize: 6.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
         ),
       ],
     );

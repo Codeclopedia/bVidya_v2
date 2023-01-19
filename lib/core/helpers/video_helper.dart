@@ -1,5 +1,5 @@
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/core/state.dart';
+import '/ui/screens.dart';
 
 import '/core/utils.dart';
 import '/data/services/blearn_api_service.dart';

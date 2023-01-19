@@ -16,9 +16,12 @@ export 'response/blearn/follow_response.dart';
 export 'response/blearn/liked_course_response.dart';
 export 'response/blearn/profile_detail_response.dart';
 export 'response/blearn/course_detail_response.dart';
+export 'response/blearn/wishlist_courses_response.dart';
+export 'response/blearn/blearn_home_response.dart';
 
 export 'response/profile/instructor_profile_response.dart';
 export 'response/profile/user_profile_response.dart';
+export 'response/profile/subscribed_courses_response.dart';
 
 export 'response/bchat/search_contact_response.dart';
 export 'response/bchat/contacts_response.dart';

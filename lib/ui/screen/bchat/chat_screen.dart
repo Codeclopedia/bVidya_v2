@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:bvidya/core/routes.dart';
+// import '/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,6 +10,9 @@ import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
+
+import '/data/models/contact_model.dart';
+import '/data/models/conversation_model.dart';
 
 import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
@@ -23,7 +26,6 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
-import '/data/models/models.dart';
 import 'models/attach_type.dart';
 import 'models/reply_model.dart';
 import 'widgets/attached_file.dart';

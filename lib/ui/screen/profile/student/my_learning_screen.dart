@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../../../../controller/blearn_providers.dart';
+import '../../../../data/models/response/profile/subscribed_Courses_Response.dart';
 import '/data/models/response/blearn/follow_response.dart';
 import '/data/models/response/blearn/instructors_response.dart';
 import '/ui/widgets.dart';
@@ -69,27 +71,48 @@ class MyLearningScreen extends ConsumerWidget {
           Expanded(
               child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-            child:
-                selectedIndex == 0 ? _buildCourses() : _buildFollowed(ref: ref),
+            child: selectedIndex == 0
+                ? _buildCourses(ref)
+                : _buildFollowed(ref: ref),
           ))
         ],
       )),
     );
   }
 
-  Widget _buildCourses() {
-    return Container(
-      color: Colors.white,
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (context, index) {
-            return rowCourse();
-          }),
-    );
+  Widget _buildCourses(WidgetRef ref) {
+    return ref.watch(subscribedCoursesProvider).when(
+          data: (data) {
+            if (data == null) {
+              return const SizedBox.shrink();
+            }
+            if (data.subscribedCourses?.length == 0) {
+              return const Center(
+                child: Text("No Subscribed Courses"),
+              );
+            } else {
+              return Container(
+                color: Colors.white,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: data.subscribedCourses?.length ?? 0,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) {
+                      return rowCourse(
+                          data.subscribedCourses?[index], context, ref);
+                    }),
+              );
+            }
+          },
+          error: (error, stackTrace) {
+            return buildEmptyPlaceHolder("error");
+          },
+          loading: () => buildLoading,
+        );
   }
 
-  Widget rowCourse() {
+  Widget rowCourse(
+      SubscribedCourse? subscribedCourse, BuildContext context, WidgetRef ref) {
     return Container(
       // height: 20.h,
       width: 100.w,
@@ -111,7 +134,7 @@ class MyLearningScreen extends ConsumerWidget {
                   SizedBox(
                     width: 50.w,
                     child: Text(
-                      "Course name: Course name and details",
+                      subscribedCourse?.name ?? "",
                       style: TextStyle(
                           fontFamily: kFontFamily,
                           color: AppColors.black,
@@ -119,8 +142,9 @@ class MyLearningScreen extends ConsumerWidget {
                           fontSize: 11.sp),
                     ),
                   ),
-                  const CoursesCircularIndicator(
-                    progressValue: 65,
+                  CoursesCircularIndicator(
+                    progressValue:
+                        subscribedCourse?.progress?.toDouble() ?? 0.0,
                   )
                 ],
               ),
@@ -138,42 +162,62 @@ class MyLearningScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.timer_outlined,
+                      Icons.video_collection_rounded,
                       color: AppColors.primaryColor,
                       size: 5.w,
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 1.w, right: 1.w),
                       child: Text(
-                        "0 Hours left",
+                        "${subscribedCourse?.lessonsLeft} left",
                         style: TextStyle(
                             fontFamily: kFontFamily,
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.w400,
-                            fontSize: 7.sp),
+                            fontSize: 9.sp),
                       ),
                     )
                   ],
                 ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.play_arrow,
-                      color: AppColors.primaryColor,
+                ref
+                    .watch(
+                        bLearnCourseDetailProvider(subscribedCourse?.id ?? 0))
+                    .when(
+                      data: (data) {
+                        print(
+                            data == null ? "data is null" : "data is not null");
+                        return InkWell(
+                          onTap: () => Navigator.pushNamed(
+                              context, RouteList.bLearnCourseDetail,
+                              arguments: data?.courses?[0]),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.play_arrow,
+                                color: AppColors.primaryColor,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 1.w, right: 1.w),
+                                child: Text(
+                                  subscribedCourse?.progress == 0
+                                      ? "Start Learning"
+                                      : "Continue Learning",
+                                  style: TextStyle(
+                                      fontFamily: kFontFamily,
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 8.sp),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                      error: (error, stackTrace) {
+                        return buildEmptyPlaceHolder("error");
+                      },
+                      loading: () => buildLoading,
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 1.w, right: 1.w),
-                      child: Text(
-                        "Continue Learning",
-                        style: TextStyle(
-                            fontFamily: kFontFamily,
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 8.sp),
-                      ),
-                    )
-                  ],
-                ),
               ],
             ),
           )
@@ -186,7 +230,12 @@ class MyLearningScreen extends ConsumerWidget {
     return ref.watch(follwedInstructorsProvider).when(
           data: (data) {
             if (data == null) {
-              return SizedBox.shrink();
+              return const SizedBox.shrink();
+            }
+            if (data.length == 0) {
+              return const Center(
+                child: Text("No Followed Teacher"),
+              );
             }
             return Container(
               color: Colors.white,

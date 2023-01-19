@@ -1,4 +1,5 @@
-import 'package:bvidya/data/models/response/blearn/blearn_home_response.dart';
+// import '/data/models/response/blearn/blearn_home_response.dart';
+// import '/co/blearntopbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import '/core/helpers/blive_helper.dart';
@@ -9,6 +10,7 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
 import '../../widgets.dart';
+import 'components/blearntopbar.dart';
 import 'components/common.dart';
 import 'components/complemetry_course.dart';
 import 'components/course_list_row.dart';
@@ -68,15 +70,15 @@ class BLearnHomeScreen extends StatelessWidget {
               topcourses: body.topCourses),
           _buildWebinarTitle(),
           _buildWebinarContent(body.upcomingWebinars, ref),
-          _buildLearnCaption(),
+          _buildLearnCaption(context),
           _buildLearnList(body.bestInstructors),
           // _buildComplementary(),
           // _buildComplementaryList(),
           _buildEnroll(context),
-          _buildRecentCaption(),
+          _buildRecentCaption(context),
           _buildRecentList(body.recentlyAddedCourses),
           _buildTestimonialCaption(),
-          _buildTestimonialList(body.bestInstructors),
+          _buildTestimonialList(body.testimonials),
           SizedBox(height: 2.h),
         ],
       ),
@@ -127,7 +129,7 @@ class BLearnHomeScreen extends StatelessWidget {
   Widget _buildUser() {
     return Padding(
       padding: EdgeInsets.only(right: 4.w, left: 8.w, top: 2.h, bottom: 2.h),
-      child: const UserTopBar(),
+      child: const BlearnUserTopBar(),
     );
   }
 
@@ -135,7 +137,7 @@ class BLearnHomeScreen extends StatelessWidget {
     return CarouselSlider.builder(
         itemCount: bannerlist?.length,
         options: CarouselOptions(
-          aspectRatio: 16 / 8,
+          aspectRatio: 18 / 8,
           viewportFraction: 1,
           initialPage: 0,
           enableInfiniteScroll: true,
@@ -151,80 +153,89 @@ class BLearnHomeScreen extends StatelessWidget {
         ),
         itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
           final bannerData = bannerlist?[itemIndex];
-          return Container(
-            height: 44.w,
-            width: double.infinity,
-            margin:
-                EdgeInsets.only(left: 6.w, right: 6.w, top: 2.w, bottom: 2.w),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(5.w)),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color.fromARGB(45, 158, 158, 158),
-                    offset: Offset(
-                      3.0,
-                      3.0,
+          return GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.webview, arguments: {
+                'url': bannerData?.actionWeb ?? "",
+              });
+            },
+            child: Container(
+              width: double.infinity,
+              margin:
+                  EdgeInsets.only(left: 6.w, right: 6.w, top: 2.w, bottom: 2.w),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                  image: DecorationImage(
+                      image: getImageProvider(bannerData?.image ?? ""),
+                      fit: BoxFit.cover),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromARGB(45, 158, 158, 158),
+                      offset: Offset(
+                        3.0,
+                        3.0,
+                      ),
+                      blurRadius: 5.0,
+                      spreadRadius: 2.0,
                     ),
-                    blurRadius: 5.0,
-                    spreadRadius: 2.0,
-                  ),
-                ]),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.w),
-                      image: DecorationImage(
-                          image: getImageProvider(bannerData?.image ?? ""),
-                          fit: BoxFit.cover)),
-                ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                    Colors.white,
-                    Colors.white.withOpacity(0.8),
-                    Colors.white.withOpacity(0.3),
-                    Colors.transparent
-                  ])),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(bannerData?.name ?? ""),
-                      SizedBox(
-                        height: 2.w,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(
-                              fontFamily: kFontFamily,
-                              color: Colors.white,
-                              fontSize: 8.sp),
-                          // elevation: 0.0,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 6.w, vertical: 1.w),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.w)),
-                          backgroundColor: const Color(0xFF65427A),
-                        ),
-                        onPressed: () => Navigator.pushNamed(
-                            context, RouteList.webview,
-                            arguments: {
-                              'url': bannerData?.actionWeb ?? "",
-                            }),
-                        child: Text(
-                          bannerData?.actionApp ?? "",
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                  ]),
+              // child: Stack(
+              //   children: [
+              //     Container(
+              //       decoration: BoxDecoration(
+              //           borderRadius: BorderRadius.circular(5.w),
+              //           image: DecorationImage(
+              //               image: getImageProvider(bannerData?.image ?? ""),
+              //               fit: BoxFit.cover)),
+              //     ),
+              //     // Container(
+              //     //   width: double.infinity,
+              //     //   decoration: BoxDecoration(
+              //     //       gradient: LinearGradient(colors: [
+              //     //     Colors.white,
+              //     //     Colors.white.withOpacity(0.8),
+              //     //     Colors.white.withOpacity(0.3),
+              //     //     Colors.transparent
+              //     //   ])),
+              //     // ),
+              //     // Padding(
+              //     //   padding:
+              //     //       EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.w),
+              //     //   child: Column(
+              //     //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     //     children: [
+              //     //       Text(bannerData?.name ?? ""),
+              //     //       SizedBox(
+              //     //         height: 2.w,
+              //     //       ),
+              //     //       // ElevatedButton(
+              //     //       //   style: ElevatedButton.styleFrom(
+              //     //       //     textStyle: TextStyle(
+              //     //       //         fontFamily: kFontFamily,
+              //     //       //         color: Colors.white,
+              //     //       //         fontSize: 8.sp),
+              //     //       //     // elevation: 0.0,
+              //     //       //     padding: EdgeInsets.symmetric(
+              //     //       //         horizontal: 6.w, vertical: 1.w),
+              //     //       //     shape: RoundedRectangleBorder(
+              //     //       //         borderRadius: BorderRadius.circular(4.w)),
+              //     //       //     backgroundColor: const Color(0xFF65427A),
+              //     //       //   ),
+              //     //       //   onPressed: () => Navigator.pushNamed(
+              //     //       //       context, RouteList.webview,
+              //     //       //       arguments: {
+              //     //       //         'url': bannerData?.actionWeb ?? "",
+              //     //       //       }),
+              //     //       //   child: Text(
+              //     //       //     bannerData?.actionApp ?? "",
+              //     //       //   ),
+              //     //       // ),
+              //     //     ],
+              //     //   ),
+              //     // ),
+              //   ],
+              // ),
             ),
           );
         });
@@ -508,12 +519,38 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLearnCaption() {
+  Widget _buildLearnCaption(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 2.h),
-      child: TwoColorText(
-        first: S.current.blearn_learnfrom,
-        second: S.current.blearn_thebest,
+      padding: EdgeInsets.only(left: 4.w, right: 2.w, top: 2.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TwoColorText(
+            first: S.current.blearn_learnfrom,
+            second: S.current.blearn_thebest,
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.bLearnCategories);
+            },
+            child: Row(
+              children: [
+                Text(
+                  S.current.blearn_btx_viewall,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 10.sp,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_right,
+                  color: AppColors.primaryColor,
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -581,12 +618,38 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentCaption() {
+  Widget _buildRecentCaption(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 2.3.h, right: 1.3.h, left: 2.3.h),
-      child: TwoColorText(
-        first: S.current.blearn_recently,
-        second: S.current.blearn_added,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TwoColorText(
+            first: S.current.blearn_recently,
+            second: S.current.blearn_added,
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.bLearnCategories);
+            },
+            child: Row(
+              children: [
+                Text(
+                  S.current.blearn_btx_viewall,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 10.sp,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_right,
+                  color: AppColors.primaryColor,
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -634,8 +697,8 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTestimonialList(List<Instructor?>? instructors) {
-    if (instructors == null || instructors.isEmpty) {
+  Widget _buildTestimonialList(List<CourseFeedback?>? testimonials) {
+    if (testimonials == null || testimonials.isEmpty) {
       return const SizedBox.shrink();
     }
     return Container(
@@ -644,10 +707,10 @@ class BLearnHomeScreen extends StatelessWidget {
       color: Colors.white,
       child: ListView.builder(
         padding: EdgeInsets.all(0.5.h),
-        itemCount: instructors.length,
+        itemCount: testimonials.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
-          final instructor = instructors[index];
+          final testimonial = testimonials[index];
           return Container(
             width: 70.w,
             margin: EdgeInsets.only(right: 3.w, left: 2.w),
@@ -664,7 +727,7 @@ class BLearnHomeScreen extends StatelessWidget {
                 Row(
                   children: [
                     getCicleAvatar(
-                        instructor?.name ?? 'AA', instructor?.image ?? '',
+                        testimonial?.name ?? 'AA', testimonial?.image ?? '',
                         radius: 8.w),
                     SizedBox(width: 4.w),
                     Expanded(
@@ -673,14 +736,15 @@ class BLearnHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            instructor?.name ?? '',
+                            testimonial?.name ?? '',
                             style: TextStyle(
                                 fontSize: 11.sp,
                                 fontFamily: kFontFamily,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black),
                           ),
-                          buildRatingBar(4.0),
+                          buildRatingBar(
+                              testimonial?.rating?.toDouble() ?? 0.0),
                         ],
                       ),
                     ),
@@ -688,7 +752,7 @@ class BLearnHomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.w),
                 Text(
-                  instructor?.specialization ?? '',
+                  testimonial?.comment ?? '',
                   maxLines: 4,
                   style: TextStyle(
                     fontFamily: kFontFamily,

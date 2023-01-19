@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 
+import '../data/models/response/profile/subscribed_Courses_Response.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/profile_repository.dart';
@@ -16,6 +17,11 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
 
 final profileUserProvider = FutureProvider.autoDispose<Profile?>((ref) {
   return ref.read(profileRepositoryProvider).getUserProfile();
+});
+
+final subscribedCoursesProvider =
+    FutureProvider.autoDispose<SubscribedCourseBody?>((ref) {
+  return ref.read(profileRepositoryProvider).getSubscribeCourses();
 });
 
 final follwedInstructorsProvider =

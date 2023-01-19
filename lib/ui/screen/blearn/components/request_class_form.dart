@@ -1,4 +1,4 @@
-import 'package:bvidya/data/models/response/blearn/instructors_response.dart';
+import '/data/models/response/blearn/instructors_response.dart';
 
 import '/controller/blearn_providers.dart';
 import '/core/constants/colors.dart';

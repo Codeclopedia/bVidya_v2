@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:bvidya/core/utils/callkit_utils.dart';
+import '/core/utils/callkit_utils.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants/notification_const.dart';
 // import '/app.dart';

@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/sdk_helpers/common.dart';
+import '/core/sdk_helpers/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
@@ -208,8 +208,7 @@ class LoginOtpScreen extends HookWidget {
       final error = await postLoginSetup(ref);
       if (error != null) {
         hideLoading(ref);
-        AppSnackbar.instance
-            .error(context, error);
+        AppSnackbar.instance.error(context, error);
         return;
       }
       hideLoading(ref);

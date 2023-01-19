@@ -41,7 +41,9 @@ class ApiList {
   static const String lmsLiveClasses = 'live-classes'; //GET
   static const String lmsLessons = 'lessons/playlist/'; //GET
   static const String lmsSubscribeCourse = 'subscribe-course/'; //GET
+  static const String lmsSetCourseProgress = 'set-course-progress'; //POST
   static const String lmswishlist = 'wishlist-course/'; //GET
+  static const String lmsgetwishlistCourses = 'wishlisted-courses'; //GET
   static const String lmsInstructors = 'instructors'; //GET
   static const String lmsSearch = 'search'; //POST
   static const String lmsCourseByInstructor = 'courses-by-instructor/'; //GET
@@ -53,6 +55,7 @@ class ApiList {
   static const String reportProblem = 'report'; //POST
   static const String userProfile = 'profile'; //POST
   static const String instructorFollowed = 'followed'; //GET
+  static const String subscribedList = 'subscribed-courses'; //GET
 
   //bChat
   static const String getChatToken = 'chat-user/token'; //GET

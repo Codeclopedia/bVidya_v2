@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/app.dart';
+import '/app.dart';
 
 import '/ui/screen/bchat/group/group_calls_screen.dart';
 import '/data/models/models.dart';
@@ -367,6 +367,12 @@ class Routes {
       case RouteList.bLearnHome:
         screen = const BLearnHomeScreen();
         hasDrawer = true;
+        break;
+      case RouteList.bLearnWishList:
+        screen = const WishlistCourses();
+        break;
+      case RouteList.bLearnAllCourses:
+        screen = const AllCoursesPage();
         break;
       case RouteList.bLearnCategories:
         screen = const CategoriesScreen();

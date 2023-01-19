@@ -47,7 +47,7 @@ class _CoursesCircularIndicatorState extends State<CoursesCircularIndicator>
               child: Padding(
             padding: EdgeInsets.all(2.w),
             child: Text(
-              "${widget.progressValue.toString().replaceRange(2, 4, "")}%",
+              "${widget.progressValue.toString()}%",
               style: TextStyle(
                   fontFamily: kFontFamily,
                   fontSize: 13.sp,

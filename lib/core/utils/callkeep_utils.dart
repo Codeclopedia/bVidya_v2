@@ -1,7 +1,7 @@
 // import 'package:callkeep/callkeep.dart';
-// import 'package:bvidya/core/helpers/extensions.dart';
-// import 'package:bvidya/data/models/models.dart';
-// import 'package:bvidya/data/services/fcm_api_service.dart';
+// import '/core/helpers/extensions.dart';
+// import '/data/models/models.dart';
+// import '/data/services/fcm_api_service.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 
 // import '../../app.dart';

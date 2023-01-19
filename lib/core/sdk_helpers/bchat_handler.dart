@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/app.dart';
+import '/app.dart';
 import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 

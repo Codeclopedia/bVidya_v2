@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 import 'package:spring/spring.dart';
 
 import '/ui/widget/sliding_tab.dart';
@@ -19,7 +19,7 @@ import '../../widgets.dart';
 
 final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
 
-final selectedIndexLessonProvider = StateProvider<int>((ref) => -1);
+final selectedLessonIndexProvider = StateProvider.autoDispose<int>((ref) => -1);
 
 final isModelSheetOpened = StateProvider.autoDispose<bool>((ref) => false);
 
@@ -149,8 +149,8 @@ class CourseDetailScreen extends StatelessWidget {
                   builder: (context, ref, child) {
                     return ref.watch(bLearnLessonsProvider(course.id!)).when(
                         data: (data) {
-                          if (data?.lessons?.isNotEmpty == true) {
-                            return _buildLessons(ref, data!.lessons ?? []);
+                          if (data?.lessons != null) {
+                            return _buildLessons(ref, data?.lessons ?? []);
                           } else {
                             return Center(
                                 child: Column(
@@ -197,7 +197,8 @@ class CourseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
-    final selectedIndex = ref.watch(selectedIndexLessonProvider);
+    final selectedLessonIndex = ref.watch(selectedLessonIndexProvider);
+
     return ListView.builder(
       itemCount: lessons.length,
       shrinkWrap: true,
@@ -205,13 +206,14 @@ class CourseDetailScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         return LessonListRow(
           index: index,
-          openIndex: selectedIndex,
+          openIndex: selectedLessonIndex,
           lesson: lessons[index],
           course: course,
           ref: ref,
           instructorId: course.userId!,
-          onExpand: (index1) {
-            ref.read(selectedIndexLessonProvider.notifier).state = index1;
+          onExpand: (openedRowIndex) {
+            ref.read(selectedLessonIndexProvider.notifier).state =
+                openedRowIndex;
           },
           // ref: ref
         );
@@ -489,9 +491,11 @@ class CourseDetailScreen extends StatelessWidget {
               SizedBox(width: 12.w),
               InkWell(
                 onTap: () {
+                  showLoading(ref);
                   ref.watch(blearnAddorRemoveinWishlistProvider(
                       coursedata?.courses?[0].id ?? 0));
                   ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+                  hideLoading(ref);
                 },
                 child: Container(
                   width: 12.w,

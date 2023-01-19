@@ -1,6 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/background_helper.dart';
-import 'package:bvidya/core/utils/notification_controller.dart';
+import '/core/helpers/background_helper.dart';
+import '/core/utils/notification_controller.dart';
 import '/core/utils/chat_utils.dart';
 
 import '/data/models/conversation_model.dart';
@@ -161,7 +161,6 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   }
 
   void deleteMessages(List<ChatMessage> msgs) {
-
     for (ChatMessage m in msgs) {
       try {
         convModel.conversation?.deleteMessage(m.msgId);

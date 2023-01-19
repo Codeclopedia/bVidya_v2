@@ -1,4 +1,5 @@
 import '../data/models/response/blearn/blearn_home_response.dart';
+import '../data/models/response/blearn/wishlist_courses_response.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/blearn_repository.dart';
@@ -36,6 +37,15 @@ final bLearnCoursesProvider =
   return ref.read(bLearnRepositoryProvider).getCourses(id);
 });
 
+final bLearnSearchCoursesProvider =
+    FutureProvider.family<SearchResults?, String>((ref, term) {
+  return ref.read(bLearnRepositoryProvider).getSearchedCourses(term);
+});
+
+final bLearnAllCoursesProvider = FutureProvider<Courses?>((ref) {
+  return ref.read(bLearnRepositoryProvider).getAllCourses();
+});
+
 final blearnSubscribeCourseProvider =
     FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
   return ref.read(bLearnRepositoryProvider).subscribeCourse(id);
@@ -44,6 +54,11 @@ final blearnSubscribeCourseProvider =
 final blearnAddorRemoveinWishlistProvider =
     FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
   return ref.read(bLearnRepositoryProvider).changeinWishlist(id);
+});
+
+final blearnWishlistCoursesProvider =
+    FutureProvider.autoDispose<WishlistCoursesBody?>((ref) {
+  return ref.read(bLearnRepositoryProvider).getWishlistCourses();
 });
 
 final bLearnLessonsProvider = FutureProvider.family<Lessons?, int>((ref, id) {
@@ -67,7 +82,7 @@ final bLearnInstructorProfileProvider =
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose
     .family<List<FollowedInstructor>, String>((ref, id) async {
   final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
-  await ref.refresh(isFollowedInstructor(id));
+  ref.refresh(isFollowedInstructor(id));
 
   return result ?? [];
 });
