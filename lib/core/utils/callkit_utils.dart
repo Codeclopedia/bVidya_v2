@@ -79,6 +79,7 @@ setupCallKit() async {
       return;
     }
     if (event.event == Event.ACTION_CALL_ENDED) {
+      clearCall();
       return;
     }
     final map = event.body['extra'];
@@ -118,6 +119,7 @@ setupCallKit() async {
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   CallBody? callBody = remoteMessage.payload();
   if (callBody == null) {
+    clearCall();
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }
@@ -126,7 +128,9 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }
+  clearCall();
   _lastCallId = callBody.callId;
+
   String fromId = remoteMessage.data["from_id"];
   String callerName = remoteMessage.data["from_name"];
   String callerImage = remoteMessage.data['image'];
@@ -321,6 +325,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
   User? user = await getMeAsUser();
   String userId;
   String userName;
+
   if (user == null) {
     userId = ChatClient.getInstance.currentUserId ?? '';
     userName = body.calleeName;
@@ -333,6 +338,7 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
   FCMApiService.instance.sendCallEndPush(senderFCM,
       NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
   await FlutterCallkitIncoming.endAllCalls();
+  clearCall();
 }
 
 endCall(CallBody callBody, String to) {
@@ -343,7 +349,9 @@ endCall(CallBody callBody, String to) {
       'action': NotiConstants.actionCallEnd
     };
     final message = ChatMessage.createCmdSendMessage(
-        targetId: to, action: jsonEncode(content));
+      targetId: to,
+      action: jsonEncode(content),
+    );
     message.attributes?.addAll({"em_force_notification": true});
 
     ChatClient.getInstance.chatManager.sendMessage(message);

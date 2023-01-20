@@ -42,7 +42,12 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
     if (grpModel.conversation != null) {
       BackgroundHelper.clearPool(grpModel.id.hashCode);
       try {
-        await grpModel.conversation?.markAllMessagesAsRead();
+        try {
+          await grpModel.conversation?.markAllMessagesAsRead();
+          await ChatClient.getInstance.chatManager
+              .sendConversationReadAck(grpModel.id);
+        } catch (_) {}
+
         final chats = await grpModel.conversation?.loadMessages(loadCount: 20);
         if (chats != null) {
           for (var e in chats) {

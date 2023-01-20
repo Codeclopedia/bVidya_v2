@@ -84,7 +84,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
       debugPrint('Hello I m here background');
       // BChatSDKController.instance.logoutOnlyInBackground();
     }
-
     if (state == AppLifecycleState.detached) {
       debugPrint('Hello I m here in termination');
     }

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
+import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
 // import '/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -33,7 +36,10 @@ import '/ui/dialog/message_menu_popup.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
-// import 'widgets/typing_indicator.dart';
+import 'widgets/typing_indicator.dart';
+
+// const String commandTypingBegin = "TypingBegin";
+// const String commandTypingEnd = "TypingEnd";
 
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
 final sendingFileProgress = StateProvider.autoDispose<int>((_) => 0);
@@ -59,23 +65,34 @@ class ChatScreen extends HookConsumerWidget {
     useEffect(() {
       // print('useEffect Called');
       _scrollController = ScrollController();
-      ref.read(bhatMessagesProvider(model)).init();
+      final f = ref.read(bChatMessagesProvider(model).notifier);
+      f.init(ref);
       _loadMe();
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      registerForNewMessage('chat_screen', (msg) {
-        onMessagesReceived(msg, ref);
+      registerChatCallback('chat_screen', f, (messages) {
+        for (var entry in messages.entries) {
+          if (entry.value == TypingCommand.typingStart) {
+            print('command=>${entry.key}: ${entry.value}');
+            ref.read(typingProvider(entry.key).notifier).beginTimer();
+          }
+        }
       });
       return () {
-        unregisterForNewMessage('chat_screen');
-
+        unregisterChatCallback('chat_screen');
         _scrollController.dispose();
       };
     }, const []);
 
-    ref.listen(bhatMessagesProvider(model), (previous, next) {
-      _isLoadingMore = next.isLoadingMore;
-      _hasMoreData = next.hasMoreData;
+    ref.listen(hasMoreStateProvider, (previous, next) {
+      _hasMoreData = next;
     });
+    ref.listen(loadingMoreStateProvider, (previous, next) {
+      _isLoadingMore = next;
+    });
+    // ref.listen(bhatMessagesProvider(model), (previous, next) {
+    //   _isLoadingMore = next.isLoadingMore;
+    //   _hasMoreData = next.hasMoreData;
+    // });
 
     final selectedItems = ref.watch(selectedChatMessageListProvider);
     return BaseWilPopupScreen(
@@ -137,6 +154,25 @@ class ChatScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final status = ref.watch(typingProvider(model.id));
+                        if (status.status == TypingCommand.typingStart) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6.w, vertical: 2.h),
+                            child: Row(
+                              children: [
+                                const TypingIndicator(),
+                                Text('${model.contact.name} is Typing')
+                              ],
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    )
                     // if (typingUsers != null && typingUsers!.isNotEmpty)
                     //   ...typingUsers!.map((ChatUserInfo user) {
                     //     return _buildUserTyping(user.nickName ?? user.userId);
@@ -149,8 +185,7 @@ class ChatScreen extends HookConsumerWidget {
                   left: 0,
                   child: Consumer(
                     builder: (context, ref, child) {
-                      bool isLoadingMore = ref.watch(bhatMessagesProvider(model)
-                          .select((value) => value.isLoadingMore));
+                      bool isLoadingMore = ref.watch(loadingMoreStateProvider);
                       return isLoadingMore
                           ? const Center(
                               child: SizedBox(
@@ -352,6 +387,10 @@ class ChatScreen extends HookConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         return ChatInputBox(
+          onTextChange: () {
+            ref.read(typingProvider(model.id).notifier).textChange();
+            // TypingHelper.instance.textChange(model.id);
+          },
           onSend: (input) async {
             final ChatMessage msg = ChatMessage.createTxtSendMessage(
                 targetId: model.id.toString(), content: input);
@@ -571,10 +610,7 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   Widget _buildMessageList(WidgetRef ref) {
-    final chatList = ref
-        .watch(bhatMessagesProvider(model).select((value) => value.messages))
-        .reversed
-        .toList();
+    final chatList = ref.watch(bChatMessagesProvider(model)).reversed.toList();
     final selectedItems = ref.watch(selectedChatMessageListProvider);
 
     return ListView.builder(
@@ -713,7 +749,7 @@ class ChatScreen extends HookConsumerWidget {
       } else if (action == 3) {
         //Delete
         ref
-            .read(bhatMessagesProvider(model).notifier)
+            .read(bChatMessagesProvider(model).notifier)
             .deleteMessages([message]);
       }
     }
@@ -761,8 +797,9 @@ class ChatScreen extends HookConsumerWidget {
         ),
       );
       // final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-      final chat =
-          await ref.read(bhatMessagesProvider(model).notifier).sendMessage(msg);
+      final chat = await ref
+          .read(bChatMessagesProvider(model).notifier)
+          .sendMessage(msg);
       if (chat != null) {
         ref
             .read(chatConversationProvider.notifier)
@@ -788,39 +825,39 @@ class ChatScreen extends HookConsumerWidget {
     return 'Error while sending message';
   }
 
-  // Widget _buildUserTyping(String name) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(left: 15, top: 25),
-  //     child: Row(
-  //       crossAxisAlignment: CrossAxisAlignment.end,
-  //       children: <Widget>[
-  //         const Padding(
-  //           padding: EdgeInsets.only(right: 2),
-  //           child: TypingIndicator(),
-  //         ),
-  //         RichText(
-  //           text: TextSpan(
-  //             children: [
-  //               TextSpan(
-  //                   text: name,
-  //                   style: const TextStyle(
-  //                     fontSize: 12,
-  //                     fontWeight: FontWeight.bold,
-  //                   )),
-  //               const TextSpan(
-  //                 text: ' is typing',
-  //                 style: TextStyle(fontSize: 12),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildUserTyping(String name) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15, top: 25),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.only(right: 2),
+            child: TypingIndicator(),
+          ),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: name,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    )),
+                const TextSpan(
+                  text: ' is typing',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    ref.read(bhatMessagesProvider(model)).addChats(messages);
+    ref.read(bChatMessagesProvider(model).notifier).addChats(messages);
   }
 
   Future<void> _onScroll(
@@ -832,7 +869,7 @@ class ChatScreen extends HookConsumerWidget {
               scrollController.position.maxScrollExtent &&
           !scrollController.position.outOfRange;
       if (topReached) {
-        ref.watch(bhatMessagesProvider(model).notifier).loadMore();
+        ref.watch(bChatMessagesProvider(model).notifier).loadMore();
       }
     }
 
@@ -986,7 +1023,7 @@ class ChatScreen extends HookConsumerWidget {
           IconButton(
             onPressed: () async {
               ref
-                  .read(bhatMessagesProvider(model).notifier)
+                  .read(bChatMessagesProvider(model).notifier)
                   .deleteMessages(selectedItems);
               ref.read(selectedChatMessageListProvider.notifier).clear();
               // ChatClient.getInstance.chatManager.del
@@ -1076,9 +1113,8 @@ class ChatScreen extends HookConsumerWidget {
                             ),
                             SizedBox(height: 0.3.h),
                             Text(
-                              parseChatPresenceToReadable(ref.watch(
-                                  bhatMessagesProvider(model)
-                                      .select((value) => value.onlineStatus))),
+                              parseChatPresenceToReadable(
+                                  ref.watch(onlineStatusProvider)),
                               // parseChatPresenceToReadable(value),
                               style: TextStyle(
                                 fontFamily: kFontFamily,
@@ -1099,7 +1135,7 @@ class ChatScreen extends HookConsumerWidget {
               onPressed: () async {
                 final msg = await makeAudioCall(model.contact, ref, context);
                 if (msg != null) {
-                  ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
+                  ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
                 }
                 setScreen(RouteList.chatScreen);
               },
@@ -1119,7 +1155,7 @@ class ChatScreen extends HookConsumerWidget {
                 // );
                 final msg = await makeVideoCall(model.contact, ref, context);
                 if (msg != null) {
-                  ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
+                  ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
                 }
                 setScreen(RouteList.chatScreen);
                 // Navigator.pushNamed(context, RouteList.bChatVideoCall);

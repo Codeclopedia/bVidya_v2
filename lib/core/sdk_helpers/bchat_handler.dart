@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/app.dart';
+import 'package:bvidya/controller/providers/bchat/chat_messeges_provider.dart';
+import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
 import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 
@@ -166,5 +167,43 @@ registerForGroup(String key) {
 unregisterForGroup(String key) {
   try {
     ChatClient.getInstance.groupManager.removeEventHandler(key);
+  } catch (_) {}
+}
+
+unregisterChatCallback(String key) {
+  try {
+    ChatClient.getInstance.groupManager.removeEventHandler(key);
+  } catch (_) {}
+}
+
+registerChatCallback(String key, ChatMessagesChangeProvider provider,
+    Function(Map<String,TypingCommand>) onCmdMessage) {
+  try {
+    ChatClient.getInstance.chatManager.addEventHandler(
+        key,
+        ChatEventHandler(
+          onCmdMessagesReceived: (messages) {
+            Map<String,TypingCommand> bodies = {};
+            for (var msg in messages) {
+              if (msg.body.type == MessageType.CMD) {
+                ChatCmdMessageBody body = msg.body as ChatCmdMessageBody;
+                String content = body.action;
+                if (content == TypingCommand.typingStart.name) {
+                  bodies.addAll({msg.from.toString():TypingCommand.typingStart});
+                }
+              }
+            }
+            onCmdMessage(bodies);
+          },
+          onMessagesReceived: (messages) {
+            provider.addChats(messages);
+          },
+          onMessagesDelivered: (messages) {
+            provider.updateMessageDelivered(messages);
+          },
+          onMessagesRead: (messages) {
+            provider.updateMessageRead(messages);
+          },
+        ));
   } catch (_) {}
 }

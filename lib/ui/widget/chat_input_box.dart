@@ -14,8 +14,13 @@ class ChatInputBox extends StatefulWidget {
   // final User currentUser;
   final Function(AttachType type)? onAttach;
   final Function()? onCamera;
+  final Function()? onTextChange;
   const ChatInputBox(
-      {Key? key, required this.onSend, this.onAttach, this.onCamera})
+      {Key? key,
+      required this.onSend,
+      this.onAttach,
+      this.onCamera,
+      this.onTextChange})
       : super(key: key);
 
   @override
@@ -93,6 +98,9 @@ class _ChatInputBoxState extends State<ChatInputBox>
                           });
                           ref.read(inputTextProvider.notifier).state =
                               value.trim();
+                          if (widget.onTextChange != null) {
+                            widget.onTextChange!();
+                          }
                         },
                         maxLines: 6,
                         minLines: 1,

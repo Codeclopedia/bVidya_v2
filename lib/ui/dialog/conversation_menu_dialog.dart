@@ -59,7 +59,12 @@ class ConversationMenuDialog extends StatelessWidget {
         if (hasUnread)
           _buildOption(S.current.bchat_conv_read, 'icon_markread_conv.svg',
               () async {
-            await model.conversation?.markAllMessagesAsRead();
+            try {
+              await ChatClient.getInstance.chatManager
+                  .sendConversationReadAck(model.id);
+              await model.conversation?.markAllMessagesAsRead();
+            } catch (e) {}
+
             Navigator.pop(context, 1);
           }),
         // if (hasUnread) SizedBox(height: 1.h),

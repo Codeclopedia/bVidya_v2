@@ -1,20 +1,35 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import '/core/helpers/background_helper.dart';
-import '/core/utils/notification_controller.dart';
 import '/core/utils/chat_utils.dart';
 
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
-final bhatMessagesProvider = ChangeNotifierProvider.autoDispose
-    .family<ChatMessagesChangeProvider, ConversationModel>(
-        (ref, id) => ChatMessagesChangeProvider(id));
+// final bhatMessagesProvider = ChangeNotifierProvider.autoDispose
+//     .family<ChatMessagesChangeProvider, ConversationModel>(
+//         (ref, id) => ChatMessagesChangeProvider(id));
 
-class ChatMessagesChangeProvider extends ChangeNotifier {
+final bChatMessagesProvider = StateNotifierProvider.autoDispose
+    .family<ChatMessagesChangeProvider, List<ChatMessage>, ConversationModel>(
+        (ref, model) => ChatMessagesChangeProvider(model));
+
+final onlineStatusProvider = StateProvider.autoDispose<ChatPresence?>(
+  (ref) => null,
+);
+
+class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
+  ChatMessagesChangeProvider(this.convModel) : super([]);
+
+// class GroupChatChangeProvider extends ChangeNotifier {
   final Map<String, ChatMessage> _messagesMap = {};
 
-  List<ChatMessage> get messages => _messagesMap.values.toList();
+// class ChatMessagesChangeProvider extends ChangeNotifier {
+//   final Map<String, ChatMessage> _messagesMap = {};
+
+  // List<ChatMessage> get messages => _messagesMap.values.toList();
+
+  // List<ChatMessage> get messages;
 
   bool _isLoadingMore = false;
 
@@ -27,16 +42,17 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   // final String conversationId;
   final ConversationModel convModel;
 
-  ChatMessagesChangeProvider(this.convModel);
+  // ChatMessagesChangeProvider(this.convModel);
 
-  ChatPresence? _chatPresence;
-  ChatPresence? get onlineStatus => _chatPresence;
+  // ChatPresence? _chatPresence;
+  // ChatPresence? get onlineStatus => _chatPresence;
   // String get onlineStatus => parseChatPresenceToReadable(_chatPresence);
 
-  init() async {
-    _chatPresence = await fetchOnlineStatus(convModel.id);
+  init(WidgetRef ref) async {
+    
+    
     BackgroundHelper.clearPool(convModel.id.hashCode);
-    _registerPresence();
+    _registerPresence(ref);
     await readAll();
     try {
       // await convModel.conversation?.markAllMessagesAsRead();
@@ -55,8 +71,10 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _registerPresence() {
+  void _registerPresence(WidgetRef ref) async{
     try {
+      final status = await fetchOnlineStatus(convModel.id);
+      ref.read(onlineStatusProvider.notifier).state = status;
       ChatClient.getInstance.presenceManager
           .subscribe(members: [convModel.id], expiry: 60);
       ChatClient.getInstance.presenceManager.addEventHandler(
@@ -65,8 +83,7 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
           onPresenceStatusChanged: (list) {
             for (ChatPresence s in list) {
               if (s.publisher == convModel.id) {
-                _chatPresence = s;
-                notifyListeners();
+                ref.read(onlineStatusProvider.notifier).state = s;
                 break;
               }
             }
@@ -107,11 +124,11 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
 
   void loadMore() async {
     try {
-      if (convModel.conversation != null && messages.isNotEmpty) {
+      if (convModel.conversation != null && state.isNotEmpty) {
         _isLoadingMore = true;
         notifyListeners();
 
-        final message = messages[0];
+        final message = state[0];
 
         final chats = await convModel.conversation
             ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
@@ -177,6 +194,8 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
   Future readAll() async {
     try {
       await convModel.conversation?.markAllMessagesAsRead();
+      await ChatClient.getInstance.chatManager
+          .sendConversationReadAck(convModel.id);
     } catch (e) {}
   }
 
@@ -185,5 +204,16 @@ class ChatMessagesChangeProvider extends ChangeNotifier {
     readAll();
     _unRegisterPresence();
     super.dispose();
+  }
+
+  void notifyListeners() {
+    state = _messagesMap.values.toList();
+  }
+
+  void updateMessageDelivered(List<ChatMessage> message) {
+    state = _messagesMap.values.toList();
+  }
+  void updateMessageRead(List<ChatMessage> message) {
+    state = _messagesMap.values.toList();
   }
 }

@@ -7,6 +7,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '/core/utils/callkit_utils.dart';
 import '../constants.dart';
 import '../sdk_helpers/bchat_call_manager.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -28,6 +29,10 @@ enum CallType { audio, video }
 
 Future<ChatMessage?> makeAudioCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
+  if (activeCallId != null) {
+    AppSnackbar.instance.error(context, 'Already on call');
+    return null;
+  }
   final user = await getMeAsUser();
   if (user == null) {
     return null;
@@ -53,7 +58,7 @@ Future<ChatMessage?> makeAudioCall(
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
       'direct': false,
-      'user_id':contact.userId.toString()
+      'user_id': contact.userId.toString()
     };
     hideLoading(ref);
     // if (contact.fcmToken?.isNotEmpty == true) {
@@ -87,6 +92,11 @@ Future<ChatMessage?> makeAudioCall(
 
 Future<ChatMessage?> makeVideoCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
+  if (activeCallId != null) {
+    AppSnackbar.instance.error(context, 'Already on call');
+    return null;
+  }
+
   final user = await getMeAsUser();
   if (user == null) {
     return null;
@@ -118,7 +128,7 @@ Future<ChatMessage?> makeVideoCall(
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
       'direct': false,
-      'user_id':contact.userId.toString()
+      'user_id': contact.userId.toString()
     };
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
@@ -148,6 +158,11 @@ Future<ChatMessage?> makeVideoCall(
 
 Future<ChatMessage?> makeCall(
     CallListModel model, WidgetRef ref, BuildContext context) async {
+  if (activeCallId != null) {
+    AppSnackbar.instance.error(context, 'Already on call');
+    return null;
+  }
+
   showLoading(ref);
   final results = await ref.read(bChatProvider).getContactsByIds(model.userId);
   hideLoading(ref);
@@ -210,8 +225,14 @@ Future<ChatMessage?> logCallEvent(
     message.attributes?.addAll({"em_force_notification": true});
 
     final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
-    CallListModel model = CallListModel(toId, callMessageBody.fromName,
-        callMessageBody.toImage, true, msg.serverTime,msg.msgId, callMessageBody);
+    CallListModel model = CallListModel(
+        toId,
+        callMessageBody.fromName,
+        callMessageBody.toImage,
+        true,
+        msg.serverTime,
+        msg.msgId,
+        callMessageBody);
     ref.read(callListProvider.notifier).addCall(model);
     return msg;
 // ref.read(chatConversationProvider).updateConversation(convId)

@@ -67,6 +67,7 @@ class ChatCallScreen extends HookConsumerWidget {
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.splash, (route) => route.isFirst);
     } else {
+      setScreen('');
       Navigator.pop(context);
     }
     _endingCall = false;
@@ -297,7 +298,7 @@ class ChatCallScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Visibility(
-              // visible: provider.updateCallType == CallType.video,
+              visible: provider.updateCallType == CallType.video,
               child: GestureDetector(
                 onTap: () {
                   provider.switchCamera();
@@ -365,7 +366,7 @@ class ChatCallScreen extends HookConsumerWidget {
                   if (user == null) {
                     return;
                   }
-                  // endCall(callInfo, otherUserId);
+                  endCall(callInfo, otherUserId);
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
                       NotiConstants.actionCallEnd,

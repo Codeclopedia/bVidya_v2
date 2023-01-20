@@ -29,6 +29,7 @@ class BChatSDKController {
         deleteMessagesAsExitGroup: false,
         requireAck: true,
         requireDeliveryAck: true,
+        
       );
       if (Platform.isIOS) {
         options.enableAPNs(
