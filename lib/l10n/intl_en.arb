@@ -325,6 +325,9 @@
     "request_class_description":"Description",
     "request_class_description_hint":"Add Description",
     "request_class_request":"Request",
+
+    "menu_call":"Call",
+    "menu_delete":"Delete",
     
 
   "Account": "Account",

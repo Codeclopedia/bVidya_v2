@@ -51,6 +51,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Consumer(builder: (context, ref, child) {
+                    print(instructor.id);
                     return ref
                         .watch(bLearnInstructorProfileProvider(
                             instructor.id.toString()))
@@ -148,12 +149,10 @@ class TeacherProfileDetailScreen extends StatelessWidget {
   }
 
   Widget _buildContent(ProfileDataBody body, BuildContext context) {
-    final follwersCount = (body.followersCount ?? 0).toString();
     // if (body.followers?.isNotEmpty == true) {
     //   follwersCount = (body.followers?[0].count ?? 0).toString();
     // }
 
-    final watchTotal = body.totalWatchtime ?? '0';
     // if (body.watchtime?.isNotEmpty == true) {
     //   watchTotal = (body.watchtime?[0].total ?? '0');
     // }
@@ -168,7 +167,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    follwersCount,
+                    body.followers?[0].count.toString() ?? "",
                     style: TextStyle(
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
@@ -186,7 +185,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    watchTotal,
+                    body.watchtime?[0].total ?? "0",
                     style: TextStyle(
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
@@ -209,6 +208,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                         return ElevatedButton(
                             onPressed: () async {
                               ref.read(bLearnFollowInstructorProvider(
+                                  instructor.id.toString()));
+                              ref.refresh(bLearnInstructorProfileProvider(
                                   instructor.id.toString()));
                               // ref.refresh(isFollowedInstructor(
                               //     instructor.id.toString()));
@@ -468,11 +469,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           // physics: const NeverScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
-            Course course = Course.fromJson(courses[index].toJson()
-              ..addAll({
-                'instructor_name': instructor.name,
-                'instructor_image': instructor.image,
-              }));
+            Course course = courses[index];
 
             // Course course = courses[index] as Course;
             return InkWell(

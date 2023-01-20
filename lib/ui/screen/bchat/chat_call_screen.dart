@@ -40,6 +40,7 @@ class ChatCallScreen extends HookConsumerWidget {
   final CallBody callInfo;
   final CallDirectionType callDirection;
   final CallType callType;
+  final String otherUserId;
   final bool direct;
 
   const ChatCallScreen(
@@ -50,6 +51,7 @@ class ChatCallScreen extends HookConsumerWidget {
       required this.callInfo,
       required this.callType,
       required this.callDirection,
+      required this.otherUserId,
       this.direct = false});
 
   _finish(BuildContext context) async {
@@ -363,7 +365,7 @@ class ChatCallScreen extends HookConsumerWidget {
                   if (user == null) {
                     return;
                   }
-
+                  // endCall(callInfo, otherUserId);
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
                       NotiConstants.actionCallEnd,

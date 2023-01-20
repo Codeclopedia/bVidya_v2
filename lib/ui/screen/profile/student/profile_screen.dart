@@ -1,4 +1,4 @@
-import '../../../../controller/profile_providers.dart';
+import '/controller/profile_providers.dart';
 import '../../../screens.dart';
 import '/ui/dialog/basic_dialog.dart';
 

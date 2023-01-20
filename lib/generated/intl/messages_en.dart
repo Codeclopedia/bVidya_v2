@@ -435,6 +435,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "meetingDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block meeting reminder notifications"),
         "meetingRem": MessageLookupByLibrary.simpleMessage("Meeting Reminder"),
+        "menu_call": MessageLookupByLibrary.simpleMessage("Call"),
+        "menu_delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "messDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block message notifications"),
         "notiHistory": MessageLookupByLibrary.simpleMessage(

@@ -33,15 +33,15 @@ class InstructorRowItem extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.black),
         ),
-        Text(
-          '2k Followers',
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            fontSize: 6.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
+        // Text(
+        //   '2k Followers',
+        //   style: TextStyle(
+        //     fontFamily: kFontFamily,
+        //     fontSize: 6.sp,
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.grey,
+        //   ),
+        // ),
       ],
     );
   }

@@ -11,7 +11,7 @@ class BLearnRepository {
   Future<BlearnHomeBody?> getHome() async {
     final result = await _api.getHomeList(_authToken);
 
-    print('result: ${result.status} ${result.body?.toJson()}');
+    // print('result: ${result.status} ${result.body?.toJson()}');
     if (result.status == successfull && result.body != null) {
       return result.body;
     } else {
@@ -44,6 +44,17 @@ class BLearnRepository {
       return result.body;
     } else {
       return null;
+    }
+  }
+
+  Future<BaseResponse> setCourseProgress(
+      int courseId, int videoId, int lessonId) async {
+    final result =
+        await _api.setCourseProgress(_authToken, courseId, videoId, lessonId);
+    if (result.status == successfull && result.body != null) {
+      return result;
+    } else {
+      return BaseResponse();
     }
   }
 
@@ -144,8 +155,8 @@ class BLearnRepository {
 
   Future<CourseDetailBody?> getCourseDetail(int courseId) async {
     final result = await _api.getCourseDetail(_authToken, courseId);
-    print("result in course detail is ${result.body?.courses}");
-    print(result.body?.toJson());
+    // print("result in course detail is ${result.body?.courses}");
+    // print(result.body?.toJson());
     if (result.status == 'success' && result.body != null) {
       return result.body;
     } else {
@@ -165,7 +176,7 @@ class BLearnRepository {
   Future<List<InstructorCourse>?> getInstructorCourses(
       String instructorId) async {
     final result = await _api.getCoursesByInstructor(_authToken, instructorId);
-    print('message ${result.message}  ${result.body}');
+    // print('message ${result.message}  ${result.body}');
     if (result.status == successfull && result.body != null) {
       return result.body!;
     } else {
@@ -177,7 +188,7 @@ class BLearnRepository {
   Future<List<FollowedInstructor>?> followInstructor(
       String instructorId) async {
     final result = await _api.followInstructor(_authToken, instructorId);
-    print('message ${result.message}  ${result.body}');
+    // print('message ${result.message}  ${result.body}');
     if (result.status == successfull && result.body != null) {
       return result.body!;
     } else {
@@ -188,7 +199,7 @@ class BLearnRepository {
 
   Future<LikedCourseResponse?> getLikedCourse(int courseId) async {
     final result = await _api.likeCourse(_authToken, courseId.toString());
-    if (result?.status == successfull && result?.body != null) {
+    if (result.status == successfull && result.body != null) {
       return result;
     } else {
       return null;

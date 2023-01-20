@@ -19,8 +19,6 @@ import '../../widgets.dart';
 
 final selectedTabCourseDetailProvider = StateProvider<int>((ref) => 0);
 
-final selectedLessonIndexProvider = StateProvider.autoDispose<int>((ref) => -1);
-
 final isModelSheetOpened = StateProvider.autoDispose<bool>((ref) => false);
 
 class CourseDetailScreen extends StatelessWidget {
@@ -125,9 +123,7 @@ class CourseDetailScreen extends StatelessWidget {
   Widget _builCurriculumView(CourseDetailBody? coursedata) {
     return Expanded(
         child: SingleChildScrollView(
-      physics: coursedata?.isSubscribed == true
-          ? const AlwaysScrollableScrollPhysics()
-          : const NeverScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
         child: Column(
@@ -150,7 +146,8 @@ class CourseDetailScreen extends StatelessWidget {
                     return ref.watch(bLearnLessonsProvider(course.id!)).when(
                         data: (data) {
                           if (data?.lessons != null) {
-                            return _buildLessons(ref, data?.lessons ?? []);
+                            return _buildLessons(ref, data?.lessons ?? [],
+                                coursedata?.isSubscribed ?? false);
                           } else {
                             return Center(
                                 child: Column(
@@ -171,23 +168,6 @@ class CourseDetailScreen extends StatelessWidget {
                         loading: () => buildLoading);
                   },
                 ),
-                coursedata?.isSubscribed == false
-                    ? Container(
-                        height: 100.w,
-                        color: Colors.white.withOpacity(0.9),
-                        alignment: Alignment.center,
-                        child: Column(children: [
-                          SizedBox(
-                            height: 35.w,
-                          ),
-                          Icon(
-                            Icons.lock,
-                            size: 14.w,
-                          ),
-                          const Text("Subscribe to unlock content")
-                        ]),
-                      )
-                    : Container(),
               ],
             )
           ],
@@ -196,24 +176,24 @@ class CourseDetailScreen extends StatelessWidget {
     ));
   }
 
-  Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
-    final selectedLessonIndex = ref.watch(selectedLessonIndexProvider);
-
+  Widget _buildLessons(WidgetRef ref, List<Lesson> lessons, bool isSubscribed) {
     return ListView.builder(
       itemCount: lessons.length,
       shrinkWrap: true,
+      padding: EdgeInsets.only(bottom: 15.w),
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return LessonListRow(
           index: index,
-          openIndex: selectedLessonIndex,
+
           lesson: lessons[index],
           course: course,
+          isSubscribed: isSubscribed,
           ref: ref,
           instructorId: course.userId!,
-          onExpand: (openedRowIndex) {
+          onExpand: (selectedindex) {
             ref.read(selectedLessonIndexProvider.notifier).state =
-                openedRowIndex;
+                selectedindex;
           },
           // ref: ref
         );

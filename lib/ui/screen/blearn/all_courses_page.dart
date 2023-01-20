@@ -2,14 +2,10 @@ import '/core/ui_core.dart';
 import '/data/models/response/blearn/courses_response.dart';
 import '/data/models/response/blearn/instructors_response.dart';
 import '/ui/screen/blearn/components/instructor_row.dart';
-import 'package:flutter/material.dart';
-
-import '../../../controller/auth_providers.dart';
-import '../../../controller/bchat_providers.dart';
-import '../../../controller/blearn_providers.dart';
-import '../../../core/constants/colors.dart';
-import '../../../core/constants/route_list.dart';
-import '../../../core/state.dart';
+import '/controller/blearn_providers.dart';
+import '/core/constants/colors.dart';
+import '/core/constants/route_list.dart';
+import '/core/state.dart';
 import '../../screens.dart';
 import '../../widget/coloured_box_bar.dart';
 import '../../widget/sliding_tab.dart';

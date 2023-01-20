@@ -1,14 +1,8 @@
-// import 'package:flutter/material.dart';
-// import 'package:sizer/sizer.dart';
-
+import '/core/constants/colors.dart';
+import '../../../dialog/image_picker_dialog.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '/core/state.dart';
-// import '/core/theme/appstyle.dart';
-// import '/core/theme/inputstyle.dart';
-// import '/core/theme/textstyles.dart';
-// import '../../../../generated/l10n.dart';
-import '../base_settings.dart';
 
 class StudentProfileDetail extends HookWidget {
   final Profile profile;
@@ -22,108 +16,274 @@ class StudentProfileDetail extends HookWidget {
     final ageController = useTextEditingController(text: profile.age);
     final addressController = useTextEditingController(text: profile.address);
 
+    final isNameEditing = StateProvider.autoDispose<bool>(
+      (ref) => false,
+    );
+    final isEmailEditing = StateProvider.autoDispose<bool>(
+      (ref) => false,
+    );
+    final isPhoneNumberEditing = StateProvider.autoDispose<bool>(
+      (ref) => false,
+    );
+    final isAgeEditing = StateProvider.autoDispose<bool>(
+      (ref) => false,
+    );
+    final isAddressEditing = StateProvider.autoDispose<bool>(
+      (ref) => false,
+    );
+
     useEffect(
       () {},
     );
-    return BaseSettings(
-      bodyContent: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 4.h),
-            Text(
-              "${S.current.profile_title} Detail", //didn't added throught l10n
-              style: textStyleHeading,
+    return Scaffold(
+      body: Consumer(builder: (context, ref, child) {
+        return Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.gradientTopColor,
+                AppColors.gradientLiveBottomColor,
+              ],
             ),
-            SizedBox(height: 2.h),
-            Text(
-              "Name", //didn't added throught l10n
-              style: inputBoxCaptionStyle(context),
-            ),
-            TextFormField(
-              controller: nameController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: inputDirectionStyle.copyWith(
-                hintText: profile.name,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              "Email Address", //didn't added throught l10n
-              style: inputBoxCaptionStyle(context),
-            ),
-            TextFormField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: inputDirectionStyle.copyWith(
-                hintText: S.current.login_email_hint,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              "Phone Number", //didn't added throught l10n
-              style: inputBoxCaptionStyle(context),
-            ),
-            TextFormField(
-              controller: phoneController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: inputDirectionStyle.copyWith(
-                hintText: S.current.signup_mobile_hint,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              "Age", //didn't added throught l10n
-              style: inputBoxCaptionStyle(context),
-            ),
-            TextFormField(
-              controller: ageController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: inputDirectionStyle.copyWith(
-                hintText: S.current.prof_hint_age,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              "Address", //didn't added throught l10n
-              style: inputBoxCaptionStyle(context),
-            ),
-            TextFormField(
-              controller: addressController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: inputDirectionStyle.copyWith(
-                hintText: S.current.prof_edit_address,
-              ),
-            ),
-            SizedBox(height: 4.h),
-            Consumer(
-              builder: (context, ref, child) {
-                return SizedBox(
+          ),
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Container(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: elevatedButtonTextStyle,
-                    onPressed: () async {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Save",
-                      style: elevationTextButtonTextStyle,
+                  height: double.infinity,
+                  margin: EdgeInsets.only(top: 9.h),
+                  padding: EdgeInsets.only(top: 15.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10.w),
+                        topLeft: Radius.circular(10.w)),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 1.h),
+                          Text(
+                            "${S.current.profile_title} Detail", //didn't added throught l10n
+                            style: textStyleHeading,
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            "Name", //didn't added throught l10n
+                            style: inputBoxCaptionStyle(context),
+                          ),
+                          TextFormField(
+                            controller: nameController,
+                            readOnly: ref.watch(isNameEditing) ? false : true,
+                            showCursor: ref.watch(isNameEditing) ? true : false,
+                            keyboardType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
+                            decoration: inputDirectionStyle.copyWith(
+                                hintText: profile.name,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      ref.read(isNameEditing.notifier).state =
+                                          true;
+                                    },
+                                    child: const Icon(Icons.edit_sharp))),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            "Email Address", //didn't added throught l10n
+                            style: inputBoxCaptionStyle(context),
+                          ),
+                          TextFormField(
+                            controller: emailController,
+                            readOnly: ref.watch(isEmailEditing) ? false : true,
+                            showCursor:
+                                ref.watch(isEmailEditing) ? true : false,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration: inputDirectionStyle.copyWith(
+                                hintText: S.current.login_email_hint,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      ref.read(isEmailEditing.notifier).state =
+                                          true;
+                                    },
+                                    child: const Icon(Icons.edit_sharp))),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            "Phone Number", //didn't added throught l10n
+                            style: inputBoxCaptionStyle(context),
+                          ),
+                          TextFormField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            readOnly:
+                                ref.watch(isPhoneNumberEditing) ? false : true,
+                            showCursor:
+                                ref.watch(isPhoneNumberEditing) ? true : false,
+                            textInputAction: TextInputAction.next,
+                            decoration: inputDirectionStyle.copyWith(
+                                hintText: S.current.signup_mobile_hint,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      ref
+                                          .read(isPhoneNumberEditing.notifier)
+                                          .state = true;
+                                    },
+                                    child: const Icon(Icons.edit_sharp))),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            "Age", //didn't added throught l10n
+                            style: inputBoxCaptionStyle(context),
+                          ),
+                          TextFormField(
+                            controller: ageController,
+                            keyboardType: TextInputType.emailAddress,
+                            readOnly: ref.watch(isAgeEditing) ? false : true,
+                            showCursor: ref.watch(isAgeEditing) ? true : false,
+                            textInputAction: TextInputAction.next,
+                            decoration: inputDirectionStyle.copyWith(
+                                hintText: S.current.prof_hint_age,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      ref.read(isAgeEditing.notifier).state =
+                                          true;
+                                    },
+                                    child: const Icon(Icons.edit_sharp))),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            "Address", //didn't added throught l10n
+                            style: inputBoxCaptionStyle(context),
+                          ),
+                          TextFormField(
+                            controller: addressController,
+                            keyboardType: TextInputType.emailAddress,
+                            readOnly:
+                                ref.watch(isAddressEditing) ? false : true,
+                            showCursor:
+                                ref.watch(isAddressEditing) ? true : false,
+                            textInputAction: TextInputAction.next,
+                            decoration: inputDirectionStyle.copyWith(
+                                hintText: S.current.prof_edit_address,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      ref
+                                          .read(isAddressEditing.notifier)
+                                          .state = true;
+                                    },
+                                    child: const Icon(Icons.edit_sharp))),
+                          ),
+                          SizedBox(height: 4.h),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: elevatedButtonTextStyle,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Save",
+                                    style: elevationTextButtonTextStyle,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                );
-              },
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: getSvgIcon('arrow_back.svg', color: Colors.white),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 3.h),
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              height: 12.5.h,
+                              width: 25.w,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: DecorationImage(
+                                      image:
+                                          getImageProvider(profile.image ?? ''),
+                                      fit: BoxFit.cover)),
+                            ),
+                            Positioned(
+                              bottom: 0.h,
+                              right: 0.w,
+                              child: Visibility(
+                                visible: true,
+                                child: InkWell(
+                                  onTap: () async {
+                                    final pickedFile =
+                                        await showImageFilePicker(context);
+                                    // if (pickedFile != null) {
+                                    //   ref
+                                    //       .read(
+                                    //           selectedGroupImageProvider.notifier)
+                                    //       .state = pickedFile;
+                                    // }
+                                  },
+                                  child: Container(
+                                    width: 8.w,
+                                    height: 8.w,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.yellowAccent,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(Icons.edit_outlined, size: 4.w),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 2.w,
+                        ),
+                        Text(
+                          profile.name.toString(),
+                          style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontSize: 4.w,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                // _buildHeader(),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }),
     );
   }
 }

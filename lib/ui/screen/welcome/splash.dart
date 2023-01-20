@@ -131,6 +131,7 @@ class SplashScreen extends ConsumerWidget {
   Future<bool> _handleNotificationClickScreen(
       BuildContext context, User user) async {
     if (activeCallMap != null && activeCallId != null) {
+      String fromId = activeCallMap!['from_id'];
       String fromName = activeCallMap!['from_name'];
       String callerFCM = activeCallMap!['caller_fcm'];
       String image = activeCallMap!['image'];
@@ -143,7 +144,8 @@ class SplashScreen extends ConsumerWidget {
         'image': image,
         'call_info': body,
         'call_direction_type': CallDirectionType.incoming,
-        'direct': true
+        'direct': true,
+        'user_id':fromId
       };
 
       if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||

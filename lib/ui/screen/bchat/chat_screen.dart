@@ -1102,7 +1102,6 @@ class ChatScreen extends HookConsumerWidget {
                   ref.read(bhatMessagesProvider(model).notifier).addChat(msg);
                 }
                 setScreen(RouteList.chatScreen);
-                // Navigator.pushNamed(context, RouteList.bChatAudioCall);
               },
               icon: getSvgIcon(
                 'icon_audio_call.svg',

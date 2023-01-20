@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/app.dart';
+// import '/app.dart';
 
 import '/ui/screen/bchat/group/group_calls_screen.dart';
 import '/data/models/models.dart';
@@ -36,13 +36,13 @@ class Routes {
 
   static String getCurrentScreen() {
     String cName = _currentScreen;
-    if (navigatorKey.currentContext != null) {
-      cName = ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
-          _currentScreen;
-      print('current screen $cName  # $_currentScreen');
-    } else {
-      print('null context screen $cName  # $_currentScreen');
-    }
+    // if (navigatorKey.currentContext != null) {
+    //   cName = ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
+    //       _currentScreen;
+    //   print('current screen $cName  # $_currentScreen');
+    // } else {
+    //   print('null context screen $cName  # $_currentScreen');
+    // }
     return cName;
   }
 
@@ -89,7 +89,7 @@ class Routes {
         screen = const HomeScreen(direct: true);
         hasDrawer = true;
         break;
-        case RouteList.homeDirectFromCall:
+      case RouteList.homeDirectFromCall:
         screen = const HomeScreen(direct: true);
         hasDrawer = true;
         break;
@@ -213,6 +213,7 @@ class Routes {
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
           bool direct = args['direct'] ?? false;
+          String userId = args['user_id'];
 
           screen = ChatCallScreen(
               fcmToken: fcmToken,
@@ -221,6 +222,7 @@ class Routes {
               callInfo: callInfo,
               callDirection: direction,
               callType: CallType.video,
+              otherUserId: userId,
               direct: direct);
         } else {
           screen = _parameterMissing();
@@ -236,6 +238,7 @@ class Routes {
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
           bool direct = args['direct'] ?? false;
+          String userId = args['user_id'];
           screen = ChatCallScreen(
               fcmToken: fcmToken,
               name: name,
@@ -243,6 +246,7 @@ class Routes {
               callInfo: callInfo,
               callDirection: direction,
               callType: CallType.audio,
+              otherUserId: userId,
               direct: direct);
         } else {
           screen = _parameterMissing();
@@ -422,10 +426,12 @@ class Routes {
           Lesson lesson = arg["lesson"];
           Course course = arg["course"];
           int instructorId = arg['instructor_id'];
+          bool isSubscribed = arg['isSubscribed'];
           screen = BlearnVideoPlayer(
             lesson: lesson,
             course: course,
             instructorId: instructorId,
+            isSubscribed: isSubscribed,
           );
         } else {
           screen = _parameterMissing();

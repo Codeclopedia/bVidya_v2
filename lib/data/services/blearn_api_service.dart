@@ -1,8 +1,5 @@
-import 'dart:convert';
-
-import '/data/models/response/blearn/wishlist_courses_response.dart';
+// import 'dart:convert';
 import 'package:dio/dio.dart';
-import '../models/response/blearn/blearn_home_response.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -19,14 +16,16 @@ class BLearnApiService {
   //Get
   Future<BlearnHomeResponse> getHomeList(String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
-
-    final response = await _dio.get(baseUrlApi + ApiList.lmsHome);
-    print(response.data);
-    // print('response ${response.data} . ${response.realUri}');
-    if (response.statusCode == 200) {
-      return BlearnHomeResponse.fromJson(response.data);
-    } else {
-      print("inside 2");
+    try {
+      final response = await _dio.get(baseUrlApi + ApiList.lmsHome);
+      if (response.statusCode == 200) {
+        return BlearnHomeResponse.fromJson(response.data);
+      } else {
+        return BlearnHomeResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
       return BlearnHomeResponse(
         status: 'error',
       );
@@ -129,7 +128,7 @@ class BLearnApiService {
       // print('requst id ${courseId}');
       final response =
           await _dio.get('$baseUrlApi${ApiList.lmsCoursesDetail}$courseId');
-      print('data from course detail ${jsonEncode(response.data)}');
+
       if (response.statusCode == 200) {
         return CourseDetailResponse.fromJson(response.data);
       } else {
@@ -153,8 +152,8 @@ class BLearnApiService {
       final response =
           await _dio.get('$baseUrlApi${ApiList.lmswishlist}$courseId');
       if (response.statusCode == 200) {
-        print(response);
-        print(BaseResponse.fromJson(response.data));
+        // print(response);
+        // print(BaseResponse.fromJson(response.data));
         return BaseResponse.fromJson(response.data);
       } else {
         return BaseResponse(message: "Something went wrong", status: "error");
@@ -172,8 +171,8 @@ class BLearnApiService {
       final response =
           await _dio.get('$baseUrlApi${ApiList.lmsgetwishlistCourses}');
       if (response.statusCode == 200) {
-        print(response.data);
-        print(BaseResponse.fromJson(response.data));
+        // print(response.data);
+        // print(BaseResponse.fromJson(response.data));
         return WishlistResponse.fromJson(response.data);
       } else {
         return WishlistResponse(status: "error");
@@ -202,15 +201,21 @@ class BLearnApiService {
   }
 
   //Post- set course progress
-  Future<BaseResponse> setCourseProgress(String token, String query) async {
+  Future<BaseResponse> setCourseProgress(
+      String token, int courseId, int videoId, int lessonId) async {
     try {
       _dio.options.headers["X-Auth-Token"] = token;
-      final requestParam = {'term': query};
+      final requestParam = {
+        'course_id': courseId,
+        "lesson_id": lessonId,
+        "video_id": videoId
+      };
 
       final response = await _dio.post(
           '$baseUrlApi${ApiList.lmsSetCourseProgress}',
           data: requestParam);
       if (response.statusCode == 200) {
+        // print(response);
         return BaseResponse.fromJson(response.data);
       } else {
         return BaseResponse(
@@ -230,9 +235,9 @@ class BLearnApiService {
       final response =
           await _dio.get('$baseUrlApi${ApiList.lmsSubscribeCourse}$courseId');
       if (response.statusCode == 200) {
-        print(response.statusCode);
-        print(response);
-        print(response.data);
+        // print(response.statusCode);
+        // print(response);
+        // print(response.data);
         return BaseResponse.fromJson(response.data);
       } else {
         return BaseResponse(
@@ -327,17 +332,18 @@ class BLearnApiService {
           .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
 
       if (response.statusCode == 200) {
-        print('${jsonEncode(response.data)}');
+        // print('${jsonEncode(response.data)}');
         return ProfileDetailResponse.fromJson(response.data);
       } else {
         return ProfileDetailResponse(
-            status: 'error',
-            message: '${response.statusCode}- ${response.statusMessage}');
+          status: 'error',
+        );
       }
     } catch (e) {
       print('error: $e');
       return ProfileDetailResponse(
-          status: 'error', message: 'Unknown error - $e');
+        status: 'error',
+      );
     }
   }
 
@@ -345,10 +351,10 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
-      print('$authToken $instructorId');
+      // print('$authToken $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsCourseByInstructor}$instructorId');
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return InstructorCoursesResponse.fromJson(response.data);
       } else {
@@ -366,10 +372,10 @@ class BLearnApiService {
       String authToken, String instructorId) async {
     _dio.options.headers["X-Auth-Token"] = authToken;
     try {
-      print('authtoken instructorId $authToken $instructorId');
+      // print('authtoken instructorId $authToken $instructorId');
       final response = await _dio
           .get('$baseUrlApi${ApiList.lmsFollowInstructor}$instructorId');
-      print('response data ${jsonEncode(response.data)}');
+      // print('response data ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return FollowInstructorResponse.fromJson(response.data);
       } else {
@@ -393,7 +399,7 @@ class BLearnApiService {
       };
       final response = await _dio
           .post('$baseUrlApi${ApiList.lmsRecordVideoPlayback}', data: data);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return response.data;
       } else {
@@ -424,18 +430,23 @@ class BLearnApiService {
     }
   }
 
-  Future<LikedCourseResponse?> likeCourse(String token, String id) async {
-    _dio.options.headers['X-Auth-Token'] = '${token}';
+  Future<LikedCourseResponse> likeCourse(String token, String id) async {
     try {
-      var response = await _dio.get('${StringConstant.BASE_URL}likecourse/$id');
-
+      _dio.options.headers['X-Auth-Token'] = token;
+      final response =
+          await _dio.get('${StringConstant.BASE_URL}likecourse/$id');
       if (response.statusCode == 200) {
         return LikedCourseResponse.fromJson(response.data);
       } else {
-        print(response.statusMessage);
-        return null;
+        return LikedCourseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+        // print(response.statusMessage);
+        // return null;
       }
-    } catch (e) {}
-    return null;
+    } catch (e) {
+      print('error : $e');
+      return LikedCourseResponse(status: 'error', message: 'Unknown error -$e');
+    }
   }
 }

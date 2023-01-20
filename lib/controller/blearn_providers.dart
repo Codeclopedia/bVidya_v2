@@ -1,5 +1,3 @@
-import '../data/models/response/blearn/blearn_home_response.dart';
-import '../data/models/response/blearn/wishlist_courses_response.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/blearn_repository.dart';
@@ -35,6 +33,13 @@ final bLearnSubCategoriesProvider =
 final bLearnCoursesProvider =
     FutureProvider.family<Courses?, String>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getCourses(id);
+});
+
+final bLearnsetCourseProgressProvider =
+    FutureProvider.family<BaseResponse?, Map>((ref, data) {
+  return ref
+      .read(bLearnRepositoryProvider)
+      .setCourseProgress(data["courseId"], data["videoId"], data["lessonId"]);
 });
 
 final bLearnSearchCoursesProvider =
@@ -83,6 +88,8 @@ final bLearnFollowInstructorProvider = FutureProvider.autoDispose
     .family<List<FollowedInstructor>, String>((ref, id) async {
   final result = await ref.read(bLearnRepositoryProvider).followInstructor(id);
   ref.refresh(isFollowedInstructor(id));
+  // ref.read(bLearnInstructorProfileProvider(id));
+  // ref.read(isFollowedInstructor(id));
 
   return result ?? [];
 });
@@ -91,3 +98,19 @@ final bLearnCourseDetailProvider =
     FutureProvider.autoDispose.family<CourseDetailBody?, int>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getCourseDetail(id);
 });
+
+final currentVideoUrlProvider = StateProvider<String>(
+  (ref) {
+    return "";
+  },
+);
+
+final currentVideoIDProvider = StateProvider<int>(
+  (ref) {
+    return 0;
+  },
+);
+
+final selectedLessonIndexProvider = StateProvider.autoDispose<int>((ref) => -1);
+
+final currentLessonIdProvider = StateProvider<int>((ref) => -1);

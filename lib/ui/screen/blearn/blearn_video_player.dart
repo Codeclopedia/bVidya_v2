@@ -12,28 +12,24 @@ import '/controller/blearn_providers.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/response/blearn/lessons_response.dart';
-import '../../screens.dart';
 import 'components/common.dart';
 import 'components/lesson_list_tile.dart';
 
 final videoStateProvider = StateProvider.autoDispose<bool>((ref) => true);
-final currentVideoIdProvider = StateProvider<int>(
-  (ref) {
-    return 0;
-  },
-);
 
 // ignore: must_be_immutable
 class BlearnVideoPlayer extends HookConsumerWidget {
   final Lesson lesson;
   final Course course;
   final int instructorId;
+  final bool isSubscribed;
 
   BlearnVideoPlayer(
       {Key? key,
       required this.lesson,
       required this.course,
-      required this.instructorId})
+      required this.instructorId,
+      required this.isSubscribed})
       : super(key: key);
 
   FlickManager? flickManager;
@@ -45,21 +41,26 @@ class BlearnVideoPlayer extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      init();
-//AutoScrollController for scroll to index feature
+      init(ref);
+      Map videodata = {
+        "courseId": course.id,
+        "videoId": ref.read(currentVideoIDProvider),
+        "lessonId": ref.read(currentLessonIdProvider),
+      };
+      ref.read(bLearnsetCourseProgressProvider(videodata));
+      //AutoScrollController for scroll to index feature
       controller = AutoScrollController(
         viewportBoundaryGetter: () =>
             Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection,
       );
-//timer for calling watch time api after eevery 1 minute
+      setcontrollervalue(ref);
+      //timer for calling watch time api after eevery 1 minute
       timer = PausableTimer(const Duration(minutes: 1), () async {
         await sendVideoPlayback(ref, instructorId);
       });
-      setcontrollervalue(ref);
 
       return () {
-        print('Disponse called');
         flickManager?.dispose();
         flickManager = null;
         timer?.cancel();
@@ -95,7 +96,9 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                           ],
                         ),
                       )
-                    : FlickVideoPlayer(flickManager: flickManager!),
+                    : FlickVideoPlayer(
+                        flickManager: flickManager!,
+                      ),
                 SizedBox(
                   height: 4.w,
                 ),
@@ -208,7 +211,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                     },
                     icon: Icon(
                       Icons.adaptive.arrow_back,
-                      color: AppColors.cardWhite,
+                      color: AppColors.iconGreyColor,
                     ))),
           ],
         ),
@@ -216,9 +219,11 @@ class BlearnVideoPlayer extends HookConsumerWidget {
     );
   }
 
-  Widget _buildLessons(WidgetRef ref, List<Lesson> lessons) {
+  Widget _buildLessons(
+    WidgetRef ref,
+    List<Lesson> lessons,
+  ) {
     final selectedIndex = ref.watch(selectedLessonIndexProvider);
-
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.w),
@@ -240,22 +245,25 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                 onExpand: (p0) {
                   ref.read(selectedLessonIndexProvider.notifier).state = p0;
                 },
-                onplay: (videoUrl, videoId) {
-                  showLoading(ref);
+                onplay: () {
+                  // showLoading(ref);
                   ref.read(videoStateProvider.notifier).state = false;
-
+                  Map updatedData = {
+                    "courseId": course.id,
+                    "videoId": ref.read(currentVideoIDProvider),
+                    "lessonId": ref.read(currentLessonIdProvider)
+                  };
+                  ref.read(bLearnsetCourseProgressProvider(updatedData));
                   // await flickManager?.dispose();
                   // flickManager = null;
-                  ref.read(selectedLessonIndexProvider.notifier).state = index;
-                  timer?.pause();
-                  flickManager?.handleChangeVideo(
-                      VideoPlayerController.network(videoUrl));
 
-                  ref.read(currentVideoIdProvider.notifier).state =
-                      lesson.videoId ?? 0;
+                  timer?.pause();
+                  flickManager?.handleChangeVideo(VideoPlayerController.network(
+                      ref.read(currentVideoUrlProvider)));
+
                   ref.read(videoStateProvider.notifier).state = true;
                   timer?.start();
-                  hideLoading(ref);
+                  // hideLoading(ref);
                 },
                 ref: ref,
                 openIndex: selectedIndex,
@@ -269,23 +277,21 @@ class BlearnVideoPlayer extends HookConsumerWidget {
   }
 
   Future setcontrollervalue(WidgetRef ref) async {
-    int selectedIndex = ref.read(selectedLessonIndexProvider);
-
-    await controller?.scrollToIndex(selectedIndex,
-        duration: const Duration(milliseconds: 300),
+    await controller?.scrollToIndex(ref.read(selectedLessonIndexProvider),
+        duration: const Duration(milliseconds: 100),
         preferPosition: AutoScrollPosition.begin);
   }
 
-  init() {
-    print('Init called');
+  init(WidgetRef ref) {
     flickManager = FlickManager(
-      videoPlayerController:
-          VideoPlayerController.network(lesson.videoUrl ?? ""),
+      videoPlayerController: VideoPlayerController.network(
+          ref.read(currentVideoUrlProvider) ?? ""),
     );
     flickManager?.flickVideoManager?.addListener(() {
       flickManager?.flickVideoManager?.isPlaying ?? false
           ? timer?.start()
           : timer?.pause();
+      timer?.isActive == true ? print("timer started") : print("timer stopped");
     });
   }
 

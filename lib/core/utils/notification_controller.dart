@@ -179,6 +179,11 @@ class NotificationController {
         await AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
+  static Future<bool> isAllowedPermission()async{
+      return await AwesomeNotifications().isNotificationAllowed();
+
+  }
+
   static Future showContactActionNotification(
       String userId, String title, String content) async {
     BuildContext? context = navigatorKey.currentContext;

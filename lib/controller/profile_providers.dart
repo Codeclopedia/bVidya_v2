@@ -28,13 +28,19 @@ final follwedInstructorsProvider =
   return ref.read(profileRepositoryProvider).followedInstructor();
 });
 
+// final isFollowedInstructor =
+//     FutureProvider.autoDispose.family<bool, String>((ref, id) async {
+//   final list = await ref.read(profileRepositoryProvider).followedInstructor();
+//   return list?.firstWhereOrNull((e) => e.instructorId?.toString() == id) !=
+//       null;
+// });
 
 final isFollowedInstructor =
     FutureProvider.autoDispose.family<bool, String>((ref, id) async {
-  print("inside the loop");
+  // print("inside the loop");
   final list = await ref.read(profileRepositoryProvider).followedInstructor();
-  print("inside the loop");
-  print(list?.firstWhereOrNull((e) => e.instructorId?.toString() == id));
+  // print("inside the loop");
+  // print(list?.firstWhereOrNull((e) => e.instructorId?.toString() == id));
   return list?.firstWhereOrNull((e) => e.instructorId?.toString() == id) !=
       null;
 });

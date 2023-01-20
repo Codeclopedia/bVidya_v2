@@ -5,8 +5,8 @@ import '/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/core/helpers/extensions.dart';
 import '/core/utils.dart';
-import '../core/sdk_helpers/bchat_contact_manager.dart';
-import '/core/helpers/duration.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+// import '/core/helpers/duration.dart';
 
 import '/core/state.dart';
 import '/data/models/models.dart';
@@ -15,7 +15,7 @@ import '/data/repository/bchat_respository.dart';
 
 import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/bchat/groups_conversation_provider.dart';
-import 'providers/p2p_call_provider.dart';
+// import 'providers/p2p_call_provider.dart';
 // import 'providers/chat_messagelist_provider.dart';
 
 final apiBChatProvider =

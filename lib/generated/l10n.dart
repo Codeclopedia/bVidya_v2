@@ -2760,6 +2760,26 @@ class S {
     );
   }
 
+  /// `Call`
+  String get menu_call {
+    return Intl.message(
+      'Call',
+      name: 'menu_call',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get menu_delete {
+    return Intl.message(
+      'Delete',
+      name: 'menu_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Account`
   String get Account {
     return Intl.message(

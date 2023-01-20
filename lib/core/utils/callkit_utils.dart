@@ -115,44 +115,6 @@ setupCallKit() async {
   });
 }
 
-// Future<void> handlShowIncomingCallNotification(RemoteMessage remoteMessage,
-//     {WidgetRef? ref}
-//     // FlutterCallkeep callKeep,
-//     ) async {
-//   // String uuid = remoteMessage.payload()["call_id"] as String;
-//   CallBody? body = remoteMessage.payload();
-//   if (body == null) {
-//     return;
-//   }
-
-//   String fromId = remoteMessage.data["from_id"];
-//   String fromName = remoteMessage.data["from_name"];
-//   String fromFCM = remoteMessage.data['caller_fcm'];
-//   String image = remoteMessage.data['image'];
-//   bool hasVideo = remoteMessage.data['has_video'] == 'true';
-//   // makeFakeCallInComing();
-//   await showIncomingCallScreen(
-//       body, fromName, fromId, fromFCM, image, hasVideo);
-//   try {
-//     final user = await getMeAsUser();
-//     if (user == null || ref == null) return;
-
-//     final callMessageBody = CallMessegeBody(
-//       callId: body.callId,
-//       callType: hasVideo ? CallType.video : CallType.audio,
-//       duration: 0,
-//       fromName: fromName,
-//       image: image,
-//       toName: user.name,
-//       status: CallStatus.ongoing,
-//       ext: {},
-//     );
-//     CallListModel model = CallListModel(fromName, image, true,
-//         DateTime.now().millisecondsSinceEpoch, callMessageBody);
-//     ref.read(callListProvider.notifier).addCall(model);
-//   } catch (e) {}
-// }
-
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   CallBody? callBody = remoteMessage.payload();
   if (callBody == null) {
@@ -170,7 +132,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   String callerImage = remoteMessage.data['image'];
   bool hasVideo = remoteMessage.data['has_video'] == 'true';
 
-  print('from ID $fromId');
+  // print('from ID $fromId');
   await FlutterCallkitIncoming.endCall(callBody.callId);
   final kitParam = CallKitParams(
     appName: 'bVidya',
@@ -217,7 +179,13 @@ showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
     if (_activeCallId == callBody.callId) {
       return;
     }
+    // if (_activeCallId == lastCallId) {
+    //   return;
+    // }
     FlutterCallkitIncoming.endAllCalls();
+  }
+  if (callBody.callId == lastCallId) {
+    return;
   }
   _activeCallId = callBody.callId;
   _lastCallId = _activeCallId;
@@ -311,6 +279,10 @@ onCallAccept(String fromId, String fcmToken, String callerName,
   //   print('User is NULL');
   //   return;
   // }
+
+  _activeCallId = body.callId;
+  _lastCallId = body.callId;
+
   BuildContext? context = navigatorKey.currentContext;
   if (context == null) {
     print(' Context is NULL');
@@ -322,7 +294,8 @@ onCallAccept(String fromId, String fcmToken, String callerName,
     'image': callerImage,
     'call_info': body,
     'call_direction_type': CallDirectionType.incoming,
-    'direct': false
+    'direct': false,
+    'user_id': fromId
   };
   print('hasVideo:::: > $hasVideo');
 
@@ -357,24 +330,24 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
     userName = user.name;
   }
 
-  // try {
-  //   Map content = {
-  //     'type': NotiConstants.typeCall,
-  //     'action': NotiConstants.actionCallDecline,
-  //     'content': jsonEncode(body.toJson()),
-  //     'from_id': callerIdFrom,
-  //     'from_name': callerName,
-  //     'image': '',
-  //     'has_video': hasVideo ? 'true' : 'false',
-  //     'caller_fcm': '',
-  //   };
-  //   final message = ChatMessage.createCmdSendMessage(
-  //       targetId: callerIdFrom, action: content);
-  //   print('toID :$callerIdFrom  ${ChatClient.getInstance.currentUserId}');
-  //   ChatClient.getInstance.chatManager.sendMessage(message);
-  // } catch (e) {}
-
   FCMApiService.instance.sendCallEndPush(senderFCM,
       NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
   await FlutterCallkitIncoming.endAllCalls();
+}
+
+endCall(CallBody callBody, String to) {
+  try {
+    final content = {
+      'call_id': callBody.callId,
+      'type': NotiConstants.typeCall,
+      'action': NotiConstants.actionCallEnd
+    };
+    final message = ChatMessage.createCmdSendMessage(
+        targetId: to, action: jsonEncode(content));
+    message.attributes?.addAll({"em_force_notification": true});
+
+    ChatClient.getInstance.chatManager.sendMessage(message);
+  } catch (e) {
+    print('sending command failed $e');
+  }
 }

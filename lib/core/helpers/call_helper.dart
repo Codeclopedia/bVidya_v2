@@ -52,7 +52,8 @@ Future<ChatMessage?> makeAudioCall(
       'fcm_token': contact.fcmToken,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
-      'direct': false
+      'direct': false,
+      'user_id':contact.userId.toString()
     };
     hideLoading(ref);
     // if (contact.fcmToken?.isNotEmpty == true) {
@@ -116,7 +117,8 @@ Future<ChatMessage?> makeVideoCall(
       'image': contact.profileImage,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
-      'direct': false
+      'direct': false,
+      'user_id':contact.userId.toString()
     };
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,

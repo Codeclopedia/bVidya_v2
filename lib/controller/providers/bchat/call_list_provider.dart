@@ -1,3 +1,5 @@
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
 import '/core/sdk_helpers/bchat_call_manager.dart';
 import '/core/state.dart';
 
@@ -42,11 +44,20 @@ class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
     // state = [...state, todo];
   }
 
+  Future delete(CallListModel message) async {
+    try {
+      await (await ChatClient.getInstance.chatManager
+              .getConversation(message.userId,createIfNeed: false))
+          ?.deleteMessage(message.msgId);
+      remove(message);
+    } catch (e) {}
+  }
+
   void clear() {
     state = [];
   }
 
-  setup() async {
+  Future setup() async {
     if (_loading) return;
     _loading = true;
     _callListMap.clear();

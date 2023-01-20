@@ -3,11 +3,13 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
-import '/controller/providers/bchat/call_list_provider.dart';
-import '/core/utils.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:intl/intl.dart';
+
+import '/core/utils/notification_controller.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
+import '/controller/providers/bchat/call_list_provider.dart';
+import '/core/utils.dart';
 
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/helpers/call_helper.dart';
@@ -64,6 +66,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       ref
           .read(chatConversationProvider.notifier)
           .reset(ref.read(bChatProvider));
+    }
+
+    if (await NotificationController.isAllowedPermission()) {
+      return;
+    }
+    await Future.delayed(const Duration(seconds: 3));
+    if (mounted) {
+      NotificationController.displayNotificationRationale();
     }
   }
 
@@ -421,6 +431,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _recentCallButton(BuildContext context) {
     return InkWell(
       onTap: () async {
+        await ref.read(callListProvider.notifier).setup();
         await Navigator.pushNamed(context, RouteList.recentCalls);
         setScreen(RouteList.home);
         ref.read(chatConversationProvider).updateUnread();

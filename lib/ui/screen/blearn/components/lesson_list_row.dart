@@ -1,17 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '/controller/blearn_providers.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '/core/state.dart';
 import '/ui/screens.dart';
 
-// import '/core/helpers/video_helper.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
 class LessonListRow extends StatelessWidget {
   final int index;
-  final int openIndex;
   final Lesson lesson;
+  final bool isSubscribed;
   final WidgetRef ref;
   final Function(int) onExpand;
   final Course course;
@@ -21,7 +24,7 @@ class LessonListRow extends StatelessWidget {
       {Key? key,
       required this.index,
       required this.lesson,
-      required this.openIndex,
+      required this.isSubscribed,
       required this.ref,
       required this.onExpand,
       required this.course,
@@ -39,66 +42,31 @@ class LessonListRow extends StatelessWidget {
       padding: EdgeInsets.only(top: 2.h, left: 4.w, bottom: 2.h, right: 4.w),
       child: Column(
         children: [
-          lesson.playlist?.isEmpty == true
-              ? GestureDetector(
-                  onTap: () {
-                    showLoading(ref);
-                    ref.read(currentVideoIdProvider.notifier).state =
-                        lesson.videoId!;
-                    Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                        arguments: {
-                          "lesson": lesson,
-                          "course": course,
-                          'instructor_id': instructorId
-                        });
-                    ref.read(selectedLessonIndexProvider.notifier).state =
-                        index;
-                    hideLoading(ref);
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Lesson ${index + 1}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 8.sp,
-                                fontFamily: kFontFamily,
-                                fontWeight: FontWeight.w300,
-                              ),
+          GestureDetector(
+            onTap: () {
+              isSubscribed
+                  ? onExpand(ref.watch(selectedLessonIndexProvider) == index
+                      ? -1
+                      : index)
+                  : index == 0
+                      ? onExpand(ref.watch(selectedLessonIndexProvider) == index
+                          ? -1
+                          : index)
+                      : {
+                          showTopSnackBar(
+                            Overlay.of(context)!,
+                            const CustomSnackBar.error(
+                              message: 'Please Subscribe to Course first.',
                             ),
-                            Text(
-                              lesson.name ?? '',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 11.sp,
-                                fontFamily: kFontFamily,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.h),
-                        child: const Icon(Icons.play_circle_outline_sharp),
-                      ),
-                    ],
-                  ),
-                )
-              : GestureDetector(
-                  onTap: () {
-                    onExpand(openIndex == index ? -1 : index);
-                    // openIndex == index
-                    //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
-                    //     : ref.read(selectedIndexLessonProvider.notifier).state =
-                    //         index;
-                  },
-                  child: Row(
+                          )
+                        };
+              // openIndex == index
+              //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
+              //     : ref.read(selectedIndexLessonProvider.notifier).state =
+              //         index;
+            },
+            child: isSubscribed
+                ? Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
@@ -129,15 +97,91 @@ class LessonListRow extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(top: 2.h),
                         child: Icon(
-                          openIndex == index
+                          ref.watch(selectedLessonIndexProvider) == index
                               ? Icons.keyboard_arrow_up
                               : Icons.keyboard_arrow_down,
                         ),
                       ),
                     ],
-                  ),
-                ),
-          if (openIndex == index)
+                  )
+                : index == 0
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lesson ${index + 1}',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 8.sp,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                Text(
+                                  lesson.name ?? '',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 11.sp,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.h),
+                            child: Icon(
+                              ref.watch(selectedLessonIndexProvider) == index
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lesson ${index + 1}',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 8.sp,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                                Text(
+                                  lesson.name ?? '',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11.sp,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.h),
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+          ),
+          if (ref.watch(selectedLessonIndexProvider) == index)
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -148,16 +192,24 @@ class LessonListRow extends StatelessWidget {
                   child: InkWell(
                     onTap: () async {
                       showLoading(ref);
-                      ref.read(currentVideoIdProvider.notifier).state =
-                          lesson.playlist?[playlistindex]?.id ?? 0;
+                      ref.read(currentVideoUrlProvider.notifier).state =
+                          lesson.playlist?[playlistindex]?.media?.location ??
+                              "";
+                      ref.read(currentVideoIDProvider.notifier).state =
+                          lesson.playlist?[playlistindex]?.videoId ?? 0;
                       Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                           arguments: {
                             "lesson": lesson,
                             "course": course,
-                            'instructor_id': instructorId
+                            'instructor_id': instructorId,
+                            'isSubscribed': isSubscribed,
                           });
                       ref.read(selectedLessonIndexProvider.notifier).state =
                           index;
+                      ref.read(currentLessonIdProvider.notifier).state =
+                          lesson.id ?? 0;
+                      print(
+                          "current lesson id : ${ref.read(currentLessonIdProvider)}");
                       hideLoading(ref);
                     },
                     child: Row(

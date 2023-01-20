@@ -107,11 +107,13 @@ class ForegroundMessageHelper {
     try {
       final diff = DateTime.now().millisecondsSinceEpoch - msg.serverTime;
       print(
-          'messege time foreground $diff ms    ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}');
+          'foreground $diff ms  ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}');
       if (diff > 30000) return;
       final body = CallMessegeBody.fromJson(
           jsonDecode((msg.body as ChatCustomMessageBody).event));
       CallBody callBody = body.callBody;
+      // print(
+      //     'callId =>${callBody.callId} last->:$lastCallId  active:$activeCallId');
       if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
         return;
       }
@@ -129,12 +131,14 @@ class ForegroundMessageHelper {
         fromName,
         image,
         false,
-        DateTime.now().millisecondsSinceEpoch,
+        msg.serverTime,
         msg.msgId,
         body,
       );
       ref.read(callListProvider.notifier).addCall(model);
-    } catch (e) {}
+    } catch (e) {
+      print('Error in calls=> $e');
+    }
   }
 
   static Future<bool> handleChatNotificationAction(

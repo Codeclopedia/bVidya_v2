@@ -66,7 +66,7 @@ class TeacherDashboard extends StatelessWidget {
                       _buildRevenue(),
                       SizedBox(height: 2.h),
                       _buildPerformance(
-                          data.followersCount, data.totalWatchtime),
+                          data.followers?[0].count, data.watchtime?[0].total),
                       SizedBox(height: 3.h),
                       _buildUploadedCourse(),
                       SizedBox(height: 1.h),

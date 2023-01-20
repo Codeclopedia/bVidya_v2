@@ -36,19 +36,85 @@ class BLearnHomeScreen extends StatelessWidget {
         body: Consumer(
           builder: (context, ref, child) {
             return ref.watch(bLearnHomeProvider).when(
-                  data: (data) {
-                    if (data != null) {
-                      return _buildContent(context, data, ref);
-                    } else {
-                      return buildEmptyPlaceHolder('No Data');
-                    }
-                  },
-                  error: (error, stackTrace) => buildEmptyPlaceHolder('$error'),
-                  loading: () => buildLoading,
-                );
+                data: (data) {
+                  if (data != null) {
+                    return _buildContent(context, data, ref);
+                  } else {
+                    return buildEmptyPlaceHolder('No Data');
+                  }
+                },
+                error: (error, stackTrace) => buildEmptyPlaceHolder('$error'),
+                loading: () => buildloadingbar());
           },
         ),
       ),
+    );
+  }
+
+  Widget buildloadingbar() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        SizedBox(
+          height: 5.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CustomizableShimmerTile(height: 30.w, width: 100.w),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        SizedBox(
+          height: 62.w,
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            children: [
+              SizedBox(
+                width: 5.w,
+              ),
+              CustomizableShimmerTile(height: 60.w, width: 40.w),
+              SizedBox(
+                width: 5.w,
+              ),
+              CustomizableShimmerTile(height: 60.w, width: 40.w),
+              SizedBox(
+                width: 5.w,
+              ),
+              CustomizableShimmerTile(height: 60.w, width: 40.w),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
+        ),
+      ],
     );
   }
 
@@ -319,18 +385,18 @@ class BLearnHomeScreen extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              AppColors.primaryColor.withOpacity(0.5)
+                              AppColors.primaryColor.withOpacity(0.3)
                             ])),
                   ),
-                  Padding(
+                  Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          alignment: Alignment.topLeft,
+                        Expanded(
                           child: Text(
                             category?.name ?? '',
                             overflow: TextOverflow.ellipsis,
@@ -531,7 +597,7 @@ class BLearnHomeScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              Navigator.pushNamed(context, RouteList.bLearnCategories);
+              Navigator.pushNamed(context, RouteList.bLearnAllCourses);
             },
             child: Row(
               children: [
@@ -561,7 +627,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 1.h),
-      height: 55.w,
+      height: 50.w,
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.all(0.5.h),
@@ -630,7 +696,7 @@ class BLearnHomeScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              Navigator.pushNamed(context, RouteList.bLearnCategories);
+              Navigator.pushNamed(context, RouteList.bLearnAllCourses);
             },
             child: Row(
               children: [

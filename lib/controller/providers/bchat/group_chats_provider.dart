@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../../../core/helpers/background_helper.dart';
+import '/core/helpers/background_helper.dart';
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter/foundation.dart';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:bvidya/core/helpers/bmeet_helper.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '/core/utils/callkit_utils.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants/notification_const.dart';
@@ -86,6 +89,7 @@ class P2PCallProvider extends ChangeNotifier {
     // _currentCallType = callType;
     _callDirection = type;
     _body = body;
+    // FirebaseMessaging.
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
@@ -101,6 +105,20 @@ class P2PCallProvider extends ChangeNotifier {
         }
       }
     });
+
+    if (!await handleCameraAndMic(Permission.microphone)) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        // AppSnackbar.instance.error(context, 'Need microphone permission');
+      }
+    }
+    if (callType == CallType.video) {
+      if (!await handleCameraAndMic(Permission.camera)) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          // AppSnackbar.instance.error(context, 'Need microphone permission');
+        }
+      }
+    }
+
     await _initEngine();
   }
 

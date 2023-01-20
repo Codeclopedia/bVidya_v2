@@ -1,3 +1,5 @@
+import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+
 import '../blearn/components/common.dart';
 import '/core/utils/date_utils.dart';
 import '/core/helpers/call_helper.dart';
@@ -49,10 +51,51 @@ class RecentCallScreen extends StatelessWidget {
               return ListView.separated(
                 itemCount: callList.length,
                 itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () async {
-                      makeCall(callList[index], ref, context);
-                    },
+                  return SwipeActionCell(
+                    key: ObjectKey(callList[index].msgId),
+                    // onTap: () async {
+                    //   makeCall(callList[index], ref, context);
+                    // },
+                    trailingActions: <SwipeAction>[
+                      SwipeAction(
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                          ),
+                          backgroundRadius: 3.w,
+                          widthSpace: 30.w,
+                          title: S.current.menu_delete,
+                          performsFirstActionWithFullSwipe: true,
+                          onTap: (CompletionHandler handler) async {
+                            /// await handler(true) : will delete this row
+                            /// And after delete animation,setState will called to
+                            /// sync your data source with your UI
+                            await handler(true);
+                            ref
+                                .read(callListProvider.notifier)
+                                .delete(callList[index]);
+                            // list.removeAt(index);
+                            // setState(() {});
+                          },
+                          color: AppColors.redBColor),
+                      SwipeAction(
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                          ),
+                          backgroundRadius: 3.w,
+                          widthSpace: 20.w,
+                          title: S.current.menu_call,
+                          onTap: (CompletionHandler handler) async {
+                            /// false means that you just do nothing,it will close
+                            /// action buttons by default
+                            handler(false);
+                            await makeCall(callList[index], ref, context);
+                          },
+                          color: AppColors.primaryColor),
+                    ],
                     child: _contactRow(callList[index]),
                   );
                 },
@@ -61,7 +104,7 @@ class RecentCallScreen extends StatelessWidget {
                     children: [
                       SizedBox(width: 18.w),
                       Expanded(
-                        child: Container(
+                        child: Divider(
                           height: 1,
                           color: Colors.grey.shade200,
                         ),
