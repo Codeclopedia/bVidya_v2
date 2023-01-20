@@ -220,6 +220,7 @@ showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
     FlutterCallkitIncoming.endAllCalls();
   }
   _activeCallId = callBody.callId;
+  _lastCallId = _activeCallId;
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: '$baseImageApi$image',

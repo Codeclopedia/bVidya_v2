@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import '/core/utils/callkit_utils.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants/notification_const.dart';
@@ -17,7 +18,8 @@ import '/core/ui_core.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
 
-enum CallConnectionStatus { connecting, ringing, connected, ended }
+// ignore: constant_identifier_names
+enum CallConnectionStatus { Connecting, Ringing, Connected, Ended }
 
 class P2PCallProvider extends ChangeNotifier {
   final DurationNotifier _read;
@@ -50,7 +52,7 @@ class P2PCallProvider extends ChangeNotifier {
   bool _endCall = false;
   bool get isCallEnded => _endCall;
 
-  CallConnectionStatus _status = CallConnectionStatus.connecting;
+  CallConnectionStatus _status = CallConnectionStatus.Connecting;
 
   CallConnectionStatus get status => _status;
 
@@ -70,7 +72,8 @@ class P2PCallProvider extends ChangeNotifier {
   int get remoteId => _remoteId;
   int get localId => _localId;
 
-  AudioPlayer? _player;
+  // AudioPlayer? _player;
+  AssetsAudioPlayer? _player;
 
   init(CallBody body, CallDirectionType type, CallType callType) async {
     // if (_isInitialized) {
@@ -102,7 +105,8 @@ class P2PCallProvider extends ChangeNotifier {
   }
 
   _outgoingTimer() async {
-    _player = AudioPlayer();
+    // _player = AudioPlayer();
+    _player = AssetsAudioPlayer.newPlayer();
     //  String audioasset = "assets/audio/Basic.mp3";
     // ByteData bytes = await rootBundle.load(audioasset); //load sound from assets
     // Uint8List soundbytes =
@@ -115,7 +119,10 @@ class P2PCallProvider extends ChangeNotifier {
       notifyListeners();
     });
     try {
-      await _player?.play(AssetSource('audio/Basic.mp3'));
+      await _player?.open(Audio('assets/audio/Basic.mp3'));
+      await _player?.play();
+
+      // await _player?.play(AssetSource('audio/Basic.mp3'));
     } catch (e) {
       print('$e');
     }
@@ -148,7 +155,7 @@ class P2PCallProvider extends ChangeNotifier {
           _localId = connection.localUid ?? 0;
           if (_callDirection == CallDirectionType.outgoing) {
             // _status = 'Ringing';
-            _status = CallConnectionStatus.ringing;
+            _status = CallConnectionStatus.Ringing;
             _outgoingTimer();
           }
           notifyListeners();
@@ -159,14 +166,14 @@ class P2PCallProvider extends ChangeNotifier {
             _timer?.cancel();
             _player?.stop();
           }
-          _status = CallConnectionStatus.connected;
+          _status = CallConnectionStatus.Connected;
           // _status = 'Connected';
           notifyListeners();
           _read.start();
         },
         onUserOffline: (connection, remoteUid, reason) {
           _endCall = true;
-          _status = CallConnectionStatus.ended;
+          _status = CallConnectionStatus.Ended;
           notifyListeners();
         },
         // onRemoteAudioStateChanged:
@@ -201,7 +208,7 @@ class P2PCallProvider extends ChangeNotifier {
       await engine.enableAudio();
 
       await engine.muteLocalAudioStream(_mute);
-      // await engine.setDefaultAudioRouteToSpeakerphone(_speakerOn);
+      await engine.setDefaultAudioRouteToSpeakerphone(_speakerOn);
 
       // await engine.setEnableSpeakerphone(_speakerOn);
       await engine.joinChannel(
@@ -326,7 +333,8 @@ class P2PCallProvider extends ChangeNotifier {
         _timer?.cancel();
       }
       await _player?.stop();
-      await _player?.release();
+      await _player?.dispose();
+      // await _player?.release();
 
       await _engine?.leaveChannel();
       await _engine?.release();

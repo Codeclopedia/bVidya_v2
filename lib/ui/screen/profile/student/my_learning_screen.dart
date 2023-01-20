@@ -1,20 +1,17 @@
-import 'dart:convert';
+// import 'dart:convert';
 
-import '../../../../controller/blearn_providers.dart';
-import '../../../../data/models/response/profile/subscribed_Courses_Response.dart';
-import '/data/models/response/blearn/follow_response.dart';
-import '/data/models/response/blearn/instructors_response.dart';
+import '/data/models/models.dart';
+import '/controller/blearn_providers.dart';
 import '/ui/widgets.dart';
 
 import '/controller/profile_providers.dart';
-import '../../../widget/sliding_tab.dart';
-import '../../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 import '../../../widget/courses_circularIndicator.dart';
-// import '../../../widget/tab_switcher.dart';
+import '../../../widget/sliding_tab.dart';
+import '../../blearn/components/common.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 
@@ -31,43 +28,15 @@ class MyLearningScreen extends ConsumerWidget {
         children: [
           SizedBox(height: 3.h),
           Center(
-              child: SlidingTab(
-                  label1: S.current.sp_tab_course,
-                  label2: S.current.sp_tab_followed,
-                  selectedIndex: selectedIndex,
-                  callback: (index) {
-                    ref.read(selectedTabLearningProvider.notifier).state =
-                        index;
-                  })
-              // child: SlideTab(
-              //     initialIndex: selectedIndex,
-              //     containerWidth: 88.w,
-              //     onSelect: (index) {
-              //       ref.read(selectedTabLearningProvider.notifier).state = index;
-              //     },
-              //     containerHeight: 6.h,
-              //     direction: Axis.horizontal,
-              //     sliderColor: AppColors.primaryColor,
-              //     containerBorderRadius: 2.w,
-              //     sliderBorderRadius: 2.6.w,
-              //     containerColor: AppColors.cardWhite,
-              //     activeTextStyle: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 9.sp,
-              //       fontWeight: FontWeight.w600,
-              //       fontFamily: kFontFamily,
-              //     ),
-              //     inactiveTextStyle: TextStyle(
-              //       fontSize: 9.sp,
-              //       fontWeight: FontWeight.w600,
-              //       fontFamily: kFontFamily,
-              //       color: Colors.black,
-              //     ),
-              //     texts: [
-              //       S.current.sp_tab_course,
-              //       S.current.sp_tab_followed,
-              //     ]),
-              ),
+            child: SlidingTab(
+              label1: S.current.sp_tab_course,
+              label2: S.current.sp_tab_followed,
+              selectedIndex: selectedIndex,
+              callback: (index) {
+                ref.read(selectedTabLearningProvider.notifier).state = index;
+              },
+            ),
+          ),
           Expanded(
               child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
@@ -86,11 +55,7 @@ class MyLearningScreen extends ConsumerWidget {
             if (data == null) {
               return const SizedBox.shrink();
             }
-            if (data.subscribedCourses?.length == 0) {
-              return const Center(
-                child: Text("No Subscribed Courses"),
-              );
-            } else {
+            if (data.subscribedCourses?.isNotEmpty == true) {
               return Container(
                 color: Colors.white,
                 child: ListView.builder(
@@ -101,6 +66,10 @@ class MyLearningScreen extends ConsumerWidget {
                       return rowCourse(
                           data.subscribedCourses?[index], context, ref);
                     }),
+              );
+            } else {
+              return const Center(
+                child: Text("No Subscribed Courses"),
               );
             }
           },

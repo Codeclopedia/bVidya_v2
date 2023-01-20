@@ -89,6 +89,10 @@ class Routes {
         screen = const HomeScreen(direct: true);
         hasDrawer = true;
         break;
+        case RouteList.homeDirectFromCall:
+        screen = const HomeScreen(direct: true);
+        hasDrawer = true;
+        break;
       case RouteList.groups:
         screen = const GroupsScreen();
         break;

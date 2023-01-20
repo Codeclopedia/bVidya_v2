@@ -25,6 +25,7 @@ class RouteList {
   // static const String splash = '/';
   static const String home = '/home';
   static const String homeDirect = '/home-direct';
+  static const String homeDirectFromCall = '/home-direct-call';
   static const String profile = '/profile';
   static const String chatScreen = '/chat-screen';
   static const String chatScreenDirect = '/chat-screen-direct';

@@ -1,5 +1,3 @@
-
-
 import '../blearn/components/common.dart';
 import '/core/utils/date_utils.dart';
 import '/core/helpers/call_helper.dart';
@@ -51,7 +49,12 @@ class RecentCallScreen extends StatelessWidget {
               return ListView.separated(
                 itemCount: callList.length,
                 itemBuilder: (context, index) {
-                  return _contactRow(callList[index]);
+                  return InkWell(
+                    onTap: () async {
+                      makeCall(callList[index], ref, context);
+                    },
+                    child: _contactRow(callList[index]),
+                  );
                 },
                 separatorBuilder: (context, index) {
                   return Row(

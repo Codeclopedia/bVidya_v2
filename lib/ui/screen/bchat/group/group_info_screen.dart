@@ -164,7 +164,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                   itemBuilder: (context, index) {
                     if (hasPermission) {
                       if (index == 0) {
-                        return _addParticipationRow(context);
+                        return _addParticipationRow(context, ref);
                       } else {
                         bool isAdmin = (grp.adminList ?? [])
                             .contains(data[index - 1].userId.toString());
@@ -188,10 +188,17 @@ class GroupInfoScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _addParticipationRow(BuildContext context) {
+  Widget _addParticipationRow(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () async {
-        await Navigator.pushNamed(context, RouteList.newGroupContacts);
+        ref.read(selectedContactProvider.notifier).clear();
+        if (contacts.isNotEmpty) {
+          ref.read(selectedContactProvider.notifier).addContacts(contacts);
+          await Navigator.pushNamed(context, RouteList.editGroup,
+              arguments: group.groupInfo);
+          // ref.read(groupConversationProvider.notifier).update();
+        }
+        // await Navigator.pushNamed(context, RouteList.newGroupContacts);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
@@ -325,7 +332,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                                       e.filePath!.absolute.path))
                                   .toList();
                               MultiImageProvider multiImageProvider =
-                                  MultiImageProvider(list);
+                                  MultiImageProvider(list, initialIndex: 0);
                               showImageViewerPager(context, multiImageProvider,
                                   onPageChanged: (page) {
                                 print("page changed to $page");
@@ -368,10 +375,26 @@ class GroupInfoScreen extends HookConsumerWidget {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        return _rowFileImage(
-                            image: item.filePath,
-                            counter: items.length - 3,
-                            last: index == 2);
+                        return GestureDetector(
+                          onTap: () {
+                            final list = items
+                                .map((e) => getImageProviderFile(
+                                    e.filePath!.absolute.path))
+                                .toList();
+                            MultiImageProvider multiImageProvider =
+                                MultiImageProvider(list, initialIndex: index);
+                            showImageViewerPager(context, multiImageProvider,
+                                onPageChanged: (page) {
+                              print("page changed to $page");
+                            }, onViewerDismissed: (page) {
+                              print("dismissed while on page $page");
+                            });
+                          },
+                          child: _rowFileImage(
+                              image: item.filePath,
+                              counter: items.length - 3,
+                              last: index == 2),
+                        );
                       },
                     );
                   },
@@ -631,7 +654,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                         InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, RouteList.searchContact);
+                                context, RouteList.searchGroups);
                           },
                           child: _buildIcon('icon_pr_search.svg'),
                         ),

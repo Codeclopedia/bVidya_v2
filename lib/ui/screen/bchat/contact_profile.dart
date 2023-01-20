@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '../../dialog/add_contact_dialog.dart';
@@ -384,7 +385,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                                   loadThumbFirst: false))
                               .toList();
                           MultiImageProvider multiImageProvider =
-                              MultiImageProvider(list);
+                              MultiImageProvider(list, initialIndex: index);
                           // final body = data[index].body;
                           showImageViewerPager(context, multiImageProvider,
                               onPageChanged: (page) {
@@ -635,51 +636,56 @@ class ContactProfileScreen extends HookConsumerWidget {
                     ),
                   ),
                   SizedBox(height: 3.h),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Consumer(builder: (context, ref, child) {
-                        return InkWell(
-                            onTap: () async {
-                              if (fromChat) {
-                                Navigator.pop(context);
+                  Consumer(builder: (context, ref, child) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            if (fromChat) {
+                              Navigator.pop(context);
+                            } else {
+                              if (isInContact) {
+                                openChatScreen(context, contact, ref);
                               } else {
-                                if (isInContact) {
-                                  openChatScreen(context, contact, ref);
+                                if (AgoraConfig.autoAcceptContact) {
+                                  _addContactSendRequest(ref, context, contact);
                                 } else {
-                                  if (AgoraConfig.autoAcceptContact) {
-                                    _addContactSendRequest(
-                                        ref, context, contact);
-                                  } else {
-                                    AppSnackbar.instance.message(
-                                        context, 'Send request to chat');
-                                  }
+                                  AppSnackbar.instance
+                                      .message(context, 'Send request to chat');
                                 }
                               }
-                            },
-                            child: isInContact
-                                ? _buildIcon('icon_pr_chat.svg')
-                                : CircleAvatar(
-                                    radius: 6.w,
-                                    backgroundColor: AppColors.yellowAccent,
-                                    child: Icon(
-                                      Icons.person_add_alt_outlined,
-                                      color: AppColors.primaryColor,
-                                      size: 5.w,
-                                    ),
-                                  ));
-                      }),
-                      _buildIcon('icon_pr_vcall.svg'),
-                      _buildIcon('icon_pr_acall.svg'),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(context, RouteList.searchContact);
-                        },
-                        child: _buildIcon('icon_pr_search.svg'),
-                      ),
-                    ],
-                  ),
+                            }
+                          },
+                          child: isInContact
+                              ? _buildIcon('icon_pr_chat.svg')
+                              : CircleAvatar(
+                                  radius: 6.w,
+                                  backgroundColor: AppColors.yellowAccent,
+                                  child: Icon(
+                                    Icons.person_add_alt_outlined,
+                                    color: AppColors.primaryColor,
+                                    size: 5.w,
+                                  ),
+                                ),
+                        ),
+                        InkWell(
+                            onTap: () => makeVideoCall(contact, ref, context),
+                            child: _buildIcon('icon_pr_vcall.svg')),
+                        InkWell(
+                            onTap: () => makeAudioCall(contact, ref, context),
+                            child: _buildIcon('icon_pr_acall.svg')),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RouteList.searchContact);
+                          },
+                          child: _buildIcon('icon_pr_search.svg'),
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),

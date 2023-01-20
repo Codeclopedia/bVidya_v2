@@ -92,17 +92,19 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       return;
     }
     _initialized = true;
-
     try {
       _isLoading = true;
+      if (update) {
+        updateUi();
+      }
       final ids = await BChatContactManager.getContactList();
       List<String> otherIds = [];
-      final chatIds = await BChatContactManager.getChatConversationsIds();
-      for (String id in chatIds) {
-        if (!ids.contains(id)) {
-          otherIds.add(id);
-        }
-      }
+      // final chatIds = await BChatContactManager.getChatConversationsIds();
+      // for (String id in chatIds) {
+      //   if (!ids.contains(id)) {
+      //     otherIds.add(id);
+      //   }
+      // }
       if (otherIds.isNotEmpty || ids.isNotEmpty) {
         _chatConversationMap.clear();
         await _addConversations(reader, ids, otherIds);
@@ -128,13 +130,13 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       }
     }
     List<String> otherIds = [];
-    final chatIds = await BChatContactManager.getChatConversationsIds();
-    for (String id in chatIds) {
-      if (!_chatConversationMap.keys.contains(id)) {
-        otherIds.add(id);
-      }
-    }
-    if (otherIds.isNotEmpty) {
+    // final chatIds = await BChatContactManager.getChatConversationsIds();
+    // for (String id in chatIds) {
+    //   if (!_chatConversationMap.keys.contains(id)) {
+    //     otherIds.add(id);
+    //   }
+    // }
+    if (ids.isNotEmpty || otherIds.isNotEmpty) {
       await _addConversations(reader, ids, otherIds);
     }
     chatConversationList = _chatConversationMap.values.toList();
@@ -142,103 +144,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     print('reset finished');
     updateUi();
   }
-
-  // Future setupWithoutInitSDK(BChatRepository reader, User loginUser) async {
-  //   _initialized = true;
-  //   _chatConversationMap.clear();
-  //   try {
-  //     _isLoading = true;
-
-  //     List<Contacts> contacts = [];
-  //     final ids = await BChatContactManager.getContacts();
-  //     if (ids.isNotEmpty) {
-  //       // BChatRepository reader = ref.read(bChatProvider);
-  //       List<Contact> friends = await reader.getContactsByIds(ids) ?? [];
-  //       contacts = friends
-  //           .map((e) => Contacts.fromContact(e, ContactStatus.friend))
-  //           .toList();
-  //     }
-
-  //     for (Contacts contact in contacts) {
-  //       _contactsMap.addAll({contact.userId: contact});
-  //       final ConversationModel model;
-  //       try {
-  //         final conv = await ChatClient.getInstance.chatManager.getConversation(
-  //             contact.userId.toString(),
-  //             type: ChatConversationType.Chat);
-  //         if (conv == null) continue;
-  //         final lastMessage = await conv.latestMessage();
-  //         if (lastMessage == null) continue;
-  //         model = ConversationModel(
-  //           id: contact.userId.toString(),
-  //           badgeCount: await conv.unreadCount(),
-  //           contact: contact,
-  //           conversation: conv,
-  //           lastMessage: lastMessage,
-  //         );
-  //       } catch (e) {
-  //         print('error $e');
-  //         continue;
-  //       }
-  //       _chatConversationMap.addAll({model.id: model});
-  //       // conversations.add(model);
-  //     }
-  //   } catch (e) {
-  //     print('error $e');
-  //   }
-  //   _isLoading = false;
-  // }
-
-  // Future init(BChatRepository reader) async {
-  //   if (_initialized && _contactsMap.isNotEmpty) {
-  //     return;
-  //   }
-  //   await BChatSDKController.instance.init();
-  //   _initialized = true;
-  //   _chatConversationMap.clear();
-  //   try {
-  //     _isLoading = true;
-
-  //     List<Contacts> contacts = [];
-  //     final ids = await BChatContactManager.getContacts();
-  //     if (ids.isNotEmpty) {
-  //       // BChatRepository reader = ref.read(bChatProvider);
-  //       List<Contact> friends = await reader.getContactsByIds(ids) ?? [];
-  //       contacts = friends
-  //           .map((e) => Contacts.fromContact(e, ContactStatus.friend))
-  //           .toList();
-  //     }
-
-  //     for (Contacts contact in contacts) {
-  //       _contactsMap.addAll({contact.userId: contact});
-  //       final ConversationModel model;
-  //       try {
-  //         final conv = await ChatClient.getInstance.chatManager.getConversation(
-  //             contact.userId.toString(),
-  //             type: ChatConversationType.Chat);
-  //         if (conv == null) continue;
-  //         final lastMessage = await conv.latestMessage();
-  //         if (lastMessage == null) continue;
-  //         model = ConversationModel(
-  //           id: contact.userId.toString(),
-  //           badgeCount: await conv.unreadCount(),
-  //           contact: contact,
-  //           conversation: conv,
-  //           lastMessage: lastMessage,
-  //         );
-  //       } catch (e) {
-  //         print('error $e');
-  //         continue;
-  //       }
-  //       _chatConversationMap.addAll({model.id: model});
-  //       // conversations.add(model);
-  //     }
-  //   } catch (e) {
-  //     print('error $e');
-  //   }
-  //   _isLoading = false;
-  //   updateUi();
-  // }
 
   Future addOrUpdateConversation(ConversationModel model) async {
     _contactsMap.addAll({model.contact.userId: model.contact});
@@ -252,8 +157,6 @@ class ChatConversationChangeProvider extends ChangeNotifier {
       final model = _chatConversationMap[convId];
       if (model != null) {
         final conv = model.conversation;
-        // final conv = await ChatClient.getInstance.chatManager
-        //     .getConversation(convId, type: ChatConversationType.Chat);
         if (conv == null) return;
         final lastMessage = await conv.latestMessage();
         if (lastMessage == null) return;
@@ -419,16 +322,35 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     }
   }
 
+  void updateUnread() async {
+    try {
+      for (var id in _chatConversationMap.entries) {
+        final newVal = id.value;
+        newVal.badgeCount = (await id.value.conversation?.unreadCount()) ?? 0;
+        if (newVal.badgeCount != id.value.badgeCount) {
+          _chatConversationMap.update(id.key, (value) {
+            return newVal;
+          });
+        }
+        // print('unread=>${id.value.badgeCount} to ${newVal.badgeCount}');
+      }
+      chatConversationList = _chatConversationMap.values.toList();
+      // _chatConversationMap.forEach((key, value) {value.conversation?.})
+      updateUi();
+    } catch (e) {
+      print('Error in notify the ui $e');
+    }
+  }
+
   void updateConversationOnly(String id) async {
     await updateConversation(id);
-    updateUi();
+    updateUnread();
   }
 
   void deleteConversationOnly(String id) {
-    ConversationModel? model = _chatConversationMap.remove(id);
-    if (model != null) {
-      updateUi();
-    }
+    _chatConversationMap.remove(id);
+    chatConversationList = _chatConversationMap.values.toList();
+    updateUi();
   }
 
   @override

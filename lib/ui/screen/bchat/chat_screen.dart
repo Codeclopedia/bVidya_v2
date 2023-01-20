@@ -13,7 +13,6 @@ import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
-
 import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
@@ -458,8 +457,35 @@ class ChatScreen extends HookConsumerWidget {
         }
         break;
       case AttachType.audio:
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['aac', 'mp3', 'wav'],
+        );
+        if (result != null) {
+          PlatformFile file = result.files.first;
+          final Media media = Media(
+              path: file.path!,
+              size: (await File(file.path!).length()).toDouble());
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.VOICE);
+        }
+        // fileExts = ['aac', 'mp3', 'wav'];
         break;
       case AttachType.docs:
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf', 'doc', 'txt'],
+        );
+        if (result != null) {
+          PlatformFile file = result.files.first;
+          final Media media = Media(
+              path: file.path!,
+              size: (await File(file.path!).length()).toDouble());
+          ref.read(attachedFile.notifier).state =
+              AttachedFile(media, MessageType.FILE);
+        }
+        // docPaths = await DocumentsPicker.pickDocuments;
+        // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
         break;
     }
   }
@@ -1112,14 +1138,16 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   void _markRead(ChatMessage message) async {
-    if (!message.hasRead) {
+    // if (!message.hasRead)
+    {
       await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
       await model.conversation?.markMessageAsRead(message.msgId);
     }
   }
 
   void _markOwnRead(ChatMessage message) async {
-    if (!message.hasRead) {
+    // if (!message.hasRead)
+    {
       await model.conversation?.markMessageAsRead(message.msgId);
     }
   }

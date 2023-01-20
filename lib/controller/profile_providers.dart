@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 
-import '../data/models/response/profile/subscribed_Courses_Response.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/profile_repository.dart';
@@ -29,12 +28,6 @@ final follwedInstructorsProvider =
   return ref.read(profileRepositoryProvider).followedInstructor();
 });
 
-// final isFollowedInstructor =
-//     FutureProvider.autoDispose.family<bool, String>((ref, id) async {
-//   final list = await ref.read(profileRepositoryProvider).followedInstructor();
-//   return list?.firstWhereOrNull((e) => e.instructorId?.toString() == id) !=
-//       null;
-// });
 
 final isFollowedInstructor =
     FutureProvider.autoDispose.family<bool, String>((ref, id) async {

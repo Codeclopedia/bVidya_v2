@@ -6,15 +6,15 @@ class ConversationModel {
   final Contacts contact;
   final String id;
   final ChatMessage? lastMessage;
-  final int badgeCount;
+  int badgeCount;
   final ChatConversation? conversation;
   final bool mute;
   // final ChatPresence? isOnline;
 
-  const ConversationModel(
+  ConversationModel(
       {required this.id,
       required this.contact,
-      required this.badgeCount,
+      this.badgeCount = 0,
       required this.conversation,
       required this.lastMessage,
       // required this.isOnline,

@@ -51,7 +51,6 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
   setupCallKit();
   await NotificationController.initializeLocalNotifications();
-
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];

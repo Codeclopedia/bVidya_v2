@@ -2,11 +2,11 @@
 
 import 'dart:convert';
 
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/conversation_model.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../sdk_helpers/bchat_call_manager.dart';
 import '../state.dart';
@@ -106,27 +106,33 @@ class ForegroundMessageHelper {
   static void handleCallNotification(ChatMessage msg, WidgetRef ref) async {
     try {
       final diff = DateTime.now().millisecondsSinceEpoch - msg.serverTime;
-
       print(
           'messege time foreground $diff ms    ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}');
       if (diff > 30000) return;
       final body = CallMessegeBody.fromJson(
           jsonDecode((msg.body as ChatCustomMessageBody).event));
-      CallBody callBody = CallBody.fromJson(jsonDecode(body.ext['call_body']));
-      if (callBody.callId == lastCallId) {
+      CallBody callBody = body.callBody;
+      if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
         return;
       }
 
       String fromId = msg.from!;
       String fromName = body.fromName;
       String fromFCM = body.ext['fcm'];
-      String image = body.image ?? '';
+      String image = body.fromImage;
       bool hasVideo = body.callType == CallType.video;
       // print('${body.toJson()}');
       await showIncomingCallScreen(
           callBody, fromName, fromId, fromFCM, image, hasVideo);
       CallListModel model = CallListModel(
-          fromName, image, true, DateTime.now().millisecondsSinceEpoch, body);
+        fromId,
+        fromName,
+        image,
+        false,
+        DateTime.now().millisecondsSinceEpoch,
+        msg.msgId,
+        body,
+      );
       ref.read(callListProvider.notifier).addCall(model);
     } catch (e) {}
   }

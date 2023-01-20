@@ -29,27 +29,33 @@ class BackgroundHelper {
       String? contentType = extra['content_type'];
       MessageType msgType = getType(contentType);
       dynamic from = message.data['f'];
-      dynamic m = message.data['m'];
+
       String? groupName;
       String? groupId;
       String contentText = '';
       String url;
       switch (msgType) {
+        case MessageType.CMD:
+        case MessageType.CUSTOM:
+          return;
         case MessageType.TXT:
-          dynamic m = extra['content'];
-          if (m != null) {
-            contentText = m.toString();
+          dynamic msgContent = extra['content'];
+          if (msgContent != null) {
+            contentText = msgContent.toString();
           } else {
+            dynamic m = message.data['m'];
             ChatMessage? msg = await ChatClient.getInstance.chatManager
                 .loadMessage(m.toString());
             if (msg == null) {
-              return;
+              contentText = 'Text message';
+            } else {
+              contentText = (msg.body as ChatTextMessageBody).content;
             }
-            contentText = (msg.body as ChatTextMessageBody).content;
           }
 
           break;
         case MessageType.IMAGE:
+          dynamic m = message.data['m'];
           ChatMessage? msg = await ChatClient.getInstance.chatManager
               .loadMessage(m.toString());
           if (msg == null) {
@@ -63,7 +69,7 @@ class BackgroundHelper {
               groupName = extra['group_name'];
               groupId = message.data['g'];
               _showGroupMediaMessageNotification(
-                  groupId!, name!, groupName!, url, image!);
+                  groupId!, name ?? '', groupName ?? 'Group', url, image!);
             } else if (type == 'chat') {
               _showMediaMessageNotification(from, name!, url, image!);
             }
@@ -95,14 +101,20 @@ class BackgroundHelper {
           (message.sentTime?.millisecondsSinceEpoch ?? 0);
       print(
           'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
+
       final data = jsonDecode(message.data['e']);
-      String fromId = message.data['f'];
+
       // print(' notification ${data['content']}');
       final body = CallMessegeBody.fromJson(jsonDecode(data['content']));
-      CallBody callBody = CallBody.fromJson(jsonDecode(body.ext['call_body']));
+      CallBody callBody = body.callBody;
+
+      if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
+        return;
+      }
+      String fromId = message.data['f'];
       String fromName = body.fromName;
       String fromFCM = body.ext['fcm'];
-      String image = body.image ?? '';
+      String image = body.fromImage;
       bool hasVideo = body.callType == CallType.video;
 
       await showIncomingCallScreen(
@@ -241,6 +253,7 @@ class BackgroundHelper {
         body: 'New Photo',
         wakeUpScreen: true,
         fullScreenIntent: false,
+        showWhen: true,
         bigPicture: url,
         largeIcon: '$baseImageApi$fromImage',
         notificationLayout: NotificationLayout.BigPicture,

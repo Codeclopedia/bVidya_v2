@@ -5,13 +5,16 @@ import '/core/utils.dart';
 import '/data/models/call_message_body.dart';
 
 class CallListModel {
+  final String userId;
   final String name;
   final String image;
   final int time;
   final bool outgoing;
+  final String msgId;
   final CallMessegeBody body;
 
-  CallListModel(this.name, this.image, this.outgoing, this.time, this.body);
+  CallListModel(
+      this.userId, this.name, this.image, this.outgoing, this.time, this.msgId, this.body);
 }
 
 Future<Map<String, CallListModel>> getCallList() async {
@@ -33,14 +36,15 @@ Future<Map<String, CallListModel>> getCallList() async {
           bool isOwnMessage = m.from == me.id.toString();
           CallListModel model;
           if (isOwnMessage) {
-            model = CallListModel(callBody.toName, callBody.image ?? '', true,
-                m.serverTime, callBody);
+            model = CallListModel(m.to.toString(), callBody.toName,
+                callBody.toImage, true, m.serverTime,m.msgId, callBody);
           } else {
-            model = CallListModel(callBody.fromName, callBody.image ?? '',
-                false, m.serverTime, callBody);
+            model = CallListModel(m.from.toString(), callBody.fromName,
+                callBody.fromImage, false, m.serverTime,m.msgId, callBody);
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {
+          print('Error in loading call ${m.body.toJson()}');
           break;
         }
       }
@@ -69,11 +73,11 @@ Future<Map<String, CallListModel>> getGroupCallList() async {
           bool isOwnMessage = m.from == me.id.toString();
           CallListModel model;
           if (isOwnMessage) {
-            model = CallListModel(callBody.fromName, callBody.image ?? '', true,
-                m.serverTime, callBody);
+            model = CallListModel(m.to.toString(), callBody.toName,
+                callBody.toImage, true, m.serverTime,m.msgId, callBody);
           } else {
-            model =
-                CallListModel(me.name, me.image, true, m.serverTime, callBody);
+            model = CallListModel(m.from.toString(), callBody.toName,
+                callBody.toImage, true, m.serverTime,m.msgId, callBody);
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {

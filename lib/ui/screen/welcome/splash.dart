@@ -24,6 +24,11 @@ import '/controller/providers/user_auth_provider.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/chat_conversation_provider.dart';
 
+final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
+      "assets/icons/svgs/splash_logo_full.svg",
+      fit: BoxFit.fitWidth,
+    ));
+
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -89,7 +94,11 @@ class SplashScreen extends ConsumerWidget {
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
           print('Time taken: $diff ms');
         } else {
-          Future.delayed(const Duration(seconds: 2), () {
+          ref.read(splashImageProvider.notifier).state = Image.asset(
+            'assets/images/loader.gif',
+            fit: BoxFit.fitWidth,
+          );
+          Future.delayed(const Duration(seconds: 6), () {
             Navigator.pushReplacementNamed(context, RouteList.login);
           });
         }
@@ -99,9 +108,20 @@ class SplashScreen extends ConsumerWidget {
         Navigator.pushReplacementNamed(context, RouteList.login);
       },
     );
+    final widget = ref.watch(splashImageProvider);
     return WillPopScope(
       onWillPop: () async => false,
-      child: _splashScreen,
+      child: Scaffold(
+        body: Container(
+          padding: EdgeInsets.symmetric(horizontal: 6.w),
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(color: AppColors.loginBgColor),
+          child: Center(
+            child: widget,
+          ),
+        ),
+      ),
     );
     // return const Scaffold(
     //   body: SafeArea(child: CustomCalendar()),
@@ -111,7 +131,6 @@ class SplashScreen extends ConsumerWidget {
   Future<bool> _handleNotificationClickScreen(
       BuildContext context, User user) async {
     if (activeCallMap != null && activeCallId != null) {
-      
       String fromName = activeCallMap!['from_name'];
       String callerFCM = activeCallMap!['caller_fcm'];
       String image = activeCallMap!['image'];
@@ -160,18 +179,18 @@ class SplashScreen extends ConsumerWidget {
     return false;
   }
 
-  Widget get _splashScreen => Scaffold(
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 6.w),
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(color: AppColors.loginBgColor),
-          child: Center(
-            child: SvgPicture.asset(
-              "assets/icons/svgs/splash_logo_full.svg",
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-        ),
-      );
+  // Widget get _splashScreen => Scaffold(
+  //       body: Container(
+  //         padding: EdgeInsets.symmetric(horizontal: 6.w),
+  //         width: double.infinity,
+  //         height: double.infinity,
+  //         decoration: const BoxDecoration(color: AppColors.loginBgColor),
+  //         child: Center(
+  //           child: SvgPicture.asset(
+  //             "assets/icons/svgs/splash_logo_full.svg",
+  //             fit: BoxFit.fitWidth,
+  //           ),
+  //         ),
+  //       ),
+  //     );
 }

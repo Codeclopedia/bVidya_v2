@@ -162,8 +162,22 @@ class BChatSDKController {
   }
 
 //from splash
+
+// Future initIfNotInitialised()async{
+//     bool alreadyLoggedIn = await ChatClient.getInstance.isConnected();
+//     if (alreadyLoggedIn) {
+//       try {
+//         await ChatClient.getInstance.logout(false);
+//       } catch (e) {
+//         print('$e');
+//       }
+//     }
+// }
+
   Future initChatSDK(User currentUser) async {
     if (_initialized) {
+      print('initChatSDK already $_initialized');
+
       return;
     }
     _initialized = true;

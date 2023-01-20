@@ -61,7 +61,7 @@ class ChatCallScreen extends HookConsumerWidget {
     if (direct) {
       // await FlutterCallkitIncoming.endAllCalls();
       clearCall();
-      Navigator.pushReplacementNamed(context, RouteList.homeDirect);
+      Navigator.pushReplacementNamed(context, RouteList.homeDirectFromCall);
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.splash, (route) => route.isFirst);
     } else {
@@ -357,8 +357,8 @@ class ChatCallScreen extends HookConsumerWidget {
             ),
             InkWell(
               onTap: () async {
-                if (provider.status == CallConnectionStatus.ringing ||
-                    provider.status == CallConnectionStatus.connecting) {
+                if (provider.status == CallConnectionStatus.Ringing ||
+                    provider.status == CallConnectionStatus.Connecting) {
                   User? user = await getMeAsUser();
                   if (user == null) {
                     return;

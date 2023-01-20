@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '/ui/widget/drawer/curved_drawer.dart';
@@ -256,24 +257,39 @@ class EndDrawer extends StatelessWidget {
           Positioned(
             right: 5.w,
             top: 0.5.h,
-            child: CircleAvatar(
-              backgroundColor: currentIndex == DrawerMenu.bChat
-                  ? AppColors.cardWhite
-                  : AppColors.yellowAccent,
-              radius: 1.8.w,
-              child: Text(
-                '3',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: kFontFamily,
-                  fontSize: 6.sp,
-                ),
-              ),
-            ),
+            child: FutureBuilder(
+                future: getUnreadCount(),
+                builder: (context, snapshot) {
+                  if (snapshot.data != null && snapshot.data! > 0) {
+                    return CircleAvatar(
+                      backgroundColor: currentIndex == DrawerMenu.bChat
+                          ? AppColors.cardWhite
+                          : AppColors.yellowAccent,
+                      radius: 1.8.w,
+                      child: Text(
+                        '${snapshot.data!}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: kFontFamily,
+                          fontSize: 6.sp,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
           )
         ]),
       )
     ];
+  }
+
+  Future<int> getUnreadCount() async {
+    try {
+      return await ChatClient.getInstance.chatManager.getUnreadMessageCount();
+    } catch (e) {}
+    return 0;
   }
 
   Widget _buildIcon(

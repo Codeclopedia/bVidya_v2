@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/utils.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -43,18 +44,21 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   handleInit() async {
     //initialized
-    if (widget.direct &&
-        !ref.read(chatConversationProvider.notifier).initialized) {
-      print('setting up again');
+    if (widget.direct) {
       final user = await getMeAsUser();
       if (user == null) {
         return;
       }
-      await ref
-          .read(chatConversationProvider.notifier)
-          .setup(ref.read(bChatProvider), user, update: true);
-      await ref.read(groupConversationProvider.notifier).setup();
-      await ref.read(callListProvider.notifier).setup();
+      //
+      await BChatSDKController.instance.initChatSDK(user);
+      if (!ref.read(chatConversationProvider.notifier).initialized) {
+        print('setting up again');
+        await ref
+            .read(chatConversationProvider.notifier)
+            .setup(ref.read(bChatProvider), user, update: true);
+        await ref.read(groupConversationProvider.notifier).setup();
+        await ref.read(callListProvider.notifier).setup();
+      }
     } else {
       print('reseting chat only');
       ref
@@ -198,6 +202,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           ref.read(chatConversationProvider).updateConversationOnly(model.id);
         } else if (result == 2) {
           ref.read(chatConversationProvider).deleteConversationOnly(model.id);
+          ref.read(callListProvider.notifier).setup();
         } else {}
       }),
       child: _contactRow(model),
@@ -418,6 +423,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       onTap: () async {
         await Navigator.pushNamed(context, RouteList.recentCalls);
         setScreen(RouteList.home);
+        ref.read(chatConversationProvider).updateUnread();
       },
       child: Row(
         children: [
@@ -465,6 +471,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                         context, RouteList.studentProfile);
                   }
                   setScreen(RouteList.home);
+                  ref.read(chatConversationProvider).updateUnread();
                 },
                 // onTap: (() => Navigator.pushNamed(
                 //     context, RouteList.contactProfile,
@@ -502,7 +509,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   final result = await Navigator.pushNamed(
                       context, RouteList.searchContact);
                   // if (result == true) {
-                  ref.read(chatConversationProvider).updateUi();
+                  ref.read(chatConversationProvider).updateUnread();
                   setScreen(RouteList.home);
                   // ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   // }

@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:file_picker/file_picker.dart';
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 
@@ -421,8 +422,35 @@ class GroupChatScreen extends HookConsumerWidget {
         }
         break;
       case AttachType.audio:
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['aac', 'mp3', 'wav'],
+        );
+        if (result != null) {
+          PlatformFile file = result.files.first;
+          final Media media = Media(
+              path: file.path!,
+              size: (await File(file.path!).length()).toDouble());
+          ref.read(attachedGroupFile.notifier).state =
+              AttachedFile(media, MessageType.VOICE);
+        }
+        // fileExts = ['aac', 'mp3', 'wav'];
         break;
       case AttachType.docs:
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf', 'doc', 'txt'],
+        );
+        if (result != null) {
+          PlatformFile file = result.files.first;
+          final Media media = Media(
+              path: file.path!,
+              size: (await File(file.path!).length()).toDouble());
+          ref.read(attachedGroupFile.notifier).state =
+              AttachedFile(media, MessageType.FILE);
+        }
+        // docPaths = await DocumentsPicker.pickDocuments;
+        // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
         break;
     }
   }
@@ -945,17 +973,17 @@ class GroupChatScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          IconButton(
-            onPressed: (() {}),
-            icon: getSvgIcon('icon_audio_call.svg'),
-          ),
-          SizedBox(
-            width: 1.w,
-          ),
-          IconButton(
-            onPressed: (() {}),
-            icon: getSvgIcon('icon_video_call.svg'),
-          ),
+          // IconButton(
+          //   onPressed: (() {}),
+          //   icon: getSvgIcon('icon_audio_call.svg'),
+          // ),
+          // SizedBox(
+          //   width: 1.w,
+          // ),
+          // IconButton(
+          //   onPressed: (() {}),
+          //   icon: getSvgIcon('icon_video_call.svg'),
+          // ),
         ],
       ),
     );
