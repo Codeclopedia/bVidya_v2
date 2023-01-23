@@ -59,6 +59,33 @@ String formatDateCall(DateTime date) {
   return DateFormat('hh:mm a').format(date);
 }
 
+String formatConverastionTime(DateTime date) {
+  final DateTime today = DateTime.now();
+  // print('Date: ${date.day}');
+  if (DateUtils.isSameDay(today, date)) {
+    return DateFormat('hh:mm a').format(date);
+  } else if (isYesterday(date, today)) {
+    return 'Yesterday ${DateFormat('hh:mm a').format(date)}';
+  }
+  if (isThisWeek(date, today)) {
+    return DateFormat('EEE hh:mm a').format(date);
+  } else {
+    return DateFormat('dd/MMM/yyyy').format(date);
+  }
+}
+
+bool isYesterday(DateTime? dateA, DateTime dateB) {
+  return dateA?.year == dateB.year &&
+      dateA?.month == dateB.month &&
+      dateA?.day == dateB.day - 1;
+}
+
+bool isThisWeek(DateTime dateTime, DateTime dateNow) {
+  final DateTime today = DateTime(dateNow.year, dateNow.month, dateNow.day);
+  int diff = today.difference(dateTime).inDays;
+  return diff < 7;
+}
+
 int _getWeekOfYear(DateTime date) {
   final int dayOfYear = int.parse(DateFormat('D').format(date));
   return ((dayOfYear - date.weekday + 10) / 7).floor();

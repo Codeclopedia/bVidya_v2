@@ -1,3 +1,5 @@
+// import 'package:bvidya/data/models/response/profile/user_profile_response.dart';
+
 import '/controller/profile_providers.dart';
 import '../../../screens.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -51,17 +53,12 @@ class StudentProfileScreen extends ConsumerWidget {
                 () async {
               showLoading(ref);
               final profile =
-                  await ref.read(profileRepositoryProvider).getUserProfile();
+                  await ref.watch(profileRepositoryProvider).getUserProfile();
               hideLoading(ref);
 
               if (profile != null) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StudentProfileDetail(
-                        profile: profile,
-                      ),
-                    ));
+                Navigator.pushNamed(context, RouteList.studentProfileDetail,
+                    arguments: profile);
               } else {
                 AppSnackbar.instance.error(context, 'Error in loading profile');
               }

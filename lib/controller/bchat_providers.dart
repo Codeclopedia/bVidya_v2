@@ -187,6 +187,32 @@ class GroupMeberInfo {
   GroupMeberInfo(this.members, this.group, this.userId);
 }
 
+class ForwardModel {
+  final String id;
+  final String name;
+  final String image;
+  final ChatType chatType;
+
+  ForwardModel(this.id, this.name, this.image, this.chatType);
+}
+
+final forwardListProvider = FutureProvider<List<ForwardModel>>((ref) {
+  final contacts = ref.watch(myContactsList).maybeWhen(orElse: () => [] as List<Contacts>);
+  final groups = ref.watch(joinedGroupsListProvier).maybeWhen(orElse: () => [] as List<ChatGroup>);
+  final List<ForwardModel> results = [];
+  for (var contact in contacts) {
+    final model = ForwardModel(contact.userId.toString(), contact.name,
+        contact.profileImage, ChatType.Chat);
+    results.add(model);
+  }
+  for (var grp in groups) {
+    final model = ForwardModel(
+        grp.groupId.toString(), grp.name??'', BchatGroupManager.getGroupImage(grp), ChatType.GroupChat);
+    results.add(model);
+  }
+  return results;
+});
+
 final joinedGroupsListProvier = FutureProvider<List<ChatGroup>>((ref) {
   return BchatGroupManager.loadGroupList();
 });

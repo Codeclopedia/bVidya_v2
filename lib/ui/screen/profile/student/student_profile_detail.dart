@@ -1,11 +1,25 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
+import 'package:bvidya/controller/profile_providers.dart';
+import 'package:bvidya/ui/screens.dart';
+
 import '/core/constants/colors.dart';
 import '../../../dialog/image_picker_dialog.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '/core/state.dart';
 
+// final updateProfilePictureProvider =
+//     FutureProvider.autoDispose.family<dynamic, File?>(
+//   (ref, image) async =>
+//       ref.watch(loginRepositoryProvider).updateProfileImage(image),
+// );
+
 class StudentProfileDetail extends HookWidget {
   final Profile profile;
+
   const StudentProfileDetail({super.key, required this.profile});
 
   @override
@@ -32,9 +46,6 @@ class StudentProfileDetail extends HookWidget {
       (ref) => false,
     );
 
-    useEffect(
-      () {},
-    );
     return Scaffold(
       body: Consumer(builder: (context, ref, child) {
         return Container(
@@ -184,23 +195,48 @@ class StudentProfileDetail extends HookWidget {
                                     child: const Icon(Icons.edit_sharp))),
                           ),
                           SizedBox(height: 4.h),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              return SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: elevatedButtonTextStyle,
-                                  onPressed: () async {
-                                    Navigator.pop(context);
+                          ref.watch(isNameEditing) ||
+                                  ref.watch(isEmailEditing) ||
+                                  ref.watch(isAddressEditing) ||
+                                  ref.watch(isPhoneNumberEditing) ||
+                                  ref.watch(isAgeEditing)
+                              ? Consumer(
+                                  builder: (context, ref, child) {
+                                    return SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: elevatedButtonTextStyle,
+                                        onPressed: () async {
+                                          showLoading(ref);
+                                          Map userdata = {
+                                            "name": nameController.text,
+                                            "email": emailController.text,
+                                            "address": addressController.text,
+                                            "phone": phoneController.text,
+                                            "age": ageController.text,
+                                          };
+                                          await ref
+                                              .read(profileRepositoryProvider)
+                                              .updateProfile(
+                                                  nameController.text,
+                                                  emailController.text,
+                                                  phoneController.text,
+                                                  addressController.text,
+                                                  ageController.text);
+                                          // ref.read(
+                                          //     updateProfileProvider(userdata));
+                                          // print("click working");
+                                          hideLoading(ref);
+                                        },
+                                        child: Text(
+                                          "Save",
+                                          style: elevationTextButtonTextStyle,
+                                        ),
+                                      ),
+                                    );
                                   },
-                                  child: Text(
-                                    "Save",
-                                    style: elevationTextButtonTextStyle,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
@@ -239,12 +275,18 @@ class StudentProfileDetail extends HookWidget {
                                   onTap: () async {
                                     final pickedFile =
                                         await showImageFilePicker(context);
-                                    // if (pickedFile != null) {
-                                    //   ref
-                                    //       .read(
-                                    //           selectedGroupImageProvider.notifier)
-                                    //       .state = pickedFile;
-                                    // }
+                                    if (pickedFile != null) {
+                                      final result = await ref
+                                          .read(profileRepositoryProvider)
+                                          .updateProfileImage(pickedFile);
+                                      if (result == null) {
+                                        AppSnackbar.instance.message(context,
+                                            'Profile updated successfully');
+                                      } else {
+                                        AppSnackbar.instance
+                                            .error(context, result);
+                                      }
+                                    }
                                   },
                                   child: Container(
                                     width: 8.w,

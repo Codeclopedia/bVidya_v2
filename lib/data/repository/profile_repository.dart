@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import '../models/models.dart';
-// import '../models/response/profile/subscribed_Courses_Response.dart';
+
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -39,12 +41,41 @@ class ProfileRepository {
 
   Future<List<FollowedInstructor>?> followedInstructor() async {
     final result = await _api.followedInstructor(_authToken);
-
     if (result.status == 'successfully' && result.body != null) {
       return result.body!;
     } else {
       print('Error ${result.message ?? 'Error'} ');
       return null;
     }
+  }
+
+  Future updateProfile(String name, String email, String phone, String address,
+      String age) async {
+    final result = await _api.updateUserProfile(
+        token: _authToken,
+        name: name,
+        email: email,
+        phone: phone.toString(),
+        address: address,
+        age: age.toString(),
+        bio: "",
+        city: "",
+        state: "",
+        country: "");
+    if (result.status != null && result.status == successfull) {
+      
+      return null;
+    }
+
+    return result;
+  }
+
+//updateimage
+  Future<String?> updateProfileImage(File file) async {
+    final result = await _api.updateProfilePic(_authToken, file);
+    if (result.status != null && result.status == successfull) {
+      return null;
+    }
+    return result.message ?? 'Error in updating image';
   }
 }

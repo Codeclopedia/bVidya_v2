@@ -2,15 +2,15 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
+import '/data/models/models.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
-import '/data/models/conversation_model.dart';
 
-Future showConversationOptions(
-    BuildContext context, ConversationModel model) async {
+Future<int?> showGroupConversationOptions(
+    BuildContext context, GroupConversationModel model) async {
   ChatPushRemindType remindType =
-      await BChatContactManager.fetchChatMuteStateFor(model.id);
+      await BchatGroupManager.fetchGroupMuteStateFor(model.id);
   bool mute = remindType != ChatPushRemindType.NONE;
   return await showDialog(
     context: context,
@@ -21,16 +21,17 @@ Future showConversationOptions(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3.w),
         ),
-        child: ConversationMenuDialog(model: model, muted: mute),
+        child: GroupConversationMenuDialog(model: model, muted: mute),
       );
     },
   );
 }
 
-class ConversationMenuDialog extends StatelessWidget {
-  final ConversationModel model;
+class GroupConversationMenuDialog extends StatelessWidget {
+  final GroupConversationModel model;
   final bool muted;
-  const ConversationMenuDialog(
+
+  const GroupConversationMenuDialog(
       {Key? key, required this.model, required this.muted})
       : super(key: key);
 
@@ -45,7 +46,7 @@ class ConversationMenuDialog extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(left: 6.w, top: 2.h),
           child: Text(
-            model.contact.name,
+            model.groupInfo.name ?? '',
             style: TextStyle(
               fontFamily: kFontFamily,
               fontSize: 14.sp,
@@ -59,31 +60,30 @@ class ConversationMenuDialog extends StatelessWidget {
           _buildOption(S.current.bchat_conv_read, 'icon_markread_conv.svg',
               () async {
             try {
-              await ChatClient.getInstance.chatManager
-                  .sendConversationReadAck(model.id);
               await model.conversation?.markAllMessagesAsRead();
+              await ChatClient.getInstance.chatManager.sendConversationReadAck(
+                model.id,
+              );
             } catch (e) {}
 
             Navigator.pop(context, 1);
           }),
         // if (hasUnread) SizedBox(height: 1.h),
-        if (hasUnread) Container(height: 0.8, color: const Color(0xFFF5F6F6)),
+        if (hasUnread) const Divider(height: 0.8, color: Color(0xFFF5F6F6)),
         // SizedBox(height: 1.h),
         _buildOption(S.current.bchat_conv_delete, 'icon_delete_conv.svg',
             () async {
           await model.conversation?.deleteAllMessages();
-          // final result = await ChatClient.getInstance.chatManager
-          //     .deleteConversation(model.id, deleteMessages: true);
-          // print('deleted $result');
+
           Navigator.pop(context, 2);
         }),
         // SizedBox(height: 1.h),
-        Container(height: 0.8, color: const Color(0xFFF5F6F6)),
+        const Divider(height: 0.8, color: Color(0xFFF5F6F6)),
         // SizedBox(height: 1.h),
         _buildOption(
             muted ? S.current.bchat_conv_unmute : S.current.bchat_conv_mute,
             muted ? 'icon_unmute_conv.svg' : 'icon_mute_conv.svg', () async {
-          await BChatContactManager.chageChatMuteStateFor(model.id, !muted);
+          await BchatGroupManager.chageGroupMuteStateFor(model.id, !muted);
           Navigator.pop(context, 3);
         }),
         SizedBox(height: 1.h),

@@ -1,7 +1,7 @@
 import 'dart:async';
-
-import 'package:bvidya/core/state.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
+import '/core/state.dart';
 
 enum TypingCommand { typingStart, typingEnd }
 
@@ -12,12 +12,14 @@ class TypingUser {
   TypingUser(this.userId, this.status);
 }
 
-final typingProvider = StateNotifierProvider
-    .family<TypingHelper, TypingUser, String>((ref, to) => TypingHelper(to));
+final typingProvider =
+    StateNotifierProvider.family<TypingHelper, TypingUser, String>(
+        (ref, to) => TypingHelper(to));
 
 class TypingHelper extends StateNotifier<TypingUser> {
   String to;
   TypingHelper(this.to) : super(TypingUser(to, TypingCommand.typingEnd));
+  Timer? _timer;
   int _previousChangedTimeStamp = 0;
 
   // TypingCommand _currentCommand =TypingCommand.typingEnd;
@@ -25,7 +27,7 @@ class TypingHelper extends StateNotifier<TypingUser> {
   void textChange() {
     int currentTimestamp = DateTime.now().millisecondsSinceEpoch;
     if (currentTimestamp - _previousChangedTimeStamp > 5000) {
-      print('sending_command');
+      // print('sending_command');
       _sendBeginTyping(to, TypingCommand.typingStart);
       _previousChangedTimeStamp = currentTimestamp;
     }
@@ -43,9 +45,8 @@ class TypingHelper extends StateNotifier<TypingUser> {
     } catch (e) {}
   }
 
-  Timer? _timer;
   void beginTimer() {
-    print('received command');
+    // print('received command');
     _timer?.cancel();
     state = TypingUser(to, TypingCommand.typingStart);
     _timer = Timer.periodic(

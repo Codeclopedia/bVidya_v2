@@ -478,7 +478,16 @@ class Routes {
         break;
 
       case RouteList.studentProfileDetail:
-        screen = const StudentProfileScreen();
+        //   screen = const StudentProfileScreen();
+        //   break;
+        if (settings.arguments is Profile) {
+          Profile profileData = settings.arguments as Profile;
+          screen = StudentProfileDetail(
+            profile: profileData,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
         break;
 
       case RouteList.studentLearnings:

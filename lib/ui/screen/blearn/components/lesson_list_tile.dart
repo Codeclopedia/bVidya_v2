@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '/controller/blearn_providers.dart';
 import '/core/state.dart';
 import '/ui/screens.dart';
@@ -13,6 +16,7 @@ class LessonListTile extends StatelessWidget {
   final int openIndex;
   final Lesson lesson;
   final WidgetRef ref;
+  final bool isSubscribed;
   final Function(int) onExpand;
   final Function() onplay;
   final int courseId;
@@ -24,6 +28,7 @@ class LessonListTile extends StatelessWidget {
       required this.lesson,
       required this.openIndex,
       required this.ref,
+      required this.isSubscribed,
       required this.onExpand,
       required this.onplay,
       required this.courseId,
@@ -47,7 +52,18 @@ class LessonListTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              onExpand(openIndex == index ? -1 : index);
+              isSubscribed
+                  ? onExpand(openIndex == index ? -1 : index)
+                  : index == 0
+                      ? onExpand(openIndex == index ? -1 : index)
+                      : {
+                          showTopSnackBar(
+                            Overlay.of(context)!,
+                            const CustomSnackBar.error(
+                              message: 'Please Subscribe to Course first.',
+                            ),
+                          )
+                        };
               // openIndex == index
               //     ? ref.read(selectedIndexLessonProvider.notifier).state = -1
               //     : ref.read(selectedIndexLessonProvider.notifier).state =
@@ -63,7 +79,11 @@ class LessonListTile extends StatelessWidget {
                       Text(
                         'Lesson ${index + 1}',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: isSubscribed
+                              ? Colors.black
+                              : index == 0
+                                  ? Colors.black
+                                  : Colors.grey,
                           fontSize: 8.sp,
                           fontFamily: kFontFamily,
                           fontWeight: FontWeight.w300,
@@ -72,7 +92,11 @@ class LessonListTile extends StatelessWidget {
                       Text(
                         lesson.name ?? '',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: isSubscribed
+                              ? Colors.black
+                              : index == 0
+                                  ? Colors.black
+                                  : Colors.grey,
                           fontSize: 11.sp,
                           fontFamily: kFontFamily,
                           fontWeight: FontWeight.bold,

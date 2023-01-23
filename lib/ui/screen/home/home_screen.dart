@@ -3,8 +3,9 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/user_auth_provider.dart';
+import 'package:bvidya/core/utils/date_utils.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:intl/intl.dart';
 
 import '/core/utils/notification_controller.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
@@ -49,6 +50,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     if (widget.direct) {
       final user = await getMeAsUser();
       if (user == null) {
+        ref.read(userAuthChangeProvider.notifier).logout();
         return;
       }
       //
@@ -188,22 +190,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         } catch (_) {}
       },
       onLongPress: (() async {
-        // ChatPushRemindType remindType =
-        //     await BChatContactManager.fetchChatMuteStateFor(model.id);
-        // bool mute = remindType != ChatPushRemindType.NONE;
-        // final result = await showDialog(
-        //   context: context,
-        //   useSafeArea: true,
-        //   builder: (context) {
-        //     return Dialog(
-        //       // insetPadding: EdgeInsets.only(left: 6.w, top: 2.h),
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(3.w),
-        //       ),
-        //       child: ConversationMenuDialog(model: model, muted: mute),
-        //     );
-        //   },
-        // );
         final result = await showConversationOptions(context, model);
         if (result == null) {
           return;
@@ -213,7 +199,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         } else if (result == 2) {
           ref.read(chatConversationProvider).deleteConversationOnly(model.id);
           ref.read(callListProvider.notifier).setup();
-        } else {}
+        }
       }),
       child: _contactRow(model),
     );
@@ -289,10 +275,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               Text(
                 model.lastMessage == null
                     ? ''
-                    : DateFormat('h:mm a')
-                        .format(DateTime.fromMillisecondsSinceEpoch(
-                            model.lastMessage!.serverTime))
-                        .toUpperCase(),
+                    : formatConverastionTime(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            model.lastMessage!.serverTime)),
+
+                //  DateFormat('h:mm a')
+                //     .format(DateTime.fromMillisecondsSinceEpoch(
+                //         model.lastMessage!.serverTime))
+                //     .toUpperCase(),
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: colorTimeBadge,

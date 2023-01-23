@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import '/core/sdk_helpers/common.dart';
+import '../../../core/utils/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 

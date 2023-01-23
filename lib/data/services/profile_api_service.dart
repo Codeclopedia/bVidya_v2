@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 
@@ -95,5 +95,81 @@ class ProfileApiService {
       return FollowInstructorResponse(
           status: 'error', message: 'Unknown error -$e');
     }
+  }
+
+  Future<BaseResponse> updateProfilePic(String token, File file) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = token;
+      String fileName = file.path.split('/').last;
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(file.path, filename: fileName),
+      });
+
+      final response = await _dio
+          .post('$baseUrlApi${ApiList.updateProfileImage}', data: formData);
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future<BaseResponse> updateUserProfile(
+      {required String token,
+      required String name,
+      required String email,
+      required String age,
+      required String phone,
+      required String bio,
+      required String city,
+      required String address,
+      required String state,
+      required String country}) async {
+    // debugPrint('Sir Sorry $token');
+    final data = {
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'gender': '',
+      'age': age,
+      'language': '',
+      'bio': bio,
+      'occupation': '',
+      'city': city,
+      'state': state,
+      'address': address,
+      'country': country,
+    };
+    try {
+      _dio.options.headers['X-Auth-Token'] = token;
+      var response =
+          await _dio.post('$baseUrlApi${ApiList.updateProfile}', data: data);
+      print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+    }
+
+    // print("inside api service");
+    // print("response $response");
+    // print("${response.statusCode}");
+    // if (response.statusCode == 200) {
+    //   print(response.data);
+    //   return BaseResponse.fromJson(response.data);
+    // } else {
+    //   return BaseResponse();
+    // }
   }
 }

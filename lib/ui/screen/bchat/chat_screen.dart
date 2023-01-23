@@ -1,9 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
+import 'package:bvidya/core/constants/data.dart';
 import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
+import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
 // import '/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -72,7 +76,7 @@ class ChatScreen extends HookConsumerWidget {
       registerChatCallback('chat_screen', f, (messages) {
         for (var entry in messages.entries) {
           if (entry.value == TypingCommand.typingStart) {
-            print('command=>${entry.key}: ${entry.value}');
+            // print('command=>${entry.key}: ${entry.value}');
             ref.read(typingProvider(entry.key).notifier).beginTimer();
           }
         }
@@ -158,16 +162,17 @@ class ChatScreen extends HookConsumerWidget {
                       builder: (context, ref, child) {
                         final status = ref.watch(typingProvider(model.id));
                         if (status.status == TypingCommand.typingStart) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6.w, vertical: 2.h),
-                            child: Row(
-                              children: [
-                                const TypingIndicator(),
-                                Text('${model.contact.name} is Typing')
-                              ],
-                            ),
-                          );
+                          return _buildUserTyping();
+                          // Padding(
+                          //   padding: EdgeInsets.symmetric(
+                          //       horizontal: 6.w, vertical: 2.h),
+                          //   child: Row(
+                          //     children: [
+                          //        _buildUserTyping(),
+                          //       Text('${model.contact.name} is Typing')
+                          //     ],
+                          //   ),
+                          // );
                         } else {
                           return const SizedBox.shrink();
                         }
@@ -740,7 +745,8 @@ class ChatScreen extends HookConsumerWidget {
         AppSnackbar.instance.message(context, 'Need to implement');
       } else if (action == 1) {
         //Forward
-        AppSnackbar.instance.message(context, 'Need to implement');
+        // AppSnackbar.instance.message(context, 'Need to implement');
+        showForwardList(context, message);
       } else if (action == 2) {
         //Reply
         bool isOwnMessage = message.from != model.id;
@@ -825,32 +831,42 @@ class ChatScreen extends HookConsumerWidget {
     return 'Error while sending message';
   }
 
-  Widget _buildUserTyping(String name) {
+  Widget _buildUserTyping() {
     return Padding(
-      padding: const EdgeInsets.only(left: 15, top: 25),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.only(right: 2),
-            child: TypingIndicator(),
+          getCicleAvatar(
+              radius: 4.w, model.contact.name, model.contact.profileImage),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 2.w),
+            decoration: BoxDecoration(
+                color: AppColors.chatBoxBackgroundOthers,
+                borderRadius: BorderRadius.all(Radius.circular(3.w))),
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+            child: const TypingIndicator(),
           ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: name,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const TextSpan(
-                  text: ' is typing',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
+          // RichText(
+          //   text: TextSpan(
+          //     children: [
+          //       TextSpan(
+          //           text: model.contact.name,
+          //           style: TextStyle(
+          //               fontSize: 12,
+          //               fontFamily: kFontFamily,
+          //               fontWeight: FontWeight.bold,
+          //               color: Colors.black)),
+          //       TextSpan(
+          //         text: ' is typing',
+          //         style: TextStyle(
+          //             fontFamily: kFontFamily,
+          //             fontSize: 12,
+          //             color: Colors.black),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

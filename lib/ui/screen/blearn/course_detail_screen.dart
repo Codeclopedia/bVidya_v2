@@ -33,84 +33,91 @@ class CourseDetailScreen extends StatelessWidget {
 
       return ref.watch(bLearnCourseDetailProvider(course.id ?? 0)).when(
           data: (data) {
-            return Scaffold(
-              backgroundColor: AppColors.cardBackground,
-              floatingActionButton: selectedIndex == 0
-                  ? CustomFeedbackButton(
-                      isOpen: modelSheetOpened,
-                      callback: (modelSheetState) {
-                        ref.read(isModelSheetOpened.notifier).state =
-                            modelSheetState;
-                      },
-                    )
-                  : Container(),
-              body: SafeArea(
-                child: Stack(
-                  // clipBehavior: Clip.none,
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        _topImage(context),
-                        _subjectDetail(data, ref),
-                        SlidingTab(
-                          label1: 'Description',
-                          label2: 'Curriculum',
-                          selectedIndex: selectedIndex,
-                          callback: (index) {
-                            ref
-                                .read(selectedTabCourseDetailProvider.notifier)
-                                .state = index;
-                          },
-                        ),
-                        // _toggleItems(),
-                        SizedBox(height: 2.h),
-                        selectedIndex == 0
-                            ? _buildDescView(data)
-                            : _builCurriculumView(data),
-                      ],
-                    ),
-                    selectedIndex == 0
-                        ? Container()
-                        : data?.isSubscribed == true
-                            ? Container()
-                            : Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 3.w, vertical: 2.w),
-                                child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        showLoading(ref);
-                                        ref.read(blearnSubscribeCourseProvider(
-                                            course.id ?? 0));
-                                        ref.refresh(bLearnCourseDetailProvider(
-                                            course.id ?? 0));
-                                        hideLoading(ref);
-                                      },
-                                      child: Text("Start Learning"),
-                                      style: ElevatedButton.styleFrom(
-                                          fixedSize: Size(100.w, 15.w)),
-                                    )),
-                              ),
-                    Visibility(
-                      visible: modelSheetOpened,
-                      child: Spring.slide(
-                        slideType: SlideType.slide_in_bottom,
-                        curve: Curves.easeIn,
-                        // startOpacity: 0.5,
-                        // endOpacity: 1,
-                        withFade: true,
-                        animDuration: const Duration(milliseconds: 300),
-                        child: FeedbackPopup(
-                            course: course,
-                            onClose: () {
-                              ref.read(isModelSheetOpened.notifier).state =
-                                  false;
-                            }),
+            return Container(
+              margin: MediaQuery.of(context).viewInsets,
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                backgroundColor: AppColors.cardBackground,
+                floatingActionButton: selectedIndex == 0
+                    ? CustomFeedbackButton(
+                        isOpen: modelSheetOpened,
+                        callback: (modelSheetState) {
+                          ref.read(isModelSheetOpened.notifier).state =
+                              modelSheetState;
+                        },
+                      )
+                    : Container(),
+                body: SafeArea(
+                  child: Stack(
+                    // clipBehavior: Clip.none,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          _topImage(context),
+                          _subjectDetail(data, ref),
+                          SlidingTab(
+                            label1: 'Description',
+                            label2: 'Curriculum',
+                            selectedIndex: selectedIndex,
+                            callback: (index) {
+                              ref
+                                  .read(
+                                      selectedTabCourseDetailProvider.notifier)
+                                  .state = index;
+                            },
+                          ),
+                          // _toggleItems(),
+                          SizedBox(height: 2.h),
+                          selectedIndex == 0
+                              ? _buildDescView(data)
+                              : _builCurriculumView(data),
+                        ],
                       ),
-                    ),
-                  ],
+                      selectedIndex == 0
+                          ? Container()
+                          : data?.isSubscribed == true
+                              ? Container()
+                              : Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 3.w, vertical: 2.w),
+                                  child: Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          showLoading(ref);
+                                          ref.read(
+                                              blearnSubscribeCourseProvider(
+                                                  course.id ?? 0));
+                                          ref.refresh(
+                                              bLearnCourseDetailProvider(
+                                                  course.id ?? 0));
+                                          hideLoading(ref);
+                                        },
+                                        child: Text("Start Learning"),
+                                        style: ElevatedButton.styleFrom(
+                                            fixedSize: Size(100.w, 15.w)),
+                                      )),
+                                ),
+                      Visibility(
+                        visible: modelSheetOpened,
+                        child: Spring.slide(
+                          slideType: SlideType.slide_in_bottom,
+                          curve: Curves.easeIn,
+                          // startOpacity: 0.5,
+                          // endOpacity: 1,
+                          withFade: true,
+                          animDuration: const Duration(milliseconds: 300),
+                          child: FeedbackPopup(
+                              course: course,
+                              onClose: () {
+                                ref.read(isModelSheetOpened.notifier).state =
+                                    false;
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -599,14 +606,17 @@ class CourseDetailScreen extends StatelessWidget {
     // final providerFallback = getImageProvider('assets/images/banner_image.png');
     return Stack(
       children: [
-        SizedBox(
-          width: 95.w,
-          child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(2.w)),
-              child: Image(
-                image: getImageProvider(course.image ?? ''),
-                fit: BoxFit.fitWidth,
-              )),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+          child: SizedBox(
+            width: 100.w,
+            child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                child: Image(
+                  image: getImageProvider(course.image ?? ''),
+                  fit: BoxFit.fitWidth,
+                )),
+          ),
         ),
         Positioned(
           top: 1.h,

@@ -51,6 +51,12 @@ class UserAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  updateUser(User user) {
+    _user = user;
+    userToken = user.authToken;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     print('Disposed app');

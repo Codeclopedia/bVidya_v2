@@ -183,7 +183,8 @@ class MyLearningScreen extends ConsumerWidget {
                         return InkWell(
                           onTap: () => Navigator.pushNamed(
                               context, RouteList.bLearnCourseDetail,
-                              arguments: data?.courses?[0]),
+                              arguments: Course.fromJson(
+                                  data?.courses?[0].toJson() ?? {})),
                           child: Row(
                             children: [
                               const Icon(

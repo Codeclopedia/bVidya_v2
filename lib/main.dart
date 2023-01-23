@@ -19,6 +19,7 @@ Future<void> main() async {
 
   await BChatSDKController.instance.setup();
 
+
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {
@@ -37,7 +38,7 @@ Future<void> main() async {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
+  // debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
   await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();

@@ -1,12 +1,13 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:dotted_border/dotted_border.dart';
+
+import '/ui/dialog/group_conv_menu_dialog.dart';
+import '/core/utils/date_utils.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/contacts_select_notifier.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:intl/intl.dart';
 
-// import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -108,21 +109,22 @@ class GroupsScreen extends HookConsumerWidget {
             .read(groupConversationProvider.notifier)
             .updateConversationOnly(model.id);
       },
-      // onLongPress: (() {
-      //   showDialog(
-      //     context: context,
-      //     useSafeArea: true,
-      //     builder: (context) {
-      //       // return Dialog(
-      //       //   // insetPadding: EdgeInsets.only(left: 6.w, top: 2.h),
-      //       //   shape: RoundedRectangleBorder(
-      //       //     borderRadius: BorderRadius.circular(3.w),
-      //       //   ),
-      //       //   // child: ConversationMenuDialog(model: model),
-      //       // );
-      //     },
-      //   );
-      // }),
+      onLongPress: () async {
+        final result = await showGroupConversationOptions(context, model);
+        if (result == null) {
+          return;
+        }
+        if (result == 1) {
+          ref
+              .read(groupConversationProvider.notifier)
+              .updateConversationOnly(model.id);
+        } else if (result == 2) {
+          ref
+              .read(groupConversationProvider.notifier)
+              .deleteConversationOnly(model.id);
+          // ref.read(callListProvider.notifier).setup();
+        }
+      },
       child: _conversationRow(model),
     );
   }
@@ -186,12 +188,17 @@ class GroupsScreen extends HookConsumerWidget {
           Column(
             children: [
               Text(
-                DateFormat('h:mm a')
-                    .format(model.lastMessage == null
-                        ? DateTime.now()
-                        : DateTime.fromMillisecondsSinceEpoch(
-                            model.lastMessage!.serverTime))
-                    .toUpperCase(),
+                model.lastMessage == null
+                    ? ''
+                    : formatConverastionTime(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            model.lastMessage!.serverTime)),
+                // DateFormat('h:mm a')
+                //     .format(model.lastMessage == null
+                //         ? DateTime.now()
+                //         : DateTime.fromMillisecondsSinceEpoch(
+                //             model.lastMessage!.serverTime))
+                //     .toUpperCase(),
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: colorTimeBadge,

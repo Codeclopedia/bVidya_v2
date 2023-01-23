@@ -15,6 +15,8 @@ class ApiList {
   static const String changePassword = 'User/ChangePassword';
   static const String updateProfile = 'User/update';
 
+  static const String updateProfileImage = 'profile/upload';
+
   //bMeet
   static const String meetingList = 'meeting/meetings'; //GET
 
@@ -56,6 +58,7 @@ class ApiList {
   static const String userProfile = 'profile'; //POST
   static const String instructorFollowed = 'followed'; //GET
   static const String subscribedList = 'subscribed-courses'; //GET
+
 
   //bChat
   static const String getChatToken = 'chat-user/token'; //GET

@@ -116,7 +116,6 @@ class GroupConversationChangeNotifier
   void updateConversationOnly(String groupId) async {
     final model = _groupConversationMap[groupId];
     if (model != null) {
-      // await model.conversation?.markAllMessagesAsRead();
       final newModel = GroupConversationModel(
           id: groupId,
           groupInfo: model.groupInfo,
@@ -124,7 +123,6 @@ class GroupConversationChangeNotifier
           badgeCount: await model.conversation?.unreadCount() ?? 0,
           lastMessage: await model.conversation?.latestMessage(),
           image: model.image);
-      // model.lastMessage = (GroupConversationModel);
       _groupConversationMap.update(groupId, (v) => newModel,
           ifAbsent: () => newModel);
     }
@@ -171,6 +169,11 @@ class GroupConversationChangeNotifier
   }
 
   void update() {
+    state = _groupConversationMap.values.toList();
+  }
+
+  void deleteConversationOnly(String groupId) {
+    _groupConversationMap.remove(groupId);
     state = _groupConversationMap.values.toList();
   }
 }

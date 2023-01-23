@@ -98,6 +98,8 @@ class CourseDtl {
     this.updatedAt,
     this.categoryName,
     this.subcategoryName,
+    this.instructorName,
+    this.instructorImage,
   });
 
   int? id;
@@ -123,6 +125,8 @@ class CourseDtl {
   DateTime? updatedAt;
   String? categoryName;
   String? subcategoryName;
+  String? instructorName;
+  String? instructorImage;
 
   factory CourseDtl.fromRawJson(String str) =>
       CourseDtl.fromJson(json.decode(str));
@@ -153,6 +157,8 @@ class CourseDtl {
         updatedAt: DateTime.parse(json["updated_at"]),
         categoryName: json["category_name"],
         subcategoryName: json["subcategory_name"],
+        instructorName: json["instructor_name"],
+        instructorImage: json["instructor_image"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -179,6 +185,8 @@ class CourseDtl {
         "updated_at": updatedAt?.toIso8601String(),
         "category_name": categoryName,
         "subcategory_name": subcategoryName,
+        "instructor_name": instructorName,
+        "instructor_image": instructorImage,
       };
 }
 

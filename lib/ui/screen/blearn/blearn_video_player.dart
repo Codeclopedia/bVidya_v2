@@ -57,6 +57,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
       setcontrollervalue(ref);
       //timer for calling watch time api after eevery 1 minute
       timer = PausableTimer(const Duration(minutes: 1), () async {
+        timer?.reset();
         await sendVideoPlayback(ref, instructorId);
       });
 
@@ -241,6 +242,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
               child: LessonListTile(
                 index: index,
                 courseId: course.id ?? 0,
+                isSubscribed: isSubscribed,
                 instructorId: instructorId,
                 onExpand: (p0) {
                   ref.read(selectedLessonIndexProvider.notifier).state = p0;
@@ -291,6 +293,7 @@ class BlearnVideoPlayer extends HookConsumerWidget {
       flickManager?.flickVideoManager?.isPlaying ?? false
           ? timer?.start()
           : timer?.pause();
+
       timer?.isActive == true ? print("timer started") : print("timer stopped");
     });
   }
