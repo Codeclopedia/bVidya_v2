@@ -1,21 +1,37 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
-import 'package:bvidya/controller/profile_providers.dart';
-import 'package:bvidya/ui/screens.dart';
+// import 'dart:io';
 
 import '/core/constants/colors.dart';
 import '../../../dialog/image_picker_dialog.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '/core/state.dart';
+import '/controller/profile_providers.dart';
+import '/core/utils/common.dart';
+import '/ui/screens.dart';
 
 // final updateProfilePictureProvider =
 //     FutureProvider.autoDispose.family<dynamic, File?>(
 //   (ref, image) async =>
 //       ref.watch(loginRepositoryProvider).updateProfileImage(image),
 // );
+
+final isNameEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+final isEmailEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+final isPhoneNumberEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+final isAgeEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+final isAddressEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
 
 class StudentProfileDetail extends HookWidget {
   final Profile profile;
@@ -29,22 +45,6 @@ class StudentProfileDetail extends HookWidget {
     final phoneController = useTextEditingController(text: profile.phone);
     final ageController = useTextEditingController(text: profile.age);
     final addressController = useTextEditingController(text: profile.address);
-
-    final isNameEditing = StateProvider.autoDispose<bool>(
-      (ref) => false,
-    );
-    final isEmailEditing = StateProvider.autoDispose<bool>(
-      (ref) => false,
-    );
-    final isPhoneNumberEditing = StateProvider.autoDispose<bool>(
-      (ref) => false,
-    );
-    final isAgeEditing = StateProvider.autoDispose<bool>(
-      (ref) => false,
-    );
-    final isAddressEditing = StateProvider.autoDispose<bool>(
-      (ref) => false,
-    );
 
     return Scaffold(
       body: Consumer(builder: (context, ref, child) {
@@ -94,8 +94,8 @@ class StudentProfileDetail extends HookWidget {
                           ),
                           TextFormField(
                             controller: nameController,
-                            readOnly: ref.watch(isNameEditing) ? false : true,
-                            showCursor: ref.watch(isNameEditing) ? true : false,
+                            readOnly: !ref.watch(isNameEditing),
+                            showCursor: !ref.watch(isNameEditing),
                             keyboardType: TextInputType.name,
                             textInputAction: TextInputAction.next,
                             decoration: inputDirectionStyle.copyWith(
@@ -208,21 +208,29 @@ class StudentProfileDetail extends HookWidget {
                                         style: elevatedButtonTextStyle,
                                         onPressed: () async {
                                           showLoading(ref);
-                                          Map userdata = {
-                                            "name": nameController.text,
-                                            "email": emailController.text,
-                                            "address": addressController.text,
-                                            "phone": phoneController.text,
-                                            "age": ageController.text,
-                                          };
-                                          await ref
+                                          // Map userdata = {
+                                          //   "name": nameController.text,
+                                          //   "email": emailController.text,
+                                          //   "address": addressController.text,
+                                          //   "phone": phoneController.text,
+                                          //   "age": ageController.text,
+                                          // };
+                                          final result = await ref
                                               .read(profileRepositoryProvider)
                                               .updateProfile(
-                                                  nameController.text,
-                                                  emailController.text,
-                                                  phoneController.text,
-                                                  addressController.text,
-                                                  ageController.text);
+                                                  nameController.text.trim(),
+                                                  emailController.text.trim(),
+                                                  phoneController.text.trim(),
+                                                  addressController.text.trim(),
+                                                  ageController.text.trim());
+                                          if (result == null) {
+                                            AppSnackbar.instance.error(context,
+                                                'Error in updating details');
+                                          } else {
+                                            await updateStudentProfile(
+                                                ref, result);
+                                            Navigator.pop(context, true);
+                                          }
                                           // ref.read(
                                           //     updateProfileProvider(userdata));
                                           // print("click working");
@@ -279,12 +287,14 @@ class StudentProfileDetail extends HookWidget {
                                       final result = await ref
                                           .read(profileRepositoryProvider)
                                           .updateProfileImage(pickedFile);
-                                      if (result == null) {
+                                      if (result != null) {
+                                        updateUserImage(ref, result);
+                                        // updateUser(ref, user);
                                         AppSnackbar.instance.message(context,
-                                            'Profile updated successfully');
+                                            'Profile image updated successfully');
                                       } else {
-                                        AppSnackbar.instance
-                                            .error(context, result);
+                                        AppSnackbar.instance.error(
+                                            context, 'Error in updating image');
                                       }
                                     }
                                   },

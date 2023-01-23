@@ -18,13 +18,22 @@ import '../helpers/call_helper.dart';
 import '../ui_core.dart';
 import '../utils.dart';
 
+bool appLoaded = false;
+
 Map? _activeCallMap;
 String? _activeCallId;
 String? _lastCallId;
+String? _onGoingCallId;
 
 Map? get activeCallMap => _activeCallMap;
 String? get activeCallId => _activeCallId;
 String? get lastCallId => _lastCallId;
+
+String? get onGoingCallId => _onGoingCallId;
+
+setOnGoing(String? callId) {
+  _onGoingCallId = callId;
+}
 
 clearCall() {
   if (_activeCallId != null) {
@@ -339,6 +348,67 @@ onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
       NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
   await FlutterCallkitIncoming.endAllCalls();
   clearCall();
+}
+
+onDeclineCallBusy(String senderFCM, String callerIdFrom, String callerName,
+    String image, CallBody body, bool hasVideo) async {
+  // print('declining call');
+  User? user = await getMeAsUser();
+  String userId;
+  String userName;
+
+  if (user == null) {
+    userId = ChatClient.getInstance.currentUserId ?? '';
+    userName = body.calleeName;
+    // return;
+  } else {
+    userId = user.id.toString();
+    userName = user.name;
+  }
+
+   FCMApiService.instance.sendCallEndPush(senderFCM,
+      NotiConstants.actionCallDeclineBusy, body, userId, userName, hasVideo);
+
+  await FlutterCallkitIncoming.endCall(body.callId);
+  final kitParam = CallKitParams(
+    appName: 'bVidya',
+    avatar: '$baseImageApi$image',
+    id: body.callId,
+    nameCaller: callerName,
+    textAccept: 'Accept',
+    textDecline: 'Decline',
+    textCallback: 'Call back',
+    extra: {
+      'no_listen': false,
+      'from_id': callerIdFrom,
+      'from_name': callerName,
+      'caller_fcm': '',
+      'image': image,
+      'has_video': hasVideo,
+      'body': jsonEncode(body.toJson())
+    },
+    android: const AndroidParams(
+      // backgroundUrl: '$baseImageApi$callerImage',
+      isShowLogo: true,
+      incomingCallNotificationChannelName: 'call_channel',
+      missedCallNotificationChannelName: 'call_channel',
+      ringtonePath: 'system_ringtone_default',
+      isShowCallback: false,
+      isCustomNotification: false,
+
+      isShowMissedCallNotification: true,
+      // actionColor: AppColors.primaryColor,
+    ),
+    ios: IOSParams(
+      ringtonePath: 'system_ringtone_default',
+      supportsVideo: hasVideo,
+    ),
+    type: hasVideo ? 1 : 0,
+    handle: callerName,
+  );
+  FlutterCallkitIncoming.showMissCallNotification(kitParam);
+  // await FlutterCallkitIncoming.endAllCalls();
+  // clearCall();
 }
 
 endCall(CallBody callBody, String to) {

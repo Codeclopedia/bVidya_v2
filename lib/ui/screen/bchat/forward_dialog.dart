@@ -6,8 +6,11 @@ import '/core/state.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/core/ui_core.dart';
 
+final forwardedProvider =
+    StateProvider.family.autoDispose<bool, String>((ref, id) => false);
+
 Future showForwardList(
-    BuildContext context, ChatMessage message) async {
+    BuildContext context, ChatMessage message, String exceptId) async {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -15,7 +18,7 @@ Future showForwardList(
     builder: (context) {
       return GestureDetector(
         onTap: () => Navigator.of(context).pop(),
-        child: ForwardContactListDialog(message: message),
+        child: ForwardContactListDialog(message: message, exceptId: exceptId),
       );
     },
   );
@@ -23,8 +26,10 @@ Future showForwardList(
 
 class ForwardContactListDialog extends StatelessWidget {
   final ChatMessage message;
+  final String exceptId;
 
-  const ForwardContactListDialog({Key? key, required this.message})
+  const ForwardContactListDialog(
+      {Key? key, required this.message, required this.exceptId})
       : super(key: key);
 
   @override
@@ -55,42 +60,37 @@ class ForwardContactListDialog extends StatelessWidget {
                   Expanded(
                     child: Consumer(
                       builder: (context, ref, child) {
-                        return ref.watch(forwardListProvider).when(
+                        return ref.watch(forwardListProvider(exceptId)).when(
                             data: (data) {
                               if (data.isNotEmpty) {
-                                return GroupedListView(
+                                return GroupedListView<ForwardModel, ChatType>(
+                                  controller: controller,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 4.w, vertical: 1.h),
                                   elements: data,
-                                  groupBy: (element) => element.chatType.name,
-                                  groupSeparatorBuilder:
-                                      (String groupByValue) => Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Text(
-                                        groupByValue,
-                                        style: TextStyle(
-                                          fontFamily: kFontFamily,
-                                          fontSize: 11.sp,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      SizedBox(width: 1.w),
-                                      Expanded(
-                                        child: Container(
-                                          height: 0.5,
-                                          width: double.infinity,
-                                          color: Colors.grey.shade400,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  itemBuilder: (context, element) {
-                                    return _buildRow(element);
+                                  sort: false,
+                                  groupBy: (element) => element.chatType,
+                                  groupSeparatorBuilder: (ChatType type) =>
+                                      _header(type),
+
+                                  indexedItemBuilder:
+                                      (context, element, index) {
+                                    return _buildRow(
+                                        element,
+                                        ref.watch(
+                                            forwardedProvider(element.id)), () {
+                                      _sendMessage(element);
+                                      ref
+                                          .read(forwardedProvider(element.id)
+                                              .notifier)
+                                          .state = true;
+                                    }, last: index == data.length - 1);
                                   },
-                                  itemComparator: (item1, item2) => item1.name
-                                      .compareTo(item2.name), // optional
+                                  // itemComparator: (item1, item2) => item1.name
+                                  //     .compareTo(item2.name), // optional
                                   useStickyGroupSeparators: false, // optional
                                   floatingHeader: false, // optional
-                                  order: GroupedListOrder.ASC, // optional
+                                  // order: GroupedListOrder.ASC, // optional
                                   // ),
                                 );
 
@@ -128,59 +128,76 @@ class ForwardContactListDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(ForwardModel model) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
-      child: Row(
-        children: [
-          getCicleAvatar(radius: 5.w, model.name, model.image),
-          SizedBox(width: 3.w),
-          Expanded(
-            child: Text(
-              model.name,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: Colors.black,
-                fontSize: 11.sp,
-              ),
-            ),
+  Widget _header(ChatType type) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Text(
+          type == ChatType.Chat
+              ? S.current.search_contact_ppl
+              : S.current.home_btx_groups,
+          style: TextStyle(
+            fontFamily: kFontFamily,
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w600,
           ),
-          InkWell(
-            onTap: () {
-              _sendMessage(model);
-            },
-            child: CircleAvatar(
-              radius: 6.w,
-              backgroundColor: AppColors.yellowAccent,
-              child: getSvgIcon(
-                'icon_chat_forward.svg',
-                width: 5.w,
-                color: AppColors.primaryColor,
-              ),
-            ),
+        ),
+        SizedBox(width: 2.w),
+        Expanded(
+          child: Divider(
+            height: 1,
+            color: Colors.grey.shade400,
           ),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     elevation: 0,
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius:
-          //           BorderRadius.circular(3.w),
-          //     ),
-          //     foregroundColor:
-          //         AppColors.primaryColor,
-          //     backgroundColor:
-          //         AppColors.yellowAccent,
-          //   ),
-          //   onPressed: () {},
-          //   child: getSvgIcon(
-          //     'icon_chat_forward.svg',
-          //     width: 5.w,
-          //     color: AppColors.primaryColor,
-          //   ),
-          //   // child: Text('Send'),
-          // )
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRow(ForwardModel model, bool sent, Function() onSend,
+      {bool last = false}) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+          child: Row(
+            children: [
+              getCicleAvatar(radius: 5.w, model.name, model.image),
+              SizedBox(width: 3.w),
+              Expanded(
+                child: Text(
+                  model.name,
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: Colors.black,
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: sent
+                    ? null
+                    : () {
+                        onSend();
+                      },
+                child: CircleAvatar(
+                  radius: 6.w,
+                  backgroundColor: sent ? Colors.grey : AppColors.yellowAccent,
+                  child: getSvgIcon(
+                    'icon_chat_forward.svg',
+                    width: 5.w,
+                    color: sent ? Colors.black : AppColors.primaryColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!last)
+          const Divider(
+            height: 1,
+            color: Color(0xFFDBDBDB),
+          )
+      ],
     );
   }
 
@@ -189,6 +206,7 @@ class ForwardContactListDialog extends StatelessWidget {
       ChatMessage msg = ChatMessage.createSendMessage(
           body: message.body, to: model.id, chatType: model.chatType);
       final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
+      print('Forwarding msg: $msg');
       return chat;
     } on ChatError catch (e) {
       debugPrint('error in sening chat: $e');

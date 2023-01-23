@@ -97,30 +97,29 @@ class ProfileApiService {
     }
   }
 
-  Future<BaseResponse> updateProfilePic(String token, File file) async {
+  Future<ImageUpdateResponse> updateProfilePic(String token, File file) async {
     try {
       _dio.options.headers['X-Auth-Token'] = token;
       String fileName = file.path.split('/').last;
       final formData = FormData.fromMap({
         'image': await MultipartFile.fromFile(file.path, filename: fileName),
       });
-
       final response = await _dio
           .post('$baseUrlApi${ApiList.updateProfileImage}', data: formData);
       print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
-        return BaseResponse.fromJson(response.data);
+        return ImageUpdateResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return ImageUpdateResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+      return ImageUpdateResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
 
-  Future<BaseResponse> updateUserProfile(
+  Future<UpdateProfileResponse> updateUserProfile(
       {required String token,
       required String name,
       required String email,
@@ -148,18 +147,20 @@ class ProfileApiService {
     };
     try {
       _dio.options.headers['X-Auth-Token'] = token;
-      var response =
+      print('request: ${jsonEncode(data)} $token');
+      final response =
           await _dio.post('$baseUrlApi${ApiList.updateProfile}', data: data);
-      print('${jsonEncode(response.data)}');
+      print('${response.statusCode} ${response.statusMessage}');
       if (response.statusCode == 200) {
-        return BaseResponse.fromJson(response.data);
+        return UpdateProfileResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return UpdateProfileResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+      return UpdateProfileResponse(
+          status: 'error', message: 'Unknown error -$e');
     }
 
     // print("inside api service");

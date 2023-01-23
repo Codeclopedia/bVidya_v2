@@ -746,7 +746,7 @@ class ChatScreen extends HookConsumerWidget {
       } else if (action == 1) {
         //Forward
         // AppSnackbar.instance.message(context, 'Need to implement');
-        showForwardList(context, message);
+        await showForwardList(context, message, model.id);
       } else if (action == 2) {
         //Reply
         bool isOwnMessage = message.from != model.id;
@@ -995,11 +995,13 @@ class ChatScreen extends HookConsumerWidget {
               children: [
                 IconButton(
                   onPressed: () async {
+                    await showForwardList(
+                        context, selectedItems.first, model.id);
                     // ref
                     //     .read(bhatMessagesProvider(model).notifier)
                     //     .deleteMessages(selectedItems);
                     ref.read(selectedChatMessageListProvider.notifier).clear();
-                    AppSnackbar.instance.message(context, 'Need to implement');
+                    // AppSnackbar.instance.message(context, 'Need to implement');
                     // ChatClient.getInstance.chatManager.del
                   },
                   padding: EdgeInsets.all(1.w),

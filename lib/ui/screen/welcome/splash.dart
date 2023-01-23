@@ -80,6 +80,7 @@ class SplashScreen extends ConsumerWidget {
           if (await _handleNotificationClickScreen(context, next.value!)) {
             final diff = DateTime.now().millisecondsSinceEpoch - startTime;
             print('Time taken: $diff ms Notification');
+            appLoaded = true;
             return;
           }
 
@@ -93,6 +94,7 @@ class SplashScreen extends ConsumerWidget {
           await _handleFirebaseMessages(context, ref, next.value);
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
           print('Time taken: $diff ms');
+          appLoaded = true;
         } else {
           ref.read(splashImageProvider.notifier).state = Image.asset(
             'assets/images/loader.gif',
@@ -100,6 +102,7 @@ class SplashScreen extends ConsumerWidget {
           );
           Future.delayed(const Duration(seconds: 6), () {
             Navigator.pushReplacementNamed(context, RouteList.login);
+            appLoaded = true;
           });
         }
       },
@@ -145,7 +148,7 @@ class SplashScreen extends ConsumerWidget {
         'call_info': body,
         'call_direction_type': CallDirectionType.incoming,
         'direct': true,
-        'user_id':fromId
+        'user_id': fromId
       };
 
       if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
@@ -178,6 +181,7 @@ class SplashScreen extends ConsumerWidget {
     } else {
       debugPrint('  initialAction is null ${initialAction == null}');
     }
+
     return false;
   }
 

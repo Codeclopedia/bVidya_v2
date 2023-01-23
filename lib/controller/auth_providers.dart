@@ -1,3 +1,5 @@
+import 'package:bvidya/data/models/models.dart';
+
 import '/core/state.dart';
 import '/data/repository/auth_repository.dart';
 import '/data/services/auth_api_service.dart';
@@ -16,6 +18,10 @@ final loginTimerProvider =
 //Login
 final loginRepositoryProvider = Provider<AuthRepository>(
   (_) => AuthRepository(_.read(apiServiceProvider)),
+);
+
+final loadUserProvider = FutureProvider<User?>(
+  (ref) => ref.watch(loginRepositoryProvider).init(),
 );
 
 final authLoadProvider = FutureProvider.autoDispose(

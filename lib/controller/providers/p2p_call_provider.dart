@@ -85,6 +85,7 @@ class P2PCallProvider extends ChangeNotifier {
     // showOutGoingCall(body, callType == CallType.video);
     _isInitialized = true;
     _callType = callType;
+    setOnGoing(body.callId);
     // _read.reset();
     // _currentCallType = callType;
     _callDirection = type;
@@ -94,7 +95,10 @@ class P2PCallProvider extends ChangeNotifier {
       print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
-        if (action == NotiConstants.actionCallDecline) {
+        if (action == NotiConstants.actionCallDeclineBusy) {
+
+        }
+        if (action == NotiConstants.actionCallDecline ||action == NotiConstants.actionCallDeclineBusy) {
           if (!_disconnected && !_endCall) {
             _endCall = true;
             _read.reset();
@@ -350,6 +354,7 @@ class P2PCallProvider extends ChangeNotifier {
       if (_timer?.isActive == true) {
         _timer?.cancel();
       }
+      setOnGoing(null);
       await _player?.stop();
       await _player?.dispose();
       // await _player?.release();

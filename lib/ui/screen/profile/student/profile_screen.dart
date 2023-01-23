@@ -1,5 +1,7 @@
 // import 'package:bvidya/data/models/response/profile/user_profile_response.dart';
 
+// ignore_for_file: use_build_context_synchronously
+
 import '/controller/profile_providers.dart';
 import '../../../screens.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -57,7 +59,8 @@ class StudentProfileScreen extends ConsumerWidget {
               hideLoading(ref);
 
               if (profile != null) {
-                Navigator.pushNamed(context, RouteList.studentProfileDetail,
+                await Navigator.pushNamed(
+                    context, RouteList.studentProfileDetail,
                     arguments: profile);
               } else {
                 AppSnackbar.instance.error(context, 'Error in loading profile');

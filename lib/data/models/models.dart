@@ -22,6 +22,8 @@ export 'response/blearn/blearn_home_response.dart';
 export 'response/profile/instructor_profile_response.dart';
 export 'response/profile/user_profile_response.dart';
 export 'response/profile/subscribed_courses_response.dart';
+export 'response/profile/image_update_response.dart';
+export 'response/profile/update_profile_response.dart';
 
 export 'response/bchat/search_contact_response.dart';
 export 'response/bchat/contacts_response.dart';

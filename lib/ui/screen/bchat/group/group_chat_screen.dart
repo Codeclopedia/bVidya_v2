@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:file_picker/file_picker.dart';
+import '../forward_dialog.dart';
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 
@@ -642,7 +643,8 @@ class GroupChatScreen extends HookConsumerWidget {
       AppSnackbar.instance.message(context, 'Need to implement');
     } else if (action == 1) {
       //Forward
-      AppSnackbar.instance.message(context, 'Need to implement');
+      // AppSnackbar.instance.message(context, 'Need to implement');
+      await showForwardList(context, message, model.id);
     } else if (action == 2) {
       //Reply
       String name = message.attributes?['from_name'] ?? '';
@@ -861,7 +863,10 @@ class GroupChatScreen extends HookConsumerWidget {
                     //     .read(bhatMessagesProvider(model).notifier)
                     //     .deleteMessages(selectedItems);
                     ref.read(selectedChatMessageListProvider.notifier).clear();
-                    AppSnackbar.instance.message(context, 'Need to implement');
+                    // AppSnackbar.instance.message(context, 'Need to implement');
+                    await showForwardList(
+                        context, selectedItems.first, model.id);
+
                     // ChatClient.getInstance.chatManager.del
                   },
                   padding: EdgeInsets.all(1.w),

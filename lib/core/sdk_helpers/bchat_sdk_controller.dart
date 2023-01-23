@@ -29,7 +29,6 @@ class BChatSDKController {
         deleteMessagesAsExitGroup: false,
         requireAck: true,
         requireDeliveryAck: true,
-        
       );
       if (Platform.isIOS) {
         options.enableAPNs(
@@ -174,6 +173,7 @@ class BChatSDKController {
 //       }
 //     }
 // }
+  bool get isInitialized => _initialized;
 
   Future initChatSDK(User currentUser) async {
     if (_initialized) {

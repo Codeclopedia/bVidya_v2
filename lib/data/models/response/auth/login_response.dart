@@ -31,6 +31,8 @@ class User {
   String fcmToken;
   String image;
 
+ 
+
   User(
       {required this.id,
       required this.authToken,

@@ -117,6 +117,14 @@ class BackgroundHelper {
       String image = body.fromImage;
       bool hasVideo = body.callType == CallType.video;
 
+      if (onGoingCallId != null) {
+        if (onGoingCallId != callBody.callId) {
+          await onDeclineCallBusy(
+              fromFCM, fromId, fromName, image, callBody, hasVideo);
+        }
+        return;
+      }
+
       await showIncomingCallScreen(
           callBody, fromName, fromId, fromFCM, image, hasVideo);
     } catch (e) {

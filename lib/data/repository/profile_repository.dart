@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import '../models/models.dart';
-
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -31,7 +30,7 @@ class ProfileRepository {
 
   Future<SubscribedCourseBody?> getSubscribeCourses() async {
     final result = await _api.getSubscribedCourses(_authToken);
-    print("result inside repo :${result.body?.toJson()}");
+    // print("result inside repo :${result.body?.toJson()}");
     if (result.status == "success") {
       return result.body;
     } else {
@@ -49,33 +48,31 @@ class ProfileRepository {
     }
   }
 
-  Future updateProfile(String name, String email, String phone, String address,
-      String age) async {
+  Future<UpdatedProfile?> updateProfile(String name, String email, String phone,
+      String address, String age) async {
     final result = await _api.updateUserProfile(
         token: _authToken,
         name: name,
         email: email,
-        phone: phone.toString(),
+        phone: phone,
         address: address,
-        age: age.toString(),
-        bio: "",
-        city: "",
-        state: "",
-        country: "");
+        age: age,
+        bio: '',
+        city: '',
+        state: '',
+        country: '');
     if (result.status != null && result.status == successfull) {
-      
-      return null;
+      return result.body;
     }
-
-    return result;
+    return null;
   }
 
 //updateimage
   Future<String?> updateProfileImage(File file) async {
     final result = await _api.updateProfilePic(_authToken, file);
     if (result.status != null && result.status == successfull) {
-      return null;
+      return result.image;
     }
-    return result.message ?? 'Error in updating image';
+    return null;
   }
 }

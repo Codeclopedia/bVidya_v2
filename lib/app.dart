@@ -66,6 +66,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   @override
   void initState() {
     super.initState();
+    appLoaded = false;
     WidgetsBinding.instance.addObserver(this);
     initLoading();
     _firebase();
@@ -151,12 +152,14 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     registerForNewMessage(
       'bVidyaApp',
       (msgs) async {
+        if (!appLoaded) return;
         // if ((await getMeAsUser()) == null) return;
         for (var lastMessage in msgs) {
           if (lastMessage.conversationId != null) {
             if (lastMessage.conversationId != null) {
               if (lastMessage.chatType == ChatType.Chat) {
                 if (lastMessage.body.type == MessageType.CUSTOM) {
+                  // if (activeCallId != null) return;
                   ForegroundMessageHelper.handleCallNotification(
                       lastMessage, ref);
                 }

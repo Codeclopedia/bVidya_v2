@@ -11,15 +11,15 @@ class UserConsumer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(userAuthChangeProvider, ((previous, next) {
-      print('listen called ${next.isUserSigned}');
+      // print('listen called ${next.isUserSigned}');
       if (next.user == null && next.isUserSigned) {
         ref.read(userAuthChangeProvider).setUserSigned(false);
-        print('User is null');
+        // print('User is null');
         Navigator.pushNamedAndRemoveUntil(
             context, RouteList.login, (route) => route.isFirst);
       }
     }));
-    final user = ref.watch(loginRepositoryProvider).user;
+    final user = ref.watch(userAuthChangeProvider).user;
     if (user == null) {
       return const SizedBox.shrink();
     }

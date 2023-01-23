@@ -47,7 +47,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   handleInit() async {
     //initialized
-    if (widget.direct) {
+    if (widget.direct || !BChatSDKController.instance.isInitialized) {
       final user = await getMeAsUser();
       if (user == null) {
         ref.read(userAuthChangeProvider.notifier).logout();

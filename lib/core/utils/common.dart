@@ -1,3 +1,5 @@
+import 'package:bvidya/data/models/response/profile/update_profile_response.dart';
+
 import '/controller/bmeet_providers.dart';
 import '/controller/blive_providers.dart';
 import '/controller/profile_providers.dart';
@@ -40,4 +42,29 @@ Future<String?> postLoginSetup(WidgetRef ref) async {
 Future updateUser(WidgetRef ref, User user) async {
   ref.read(loginRepositoryProvider).updateUser(user);
   ref.read(userAuthChangeProvider.notifier).updateUser(user);
+}
+
+Future updateStudentProfile(WidgetRef ref, UpdatedProfile profile) async {
+  final user = await ref.read(userAuthChangeProvider.notifier).loadUser();
+  if (user != null) {
+    final newUser = User(
+        id: user.id,
+        authToken: user.authToken,
+        name: profile.name ?? '',
+        email: profile.email ?? '',
+        phone: profile.phone ?? '',
+        role: user.role,
+        fcmToken: user.fcmToken,
+        image: user.image);
+    updateUser(ref, newUser);
+  }
+}
+
+Future updateUserImage(WidgetRef ref, String image) async {
+  final user = await ref.read(userAuthChangeProvider.notifier).loadUser();
+  if (user != null) {
+    final map = user.toJson()..addAll({'image': image});
+    final newUser = User.fromJson(map);
+    updateUser(ref, newUser);
+  }
 }
