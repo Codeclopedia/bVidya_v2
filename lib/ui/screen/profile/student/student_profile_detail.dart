@@ -227,8 +227,7 @@ class StudentProfileDetail extends HookWidget {
                                             AppSnackbar.instance.error(context,
                                                 'Error in updating details');
                                           } else {
-                                            await updateStudentProfile(
-                                                ref, result);
+                                            await updateProfileData(ref, result);
                                             Navigator.pop(context, true);
                                           }
                                           // ref.read(

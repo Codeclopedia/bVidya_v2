@@ -7,6 +7,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
 import 'package:bvidya/core/constants/data.dart';
 import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
+import 'package:bvidya/core/utils/common.dart';
 import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
 // import '/core/routes.dart';
 
@@ -14,6 +15,7 @@ import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
@@ -742,7 +744,8 @@ class ChatScreen extends HookConsumerWidget {
       final action = await showMessageMenu(context, message);
       if (action == 0) {
         //Copy
-        AppSnackbar.instance.message(context, 'Need to implement');
+        // AppSnackbar.instance.message(context, 'Need to implement');
+        copyToClipboard([message]);
       } else if (action == 1) {
         //Forward
         // AppSnackbar.instance.message(context, 'Need to implement');
@@ -846,6 +849,12 @@ class ChatScreen extends HookConsumerWidget {
                 borderRadius: BorderRadius.all(Radius.circular(3.w))),
             padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
             child: const TypingIndicator(),
+            // child: JumpingDots(
+            //   color: AppColors.chatBoxMessageOthers,
+            //   radius: 1.w,
+            //   numberOfDots: 4,
+            //   // innerPadding: 1.w,
+            // ),
           ),
           // RichText(
           //   text: TextSpan(
@@ -972,11 +981,12 @@ class ChatScreen extends HookConsumerWidget {
                 .isEmpty),
             child: IconButton(
               onPressed: () async {
+                await copyToClipboard(selectedItems);
                 // ref
                 //     .read(bhatMessagesProvider(model).notifier)
                 //     .deleteMessages(selectedItems);
                 ref.read(selectedChatMessageListProvider.notifier).clear();
-                AppSnackbar.instance.message(context, 'Need to implement');
+                // AppSnackbar.instance.message(context, 'Need to implement');
                 // ChatClient.getInstance.chatManager.del
               },
               padding: EdgeInsets.all(1.w),

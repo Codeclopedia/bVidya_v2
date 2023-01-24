@@ -34,7 +34,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
     super.initState();
     _repeatingController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
     _repeatingController.repeat();
   }
@@ -48,8 +48,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 30,
-      height: 15,
+      width: 8.w,
+      height: 3.w,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -70,8 +70,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
         final double circleColorPercent = sin(pi * circleFlashPercent);
 
         return Container(
-          width: 5,
-          height: 5,
+          width: 1.5.w,
+          height: 1.5.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color.lerp(widget.flashingCircleDarkColor,

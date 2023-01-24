@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/utils/common.dart';
+
 import '/controller/profile_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -36,6 +38,7 @@ class TeacherProfile extends StatelessWidget {
                 hideLoading(ref);
 
                 if (profile != null) {
+                  await updateProfile(ref, profile);
                   Navigator.pushNamed(context, RouteList.teacherEditProfile,
                       arguments: profile);
                 } else {

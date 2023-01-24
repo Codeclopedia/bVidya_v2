@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/common.dart';
 import 'package:file_picker/file_picker.dart';
 import '../forward_dialog.dart';
 import '/data/models/contact_model.dart';
@@ -640,7 +641,8 @@ class GroupChatScreen extends HookConsumerWidget {
     final action = await showMessageMenu(context, message);
     if (action == 0) {
       //Copy
-      AppSnackbar.instance.message(context, 'Need to implement');
+      // AppSnackbar.instance.message(context, 'Need to implement');
+      copyToClipboardGroup([message]);
     } else if (action == 1) {
       //Forward
       // AppSnackbar.instance.message(context, 'Need to implement');
@@ -836,11 +838,12 @@ class GroupChatScreen extends HookConsumerWidget {
                 .isEmpty),
             child: IconButton(
               onPressed: () async {
+                await copyToClipboardGroup(selectedItems);
                 // ref
                 //     .read(bhatMessagesProvider(model).notifier)
                 //     .deleteMessages(selectedItems);
                 ref.read(selectedChatMessageListProvider.notifier).clear();
-                AppSnackbar.instance.message(context, 'Need to implement');
+                // AppSnackbar.instance.message(context, 'Need to implement');
                 // ChatClient.getInstance.chatManager.del
               },
               padding: EdgeInsets.all(1.w),
@@ -859,13 +862,14 @@ class GroupChatScreen extends HookConsumerWidget {
               children: [
                 IconButton(
                   onPressed: () async {
+                    await showForwardList(
+                        context, selectedItems.first, model.id);
+
                     // ref
                     //     .read(bhatMessagesProvider(model).notifier)
                     //     .deleteMessages(selectedItems);
                     ref.read(selectedChatMessageListProvider.notifier).clear();
                     // AppSnackbar.instance.message(context, 'Need to implement');
-                    await showForwardList(
-                        context, selectedItems.first, model.id);
 
                     // ChatClient.getInstance.chatManager.del
                   },

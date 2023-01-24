@@ -1,4 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils.dart';
+import 'package:bvidya/data/models/models.dart';
 import 'package:grouped_list/grouped_list.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
@@ -11,6 +13,8 @@ final forwardedProvider =
 
 Future showForwardList(
     BuildContext context, ChatMessage message, String exceptId) async {
+  final User? user = await getMeAsUser();
+  if (user == null) return;
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -18,7 +22,8 @@ Future showForwardList(
     builder: (context) {
       return GestureDetector(
         onTap: () => Navigator.of(context).pop(),
-        child: ForwardContactListDialog(message: message, exceptId: exceptId),
+        child: ForwardContactListDialog(
+            message: message, exceptId: exceptId, user: user),
       );
     },
   );
@@ -28,8 +33,12 @@ class ForwardContactListDialog extends StatelessWidget {
   final ChatMessage message;
   final String exceptId;
 
+  final User user;
   const ForwardContactListDialog(
-      {Key? key, required this.message, required this.exceptId})
+      {Key? key,
+      required this.message,
+      required this.exceptId,
+      required this.user})
       : super(key: key);
 
   @override
@@ -78,12 +87,15 @@ class ForwardContactListDialog extends StatelessWidget {
                                     return _buildRow(
                                         element,
                                         ref.watch(
-                                            forwardedProvider(element.id)), () {
-                                      _sendMessage(element);
-                                      ref
-                                          .read(forwardedProvider(element.id)
-                                              .notifier)
-                                          .state = true;
+                                            forwardedProvider(element.id)),
+                                        () async {
+                                      final sent = await _sendMessage(element);
+                                      if (sent != null) {
+                                        ref
+                                            .read(forwardedProvider(element.id)
+                                                .notifier)
+                                            .state = true;
+                                      }
                                     }, last: index == data.length - 1);
                                   },
                                   // itemComparator: (item1, item2) => item1.name
@@ -201,18 +213,69 @@ class ForwardContactListDialog extends StatelessWidget {
     );
   }
 
-  _sendMessage(ForwardModel model) async {
+  Future<ChatMessage?> _sendMessage(ForwardModel model) async {
     try {
       ChatMessage msg = ChatMessage.createSendMessage(
           body: message.body, to: model.id, chatType: model.chatType);
+      if (model.chatType == ChatType.GroupChat) {
+        if (msg.body.type == MessageType.TXT) {
+          msg.attributes = {
+            "em_apns_ext": {
+              // "em_push_title": "${_me.name} sent you a message",
+              // "em_push_content": input,
+              'type': 'group_chat',
+              'name': user.name,
+              'content': ((message.body as ChatTextMessageBody).content),
+              'image': user.image,
+              'group_name': model.name,
+              'content_type': msg.body.type.name,
+            },
+          };
+        } else {
+          msg.attributes = {
+            "em_apns_ext": {
+              'type': 'group_chat',
+              'name': user.name,
+              'image': model.image,
+              'group_name': model.name,
+              'content_type': msg.body.type.name,
+            },
+          };
+        }
+        msg.attributes?.addAll({'from_name': user.name});
+        msg.attributes?.addAll({'from_image': user.image});
+      } else if (model.chatType == ChatType.Chat) {
+        if (msg.body.type == MessageType.TXT) {
+          msg.attributes = {
+            "em_apns_ext": {
+              'type': 'chat',
+              'name': user.name,
+              'content': ((message.body as ChatTextMessageBody).content),
+              'image': user.image,
+              'content_type': msg.body.type.name,
+            },
+          };
+        } else {
+          msg.attributes = {
+            "em_apns_ext": {
+              'type': 'chat',
+              'name': user.name,
+              'image': user.image,
+              'content_type': msg.body.type.name,
+            },
+          };
+        }
+      }
+      msg.attributes?.addAll({"em_force_notification": true});
       final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-      print('Forwarding msg: $msg');
+      print('Forwarded msg:${message.msgId}=> ${chat.msgId}');
       return chat;
     } on ChatError catch (e) {
       debugPrint('error in sening chat: $e');
     } catch (e) {
       debugPrint('other error in deleting chat: $e');
     }
+    return null;
   }
 
   // _sendGroupMessage(ChatGroup group) async {

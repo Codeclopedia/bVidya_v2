@@ -3,16 +3,17 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/foreground_message_helper.dart';
-import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import '/core/helpers/foreground_message_helper.dart';
+import '/core/sdk_helpers/bchat_sdk_controller.dart';
+
 import '/core/sdk_helpers/bchat_handler.dart';
 import '/core/state.dart';
 import '/core/utils.dart';
-import '/core/utils/chat_utils.dart';
+// import '/core/utils/chat_utils.dart';
 import 'controller/providers/bchat/chat_conversation_provider.dart';
 import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'core/constants.dart';
@@ -143,11 +144,11 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }, onError: (e) {
       debugPrint('onTokenRefresh Error $e');
     });
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      if (message.data['alert'] != null && message.data['e'] != null) {
-        handleRemoteMessage(message, context, fallbackScreen: '');
-      }
-    });
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    //   if (message.data['alert'] != null && message.data['e'] != null) {
+    //     handleRemoteMessage(message, context, fallbackScreen: '');
+    //   }
+    // });
     // if ((await getMeAsUser()) == null) return;
     registerForNewMessage(
       'bVidyaApp',
@@ -155,54 +156,43 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         if (!appLoaded) return;
         // if ((await getMeAsUser()) == null) return;
         for (var lastMessage in msgs) {
-          if (lastMessage.conversationId != null) {
-            if (lastMessage.conversationId != null) {
-              if (lastMessage.chatType == ChatType.Chat) {
-                if (lastMessage.body.type == MessageType.CUSTOM) {
-                  // if (activeCallId != null) return;
-                  ForegroundMessageHelper.handleCallNotification(
-                      lastMessage, ref);
-                }
-                // print('on Chat Message=> ${lastMessage.body.toJson()} ');
-                final value = await ref
-                    .read(chatConversationProvider.notifier)
-                    .updateConversationMessage(lastMessage,
-                        update: Routes.getCurrentScreen() == RouteList.home);
-                if (value != null) {
-                  ForegroundMessageHelper.handleChatNotification(
-                      value, lastMessage);
-                }
-              } else if (lastMessage.chatType == ChatType.GroupChat) {
-                // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
-                ref
-                    .read(groupConversationProvider.notifier)
-                    .updateConversationMessage(
-                        lastMessage, lastMessage.conversationId!,
-                        update: Routes.getCurrentScreen() == RouteList.groups);
-                // final values = ref.read(groupConversationProvider);
-                final value = ref
-                    .read(groupConversationProvider)
-                    .firstWhereOrNull(
-                        (element) => element.id == lastMessage.conversationId);
-                if (value != null) {
-                  ForegroundMessageHelper.handleGroupChatNotification(
-                      value, lastMessage);
-                }
-                // if(values.l.contains(lastMessage.conversationId)){
-                // }
-              }
-              // NotificationController.handleForegroundMessage(lastMessage);
+          if (lastMessage.conversationId == null) {
+            continue;
+          }
+          if (lastMessage.chatType == ChatType.Chat) {
+            final value = await ref
+                .read(chatConversationProvider.notifier)
+                .updateConversationMessage(lastMessage,
+                    update: Routes.getCurrentScreen() == RouteList.home);
+            if (lastMessage.body.type == MessageType.CUSTOM) {
+              // if (activeCallId != null) return;
+              ForegroundMessageHelper.handleCallNotification(lastMessage, ref);
+            } else  if (value != null) {
+              ForegroundMessageHelper.handleChatNotification(
+                  value, lastMessage);
             }
+          } else if (lastMessage.chatType == ChatType.GroupChat) {
+            // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
+            ref
+                .read(groupConversationProvider.notifier)
+                .updateConversationMessage(
+                    lastMessage, lastMessage.conversationId!,
+                    update: Routes.getCurrentScreen() == RouteList.groups);
+            // final values = ref.read(groupConversationProvider);
+            final value = ref.read(groupConversationProvider).firstWhereOrNull(
+                (element) => element.id == lastMessage.conversationId);
+            if (value != null) {
+              ForegroundMessageHelper.handleGroupChatNotification(
+                  value, lastMessage);
+            }
+            // if(values.l.contains(lastMessage.conversationId)){
+            // }
+
+            // NotificationController.handleForegroundMessage(lastMessage);
           }
         }
       },
     );
-
-    // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    // if (!isAllowed) {
-    //   await Future.delayed(const Duration(seconds: 3));
-    //   await NotificationController.displayNotification(context);
-    // }
   }
 
   @override

@@ -1,5 +1,4 @@
 import '/controller/blearn_providers.dart';
-// import '/data/models/response/profile/subscribed_Courses_Response.dart';
 import '/ui/widgets.dart';
 import '/data/models/models.dart';
 import '/controller/profile_providers.dart';
@@ -10,7 +9,6 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../base_settings_noscroll.dart';
 import '../../../widget/courses_circularIndicator.dart';
-// import '../../../widget/tab_switcher.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:bvidya/core/helpers/bmeet_helper.dart';
@@ -95,11 +96,20 @@ class P2PCallProvider extends ChangeNotifier {
       print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
-        if (action == NotiConstants.actionCallDeclineBusy) {
 
-        }
-        if (action == NotiConstants.actionCallDecline ||action == NotiConstants.actionCallDeclineBusy) {
+        if (action == NotiConstants.actionCallDecline ||
+            action == NotiConstants.actionCallDeclineBusy) {
           if (!_disconnected && !_endCall) {
+            if (action == NotiConstants.actionCallDeclineBusy) {
+              Fluttertoast.showToast(
+                  msg: "${body.calleeName} is  Busy",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            }
             _endCall = true;
             _read.reset();
             clearCall();

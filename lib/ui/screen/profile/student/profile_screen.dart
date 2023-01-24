@@ -2,6 +2,8 @@
 
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/utils/common.dart';
+
 import '/controller/profile_providers.dart';
 import '../../../screens.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -59,6 +61,7 @@ class StudentProfileScreen extends ConsumerWidget {
               hideLoading(ref);
 
               if (profile != null) {
+                await updateProfile(ref, profile);
                 await Navigator.pushNamed(
                     context, RouteList.studentProfileDetail,
                     arguments: profile);
