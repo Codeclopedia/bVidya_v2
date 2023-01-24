@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
-import 'package:bvidya/core/constants/data.dart';
+// import 'package:bvidya/core/constants/data.dart';
 import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
 import 'package:bvidya/core/utils/common.dart';
 import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
@@ -15,7 +15,7 @@ import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
-import 'package:jumping_dot/jumping_dot.dart';
+// import 'package:jumping_dot/jumping_dot.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
