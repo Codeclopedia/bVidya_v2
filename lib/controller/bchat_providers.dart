@@ -13,7 +13,8 @@ import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/data/repository/bchat_respository.dart';
 
-import 'providers/bchat/chat_conversation_provider.dart';
+// import 'providers/bchat/chat_conversation_provider.dart';
+import 'providers/bchat/contact_list_provider.dart';
 import 'providers/bchat/groups_conversation_provider.dart';
 // import 'providers/p2p_call_provider.dart';
 // import 'providers/chat_messagelist_provider.dart';
@@ -90,11 +91,11 @@ final searchGroupProvider = FutureProvider.autoDispose<List<ChatGroup>>((ref) {
   }
 });
 
-final myContactsList = FutureProvider<List<Contacts>>((ref) async {
-  // final ids = await BChatContactManager.getContacts();
-  // final contacts = await ref.read(bChatProvider).getContactsByIds(ids);
-  return ref.watch(chatConversationProvider.select((value) => value.contacts));
-});
+// final myContactsList = FutureProvider<List<Contacts>>((ref) async {
+//   // final ids = await BChatContactManager.getContacts();
+//   // final contacts = await ref.read(bChatProvider).getContactsByIds(ids);
+//   return ref.watch(chatConversationProvider.select((value) => value.contacts));
+// });
 
 // final groupMembersList =
 //     FutureProvider.family<List<Contacts>, String>((ref, ids) async {
@@ -198,8 +199,7 @@ class ForwardModel {
 
 final forwardListProvider = FutureProvider.autoDispose
     .family<List<ForwardModel>, String>((ref, id) async {
-  final List<Contacts> contacts = ref.watch(myContactsList).valueOrNull ??
-      [] as List<Contacts>; //.maybeWhen(orElse: () => [] as List<Contacts>);
+  final List<Contacts> contacts = ref.watch(contactListProvider);
   final List<ChatGroup> groups = ref
           .watch(joinedGroupsListProvier)
           .valueOrNull ??

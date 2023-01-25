@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+
+import '../../../controller/providers/bchat/contact_list_provider.dart';
 import '/ui/dialog/add_contact_dialog.dart';
 import 'package:collection/collection.dart';
 import '/core/utils/chat_utils.dart';
@@ -128,8 +131,7 @@ class SearchScreen extends StatelessWidget {
             ),
             Consumer(builder: (context, ref, child) {
               final result = ref.watch(searchChatContact);
-              final contacts = ref.watch(
-                  chatConversationProvider.select((value) => value.contacts));
+              final contacts = ref.watch(contactListProvider);
               final contactIds = contacts.map((e) => e.userId).toList();
               return result.when(
                   data: ((data) {
@@ -171,9 +173,10 @@ class SearchScreen extends StatelessWidget {
                                   },
                                 );
                               } else if (value == 2) {
-                                ref
-                                    .read(chatConversationProvider)
-                                    .removedContact(item.userId!);
+                                await deleteContact(item.userId!, ref);
+                                // ref
+                                //     .read(chatConversationProvider)
+                                //     .removedContact(item.userId!);
                               } else {}
                             },
                             onTap: () async {

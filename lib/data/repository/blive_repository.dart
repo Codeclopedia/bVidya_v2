@@ -20,7 +20,7 @@ class BLiveRepository {
       required File image}) async {
     final result = await _api.createClass(_authToken,
         title: title, date: date, desc: desc, time: time, image: image);
-    if (result.status == successfull) {
+    if (result.status == 'successfulls') {
       return result.body!;
     } else {
       return null;

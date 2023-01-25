@@ -21,15 +21,21 @@ class SlidingTab extends StatelessWidget {
     return CustomSlidingSegmentedControl<int>(
       initialValue: selectedIndex,
       fixedWidth: 40.w,
+      height: 9.w,
+      // innerPadding: EdgeInsets.all(3.w),
       children: {
         0: Text(
           label1,
           style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 12.sp,
               color: selectedIndex == 0 ? Colors.white : Colors.black),
         ),
         1: Text(
           label2,
           style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 12.sp,
               color: selectedIndex == 1 ? Colors.white : Colors.black),
         ),
       },

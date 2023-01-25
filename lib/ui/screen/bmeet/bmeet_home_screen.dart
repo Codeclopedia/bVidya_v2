@@ -171,17 +171,17 @@ class BMeetHomeScreen extends StatelessWidget {
                   )),
               PopupMenuButton(
                 padding: EdgeInsets.zero,
-                onSelected: (item) {
+                onSelected: (item) async {
                   switch (item) {
                     case 'Edit':
-                      return null;
+                      // return null;
                       break;
                     case 'Delete':
-                      print(meeting.id);
-                      ref
+                      // print(meeting.id);
+                      await ref
                           .read(bMeetRepositoryProvider)
                           .deleteMeeting(meeting.id.toString());
-                      ref.read(bMeetSelectedHistoryProvider);
+                      ref.refresh(bMeetHistoryProvider);
                       break;
                   }
                   print(item);

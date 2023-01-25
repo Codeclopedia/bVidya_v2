@@ -9,7 +9,8 @@ import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
-import 'core/utils/callkit_utils.dart';
+// import 'core/utils/callkit_utils.dart';
+import 'core/utils/connectycubekit.dart';
 import 'core/utils/notification_controller.dart';
 import 'firebase_options.dart';
 import 'app.dart';
@@ -18,7 +19,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await BChatSDKController.instance.setup();
-
 
   if (Platform.isAndroid) {
     await Firebase.initializeApp();

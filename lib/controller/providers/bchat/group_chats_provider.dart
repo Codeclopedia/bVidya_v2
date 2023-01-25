@@ -142,4 +142,8 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
     state = _messagesMap.values.toList();
     // notifyListeners();
   }
+
+  void updateUi() {
+    state = _messagesMap.values.toList();
+  }
 }

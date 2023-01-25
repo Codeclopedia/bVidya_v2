@@ -31,7 +31,7 @@ class AuthRepository {
       final user = User.fromJson(jsonDecode(userStr) as Map<String, dynamic>);
       _user = user;
       userToken = user.authToken;
-      print(_user!.toJson());
+      // print(_user!.toJson());
       // await Future.delayed(const Duration(seconds: 2));
       return user;
     }

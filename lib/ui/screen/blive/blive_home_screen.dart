@@ -134,7 +134,9 @@ class BLiveHomeScreen extends HookWidget {
                   alignment: Alignment.topRight,
                   child: UserConsumer(
                     builder: (context, user, ref) {
-                      return user.role.toLowerCase() == 'teacher'
+                      return user.role.toLowerCase() == 'instructor' ||
+                              user.role.toLowerCase() == 'admin' ||
+                              user.role.toLowerCase() == 'teacher'
                           ? InkWell(
                               onTap: () {
                                 Navigator.pushNamed(
@@ -143,8 +145,11 @@ class BLiveHomeScreen extends HookWidget {
                               child: CircleAvatar(
                                 backgroundColor: AppColors.yellowAccent,
                                 radius: 5.w,
-                                child: const Icon(Icons.add,
-                                    color: AppColors.primaryColor),
+                                child: Icon(
+                                  Icons.add,
+                                  color: AppColors.primaryColor,
+                                  size: 4.w,
+                                ),
                                 // getSvgIcon('icon_next.svg', width: 4.5.w)
                               ),
                             )

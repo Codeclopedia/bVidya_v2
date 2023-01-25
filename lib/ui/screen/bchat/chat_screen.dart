@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 // import '/core/constants/data.dart';
 import '/core/sdk_helpers/typing_helper.dart';
@@ -810,9 +811,7 @@ class ChatScreen extends HookConsumerWidget {
           .read(bChatMessagesProvider(model).notifier)
           .sendMessage(msg);
       if (chat != null) {
-        ref
-            .read(chatConversationProvider.notifier)
-            .updateConversationMessage(msg);
+        ref.read(chatConversationProvider.notifier).addConversationMessage(msg);
         _scrollController.animateTo(
           0.0,
           duration: const Duration(milliseconds: 300),
@@ -1201,17 +1200,17 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   void _markRead(ChatMessage message) async {
-    // if (!message.hasRead)
-    {
+    try {
       await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
       await model.conversation?.markMessageAsRead(message.msgId);
-    }
+    } catch (_) {}
   }
 
   void _markOwnRead(ChatMessage message) async {
-    // if (!message.hasRead)
-    {
-      await model.conversation?.markMessageAsRead(message.msgId);
-    }
+    try {
+      if (!message.hasRead) {
+        await model.conversation?.markMessageAsRead(message.msgId);
+      }
+    } catch (_) {}
   }
 }

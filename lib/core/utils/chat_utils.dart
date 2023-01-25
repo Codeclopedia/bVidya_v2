@@ -3,13 +3,14 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
 import '/data/services/bchat_api_service.dart';
 import '/ui/screens.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../constants/route_list.dart';
 import '../state.dart';
@@ -88,75 +89,75 @@ Future<List<ChatPresence>> fetchOnlineStatuses(List<String> contacts) async {
   }
 }
 
-Future handleRemoteMessage(RemoteMessage message, BuildContext context,
-    {WidgetRef? ref,
-    // bool replace = true,
-    String fallbackScreen = RouteList.home}) async {
-  try {
-    debugPrint('getInitialMessage : ${message.toMap()}');
-    if (message.data['alert'] != null && message.data['e'] != null) {
-      if (ref != null) {
-        showLoading(ref);
-      }
-      //open specific screen
-      print('Data: ${message.data}');
-      String? type = jsonDecode(message.data['e'])['type'];
-      print('type: $type');
-      dynamic from = message.data['f'];
-      print('From $from');
+// Future handleRemoteMessage(RemoteMessage message, BuildContext context,
+//     {WidgetRef? ref,
+//     // bool replace = true,
+//     String fallbackScreen = RouteList.home}) async {
+//   try {
+//     debugPrint('getInitialMessage : ${message.toMap()}');
+//     if (message.data['alert'] != null && message.data['e'] != null) {
+//       if (ref != null) {
+//         showLoading(ref);
+//       }
+//       //open specific screen
+//       print('Data: ${message.data}');
+//       String? type = jsonDecode(message.data['e'])['type'];
+//       print('type: $type');
+//       dynamic from = message.data['f'];
+//       print('From $from');
 
-      if (from == null) {
-        if (fallbackScreen.isNotEmpty) {
-          Navigator.pushReplacementNamed(context, fallbackScreen);
-        }
-        return;
-      }
-      if (type == 'chat') {
-        final model = await getConversationModel(from.toString());
-        if (ref != null) {
-          hideLoading(ref);
-        }
-        if (model != null) {
-          await Navigator.pushReplacementNamed(
-              context, RouteList.chatScreenDirect,
-              arguments: model);
-          return;
-        }
-      } else if (type == 'group_chat') {
-        dynamic gId = message.data['g'];
-        print('From $gId');
-        if (gId == null) {
-          if (fallbackScreen.isNotEmpty) {
-            Navigator.pushReplacementNamed(context, fallbackScreen);
-          }
-          return;
-        }
+//       if (from == null) {
+//         if (fallbackScreen.isNotEmpty) {
+//           Navigator.pushReplacementNamed(context, fallbackScreen);
+//         }
+//         return;
+//       }
+//       if (type == 'chat') {
+//         final model = await getConversationModel(from.toString());
+//         if (ref != null) {
+//           hideLoading(ref);
+//         }
+//         if (model != null) {
+//           await Navigator.pushReplacementNamed(
+//               context, RouteList.chatScreenDirect,
+//               arguments: model);
+//           return;
+//         }
+//       } else if (type == 'group_chat') {
+//         dynamic gId = message.data['g'];
+//         print('From $gId');
+//         if (gId == null) {
+//           if (fallbackScreen.isNotEmpty) {
+//             Navigator.pushReplacementNamed(context, fallbackScreen);
+//           }
+//           return;
+//         }
 
-        final model = await getGroupConversationModel(gId.toString());
-        if (ref != null) {
-          hideLoading(ref);
-        }
-        if (model != null) {
-          await Navigator.pushReplacementNamed(
-              context, RouteList.groupChatScreenDirect,
-              arguments: model);
-          return;
-        }
-      }
-      if (fallbackScreen.isNotEmpty) {
-        Navigator.pushReplacementNamed(context, fallbackScreen);
-      }
-    }
-  } catch (e) {
-    print('Error $e');
-    if (ref != null) {
-      hideLoading(ref);
-    }
-    if (fallbackScreen.isNotEmpty) {
-      Navigator.pushReplacementNamed(context, fallbackScreen);
-    }
-  }
-}
+//         final model = await getGroupConversationModel(gId.toString());
+//         if (ref != null) {
+//           hideLoading(ref);
+//         }
+//         if (model != null) {
+//           await Navigator.pushReplacementNamed(
+//               context, RouteList.groupChatScreenDirect,
+//               arguments: model);
+//           return;
+//         }
+//       }
+//       if (fallbackScreen.isNotEmpty) {
+//         Navigator.pushReplacementNamed(context, fallbackScreen);
+//       }
+//     }
+//   } catch (e) {
+//     print('Error $e');
+//     if (ref != null) {
+//       hideLoading(ref);
+//     }
+//     if (fallbackScreen.isNotEmpty) {
+//       Navigator.pushReplacementNamed(context, fallbackScreen);
+//     }
+//   }
+// }
 
 Future<ConversationModel?> getConversationModel(String fromId) async {
   final user = await getMeAsUser();
@@ -222,15 +223,17 @@ openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
           content: message.isEmpty ? 'Hi' : message);
       await ChatClient.getInstance.chatManager.sendMessage(inviateMessage);
     }
-    ConversationModel model = ConversationModel(
-      id: contact.userId.toString(),
-      badgeCount: await conv.unreadCount(),
-      contact: contact,
-      conversation: conv,
-      lastMessage: await conv.latestMessage(),
-      // isOnline: null,
-    );
-    ref.read(chatConversationProvider).addOrUpdateConversation(model);
+    final model = await addNewContact(contact, ref);
+    if (model == null) return;
+    // ConversationModel model = ConversationModel(
+    //   id: contact.userId.toString(),
+    //   badgeCount: await conv.unreadCount(),
+    //   contact: contact,
+    //   conversation: conv,
+    //   lastMessage: await conv.latestMessage(),
+    //   // isOnline: null,
+    // );
+    // ref.read(chatConversationProvider).addOrUpdateConversation(model);
     hideLoading(ref);
     Navigator.pushReplacementNamed(context, RouteList.chatScreen,
         arguments: model);

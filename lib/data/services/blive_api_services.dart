@@ -27,8 +27,8 @@ class BLiveApiService {
       FormData formData = FormData.fromMap({
         'name': title,
         'description': desc,
-        'date': DateFormat.yMMMd(date),
-        'time': DateFormat.Hm(time),
+        'date': DateFormat('y-MM-dd').format(date),
+        'time': DateFormat.Hm().format(time),
         'image': await MultipartFile.fromFile(image.path, filename: fileName),
       });
       _dio.options.headers['X-Auth-Token'] = authToken;

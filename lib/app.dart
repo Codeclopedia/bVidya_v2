@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,13 +15,14 @@ import '/core/sdk_helpers/bchat_handler.dart';
 import '/core/state.dart';
 import '/core/utils.dart';
 // import '/core/utils/chat_utils.dart';
-import 'controller/providers/bchat/chat_conversation_provider.dart';
+// import 'controller/providers/bchat/chat_conversation_provider.dart';
 import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'core/constants.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
+import 'core/utils/connectycubekit.dart';
 import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
@@ -69,10 +71,11 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     super.initState();
     appLoaded = false;
     WidgetsBinding.instance.addObserver(this);
+    setupCallKit();
+
     initLoading();
     _firebase();
     NotificationController.startListeningNotificationEvents();
-    setupCallKit();
   }
 
   @override
@@ -92,22 +95,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   }
 
   void _firebase() async {
-    // FirebaseMessaging? messaging = FirebaseMessaging.instance;
-    // if (messaging == null) return;
-    // NotificationSettings settings =
-    //  await FirebaseMessaging.instance.requestPermission(
-    //   alert: true,
-    //   announcement: false,
-    //   badge: true,
-    //   carPlay: false,
-    //   criticalAlert: false,
-    //   provisional: false,
-    //   sound: true,
-    // );
-    // print('User granted permission: ${settings.authorizationStatus}');
-
-    // FirebaseMessaging.instance.subscribeToTopic('news');
-
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
     FirebaseMessaging.onMessage.listen((message) async {
@@ -160,14 +147,15 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
             continue;
           }
           if (lastMessage.chatType == ChatType.Chat) {
-            final value = await ref
-                .read(chatConversationProvider.notifier)
-                .updateConversationMessage(lastMessage,
-                    update: Routes.getCurrentScreen() == RouteList.home);
+            final value = await onNewChatMessage(lastMessage, ref);
+            // final value = await ref
+            //     .read(chatConversationProvider.notifier)
+            //     .updateConversationMessage(lastMessage,
+            //         update: Routes.getCurrentScreen() == RouteList.home);
             if (lastMessage.body.type == MessageType.CUSTOM) {
               // if (activeCallId != null) return;
               ForegroundMessageHelper.handleCallNotification(lastMessage, ref);
-            } else  if (value != null) {
+            } else if (value != null) {
               ForegroundMessageHelper.handleChatNotification(
                   value, lastMessage);
             }
@@ -187,7 +175,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
             }
             // if(values.l.contains(lastMessage.conversationId)){
             // }
-
             // NotificationController.handleForegroundMessage(lastMessage);
           }
         }

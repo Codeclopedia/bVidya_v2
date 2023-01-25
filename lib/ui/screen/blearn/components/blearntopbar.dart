@@ -56,9 +56,10 @@ class BlearnUserTopBar extends StatelessWidget {
                 radius: 4.5.w,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                  child: const Icon(
+                  child: Icon(
                     Icons.favorite_outline,
                     color: AppColors.primaryColor,
+                    size: 5.w,
                   ),
                 ),
               ),
@@ -81,8 +82,9 @@ class BlearnUserTopBar extends StatelessWidget {
                 radius: 4.5.w,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                  child: const Icon(
+                  child: Icon(
                     Icons.search,
+                    size: 5.w,
                     color: AppColors.primaryColor,
                   ),
                 ),

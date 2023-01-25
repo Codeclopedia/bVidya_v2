@@ -1,12 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
 // import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:bvidya/controller/providers/bchat/contact_list_provider.dart';
+
 import '/core/utils/chat_utils.dart';
 import '/ui/dialog/contact_menu_dialog.dart';
 import 'package:grouped_list/grouped_list.dart';
 
-import '/controller/providers/bchat/chat_conversation_provider.dart';
-import '/controller/bchat_providers.dart';
 import '/core/constants/route_list.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
@@ -26,16 +27,22 @@ class ContactListScreen extends StatelessWidget {
         topBar: const BAppBar(title: 'Start New Conversation'),
         body: Consumer(
           builder: (context, ref, child) {
-            return ref.watch(myContactsList).when(
-                data: (data) {
-                  if (data.isNotEmpty) {
-                    return _buildList(context, ref, data);
-                  } else {
-                    return buildEmptyPlaceHolder('No Contacts');
-                  }
-                },
-                error: (error, t) => buildEmptyPlaceHolder('No Contacts'),
-                loading: () => buildLoading);
+            final data = ref.watch(contactListProvider);
+            if (data.isNotEmpty) {
+              return _buildList(context, ref, data);
+            } else {
+              return buildEmptyPlaceHolder('No Contacts');
+            }
+            // return ref.watch(myContactsList).when(
+            //     data: (data) {
+            //       if (data.isNotEmpty) {
+            //         return _buildList(context, ref, data);
+            //       } else {
+            //         return buildEmptyPlaceHolder('No Contacts');
+            //       }
+            //     },
+            //     error: (error, t) => buildEmptyPlaceHolder('No Contacts'),
+            //     loading: () => buildLoading);
           },
         ),
       ),
@@ -80,9 +87,10 @@ class ContactListScreen extends StatelessWidget {
                           },
                         );
                       } else if (value == 2) {
-                        ref
-                            .read(chatConversationProvider)
-                            .removedContact(element.userId);
+                        await deleteContact(element.userId, ref);
+                        // ref
+                        //     .read(chatConversationProvider)
+                        //     .removedContact(element.userId);
                       } else {}
                     },
                     onTap: (() async {

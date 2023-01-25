@@ -51,28 +51,30 @@ class CourseDetailScreen extends StatelessWidget {
                   child: Stack(
                     // clipBehavior: Clip.none,
                     children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          _topImage(context),
-                          _subjectDetail(data, ref),
-                          SlidingTab(
-                            label1: 'Description',
-                            label2: 'Curriculum',
-                            selectedIndex: selectedIndex,
-                            callback: (index) {
-                              ref
-                                  .read(
-                                      selectedTabCourseDetailProvider.notifier)
-                                  .state = index;
-                            },
-                          ),
-                          // _toggleItems(),
-                          SizedBox(height: 2.h),
-                          selectedIndex == 0
-                              ? _buildDescView(data)
-                              : _builCurriculumView(data),
-                        ],
+                      SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            _topImage(context),
+                            _subjectDetail(data, ref),
+                            SlidingTab(
+                              label1: 'Description',
+                              label2: 'Curriculum',
+                              selectedIndex: selectedIndex,
+                              callback: (index) {
+                                ref
+                                    .read(selectedTabCourseDetailProvider
+                                        .notifier)
+                                    .state = index;
+                              },
+                            ),
+                            // _toggleItems(),
+                            SizedBox(height: 2.h),
+                            selectedIndex == 0
+                                ? _buildDescView(data)
+                                : _builCurriculumView(data),
+                          ],
+                        ),
                       ),
                       selectedIndex == 0
                           ? Container()
@@ -83,20 +85,23 @@ class CourseDetailScreen extends StatelessWidget {
                                       horizontal: 3.w, vertical: 2.w),
                                   child: Align(
                                       alignment: Alignment.bottomCenter,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showLoading(ref);
-                                          ref.read(
-                                              blearnSubscribeCourseProvider(
-                                                  course.id ?? 0));
-                                          ref.refresh(
-                                              bLearnCourseDetailProvider(
-                                                  course.id ?? 0));
-                                          hideLoading(ref);
-                                        },
-                                        child: Text("Start Learning"),
-                                        style: ElevatedButton.styleFrom(
-                                            fixedSize: Size(100.w, 15.w)),
+                                      child: SizedBox(
+                                        width: 90.w,
+                                        height: 12.w,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            showLoading(ref);
+                                            ref.read(
+                                                blearnSubscribeCourseProvider(
+                                                    course.id ?? 0));
+                                            ref.refresh(
+                                                bLearnCourseDetailProvider(
+                                                    course.id ?? 0));
+                                            hideLoading(ref);
+                                          },
+                                          style: elevatedButtonStyle,
+                                          child: const Text("Start Learning"),
+                                        ),
                                       )),
                                 ),
                       Visibility(
@@ -128,9 +133,8 @@ class CourseDetailScreen extends StatelessWidget {
   }
 
   Widget _builCurriculumView(CourseDetailBody? coursedata) {
-    return Expanded(
-        child: SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
         child: Column(
@@ -180,7 +184,7 @@ class CourseDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildLessons(WidgetRef ref, List<Lesson> lessons, bool isSubscribed) {
@@ -209,10 +213,10 @@ class CourseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDescView(CourseDetailBody? coursedetail) {
-    return Expanded(
-        child: Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
       child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -269,8 +273,17 @@ class CourseDetailScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 1.h),
-            _getText(),
-            SizedBox(height: 10.w),
+            // _getText(),
+            Text(
+              course.description ?? '',
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: Colors.black87,
+                fontSize: 9.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 4.w),
             const TwoColorText(
               first: 'Reviews',
               second: '',
@@ -294,11 +307,19 @@ class CourseDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 
   Widget _getText() {
-    return Text(course.description ?? '');
+    return Text(
+      course.description ?? '',
+      style: TextStyle(
+        fontFamily: kFontFamily,
+        color: Colors.black87,
+        fontSize: 9.sp,
+        fontWeight: FontWeight.w400,
+      ),
+    );
   }
 
   Widget _buildTestimonialList(List<CourseFeedback>? feedbackList) {
@@ -458,7 +479,7 @@ class CourseDetailScreen extends StatelessWidget {
 
   Widget _subjectDetail(CourseDetailBody? coursedata, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 5.w),
+      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
       child: Column(
         children: [
           Row(
@@ -502,6 +523,7 @@ class CourseDetailScreen extends StatelessWidget {
                   child: coursedata?.isWishlisted == true
                       ? Icon(
                           Icons.favorite,
+                          size: 8.w,
                           color: Colors.pink[400],
                         )
                       : Icon(
@@ -526,7 +548,8 @@ class CourseDetailScreen extends StatelessWidget {
               _buildMeta('Category', coursedata?.courses?[0].categoryName ?? "",
                   'icon_category.svg'),
             ],
-          )
+          ),
+          SizedBox(height: 2.h),
         ],
       ),
     );

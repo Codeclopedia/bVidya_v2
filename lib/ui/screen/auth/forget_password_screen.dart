@@ -119,13 +119,14 @@ class ForgetPasswordScreen extends HookConsumerWidget {
     showLoading(ref);
     final response = await ApiAuthService.instance.requestForgotPassword(email);
     if (response.status != 'successfull') {
+      hideLoading(ref);
       AppSnackbar.instance
           .error(context, response.message ?? 'Unknown error occurred!!');
       await Future.delayed(const Duration(seconds: 2));
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, RouteList.login);
     } else {
-      Navigator.pop(context);
+      hideLoading(ref);
+      Navigator.pushReplacementNamed(context, RouteList.login);
     }
-    hideLoading(ref);
   }
 }

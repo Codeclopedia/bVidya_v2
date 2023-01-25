@@ -1,263 +1,233 @@
-// ignore_for_file: use_build_context_synchronously
+// // ignore_for_file: use_build_context_synchronously
 
-import 'dart:convert';
+// import 'dart:convert';
 
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_callkit_incoming/entities/entities.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+// import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:flutter_callkit_incoming/entities/entities.dart';
+// import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
-import '/data/models/response/auth/login_response.dart';
-import '/data/models/response/bchat/p2p_call_response.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/models/response/auth/login_response.dart';
+// import '/data/models/response/bchat/p2p_call_response.dart';
+// import '/data/services/fcm_api_service.dart';
 
-import '../routes.dart';
-import '/core/helpers/extensions.dart';
-import '/app.dart';
-import '../constants.dart';
-import '../helpers/call_helper.dart';
-import '../ui_core.dart';
-import '../utils.dart';
+// import '../routes.dart';
+// import '/core/helpers/extensions.dart';
+// import '/app.dart';
+// import '../constants.dart';
+// import '../helpers/call_helper.dart';
+// import '../ui_core.dart';
+// import '../utils.dart';
 
-bool appLoaded = false;
+// bool appLoaded = false;
 
-Map? _activeCallMap;
-String? _activeCallId;
-String? _lastCallId;
-String? _onGoingCallId;
+// Map? _activeCallMap;
+// String? _activeCallId;
+// String? _lastCallId;
+// String? _onGoingCallId;
 
-Map? get activeCallMap => _activeCallMap;
-String? get activeCallId => _activeCallId;
-String? get lastCallId => _lastCallId;
+// Map? get activeCallMap => _activeCallMap;
+// String? get activeCallId => _activeCallId;
+// String? get lastCallId => _lastCallId;
 
-String? get onGoingCallId => _onGoingCallId;
+// String? get onGoingCallId => _onGoingCallId;
 
-setOnGoing(String? callId) {
-  _onGoingCallId = callId;
-}
+// setOnGoing(String? callId) {
+//   _onGoingCallId = callId;
+// }
 
-clearCall() {
-  if (_activeCallId != null) {
-    _lastCallId = _activeCallId;
-  }
-  _activeCallId = null;
-  _activeCallMap = null;
-}
+// clearCall() {
+//   print('clear Call Called => active: $_activeCallId last:$_lastCallId');
+//   if (_activeCallId != null) {
+//     _lastCallId = _activeCallId;
+//   }
+//   _activeCallId = null;
+//   _activeCallMap = null;
+// }
 
-_getActiveCall() async {
-  try {
-    // print('loading active calls');
-    final List<dynamic>? list = await FlutterCallkitIncoming.activeCalls();
-    if (list?.isNotEmpty == true) {
-      final id = list![0]['id'];
-      // print('id: $id -> ${list[0]}');
-      final map = list[0]['extra'];
-      if (map == null) {
-        // print('map: is null');
-        _activeCallId = null;
-        _activeCallMap = null;
-        return;
-      }
-      // print('map: $id -> $map');
-      String? fromId = map['from_id'];
-      if (fromId == null) {
-        // print('Not a valid Active calls');
-        _activeCallId = null;
-        _activeCallMap = null;
-        return;
-      }
-      _activeCallMap = map;
-      _activeCallId = id;
-      return;
-    } else {
-      // print('No Active calls');
-    }
-  } catch (e) {
-    // print('error in getting active calls');
-  }
-  _activeCallMap = null;
-  _activeCallId = null;
-}
+// // Future _getActiveCall() async {
+// //   try {
+// //     // print('loading active calls');
+// //     final List<dynamic>? list = await FlutterCallkitIncoming.activeCalls();
+// //     if (list?.isNotEmpty == true) {
+// //       final id = list![0]['id'];
+// //       print('_getActiveCall=>id: $id ');
+// //       // print('id: $id -> ${list[0]}');
+// //       final map = list[0]['extra'];
+// //       if (map == null) {
+// //         print('map: is null');
+// //         _activeCallId = null;
+// //         _activeCallMap = null;
+// //         return;
+// //       }
+// //       // print('map: $id -> $map');
+// //       String? fromId = map['from_id'];
+// //       if (fromId == null) {
+// //         print('Not a valid Active calls');
+// //         _activeCallId = null;
+// //         _activeCallMap = null;
+// //         return;
+// //       }
+// //       _activeCallMap = map;
+// //       _activeCallId = id;
+// //       return;
+// //     } else {
+// //       print('No Active calls');
+// //     }
+// //   } catch (e) {
+// //     print('error in getting active calls');
+// //   }
+// //   _activeCallMap = null;
+// //   _activeCallId = null;
+// // }
 
-setupCallKit() async {
-  await _getActiveCall();
-  FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
-    if (event == null) {
-      print('onCall Event Null'); //
-      return;
-    }
-    if (event.event == Event.ACTION_CALL_ENDED) {
-      clearCall();
-      return;
-    }
-    final map = event.body['extra'];
-    if (map == null) {
-      return;
-    }
-    String? fromId = map['from_id'];
-    if (fromId == null) {
-      print('Event ${event.event}  from_id is null so-> $map');
-      return;
-    }
+// // Future loadCalls() async {
+// //   await _getActiveCall();
+// // }
 
-    String fromName = map['from_name'];
-    String callerFCM = map['caller_fcm'];
-    String image = map['image'];
-    CallBody body = CallBody.fromJson(jsonDecode(map['body']));
-    bool hasVideo = map['has_video'];
+// Future setupCallKit() async {
+//   // await _getActiveCall();
+//   FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
+//     if (event == null) {
+//       print('onCall Event Null'); //
+//       return;
+//     }
+//     if (event.event == Event.ACTION_CALL_ENDED) {
+//       clearCall();
+//       return;
+//     }
+//     final map = event.body['extra'];
+//     if (map == null) {
+//       return;
+//     }
+//     String? fromId = map['from_id'];
+//     if (fromId == null) {
+//       print('Event ${event.event}  from_id is null so-> $map');
+//       return;
+//     }
 
-    // print('onCall Event ${event.event}  - $map');
+//     String fromName = map['from_name'];
+//     String callerFCM = map['caller_fcm'];
+//     String image = map['image'];
+//     CallBody body = CallBody.fromJson(jsonDecode(map['body']));
+//     bool hasVideo = map['has_video'];
 
-    switch (event.event) {
-      case Event.ACTION_CALL_ACCEPT:
-        onCallAccept(fromId, callerFCM, fromName, image, body, hasVideo);
-        break;
-      case Event.ACTION_CALL_DECLINE:
-        onDeclineCall(callerFCM, fromId, fromName, image, body, hasVideo);
-        break;
-      case Event.ACTION_CALL_START:
-        break;
-      case Event.ACTION_CALL_ENDED:
-        break;
-      default:
-    }
-  });
-}
+//     // print('onCallEven => event: ${}} callId:${body.callId}');
 
-Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
-  CallBody? callBody = remoteMessage.payload();
-  if (callBody == null) {
-    clearCall();
-    await FlutterCallkitIncoming.endAllCalls();
-    return;
-  }
-  await _getActiveCall();
-  if (_activeCallId == null) {
-    await FlutterCallkitIncoming.endAllCalls();
-    return;
-  }
-  clearCall();
-  _lastCallId = callBody.callId;
+//     // print('onCall Event ${event.event}  - $map');
 
-  String fromId = remoteMessage.data["from_id"];
-  String callerName = remoteMessage.data["from_name"];
-  String callerImage = remoteMessage.data['image'];
-  bool hasVideo = remoteMessage.data['has_video'] == 'true';
+//     switch (event.event) {
+//       case Event.ACTION_CALL_ACCEPT:
+//         _activeCallId = body.callId;
+//         _activeCallMap = map;
+//         onCallAccept(fromId, callerFCM, fromName, image, body, hasVideo);
+//         break;
+//       case Event.ACTION_CALL_DECLINE:
+//         onDeclineCall(callerFCM, fromId, fromName, image, body, hasVideo);
+//         break;
+//       case Event.ACTION_CALL_START:
+//         break;
+//       case Event.ACTION_CALL_ENDED:
+//         break;
+//       default:
+//     }
+//   });
+// }
 
-  // print('from ID $fromId');
-  await FlutterCallkitIncoming.endCall(callBody.callId);
-  final kitParam = CallKitParams(
-    appName: 'bVidya',
-    avatar: '$baseImageApi$callerImage',
-    id: callBody.callId,
-    nameCaller: callerName,
-    textAccept: 'Accept',
-    textDecline: 'Decline',
-    textCallback: 'Call back',
-    extra: {
-      'no_listen': false,
-      'from_id': fromId,
-      'from_name': callerName,
-      'caller_fcm': '',
-      'image': callerImage,
-      'has_video': hasVideo,
-      'body': jsonEncode(callBody.toJson())
-    },
-    android: const AndroidParams(
-      // backgroundUrl: '$baseImageApi$callerImage',
-      isShowLogo: true,
-      incomingCallNotificationChannelName: 'call_channel',
-      missedCallNotificationChannelName: 'call_channel',
-      ringtonePath: 'system_ringtone_default',
-      isShowCallback: false,
-      isCustomNotification: false,
+// Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
+//   CallBody? callBody = remoteMessage.payload();
+//   if (callBody == null) {
+//     clearCall();
+//     await FlutterCallkitIncoming.endAllCalls();
+//     return;
+//   }
+//   // await _getActiveCall();
+//   if (_activeCallId == null) {
+//     await FlutterCallkitIncoming.endAllCalls();
+//     return;
+//   }
+//   clearCall();
+//   _lastCallId = callBody.callId;
 
-      isShowMissedCallNotification: true,
-      // actionColor: AppColors.primaryColor,
-    ),
-    ios: IOSParams(
-      ringtonePath: 'system_ringtone_default',
-      supportsVideo: hasVideo,
-    ),
-    type: hasVideo ? 1 : 0,
-    handle: callerName,
-  );
-  FlutterCallkitIncoming.showMissCallNotification(kitParam);
-}
+//   String fromId = remoteMessage.data["from_id"];
+//   String callerName = remoteMessage.data["from_name"];
+//   String callerImage = remoteMessage.data['image'];
+//   bool hasVideo = remoteMessage.data['has_video'] == 'true';
 
-showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
-    String fromFCM, String image, bool hasVideo) async {
-  if (_activeCallId != null) {
-    if (_activeCallId == callBody.callId) {
-      return;
-    }
-    // if (_activeCallId == lastCallId) {
-    //   return;
-    // }
-    FlutterCallkitIncoming.endAllCalls();
-  }
-  if (callBody.callId == lastCallId) {
-    return;
-  }
-  _activeCallId = callBody.callId;
-  _lastCallId = _activeCallId;
-  final kitParam = CallKitParams(
-    appName: 'bVidya',
-    avatar: '$baseImageApi$image',
-    id: callBody.callId,
-    nameCaller: callerName,
-    textAccept: 'Accept',
-    textDecline: 'Decline',
-    textCallback: 'Call back',
-    extra: {
-      'no_listen': false,
-      'from_id': fromId,
-      'from_name': callerName,
-      'caller_fcm': fromFCM,
-      'image': image,
-      'has_video': hasVideo,
-      'body': jsonEncode(callBody.toJson())
-    },
-    android: const AndroidParams(
-      // backgroundUrl: '$baseImageApi$callerImage',
-      isShowLogo: true,
-      incomingCallNotificationChannelName: 'call_channel',
-      missedCallNotificationChannelName: 'call_channel',
-      ringtonePath: 'system_ringtone_default',
-      isShowCallback: false,
-      isCustomNotification: false,
-      isShowMissedCallNotification: true,
-      // actionColor: AppColors.primaryColor,
-    ),
-    ios: IOSParams(
-      ringtonePath: 'system_ringtone_default',
-      supportsVideo: hasVideo,
-    ),
-    type: hasVideo ? 1 : 0,
-    handle: callerName,
-  );
-  try {
-    await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
-  } catch (e) {
-    print('error showing UI : $e');
-  }
-}
-
-// showOutGoingCall(CallBody callBody, bool hasVideo) async {
+//   // print('from ID $fromId');
+//   await FlutterCallkitIncoming.endCall(callBody.callId);
 //   final kitParam = CallKitParams(
 //     appName: 'bVidya',
-//     avatar: '',
+//     avatar: '$baseImageApi$callerImage',
 //     id: callBody.callId,
-//     nameCaller: callBody.callerName,
+//     nameCaller: callerName,
 //     textAccept: 'Accept',
 //     textDecline: 'Decline',
 //     textCallback: 'Call back',
 //     extra: {
-//       'no_listen': true,
-//       'from_id': '',
-//       'from_name': callBody.calleeName,
+//       'no_listen': false,
+//       'from_id': fromId,
+//       'from_name': callerName,
 //       'caller_fcm': '',
-//       'image': '',
+//       'image': callerImage,
+//       'has_video': hasVideo,
+//       'body': jsonEncode(callBody.toJson())
+//     },
+//     android: const AndroidParams(
+//       // backgroundUrl: '$baseImageApi$callerImage',
+//       isShowLogo: true,
+//       incomingCallNotificationChannelName: 'call_channel',
+//       missedCallNotificationChannelName: 'call_channel',
+//       ringtonePath: 'system_ringtone_default',
+//       isShowCallback: false,
+//       isCustomNotification: false,
+
+//       isShowMissedCallNotification: true,
+//       // actionColor: AppColors.primaryColor,
+//     ),
+//     ios: IOSParams(
+//       ringtonePath: 'system_ringtone_default',
+//       supportsVideo: hasVideo,
+//     ),
+//     type: hasVideo ? 1 : 0,
+//     handle: callerName,
+//   );
+//   FlutterCallkitIncoming.showMissCallNotification(kitParam);
+// }
+
+// showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
+//     String fromFCM, String image, bool hasVideo) async {
+//   print(
+//       'showIncomingCallScreen Call Called => active: $_activeCallId last:$_lastCallId');
+//   if (_activeCallId != null) {
+//     if (_activeCallId == callBody.callId) {
+//       return;
+//     }
+//     // if (_activeCallId == lastCallId) {
+//     //   return;
+//     // }
+//     FlutterCallkitIncoming.endAllCalls();
+//   }
+//   if (callBody.callId == lastCallId) {
+//     return;
+//   }
+//   _activeCallId = callBody.callId;
+//   _lastCallId = _activeCallId;
+//   print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
+//   final kitParam = CallKitParams(
+//     appName: 'bVidya',
+//     avatar: '$baseImageApi$image',
+//     id: callBody.callId,
+//     nameCaller: callerName,
+//     textAccept: 'Accept',
+//     textDecline: 'Decline',
+//     textCallback: 'Call back',
+//     extra: {
+//       'no_listen': false,
+//       'from_id': fromId,
+//       'from_name': callerName,
+//       'caller_fcm': fromFCM,
+//       'image': image,
 //       'has_video': hasVideo,
 //       'body': jsonEncode(callBody.toJson())
 //     },
@@ -277,154 +247,202 @@ showIncomingCallScreen(CallBody callBody, String callerName, String fromId,
 //       supportsVideo: hasVideo,
 //     ),
 //     type: hasVideo ? 1 : 0,
-//     handle: callBody.callerName,
+//     handle: callerName,
 //   );
 //   try {
-//     await FlutterCallkitIncoming.startCall(kitParam);
-//   } catch (_) {}
+//     await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
+//   } catch (e) {
+//     print('error showing UI : $e');
+//   }
 // }
 
-onCallAccept(String fromId, String fcmToken, String callerName,
-    String callerImage, CallBody body, bool hasVideo) async {
-  // User? user = await getMeAsUser();
-  // if (user == null) {
-  //   print('User is NULL');
-  //   return;
-  // }
+// // showOutGoingCall(CallBody callBody, bool hasVideo) async {
+// //   final kitParam = CallKitParams(
+// //     appName: 'bVidya',
+// //     avatar: '',
+// //     id: callBody.callId,
+// //     nameCaller: callBody.callerName,
+// //     textAccept: 'Accept',
+// //     textDecline: 'Decline',
+// //     textCallback: 'Call back',
+// //     extra: {
+// //       'no_listen': true,
+// //       'from_id': '',
+// //       'from_name': callBody.calleeName,
+// //       'caller_fcm': '',
+// //       'image': '',
+// //       'has_video': hasVideo,
+// //       'body': jsonEncode(callBody.toJson())
+// //     },
+// //     android: const AndroidParams(
+// //       // backgroundUrl: '$baseImageApi$callerImage',
+// //       isShowLogo: true,
+// //       incomingCallNotificationChannelName: 'call_channel',
+// //       missedCallNotificationChannelName: 'call_channel',
+// //       ringtonePath: 'system_ringtone_default',
+// //       isShowCallback: false,
+// //       isCustomNotification: false,
+// //       isShowMissedCallNotification: true,
+// //       // actionColor: AppColors.primaryColor,
+// //     ),
+// //     ios: IOSParams(
+// //       ringtonePath: 'system_ringtone_default',
+// //       supportsVideo: hasVideo,
+// //     ),
+// //     type: hasVideo ? 1 : 0,
+// //     handle: callBody.callerName,
+// //   );
+// //   try {
+// //     await FlutterCallkitIncoming.startCall(kitParam);
+// //   } catch (_) {}
+// // }
 
-  _activeCallId = body.callId;
-  _lastCallId = body.callId;
+// onCallAccept(
+//   String fromId,
+//   String fcmToken,
+//   String callerName,
+//   String callerImage,
+//   CallBody body,
+//   bool hasVideo,
+// ) async {
+//   // User? user = await getMeAsUser();
+//   // if (user == null) {
+//   //   print('User is NULL');
+//   //   return;
+//   // }
+//   // _activeCallId = body.callId;
+//   _lastCallId = body.callId;
+//   print('onCallAccept Call Called => active: $_activeCallId last:$_lastCallId');
+//   BuildContext? context = navigatorKey.currentContext;
+//   if (context == null) {
+//     print(' Context is NULL');
+//     return;
+//   }
+//   Map<String, dynamic> map = {
+//     'name': callerName,
+//     'fcm_token': fcmToken,
+//     'image': callerImage,
+//     'call_info': body,
+//     'call_direction_type': CallDirectionType.incoming,
+//     'direct': false,
+//     'user_id': fromId
+//   };
+//   print('hasVideo:::: > $hasVideo');
 
-  BuildContext? context = navigatorKey.currentContext;
-  if (context == null) {
-    print(' Context is NULL');
-    return;
-  }
-  Map<String, dynamic> map = {
-    'name': callerName,
-    'fcm_token': fcmToken,
-    'image': callerImage,
-    'call_info': body,
-    'call_direction_type': CallDirectionType.incoming,
-    'direct': false,
-    'user_id': fromId
-  };
-  print('hasVideo:::: > $hasVideo');
+//   if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
+//       Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
+//     print(' Already on call screen');
+//     return;
+//   }
+//   Navigator.pushNamed(
+//       context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
+//       arguments: map);
+// }
 
-  if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
-      Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
-    print(' Already on call screen');
-    return;
-  }
-  Navigator.pushNamed(
-      context, hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
-      arguments: map);
-}
+// // onHoldAnswer(
+// //     String callerIdFrom, String callerName, CallBody body, bool hasVideo) {}
 
-// onHoldAnswer(
-//     String callerIdFrom, String callerName, CallBody body, bool hasVideo) {}
+// // onMuteCall(
+// //     String callerIdFrom, String callerName, CallBody uuid, bool hasVideo) {}
 
-// onMuteCall(
-//     String callerIdFrom, String callerName, CallBody uuid, bool hasVideo) {}
+// onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
+//     String image, CallBody body, bool hasVideo) async {
+//   print('declining call');
+//   User? user = await getMeAsUser();
+//   String userId;
+//   String userName;
 
-onDeclineCall(String senderFCM, String callerIdFrom, String callerName,
-    String image, CallBody body, bool hasVideo) async {
-  print('declining call');
-  User? user = await getMeAsUser();
-  String userId;
-  String userName;
+//   if (user == null) {
+//     userId = ChatClient.getInstance.currentUserId ?? '';
+//     userName = body.calleeName;
+//     // return;
+//   } else {
+//     userId = user.id.toString();
+//     userName = user.name;
+//   }
 
-  if (user == null) {
-    userId = ChatClient.getInstance.currentUserId ?? '';
-    userName = body.calleeName;
-    // return;
-  } else {
-    userId = user.id.toString();
-    userName = user.name;
-  }
+//   FCMApiService.instance.sendCallEndPush(senderFCM,
+//       NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
+//   await FlutterCallkitIncoming.endAllCalls();
+//   clearCall();
+// }
 
-  FCMApiService.instance.sendCallEndPush(senderFCM,
-      NotiConstants.actionCallDecline, body, userId, userName, hasVideo);
-  await FlutterCallkitIncoming.endAllCalls();
-  clearCall();
-}
+// onDeclineCallBusy(String senderFCM, String callerIdFrom, String callerName,
+//     String image, CallBody body, bool hasVideo) async {
+//   // print('declining call');
+//   User? user = await getMeAsUser();
+//   String userId;
+//   String userName;
 
-onDeclineCallBusy(String senderFCM, String callerIdFrom, String callerName,
-    String image, CallBody body, bool hasVideo) async {
-  // print('declining call');
-  User? user = await getMeAsUser();
-  String userId;
-  String userName;
+//   if (user == null) {
+//     userId = ChatClient.getInstance.currentUserId ?? '';
+//     userName = body.calleeName;
+//     // return;
+//   } else {
+//     userId = user.id.toString();
+//     userName = user.name;
+//   }
 
-  if (user == null) {
-    userId = ChatClient.getInstance.currentUserId ?? '';
-    userName = body.calleeName;
-    // return;
-  } else {
-    userId = user.id.toString();
-    userName = user.name;
-  }
+//   FCMApiService.instance.sendCallEndPush(senderFCM,
+//       NotiConstants.actionCallDeclineBusy, body, userId, userName, hasVideo);
 
-  FCMApiService.instance.sendCallEndPush(senderFCM,
-      NotiConstants.actionCallDeclineBusy, body, userId, userName, hasVideo);
+//   await FlutterCallkitIncoming.endCall(body.callId);
+//   final kitParam = CallKitParams(
+//     appName: 'bVidya',
+//     avatar: '$baseImageApi$image',
+//     id: body.callId,
+//     nameCaller: callerName,
+//     textAccept: 'Accept',
+//     textDecline: 'Decline',
+//     textCallback: 'Call back',
+//     extra: {
+//       'no_listen': false,
+//       'from_id': callerIdFrom,
+//       'from_name': callerName,
+//       'caller_fcm': '',
+//       'image': image,
+//       'has_video': hasVideo,
+//       'body': jsonEncode(body.toJson())
+//     },
+//     android: const AndroidParams(
+//       // backgroundUrl: '$baseImageApi$callerImage',
+//       isShowLogo: true,
+//       incomingCallNotificationChannelName: 'call_channel',
+//       missedCallNotificationChannelName: 'call_channel',
+//       ringtonePath: 'system_ringtone_default',
+//       isShowCallback: false,
+//       isCustomNotification: false,
 
-  await FlutterCallkitIncoming.endCall(body.callId);
-  final kitParam = CallKitParams(
-    appName: 'bVidya',
-    avatar: '$baseImageApi$image',
-    id: body.callId,
-    nameCaller: callerName,
-    textAccept: 'Accept',
-    textDecline: 'Decline',
-    textCallback: 'Call back',
-    extra: {
-      'no_listen': false,
-      'from_id': callerIdFrom,
-      'from_name': callerName,
-      'caller_fcm': '',
-      'image': image,
-      'has_video': hasVideo,
-      'body': jsonEncode(body.toJson())
-    },
-    android: const AndroidParams(
-      // backgroundUrl: '$baseImageApi$callerImage',
-      isShowLogo: true,
-      incomingCallNotificationChannelName: 'call_channel',
-      missedCallNotificationChannelName: 'call_channel',
-      ringtonePath: 'system_ringtone_default',
-      isShowCallback: false,
-      isCustomNotification: false,
+//       isShowMissedCallNotification: true,
+//       // actionColor: AppColors.primaryColor,
+//     ),
+//     ios: IOSParams(
+//       ringtonePath: 'system_ringtone_default',
+//       supportsVideo: hasVideo,
+//     ),
+//     type: hasVideo ? 1 : 0,
+//     handle: callerName,
+//   );
+//   FlutterCallkitIncoming.showMissCallNotification(kitParam);
+//   // await FlutterCallkitIncoming.endAllCalls();
+//   // clearCall();
+// }
 
-      isShowMissedCallNotification: true,
-      // actionColor: AppColors.primaryColor,
-    ),
-    ios: IOSParams(
-      ringtonePath: 'system_ringtone_default',
-      supportsVideo: hasVideo,
-    ),
-    type: hasVideo ? 1 : 0,
-    handle: callerName,
-  );
-  FlutterCallkitIncoming.showMissCallNotification(kitParam);
-  // await FlutterCallkitIncoming.endAllCalls();
-  // clearCall();
-}
+// endCall(CallBody callBody, String to) {
+//   try {
+//     final content = {
+//       'call_id': callBody.callId,
+//       'type': NotiConstants.typeCall,
+//       'action': NotiConstants.actionCallEnd
+//     };
+//     final message = ChatMessage.createCmdSendMessage(
+//       targetId: to,
+//       action: jsonEncode(content),
+//     );
+//     message.attributes?.addAll({"em_force_notification": true});
 
-endCall(CallBody callBody, String to) {
-  try {
-    final content = {
-      'call_id': callBody.callId,
-      'type': NotiConstants.typeCall,
-      'action': NotiConstants.actionCallEnd
-    };
-    final message = ChatMessage.createCmdSendMessage(
-      targetId: to,
-      action: jsonEncode(content),
-    );
-    message.attributes?.addAll({"em_force_notification": true});
-
-    ChatClient.getInstance.chatManager.sendMessage(message);
-  } catch (e) {
-    print('sending command failed $e');
-  }
-}
+//     ChatClient.getInstance.chatManager.sendMessage(message);
+//   } catch (e) {
+//     print('sending command failed $e');
+//   }
+// }

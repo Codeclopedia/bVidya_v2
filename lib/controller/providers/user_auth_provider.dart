@@ -34,7 +34,7 @@ class UserAuthProvider extends ChangeNotifier {
       userToken = user.authToken;
     }
     _isUserSinged = user != null;
-    print(' User :$userStr');
+    // print(' User :$userStr');
     notifyListeners();
     return _user;
   }

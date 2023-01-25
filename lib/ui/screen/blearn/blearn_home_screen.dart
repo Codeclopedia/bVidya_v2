@@ -230,78 +230,22 @@ class BLearnHomeScreen extends StatelessWidget {
               margin:
                   EdgeInsets.only(left: 6.w, right: 6.w, top: 2.w, bottom: 2.w),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5.w)),
-                  image: DecorationImage(
-                      image: getImageProvider(bannerData?.image ?? ""),
-                      fit: BoxFit.cover),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color.fromARGB(45, 158, 158, 158),
-                      offset: Offset(
-                        3.0,
-                        3.0,
-                      ),
-                      blurRadius: 5.0,
-                      spreadRadius: 2.0,
+                borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                image: DecorationImage(
+                    image: getImageProvider(bannerData?.image ?? ""),
+                    fit: BoxFit.cover),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromARGB(45, 158, 158, 158),
+                    offset: Offset(
+                      3.0,
+                      3.0,
                     ),
-                  ]),
-              // child: Stack(
-              //   children: [
-              //     Container(
-              //       decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(5.w),
-              //           image: DecorationImage(
-              //               image: getImageProvider(bannerData?.image ?? ""),
-              //               fit: BoxFit.cover)),
-              //     ),
-              //     // Container(
-              //     //   width: double.infinity,
-              //     //   decoration: BoxDecoration(
-              //     //       gradient: LinearGradient(colors: [
-              //     //     Colors.white,
-              //     //     Colors.white.withOpacity(0.8),
-              //     //     Colors.white.withOpacity(0.3),
-              //     //     Colors.transparent
-              //     //   ])),
-              //     // ),
-              //     // Padding(
-              //     //   padding:
-              //     //       EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.2.w),
-              //     //   child: Column(
-              //     //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     //     children: [
-              //     //       Text(bannerData?.name ?? ""),
-              //     //       SizedBox(
-              //     //         height: 2.w,
-              //     //       ),
-              //     //       // ElevatedButton(
-              //     //       //   style: ElevatedButton.styleFrom(
-              //     //       //     textStyle: TextStyle(
-              //     //       //         fontFamily: kFontFamily,
-              //     //       //         color: Colors.white,
-              //     //       //         fontSize: 8.sp),
-              //     //       //     // elevation: 0.0,
-              //     //       //     padding: EdgeInsets.symmetric(
-              //     //       //         horizontal: 6.w, vertical: 1.w),
-              //     //       //     shape: RoundedRectangleBorder(
-              //     //       //         borderRadius: BorderRadius.circular(4.w)),
-              //     //       //     backgroundColor: const Color(0xFF65427A),
-              //     //       //   ),
-              //     //       //   onPressed: () => Navigator.pushNamed(
-              //     //       //       context, RouteList.webview,
-              //     //       //       arguments: {
-              //     //       //         'url': bannerData?.actionWeb ?? "",
-              //     //       //       }),
-              //     //       //   child: Text(
-              //     //       //     bannerData?.actionApp ?? "",
-              //     //       //   ),
-              //     //       // ),
-              //     //     ],
-              //     //   ),
-              //     // ),
-              //   ],
-              // ),
+                    blurRadius: 5.0,
+                    spreadRadius: 2.0,
+                  ),
+                ],
+              ),
             ),
           );
         });
@@ -351,7 +295,7 @@ class BLearnHomeScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Container(
-      height: 70.w,
+      height: 40.sp + 60.w,
       color: Colors.white,
       child: ListView.builder(
         padding: EdgeInsets.only(left: 4.w, right: 4.w, top: 1.h),
@@ -565,21 +509,12 @@ class BLearnHomeScreen extends StatelessWidget {
         Navigator.pushNamed(context, RouteList.webview, arguments: {
           'url': "https://www.app.bvidya.com/",
         });
-        // Navigator.push(context, MaterialPageRoute(
-        //   builder: (context) {
-        //     return WebView(url: "https://www.bvidya.com/");
-        //   },
-        // ));
       },
-      child: Container(
-        height: 26.h,
-        margin: EdgeInsets.only(top: 2.h),
-        decoration: const BoxDecoration(
-          // borderRadius: BorderRadius.all(Radius.circular(3.w)),
-          image: DecorationImage(
-            image: AssetImage('assets/images/Become-instructor.png'),
-            fit: BoxFit.fill,
-          ),
+      child: Padding(
+        padding: EdgeInsets.only(top: 2.h),
+        child: const Image(
+          image: AssetImage('assets/images/Become-instructor.png'),
+          fit: BoxFit.fitWidth,
         ),
       ),
     );
@@ -765,7 +700,7 @@ class BLearnHomeScreen extends StatelessWidget {
 
   Widget _buildTestimonialList(List<CourseFeedback?>? testimonials) {
     if (testimonials == null || testimonials.isEmpty) {
-      return const SizedBox.shrink();
+      return buildEmptyPlaceHolder('No Testimonials');
     }
     return Container(
       margin: EdgeInsets.only(top: 0.8.h),
@@ -819,7 +754,8 @@ class BLearnHomeScreen extends StatelessWidget {
                 SizedBox(height: 2.w),
                 Text(
                   testimonial?.comment ?? '',
-                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     fontSize: 10.sp,

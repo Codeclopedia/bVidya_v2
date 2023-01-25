@@ -2,11 +2,13 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:bvidya/controller/providers/bchat/contact_list_provider.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:collection/collection.dart';
 
 import '/controller/providers/contacts_select_notifier.dart';
-import '/controller/bchat_providers.dart';
+// import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
 import '../../blearn/components/common.dart';
 import '/core/constants.dart';
@@ -79,43 +81,43 @@ class NewGroupContactsScreen extends StatelessWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                return ref.watch(myContactsList).when(
-                      data: (list) {
-                        if (list.isEmpty) {
-                          return buildEmptyPlaceHolder('No Contacts');
-                        }
-                        final selectedList = ref.watch(selectedContactProvider);
-                        return GroupedListView(
-                          elements: list,
-                          groupBy: (element) => element.name[0],
-                          groupSeparatorBuilder: (String groupByValue) =>
-                              _groupHeader(groupByValue),
-                          itemBuilder: (context, Contacts element) =>
-                              _contactRow(
-                                  element,
-                                  selectedList.firstWhereOrNull(
-                                          (e) => e.userId == element.userId) !=
-                                      null,
-                                  ref),
-                          itemComparator: (item1, item2) =>
-                              item1.name.compareTo(item2.name), // optional
-                          useStickyGroupSeparators: false, // optional
-                          floatingHeader: false, // optional
-                          order: GroupedListOrder.ASC, // optional
-                        );
+                final list = ref.read(contactListProvider);
+                // return ref.watch(myContactsList).when(
+                //       data: (list) {
+                if (list.isEmpty) {
+                  return buildEmptyPlaceHolder('No Contacts');
+                }
+                final selectedList = ref.watch(selectedContactProvider);
+                return GroupedListView(
+                  elements: list,
+                  groupBy: (element) => element.name[0],
+                  groupSeparatorBuilder: (String groupByValue) =>
+                      _groupHeader(groupByValue),
+                  itemBuilder: (context, Contacts element) => _contactRow(
+                      element,
+                      selectedList.firstWhereOrNull(
+                              (e) => e.userId == element.userId) !=
+                          null,
+                      ref),
+                  itemComparator: (item1, item2) =>
+                      item1.name.compareTo(item2.name), // optional
+                  useStickyGroupSeparators: false, // optional
+                  floatingHeader: false, // optional
+                  order: GroupedListOrder.ASC, // optional
+                );
 
-                        // return ListView.builder(
-                        //   shrinkWrap: true,
-                        //   itemCount: list.length,
-                        //   physics: const NeverScrollableScrollPhysics(),
-                        //   itemBuilder: (context, index) {
-                        //     // return _contactRow(list[index]);
-                        //   },
-                        // );
-                      },
-                      error: (e, t) => buildEmptyPlaceHolder('No Contacts'),
-                      loading: () => buildLoading,
-                    );
+                // return ListView.builder(
+                //   shrinkWrap: true,
+                //   itemCount: list.length,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   itemBuilder: (context, index) {
+                //     // return _contactRow(list[index]);
+                //   },
+                // );
+                //   },
+                //   error: (e, t) => buildEmptyPlaceHolder('No Contacts'),
+                //   loading: () => buildLoading,
+                // );
               },
             ),
           ),

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../utils/connectycubekit.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/conversation_model.dart';
 
@@ -16,7 +17,7 @@ import '/data/models/response/bchat/p2p_call_response.dart';
 import '../constants/route_list.dart';
 import '../routes.dart';
 import '../ui_core.dart';
-import '../utils/callkit_utils.dart';
+// import '../utils/callkit_utils.dart';
 import '../utils/chat_utils.dart';
 import 'call_helper.dart';
 
@@ -26,6 +27,7 @@ class ForegroundMessageHelper {
     String name = model.contact.name;
     // String image = model.contact.profileImage;
     String from = model.id;
+    if (msg.from != model.id) return;
     BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
       String contentText = '';
@@ -108,15 +110,20 @@ class ForegroundMessageHelper {
       final diff = DateTime.now().millisecondsSinceEpoch - msg.serverTime;
       print(
           'foreground $diff ms  ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}');
-      if (diff > 30000) return;
+
       final body = CallMessegeBody.fromJson(
           jsonDecode((msg.body as ChatCustomMessageBody).event));
       CallBody callBody = body.callBody;
       // print(
       //     'callId =>${callBody.callId} last->:$lastCallId  active:$activeCallId');
+      print(
+          'lastCallId: $lastCallId  active: $activeCallId current:${callBody.callId}');
+
       if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
         return;
       }
+
+      if (diff > 30000) return;
 
       String fromId = msg.from!;
       String fromName = body.fromName;
@@ -132,7 +139,7 @@ class ForegroundMessageHelper {
         return;
       }
       await showIncomingCallScreen(
-          callBody, fromName, fromId, fromFCM, image, hasVideo);
+          callBody, fromName, fromId, fromFCM, image, hasVideo,false);
       CallListModel model = CallListModel(
         fromId,
         fromName,

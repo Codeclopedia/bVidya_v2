@@ -181,9 +181,10 @@ class BChatSDKController {
 
       return;
     }
-    _initialized = true;
     print('initChatSDK $_initialized');
-    print('_initialized');
+    // print('_initializing');
+    _initialized = true;
+
     final pref = await SharedPreferences.getInstance();
     bool shouldLogin = false;
     ChatTokenBody? keyBody;

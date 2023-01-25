@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:intl/intl.dart';
@@ -33,10 +34,10 @@ Future<String?> postLoginSetup(WidgetRef ref) async {
   // await BChatSDKController.instance.initChatSDK(next.value!);
   await BChatSDKController.instance.initChatSDK(user);
   await BChatSDKController.instance.loadAllContactsGroup();
-
-  await ref
-      .read(chatConversationProvider.notifier)
-      .setup(ref.read(bChatProvider), user);
+  await loadChats(ref);
+  // await ref
+  //     .read(chatConversationProvider.notifier)
+  //     .setup(ref.read(bChatProvider), user);
   await ref.read(groupConversationProvider.notifier).setup();
   await ref.read(callListProvider.notifier).setup();
   return null;

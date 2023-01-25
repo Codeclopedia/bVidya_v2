@@ -136,7 +136,7 @@ InputDecoration inputMultiLineStyle = InputDecoration(
   fillColor: const Color(0xFFF5F5F5),
   filled: true,
   hintStyle: TextStyle(
-    fontSize: 9.sp,
+    fontSize: 10.sp,
     fontFamily: kFontFamily,
     color: AppColors.inputHintText,
   ),

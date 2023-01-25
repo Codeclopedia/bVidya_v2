@@ -37,6 +37,7 @@ final bMeetSelectedHistoryProvider =
     final date = ref.watch(selectedDateProvider);
     // print('Filter list of Meetings of ${date.toString()} ');
     final list = meetings?.meetings ?? [];
+    // return list;
     return list.where((item) => isSameDate(item.startsAt, date)).toList();
   }
   return [];

@@ -5,18 +5,18 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/utils/common.dart';
 import 'package:file_picker/file_picker.dart';
-import '../forward_dialog.dart';
-import '/data/models/contact_model.dart';
-import '/data/models/conversation_model.dart';
-
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
+
 import '/controller/providers/bchat/group_chats_provider.dart';
+import '../forward_dialog.dart';
+import '/data/models/contact_model.dart';
+import '/data/models/conversation_model.dart';
+import '/core/utils/common.dart';
 
 import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
@@ -122,7 +122,6 @@ class GroupChatScreen extends HookConsumerWidget {
           status: ContactStatus.self);
       _myUserId = _me.userId.toString();
       // _memberList =
-
     }
   }
 
@@ -134,8 +133,10 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   _addHandler(WidgetRef ref) async {
-    registerForNewMessage('group_chat_screen', (msg) {
+    registerGroupForNewMessage('group_chat_screen', (msg) {
       onMessagesReceived(msg, ref);
+    }, () {
+      ref.read(groupChatProvider(model).notifier).updateUi();
     });
   }
 
@@ -548,7 +549,8 @@ class GroupChatScreen extends HookConsumerWidget {
         bool isSelected = selectedItems.contains(message);
 
         bool isOwnMessage = message.from == _myUserId;
-        if (!isOwnMessage) _markRead(message);
+
+        isOwnMessage ? _markOwnRead(message) : _markRead(message);
 
         String name = message.attributes?['from_name'] ?? '';
         String image = message.attributes?['from_image'] ?? '';
@@ -1051,8 +1053,17 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   void _markRead(ChatMessage message) async {
-    if (!message.hasRead) {
+    try {
+      await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
       await model.conversation?.markMessageAsRead(message.msgId);
-    }
+    } catch (_) {}
+  }
+
+  void _markOwnRead(ChatMessage message) async {
+    try {
+      if (!message.hasRead) {
+        await model.conversation?.markMessageAsRead(message.msgId);
+      }
+    } catch (_) {}
   }
 }

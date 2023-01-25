@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/sdk_helpers/typing_helper.dart';
 import '/data/models/models.dart';
@@ -30,9 +31,13 @@ registerForContact(String key, WidgetRef? ref) {
             lastUserId = userId;
             lastAction = 'Add';
             print('Added: $userId ');
-            await ref
-                ?.read(chatConversationProvider)
-                .addContact(userId, ContactStatus.invited);
+            if (ref != null) {
+              await addNewContactById(int.parse(userId), ref);
+            }
+
+            // await ref
+            //     ?.read(chatConversationProvider)
+            //     .addContact(userId, ContactStatus.invited);
 
             return;
           }
@@ -56,9 +61,13 @@ registerForContact(String key, WidgetRef? ref) {
           lastUserId = userId;
           lastAction = 'Add';
           print('Added: $userId ');
-          final result = await ref
-              ?.read(chatConversationProvider)
-              .addContact(userId, ContactStatus.friend);
+          Contacts? result;
+          if (ref != null) {
+            result = await addNewContactById(int.parse(userId), ref);
+          }
+          // final result = await ref
+          //     ?.read(chatConversationProvider)
+          //     .addContact(userId, ContactStatus.friend);
           if (AgoraConfig.autoAcceptContact) {
             return;
           }
@@ -79,9 +88,14 @@ registerForContact(String key, WidgetRef? ref) {
           lastUserId = userId;
           lastAction = 'Deleted';
           print('Deleted: $userId ');
-          final result = await ref
-              ?.read(chatConversationProvider)
-              .removedContact(int.tryParse(userId) ?? -1);
+          Contacts? result;
+          if (ref != null) {
+            deleteContact(int.parse(userId), ref);
+          }
+
+          // final result = await ref
+          //     ?.read(chatConversationProvider)
+          //     .removedContact(int.tryParse(userId) ?? -1);
           if (result != null) {
             NotificationController.showContactActionNotification(
                 userId, 'bVidya', 'Contact ${result.name} deleted');
@@ -140,6 +154,25 @@ registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
   try {
     ChatClient.getInstance.chatManager.addEventHandler(key,
         ChatEventHandler(onMessagesReceived: (msgs) => onNewMessages(msgs)));
+  } on ChatError catch (e) {
+    print('Error ${e.code} - ${e.description}');
+  } catch (_) {}
+}
+
+registerGroupForNewMessage(String key,
+    Function(List<ChatMessage>) onNewMessages, Function() onUpdate) {
+  try {
+    ChatClient.getInstance.chatManager.addEventHandler(
+        key,
+        ChatEventHandler(
+          onMessagesReceived: (msgs) => onNewMessages(msgs),
+          onGroupMessageRead: (groupMessageAcks) {
+            onUpdate();
+          },
+          onReadAckForGroupMessageUpdated: () {
+            onUpdate();
+          },
+        ));
   } on ChatError catch (e) {
     print('Error ${e.code} - ${e.description}');
   } catch (_) {}

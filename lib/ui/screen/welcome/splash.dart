@@ -4,14 +4,17 @@
 
 import 'dart:convert';
 
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 //import '/app.dart';
+import '../../../core/utils/connectycubekit.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/core/routes.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
-import '/core/utils/callkit_utils.dart';
+// import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
@@ -21,8 +24,8 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 
 import '/controller/providers/user_auth_provider.dart';
-import '/controller/bchat_providers.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/bchat_providers.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 
 final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
       "assets/icons/svgs/splash_logo_full.svg",
@@ -84,9 +87,10 @@ class SplashScreen extends ConsumerWidget {
             return;
           }
 
-          await ref
-              .read(chatConversationProvider.notifier)
-              .setup(ref.read(bChatProvider), next.value!);
+          await loadChats(ref);
+          // await ref
+          //     .read(chatConversationProvider.notifier)
+          //     .setup(ref.read(bChatProvider), next.value!);
 
           await ref.read(groupConversationProvider.notifier).setup();
           await ref.read(callListProvider.notifier).setup();
@@ -133,13 +137,14 @@ class SplashScreen extends ConsumerWidget {
 
   Future<bool> _handleNotificationClickScreen(
       BuildContext context, User user) async {
+    await loadCallOnInit();
     if (activeCallMap != null && activeCallId != null) {
       String fromId = activeCallMap!['from_id'];
       String fromName = activeCallMap!['from_name'];
       String callerFCM = activeCallMap!['caller_fcm'];
       String image = activeCallMap!['image'];
       CallBody body = CallBody.fromJson(jsonDecode(activeCallMap!['body']));
-      bool hasVideo = activeCallMap!['has_video'];
+      bool hasVideo = activeCallMap!['has_video'] == 'true';
 
       Map<String, dynamic> callMap = {
         'name': fromName,
@@ -163,6 +168,8 @@ class SplashScreen extends ConsumerWidget {
           hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
           arguments: callMap);
       return true;
+    } else {
+      print('active callId => $activeCallId $lastUserId');
     }
     await BChatSDKController.instance.initChatSDK(user);
     final initialAction = NotificationController.clickAction;
