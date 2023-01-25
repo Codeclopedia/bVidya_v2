@@ -126,6 +126,8 @@ class ProfileApiService {
       required String age,
       required String phone,
       required String bio,
+      required String language,
+      required String occupation,
       required String city,
       required String address,
       required String state,
@@ -137,9 +139,9 @@ class ProfileApiService {
       'email': email,
       'gender': '',
       'age': age,
-      'language': '',
       'bio': bio,
-      'occupation': '',
+      'language': language,
+      'occupation': occupation,
       'city': city,
       'state': state,
       'address': address,
@@ -151,6 +153,7 @@ class ProfileApiService {
       final response =
           await _dio.post('$baseUrlApi${ApiList.updateProfile}', data: data);
       print('${response.statusCode} ${response.statusMessage}');
+      print('${response.data}');
       if (response.statusCode == 200) {
         return UpdateProfileResponse.fromJson(response.data);
       } else {
@@ -162,15 +165,5 @@ class ProfileApiService {
       return UpdateProfileResponse(
           status: 'error', message: 'Unknown error -$e');
     }
-
-    // print("inside api service");
-    // print("response $response");
-    // print("${response.statusCode}");
-    // if (response.statusCode == 200) {
-    //   print(response.data);
-    //   return BaseResponse.fromJson(response.data);
-    // } else {
-    //   return BaseResponse();
-    // }
   }
 }

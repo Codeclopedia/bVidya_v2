@@ -1,4 +1,4 @@
-import 'package:bvidya/data/models/models.dart';
+import '/data/models/models.dart';
 
 import '/core/state.dart';
 import '/data/repository/auth_repository.dart';

@@ -7,12 +7,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
-import '../routes.dart';
-import '/core/helpers/extensions.dart';
-import '/app.dart';
 import '/data/models/response/auth/login_response.dart';
 import '/data/models/response/bchat/p2p_call_response.dart';
 import '/data/services/fcm_api_service.dart';
+
+import '../routes.dart';
+import '/core/helpers/extensions.dart';
+import '/app.dart';
 import '../constants.dart';
 import '../helpers/call_helper.dart';
 import '../ui_core.dart';
@@ -45,36 +46,34 @@ clearCall() {
 
 _getActiveCall() async {
   try {
-    print('loading active calls');
-
+    // print('loading active calls');
     final List<dynamic>? list = await FlutterCallkitIncoming.activeCalls();
     if (list?.isNotEmpty == true) {
       final id = list![0]['id'];
-      print('id: $id -> ${list[0]}');
+      // print('id: $id -> ${list[0]}');
       final map = list[0]['extra'];
       if (map == null) {
-        print('map: is null');
+        // print('map: is null');
         _activeCallId = null;
         _activeCallMap = null;
         return;
       }
-      print('map: $id -> $map');
+      // print('map: $id -> $map');
       String? fromId = map['from_id'];
       if (fromId == null) {
-        print('Not a valid Active calls');
+        // print('Not a valid Active calls');
         _activeCallId = null;
         _activeCallMap = null;
         return;
       }
       _activeCallMap = map;
       _activeCallId = id;
-
       return;
     } else {
-      print('No Active calls');
+      // print('No Active calls');
     }
   } catch (e) {
-    print('error in getting active calls');
+    // print('error in getting active calls');
   }
   _activeCallMap = null;
   _activeCallId = null;
@@ -366,7 +365,7 @@ onDeclineCallBusy(String senderFCM, String callerIdFrom, String callerName,
     userName = user.name;
   }
 
-   FCMApiService.instance.sendCallEndPush(senderFCM,
+  FCMApiService.instance.sendCallEndPush(senderFCM,
       NotiConstants.actionCallDeclineBusy, body, userId, userName, hasVideo);
 
   await FlutterCallkitIncoming.endCall(body.callId);

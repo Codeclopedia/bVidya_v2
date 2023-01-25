@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:bvidya/core/helpers/bmeet_helper.dart';
+import '/core/helpers/bmeet_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '/core/utils/callkit_utils.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';

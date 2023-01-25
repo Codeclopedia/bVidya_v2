@@ -328,6 +328,11 @@ class BMeetProvider extends ChangeNotifier {
           if (_userList.containsKey(remoteUid)) {
             _userList.update(remoteUid, (value) {
               value.enabledVideo = enabled;
+              if (enabled) {
+                value.widget = _remoteView(remoteUid);
+              } else {
+                value.widget = getRectFAvatar(value.name, '');
+              }
               return value;
             });
           }
@@ -760,7 +765,7 @@ class BMeetProvider extends ChangeNotifier {
 
 class ConnectedUserInfo {
   final int uid;
-  StatefulWidget widget;
+  Widget widget;
   String name;
   bool isSpeaking = false;
   bool muteAudio = false;

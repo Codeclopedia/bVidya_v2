@@ -135,13 +135,17 @@ class BMeetHomeScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final meeting = meetings[index];
         return _buildCardRow(meeting, () {
-          startMeeting(context, ref, meeting, true, false);
-        });
+          Navigator.pushNamed(context, RouteList.bMeetStart,
+              arguments: meeting);
+
+          // startMeeting(context, ref, meeting, true, false);
+        }, ref);
       },
     );
   }
 
-  Widget _buildCardRow(ScheduledMeeting meeting, Function() onJoin) {
+  Widget _buildCardRow(
+      ScheduledMeeting meeting, Function() onJoin, WidgetRef ref) {
     return Container(
       margin: EdgeInsets.only(right: 2.w),
       padding: EdgeInsets.all(3.w),
@@ -155,13 +159,44 @@ class BMeetHomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(S.current.bmeet_txt_meeting,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 7.sp,
-                fontFamily: kFontFamily,
-                color: AppColors.black,
-              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(S.current.bmeet_txt_meeting,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 7.sp,
+                    fontFamily: kFontFamily,
+                    color: AppColors.black,
+                  )),
+              PopupMenuButton(
+                padding: EdgeInsets.zero,
+                onSelected: (item) {
+                  switch (item) {
+                    case 'Edit':
+                      return null;
+                      break;
+                    case 'Delete':
+                      print(meeting.id);
+                      ref
+                          .read(bMeetRepositoryProvider)
+                          .deleteMeeting(meeting.id.toString());
+                      ref.read(bMeetSelectedHistoryProvider);
+                      break;
+                  }
+                  print(item);
+                },
+                itemBuilder: (context) {
+                  return {'Edit', 'Delete'}.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              )
+            ],
+          ),
           SizedBox(height: 1.w),
           Text(
             meeting.name,

@@ -1,8 +1,27 @@
+// ignore_for_file: use_build_context_synchronously
+
+import '/core/utils/common.dart';
+
+import '/controller/profile_providers.dart';
+import '../../../dialog/image_picker_dialog.dart';
+import '../../../screens.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
+
+final isBioEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+
+final isworkedatEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+
+final islanguageEditing = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
 
 class TeacherProfileEdit extends HookWidget {
   final Profile profile;
@@ -58,158 +77,283 @@ class TeacherProfileEdit extends HookWidget {
                       topRight: Radius.circular(10.w),
                       topLeft: Radius.circular(10.w)),
                 ),
-                child: Container(
-                  height: double.infinity,
-                  margin: EdgeInsets.only(top: 7.0.h),
-                  child: SingleChildScrollView(
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          _buildTitle(),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          // _buildCaption(S.current.prof_edit_name),
-                          Text(
-                            S.current.prof_edit_name,
-                            style: textStyleCaption,
-                          ),
-                          SizedBox(
-                            height: 1.h,
-                          ),
-                          TextFormField(
-                              controller: nameController,
-                              focusNode: nameFocusNode,
-                              validator: (value) {
-                                if (value == null || value.isEmpty == true) {
-                                  return S.current.signup_fullname_empty;
-                                }
-                                return null;
-                              },
-                              textInputAction: TextInputAction.next,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.prof_hint_name,
-                              )),
-                          _buildCaption(S.current.prof_edit_email),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textInputAction: TextInputAction.next,
-                              validator: (value) {
-                                if (value == null || value.isEmpty == true) {
-                                  return S.current.fp_email_empty;
-                                } else if (!isValidEmail(value)) {
-                                  return S.current.fp_email_invalid;
-                                }
-                                return null;
-                              },
-                              focusNode: emailFocusNode,
-                              controller: emailController,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.prof_hint_email,
-                              )),
-                          _buildCaption(S.current.prof_edit_no),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              keyboardType: TextInputType.phone,
-                              controller: phoneController,
-                              focusNode: phoneFocusNode,
-                              validator: (value) {
-                                return null;
-                              },
-                              autocorrect: false,
-                              textInputAction: TextInputAction.next,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.prof_hint_no,
-                              )),
-                          _buildCaption(S.current.prof_edit_age),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              controller: ageController,
-                              focusNode: ageFocusNode,
-                              validator: (value) {
-                                return null;
-                              },
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.next,
-                              autocorrect: false,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.prof_hint_age,
-                              )),
-                          _buildCaption(S.current.prof_edit_address),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              validator: (value) {
-                                return null;
-                              },
-                              controller: addressController,
-                              focusNode: addressFocusNode,
-                              autocorrect: false,
-                              textInputAction: TextInputAction.next,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.prof_hint_add,
-                              )),
-                          _buildCaption(S.current.tpe_worked),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              controller: workedAtController,
-                              textInputAction: TextInputAction.next,
-                              validator: (value) {
-                                return null;
-                              },
-                              focusNode: workedAtFocusNode,
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.tpe_worked_hint,
-                              )),
-                          _buildCaption(S.current.tpe_lang),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              controller: languageController,
-                              textInputAction: TextInputAction.next,
-                              focusNode: languageFocusNode,
-                              validator: (value) {
-                                return null;
-                              },
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.tpe_lang_hint,
-                              )),
-                          _buildCaption(S.current.tpe_bio),
-                          SizedBox(height: 0.5.h),
-                          TextFormField(
-                              controller: bioController,
-                              keyboardType: TextInputType.multiline,
-                              minLines: 3,
-                              maxLines: 5,
-                              // textInputAction: TextInputAction.done,
-                              validator: (value) {
-                                return null;
-                              },
-                              focusNode: bioFocusNode,
-                              onFieldSubmitted: (value) {},
-                              decoration: inputEditProfileStyle.copyWith(
-                                hintText: S.current.tpe_bio_hint,
-                              )),
-                          _buildButton(() {
-                            if (formKey.currentState?.validate() == true) {}
-                            // Navigator.push(
-                            // context,
-                            // MaterialPageRoute(
-                            // builder: (context) => const TeacherDetail()),
-                            // );
-                          })
-                        ],
+                child: Consumer(builder: (context, ref, child) {
+                  return Container(
+                    height: double.infinity,
+                    margin: EdgeInsets.only(top: 7.0.h),
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            _buildTitle(),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            // _buildCaption(S.current.prof_edit_name),
+                            Text(
+                              S.current.prof_edit_name,
+                              style: textStyleCaption,
+                            ),
+                            SizedBox(
+                              height: 1.h,
+                            ),
+                            TextFormField(
+                                controller: nameController,
+                                focusNode: nameFocusNode,
+                                readOnly:
+                                    ref.watch(isNameEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isNameEditing) ? true : false,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty == true) {
+                                    return S.current.signup_fullname_empty;
+                                  }
+                                  return null;
+                                },
+                                textInputAction: TextInputAction.next,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.prof_hint_name,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isNameEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.prof_edit_email),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                keyboardType: TextInputType.emailAddress,
+                                autocorrect: false,
+                                readOnly:
+                                    ref.watch(isEmailEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isEmailEditing) ? true : false,
+                                textInputAction: TextInputAction.next,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty == true) {
+                                    return S.current.fp_email_empty;
+                                  } else if (!isValidEmail(value)) {
+                                    return S.current.fp_email_invalid;
+                                  }
+                                  return null;
+                                },
+                                focusNode: emailFocusNode,
+                                controller: emailController,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.prof_hint_email,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isEmailEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.prof_edit_no),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                keyboardType: TextInputType.phone,
+                                controller: phoneController,
+                                readOnly: ref.watch(isPhoneNumberEditing)
+                                    ? false
+                                    : true,
+                                showCursor: ref.watch(isPhoneNumberEditing)
+                                    ? true
+                                    : false,
+                                focusNode: phoneFocusNode,
+                                validator: (value) {
+                                  return null;
+                                },
+                                autocorrect: false,
+                                textInputAction: TextInputAction.next,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.prof_hint_no,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                  isPhoneNumberEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.prof_edit_age),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                controller: ageController,
+                                focusNode: ageFocusNode,
+                                readOnly:
+                                    ref.watch(isAgeEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isAgeEditing) ? true : false,
+                                validator: (value) {
+                                  return null;
+                                },
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.next,
+                                autocorrect: false,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.prof_hint_age,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isAgeEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.prof_edit_address),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                validator: (value) {
+                                  return null;
+                                },
+                                controller: addressController,
+                                readOnly:
+                                    ref.watch(isAddressEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isAddressEditing) ? true : false,
+                                focusNode: addressFocusNode,
+                                autocorrect: false,
+                                textInputAction: TextInputAction.next,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.prof_hint_add,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isAddressEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.tpe_worked),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                controller: workedAtController,
+                                textInputAction: TextInputAction.next,
+                                readOnly:
+                                    ref.watch(isworkedatEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isworkedatEditing) ? true : false,
+                                validator: (value) {
+                                  return null;
+                                },
+                                focusNode: workedAtFocusNode,
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.tpe_worked_hint,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isworkedatEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.tpe_lang),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                controller: languageController,
+                                textInputAction: TextInputAction.next,
+                                readOnly:
+                                    ref.watch(islanguageEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(islanguageEditing) ? true : false,
+                                focusNode: languageFocusNode,
+                                validator: (value) {
+                                  return null;
+                                },
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.tpe_lang_hint,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(islanguageEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            _buildCaption(S.current.tpe_bio),
+                            SizedBox(height: 0.5.h),
+                            TextFormField(
+                                controller: bioController,
+                                keyboardType: TextInputType.multiline,
+                                readOnly:
+                                    ref.watch(isBioEditing) ? false : true,
+                                showCursor:
+                                    ref.watch(isBioEditing) ? true : false,
+                                minLines: 3,
+                                maxLines: 5,
+                                // textInputAction: TextInputAction.done,
+                                validator: (value) {
+                                  return null;
+                                },
+                                focusNode: bioFocusNode,
+                                onFieldSubmitted: (value) {},
+                                decoration: inputEditProfileStyle.copyWith(
+                                    hintText: S.current.tpe_bio_hint,
+                                    suffixIcon: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(isBioEditing.notifier)
+                                              .state = true;
+                                        },
+                                        child: const Icon(Icons.edit_sharp)))),
+                            ref.watch(isNameEditing) ||
+                                    ref.watch(isEmailEditing) ||
+                                    ref.watch(isAddressEditing) ||
+                                    ref.watch(isPhoneNumberEditing) ||
+                                    ref.watch(isAgeEditing) ||
+                                    ref.watch(isBioEditing) ||
+                                    ref.watch(isworkedatEditing) ||
+                                    ref.watch(islanguageEditing)
+                                ? Consumer(builder: (context, ref, child) {
+                                    return _buildButton(() async {
+                                      if (formKey.currentState?.validate() ==
+                                          true) {
+                                        showLoading(ref);
+
+                                        final result = await ref
+                                            .read(profileRepositoryProvider)
+                                            .updateProfile(
+                                                nameController.text.trim(),
+                                                emailController.text.trim(),
+                                                phoneController.text.trim(),
+                                                addressController.text.trim(),
+                                                ageController.text.trim(),
+                                                bioController.text.trim(),
+                                                languageController.text.trim(),
+                                                workedAtController.text.trim(),
+                                                "",
+                                                "",
+                                                "India");
+                                        if (result == null) {
+                                          AppSnackbar.instance.error(context,
+                                              'Error in updating details');
+                                        } else {
+                                          await updateProfileData(ref, result);
+                                          Navigator.pop(context, true);
+                                        }
+                                        // ref.read(
+                                        //     updateProfileProvider(userdata));
+                                        // print("click working");
+                                        hideLoading(ref);
+                                      }
+                                      // Navigator.push(
+                                      // context,
+                                      // MaterialPageRoute(
+                                      // builder: (context) => const TeacherDetail()),
+                                      // );
+                                    });
+                                  })
+                                : Container()
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ),
               IconButton(
                 onPressed: () {
@@ -233,19 +377,39 @@ class TeacherProfileEdit extends HookWidget {
                         Positioned(
                             bottom: 0,
                             right: 0,
-                            child: Container(
-                              width: 6.w,
-                              height: 6.w,
-                              decoration: BoxDecoration(
-                                color: AppColors.yellowAccent,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1,
+                            child: GestureDetector(
+                              onTap: () async {
+                                final pickedFile =
+                                    await showImageFilePicker(context);
+                                if (pickedFile != null) {
+                                  final result = await ref
+                                      .read(profileRepositoryProvider)
+                                      .updateProfileImage(pickedFile);
+                                  if (result != null) {
+                                    updateUserImage(ref, result);
+                                    // updateUser(ref, user);
+                                    AppSnackbar.instance.message(context,
+                                        'Profile image updated successfully');
+                                  } else {
+                                    AppSnackbar.instance.error(
+                                        context, 'Error in updating image');
+                                  }
+                                }
+                              },
+                              child: Container(
+                                width: 6.w,
+                                height: 6.w,
+                                decoration: BoxDecoration(
+                                  color: AppColors.yellowAccent,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
                                 ),
+                                child: Icon(Icons.edit,
+                                    color: AppColors.primaryColor, size: 3.w),
                               ),
-                              child: Icon(Icons.edit,
-                                  color: AppColors.primaryColor, size: 3.w),
                             )),
                         // Text(
                         //   user?.name ?? '',
@@ -323,7 +487,7 @@ class TeacherProfileEdit extends HookWidget {
                             width: 2,
                           ),
                         ),
-                        child: Icon(Icons.edit),
+                        child: const Icon(Icons.edit),
                       ),
                     ),
                   ],

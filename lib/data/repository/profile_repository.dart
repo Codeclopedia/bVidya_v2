@@ -48,8 +48,18 @@ class ProfileRepository {
     }
   }
 
-  Future<UpdatedProfile?> updateProfile(String name, String email, String phone,
-      String address, String age) async {
+  Future<UpdatedProfile?> updateProfile(
+      String name,
+      String email,
+      String phone,
+      String address,
+      String age,
+      String bio,
+      String language,
+      String occupation,
+      String city,
+      String state,
+      String country) async {
     final result = await _api.updateUserProfile(
         token: _authToken,
         name: name,
@@ -57,10 +67,12 @@ class ProfileRepository {
         phone: phone,
         address: address,
         age: age,
-        bio: '',
-        city: '',
-        state: '',
-        country: '');
+        bio: bio,
+        language: language,
+        occupation: occupation,
+        city: city,
+        state: state,
+        country: country);
     if (result.status != null && result.status == successfull) {
       return result.body;
     }

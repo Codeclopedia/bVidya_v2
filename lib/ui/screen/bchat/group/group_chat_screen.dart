@@ -5,7 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/common.dart';
+import '/core/utils/common.dart';
 import 'package:file_picker/file_picker.dart';
 import '../forward_dialog.dart';
 import '/data/models/contact_model.dart';

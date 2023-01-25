@@ -1,6 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils.dart';
-import 'package:bvidya/data/models/models.dart';
+import '/core/utils.dart';
+import '/data/models/models.dart';
 import 'package:grouped_list/grouped_list.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';

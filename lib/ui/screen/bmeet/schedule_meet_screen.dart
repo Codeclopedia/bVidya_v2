@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable
 
-import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import '/controller/bmeet_providers.dart';
@@ -192,32 +191,36 @@ class ScheduleMeetScreen extends HookWidget {
             SizedBox(height: 3.h),
             Text(S.current.bmeet_caption_date, style: textStyleCaption),
             SizedBox(height: 0.5.h),
-            TextFormField(
-              controller: _dateController,
-              autofocus: false,
-              showCursor: false,
-              validator: (value) {
-                if (value == null ||
-                    value.isEmpty == true ||
-                    _selectedDate == null) {
-                  return S.current.bmeet_empty_date;
-                }
-                return null;
-              },
-              onTap: () async {
-                _dateFocus.unfocus();
+            Consumer(builder: (context, ref, child) {
+              return TextFormField(
+                controller: _dateController,
+                autofocus: false,
+                showCursor: false,
+                validator: (value) {
+                  if (value == null ||
+                      value.isEmpty == true ||
+                      _selectedDate == null) {
+                    return S.current.bmeet_empty_date;
+                  }
+                  return null;
+                },
+                onTap: () async {
+                  _dateFocus.unfocus();
 
-                _selectedDate = await _pickDate(context);
-                if (_selectedDate != null) {
-                  _dateController.text =
-                      DateFormat('dd-MM-yyyy').format(_selectedDate!);
-                }
-              },
-              focusNode: _dateFocus,
-              decoration: inputMeetStyle.copyWith(
-                  hintText: S.current.bmeet_hint_date,
-                  suffixIcon: const Icon(Icons.edit_calendar)),
-            ),
+                  _selectedDate = await _pickDate(context);
+                  ref.read(selectedDateProvider.notifier).state =
+                      _selectedDate ?? DateTime.now();
+                  if (_selectedDate != null) {
+                    _dateController.text =
+                        DateFormat('dd-MM-yyyy').format(_selectedDate!);
+                  }
+                },
+                focusNode: _dateFocus,
+                decoration: inputMeetStyle.copyWith(
+                    hintText: S.current.bmeet_hint_date,
+                    suffixIcon: const Icon(Icons.edit_calendar)),
+              );
+            }),
             SizedBox(height: 3.h),
             Row(
               children: [
@@ -234,72 +237,78 @@ class ScheduleMeetScreen extends HookWidget {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: _startController,
-                    autofocus: false,
-                    showCursor: false,
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty == true ||
-                          _startTime == null) {
-                        return S.current.bmeet_empty_start;
-                      }
-                      if (_startTime?.isBefore(DateTime.now()) == true) {
-                        return S.current.bmeet_invalid_start;
-                      }
-                      return null;
-                    },
-                    onTap: () {
-                      _pickTime(context, (time) {
-                        _startTime = time;
-                        final dt = DateFormat.jm().format(time);
-                        print('dt: $dt');
-                        _startController.text = dt;
-                      });
-                    },
-                    onFieldSubmitted: (value) {},
-                    focusNode: _startFocus,
-                    decoration: inputMeetStyle.copyWith(
-                        hintText: S.current.bmeet_hint_start,
-                        suffixIcon: const Icon(
-                          Icons.keyboard_arrow_down,
-                        )),
-                  ),
+                  child: Consumer(builder: (context, ref, child) {
+                    return TextFormField(
+                      controller: _startController,
+                      autofocus: false,
+                      showCursor: false,
+                      keyboardType: TextInputType.none,
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty == true ||
+                            _startTime == null) {
+                          return S.current.bmeet_empty_start;
+                        }
+                        if (_startTime?.isBefore(DateTime.now()) == true) {
+                          return S.current.bmeet_invalid_start;
+                        }
+                        return null;
+                      },
+                      onTap: () {
+                        _pickTime(context, (time) {
+                          _startTime = time;
+                          final dt = DateFormat.jm().format(time);
+                          print('dt: $dt');
+                          _startController.text = dt;
+                        }, ref);
+                      },
+                      onFieldSubmitted: (value) {},
+                      focusNode: _startFocus,
+                      decoration: inputMeetStyle.copyWith(
+                          hintText: S.current.bmeet_hint_start,
+                          suffixIcon: const Icon(
+                            Icons.keyboard_arrow_down,
+                          )),
+                    );
+                  }),
                 ),
                 SizedBox(width: 3.w),
                 Expanded(
-                  child: TextFormField(
-                    controller: _endController,
-                    autofocus: false,
-                    showCursor: false,
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty == true ||
-                          _endTime == null ||
-                          _startTime == null) {
-                        return S.current.bmeet_empty_end;
-                      }
-                      if (_endTime?.isBefore(_startTime!) == true) {
-                        return S.current.bmeet_invalid_end;
-                      }
-                      return null;
-                    },
-                    onTap: () {
-                      _pickTime(context, (time) {
-                        final dt = DateFormat.jm().format(time);
-                        _endTime = time;
-                        _endController.text = dt;
-                        print('dt: $dt');
-                      });
-                    },
-                    focusNode: _endFocus,
-                    onEditingComplete: () {},
-                    decoration: inputMeetStyle.copyWith(
-                        hintText: S.current.bmeet_hint_end,
-                        suffixIcon: const Icon(
-                          Icons.keyboard_arrow_down,
-                        )),
-                  ),
+                  child: Consumer(builder: (context, ref, child) {
+                    return TextFormField(
+                      controller: _endController,
+                      autofocus: false,
+                      showCursor: false,
+                      keyboardType: TextInputType.none,
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty == true ||
+                            _endTime == null ||
+                            _startTime == null) {
+                          return S.current.bmeet_empty_end;
+                        }
+                        if (_endTime?.isBefore(_startTime!) == true) {
+                          return S.current.bmeet_invalid_end;
+                        }
+                        return null;
+                      },
+                      onTap: () {
+                        _pickTime(context, (time) {
+                          final dt = DateFormat.jm().format(time);
+                          _endTime = time;
+                          _endController.text = dt;
+                          print('dt: $dt');
+                        }, ref);
+                      },
+                      focusNode: _endFocus,
+                      onEditingComplete: () {},
+                      decoration: inputMeetStyle.copyWith(
+                          hintText: S.current.bmeet_hint_end,
+                          suffixIcon: const Icon(
+                            Icons.keyboard_arrow_down,
+                          )),
+                    );
+                  }),
                 ),
               ],
             ),
@@ -430,29 +439,57 @@ class ScheduleMeetScreen extends HookWidget {
             DateTime.now().year + 1, DateTime.now().month, DateTime.now().day));
   }
 
-  _pickTime(BuildContext context, Function(DateTime) onPick) {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (_) => Container(
-              height: 40.h,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(4.w),
-                      topLeft: Radius.circular(4.w)),
-                  color: Colors.white),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 40.h,
-                    child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.time,
-                        initialDateTime: DateTime.now(),
-                        onDateTimeChanged: (val) {
-                          onPick(val);
-                        }),
-                  ),
-                ],
-              ),
-            ));
+  _pickTime(
+      BuildContext context, Function(DateTime) onPick, WidgetRef ref) async {
+    TimeOfDay pickedTime = await showTimePicker(
+          initialTime: TimeOfDay.now(),
+          context: context, //context of current state
+        ) ??
+        TimeOfDay.now();
+
+    final now = DateTime.now();
+
+    if (pickedTime != null) {
+      onPick(DateTime(
+          ref.watch(selectedDateProvider).year,
+          ref.watch(selectedDateProvider).month,
+          ref.watch(selectedDateProvider).day,
+          pickedTime.hour,
+          pickedTime.minute));
+      //output 10:51 PM
+      // DateTime parsedTime =
+      //     DateFormat.jm().parse(pickedTime.format(context).toString());
+      // //converting to DateTime so that we can further format on different pattern.
+      // print(parsedTime); //output 1970-01-01 22:53:00.000
+      // String formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
+      // print(formattedTime); //output 14:59:00
+      // //DateFormat() is from intl package, you can format the time on any pattern you need.
+    } else {
+      print("Time is not selected");
+    }
+
+    // showCupertinoModalPopup(
+    //     context: context,
+    //     builder: (_) => Container(
+    //           height: 40.h,
+    //           decoration: BoxDecoration(
+    //               borderRadius: BorderRadius.only(
+    //                   topRight: Radius.circular(4.w),
+    //                   topLeft: Radius.circular(4.w)),
+    //               color: Colors.white),
+    //           child: Column(
+    //             children: [
+    //               SizedBox(
+    //                 height: 40.h,
+    //                 child: CupertinoDatePicker(
+    //                     mode: CupertinoDatePickerMode.time,
+    //                     initialDateTime: DateTime.now(),
+    //                     onDateTimeChanged: (val) {
+    //                       onPick(val);
+    //                     }),
+    //               ),
+    //             ],
+    //           ),
+    //         ));
   }
 }

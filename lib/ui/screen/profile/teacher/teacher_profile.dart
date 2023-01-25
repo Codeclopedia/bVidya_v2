@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/utils/common.dart';
+import '/core/utils/common.dart';
 
 import '/controller/profile_providers.dart';
 import '/core/constants.dart';

@@ -1,8 +1,8 @@
-// import 'package:bvidya/data/models/response/profile/user_profile_response.dart';
+// import '/data/models/response/profile/user_profile_response.dart';
 
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/utils/common.dart';
+import '/core/utils/common.dart';
 
 import '/controller/profile_providers.dart';
 import '../../../screens.dart';

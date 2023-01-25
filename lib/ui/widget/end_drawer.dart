@@ -102,7 +102,7 @@ class EndDrawer extends StatelessWidget {
             case DrawerMenu.profile:
               final user = await getMeAsUser();
               if (user != null) {
-                if (user.role == 'teacher' || user.role == 'admin') {
+                if (user.role == 'instructor' || user.role == 'admin') {
                   routeName = RouteList.teacherProfile;
                 } else {
                   routeName = RouteList.studentProfile;
@@ -187,7 +187,7 @@ class EndDrawer extends StatelessWidget {
           //removed to work as  a teacher profile
 
           // print('user role ${user.role}');
-          if (user.role == 'teacher' || user.role == 'admin') {
+          if (user.role == 'instructor' || user.role == 'admin') {
             Navigator.pushReplacementNamed(context, RouteList.teacherProfile);
           } else {
             Navigator.pushReplacementNamed(context, RouteList.studentProfile);

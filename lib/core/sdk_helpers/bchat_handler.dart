@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_messeges_provider.dart';
-import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
+import '/controller/providers/bchat/chat_messeges_provider.dart';
+import '/core/sdk_helpers/typing_helper.dart';
 import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 
@@ -177,19 +177,20 @@ unregisterChatCallback(String key) {
 }
 
 registerChatCallback(String key, ChatMessagesChangeProvider provider,
-    Function(Map<String,TypingCommand>) onCmdMessage) {
+    Function(Map<String, TypingCommand>) onCmdMessage) {
   try {
     ChatClient.getInstance.chatManager.addEventHandler(
         key,
         ChatEventHandler(
           onCmdMessagesReceived: (messages) {
-            Map<String,TypingCommand> bodies = {};
+            Map<String, TypingCommand> bodies = {};
             for (var msg in messages) {
               if (msg.body.type == MessageType.CMD) {
                 ChatCmdMessageBody body = msg.body as ChatCmdMessageBody;
                 String content = body.action;
                 if (content == TypingCommand.typingStart.name) {
-                  bodies.addAll({msg.from.toString():TypingCommand.typingStart});
+                  bodies
+                      .addAll({msg.from.toString(): TypingCommand.typingStart});
                 }
               }
             }

@@ -65,7 +65,8 @@ String formatConverastionTime(DateTime date) {
   if (DateUtils.isSameDay(today, date)) {
     return DateFormat('hh:mm a').format(date);
   } else if (isYesterday(date, today)) {
-    return 'Yesterday ${DateFormat('hh:mm a').format(date)}';
+    // return 'Yesterday ${DateFormat('hh:mm a').format(date)}';
+    return 'Yesterday ';
   }
   if (isThisWeek(date, today)) {
     return DateFormat('EEE hh:mm a').format(date);

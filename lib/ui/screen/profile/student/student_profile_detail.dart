@@ -222,12 +222,19 @@ class StudentProfileDetail extends HookWidget {
                                                   emailController.text.trim(),
                                                   phoneController.text.trim(),
                                                   addressController.text.trim(),
-                                                  ageController.text.trim());
+                                                  ageController.text.trim(),
+                                                  "",
+                                                  "",
+                                                  "",
+                                                  "",
+                                                  "",
+                                                  "");
                                           if (result == null) {
                                             AppSnackbar.instance.error(context,
                                                 'Error in updating details');
                                           } else {
-                                            await updateProfileData(ref, result);
+                                            await updateProfileData(
+                                                ref, result);
                                             Navigator.pop(context, true);
                                           }
                                           // ref.read(

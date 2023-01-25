@@ -10,6 +10,7 @@ import '/core/ui_core.dart';
 import '../widgets.dart';
 
 final emojiVisibleProvider = StateProvider.autoDispose<bool>((ref) => false);
+final textInputStateProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class ChatInputBox extends ConsumerStatefulWidget {
   final Future<String?> Function(String) onSend;
@@ -33,57 +34,24 @@ class ChatInputBox extends ConsumerStatefulWidget {
 
 class _ChatInputBoxState extends ConsumerState<ChatInputBox>
     with WidgetsBindingObserver {
-  late TextEditingController textController;
-  OverlayEntry? _overlayEntry;
-  int currentMentionIndex = -1;
-  String currentTrigger = '';
+  late TextEditingController _textController;
   late FocusNode focusNode;
   // late Config config;
   // double _keyboardHeight = 0.0;
 
   @override
   void initState() {
-    textController = TextEditingController();
+    _textController = TextEditingController();
     focusNode = FocusNode();
     focusNode.addListener(() {
-      if (!focusNode.hasFocus) {
-        _clearOverlay();
-      } else {
+      if (focusNode.hasFocus) {
         ref.read(emojiVisibleProvider.notifier).state = false;
       }
+      // else {
+      // _clearOverlay();
+      // }
     });
     WidgetsBinding.instance.addObserver(this);
-
-    // config = Config(
-    //   columns: 7,
-    //   emojiSizeMax: 32 *
-    //       (foundation.defaultTargetPlatform == TargetPlatform.iOS
-    //           ? 1.30
-    //           : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
-    //   verticalSpacing: 0,
-    //   horizontalSpacing: 0,
-    //   gridPadding: EdgeInsets.zero,
-    //   initCategory: Category.RECENT,
-    //   bgColor: const Color(0xFF111111),
-    //   indicatorColor: Colors.blue,
-    //   iconColor: Colors.grey,
-    //   iconColorSelected: Colors.blue,
-    //   backspaceColor: Colors.blue,
-    //   skinToneDialogBgColor: Colors.white,
-    //   skinToneIndicatorColor: Colors.grey,
-    //   enableSkinTones: true,
-    //   showRecentsTab: true,
-    //   recentsLimit: 28,
-    //   noRecents: const Text(
-    //     'No Recents',
-    //     style: TextStyle(fontSize: 20, color: Colors.black26),
-    //     textAlign: TextAlign.center,
-    //   ), // Needs to be const Widget
-    //   loadingIndicator: const SizedBox.shrink(), // Needs to be const Widget
-    //   tabIndicatorAnimDuration: kTabScrollDuration,
-    //   categoryIcons: const CategoryIcons(),
-    //   buttonMode: ButtonMode.MATERIAL,
-    // );
     super.initState();
   }
 
@@ -92,20 +60,22 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
     final double bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
     final bool isKeyboardActive = bottomInset > 0.0;
     if (!isKeyboardActive) {
-      _clearOverlay();
+      // _clearOverlay();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    textController.dispose();
-    _clearOverlay();
+    _textController.dispose();
+    // _clearOverlay();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEmptyInput = ref.watch(textInputStateProvider);
+
     return SafeArea(
       top: false,
       child: Column(
@@ -113,137 +83,108 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
         children: [
           Container(
             padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 2.h),
-            //
-            child: Consumer(
-              builder: (context, ref, child) {
-                // String input = ref.watch(inputTextProvider);
-                return Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(3.w),
-                            ),
-                            color: AppColors.chatInputBackground),
-                        child: Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: TextField(
-                            focusNode: focusNode,
-                            controller: textController,
-                            onChanged: (value) {
-                              // WidgetsBinding.instance
-                              //     .addPostFrameCallback((_) async {
-                              // if (onMention != null) {
-                              //   await _checkMentions(value);
-                              // }
-                              // });
-                              // ref.read(inputTextProvider.notifier).state =
-                              //     value.trim();
-                              if (widget.onTextChange != null) {
-                                widget.onTextChange!();
-                              }
-                            },
-                            maxLines: 6,
-                            minLines: 1,
-                            keyboardType: TextInputType.multiline,
-                            decoration: chatInputDirectionStyle.copyWith(
-                              hintText: S.current.chat_input_hint,
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.all(4.w),
-                                child: InkWell(
-                                  // padding: EdgeInsets.all(0),
-                                  onTap: () {
-                                    bool visible =
-                                        ref.read(emojiVisibleProvider);
-                                    if (visible) {
-                                      focusNode.requestFocus();
-                                    } else {
-                                      focusNode.unfocus();
-                                    }
-
-                                    ref
-                                        .read(emojiVisibleProvider.notifier)
-                                        .state = !visible;
-                                  },
-                                  child: ref.watch(emojiVisibleProvider)
-                                      ? const Icon(Icons.keyboard_alt_outlined)
-                                      : getSvgIcon('icon_chat_emoji.svg'),
-                                ),
-                              ),
-                            ),
-                          ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(3.w),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 1.w),
-                    Visibility(
-                      visible: widget.onAttach != null,
-                      child: IconButton(
-                        onPressed: () async {
-                          _showAttachDialog(context);
-                          // if (await handleStorage()) {
-                          // } else {
-                          //   if (await Permission.photos.isPermanentlyDenied) {
-                          //     AppSnackbar.instance.error(context,
-                          //         "Enable storage permission from app setting");
-                          //     openAppSettings();
-                          //   } else if (await Permission.storage.isDenied) {
-                          //     final status = await Permission.storage.request();
-                          //     debugPrint(status.name);
-                          //     if (status.isPermanentlyDenied) {
-                          //       AppSnackbar.instance.error(context,
-                          //           "Enable storage permission from app setting");
-                          //       openAppSettings();
-                          //     } else if (status.isGranted) {
-                          //       _showAttachDialog(context);
-                          //     }
-                          //   } else {
-                          //     print(
-                          //         '${await Permission.storage.isRestricted}  ${await Permission.storage.isDenied}');
-                          //   }
+                        color: AppColors.chatInputBackground),
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: TextField(
+                        focusNode: focusNode,
+                        controller: _textController,
+                        onChanged: (value) {
+                          // WidgetsBinding.instance
+                          //     .addPostFrameCallback((_) async {
+                          // if (onMention != null) {
+                          //   await _checkMentions(value);
+                          // }
+                          // });
+                          _textUpdated();
+                          // ref.read(textInputStateProvider.notifier).state =
+                          //     value.trim().isEmpty;
+                          // if (widget.onTextChange != null) {
+                          //   widget.onTextChange!();
                           // }
                         },
-                        icon: getSvgIcon('icon_chat_attach.svg'),
-                      ),
-                    ),
-                    if (textController.text.trim().isEmpty &&
-                        widget.onCamera != null)
-                      IconButton(
-                        splashColor: Colors.grey,
-                        onPressed: () {
-                          widget.onCamera!();
-                        },
-                        icon: getSvgIcon('icon_chat_camera.svg'),
-                      ),
-                    if (textController.text.trim().isNotEmpty)
-                      InkWell(
-                        onTap: () async {
-                          // ChatMessage.createTxtSendMessage(targetId: targetId, content: content)
-                          final sent =
-                              await widget.onSend(textController.text.trim());
-                          if (sent == null) {
-                            textController.text = '';
-                            // input = '';
-                            // ref.read(inputTextProvider.notifier).state = '';
-                          } else {
-                            AppSnackbar.instance.error(context, sent);
-                          }
-                        },
-                        child: CircleAvatar(
-                          radius: 5.w,
-                          backgroundColor: AppColors.primaryColor,
-                          child: const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                            size: 20.0,
+                        maxLines: 6,
+                        minLines: 1,
+                        keyboardType: TextInputType.multiline,
+                        decoration: chatInputDirectionStyle.copyWith(
+                          hintText: S.current.chat_input_hint,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(4.w),
+                            child: InkWell(
+                              // padding: EdgeInsets.all(0),
+                              onTap: () {
+                                bool visible = ref.read(emojiVisibleProvider);
+                                if (visible) {
+                                  focusNode.requestFocus();
+                                } else {
+                                  focusNode.unfocus();
+                                }
+                                ref.read(emojiVisibleProvider.notifier).state =
+                                    !visible;
+                              },
+                              child: ref.watch(emojiVisibleProvider)
+                                  ? const Icon(Icons.keyboard_alt_outlined)
+                                  : getSvgIcon('icon_chat_emoji.svg'),
+                            ),
                           ),
                         ),
                       ),
-                  ],
-                );
-              },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 1.w),
+                Visibility(
+                  visible: widget.onAttach != null,
+                  child: IconButton(
+                    onPressed: () async {
+                      _showAttachDialog(context);
+                    },
+                    icon: getSvgIcon('icon_chat_attach.svg'),
+                  ),
+                ),
+                if (isEmptyInput && widget.onCamera != null)
+                  IconButton(
+                    splashColor: Colors.grey,
+                    onPressed: () {
+                      widget.onCamera!();
+                    },
+                    icon: getSvgIcon('icon_chat_camera.svg'),
+                  ),
+                if (!isEmptyInput)
+                  InkWell(
+                    onTap: () async {
+                      // ChatMessage.createTxtSendMessage(targetId: targetId, content: content)
+                      final sent =
+                          await widget.onSend(_textController.text.trim());
+                      if (sent == null) {
+                        _textController.text = '';
+                        ref.read(textInputStateProvider.notifier).state = true;
+                        // input = '';
+                        // ref.read(inputTextProvider.notifier).state = '';
+                      } else {
+                        AppSnackbar.instance.error(context, sent);
+                      }
+                    },
+                    child: CircleAvatar(
+                      radius: 5.w,
+                      backgroundColor: AppColors.primaryColor,
+                      child: Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 5.w,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
           Offstage(
@@ -251,8 +192,13 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
               child: SizedBox(
                 height: 30.h,
                 child: EmojiPicker(
-                  onBackspacePressed: () {},
-                  textEditingController: textController,
+                  onBackspacePressed: () {
+                    _textUpdated();
+                  },
+                  onEmojiSelected: (category, emoji) {
+                    _textUpdated();
+                  },
+                  textEditingController: _textController,
                   config: Config(
                     columns: 7,
                     emojiSizeMax: 32 *
@@ -277,7 +223,7 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                       'No Recents',
                       style: TextStyle(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: Colors.grey,
                       ),
                       textAlign: TextAlign.center,
                     ), // Needs to be const Widget
@@ -289,50 +235,17 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                   ),
                 ),
               )),
-
-          // SizedBox(
-          //
-
-          //   child: EmojiPicker(
-          //     onBackspacePressed: () {},
-          //     onEmojiSelected: (category, emoji) {},
-          //     // textEditingController: textController,
-          //     config: Config(
-          //       columns: 7,
-          //       emojiSizeMax: 32 *
-          //           (foundation.defaultTargetPlatform == TargetPlatform.iOS
-          //               ? 1.30
-          //               : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
-          //       verticalSpacing: 0,
-          //       horizontalSpacing: 0,
-          //       gridPadding: EdgeInsets.zero,
-          //       initCategory: Category.RECENT,
-          //       bgColor: const Color(0xFF111111),
-          //       indicatorColor: Colors.blue,
-          //       iconColor: Colors.grey,
-          //       iconColorSelected: Colors.blue,
-          //       backspaceColor: Colors.blue,
-          //       skinToneDialogBgColor: Colors.white,
-          //       skinToneIndicatorColor: Colors.grey,
-          //       enableSkinTones: true,
-          //       showRecentsTab: true,
-          //       recentsLimit: 28,
-          //       noRecents: const Text(
-          //         'No Recents',
-          //         style: TextStyle(fontSize: 20, color: Colors.black26),
-          //         textAlign: TextAlign.center,
-          //       ), // Needs to be const Widget
-          //       loadingIndicator:
-          //           const SizedBox.shrink(), // Needs to be const Widget
-          //       tabIndicatorAnimDuration: kTabScrollDuration,
-          //       categoryIcons: const CategoryIcons(),
-          //       buttonMode: ButtonMode.MATERIAL,
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
+  }
+
+  _textUpdated() {
+    ref.read(textInputStateProvider.notifier).state =
+        _textController.text.trim().isEmpty;
+    if (widget.onTextChange != null) {
+      widget.onTextChange!();
+    }
   }
 
   Future<bool> handleStorage() async {
@@ -354,94 +267,99 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
     }
   }
 
-  Future<List<Widget>> Function(String trigger, String value,
-      void Function(String value) onMentionClick)? onMention;
+// OverlayEntry? _overlayEntry;
+//   int currentMentionIndex = -1;
+//   String currentTrigger = '';
 
-  final List<String> onMentionTriggers = const <String>['@'];
-  Future<void> _checkMentions(String text) async {
-    bool hasMatch = false;
-    for (final String trigger in onMentionTriggers) {
-      final RegExp regexp = RegExp(r'(?<![^\s<>])' + trigger + r'([^\s<>]+)$');
-      if (regexp.hasMatch(text)) {
-        hasMatch = true;
-        currentMentionIndex = textController.text.indexOf(regexp);
-        currentTrigger = trigger;
-        List<Widget> children = await onMention!(
-          trigger,
-          regexp.firstMatch(text)!.group(1)!,
-          _onMentionClick,
-        );
-        _showMentionModal(children);
-      }
-    }
-    if (!hasMatch) {
-      _clearOverlay();
-    }
-  }
+//   Future<List<Widget>> Function(String trigger, String value,
+//       void Function(String value) onMentionClick)? onMention;
 
-  void _onMentionClick(String value) {
-    textController.text = textController.text.replaceRange(
-      currentMentionIndex,
-      textController.text.length,
-      currentTrigger + value,
-    );
-    textController.selection = TextSelection.collapsed(
-      offset: textController.text.length,
-    );
-    _clearOverlay();
-  }
+//   final List<String> onMentionTriggers = const <String>['@'];
 
-  void _clearOverlay() {
-    if (_overlayEntry != null && _overlayEntry!.mounted) {
-      _overlayEntry?.remove();
-      _overlayEntry?.dispose();
-    }
-  }
+//   Future<void> _checkMentions(String text) async {
+//     bool hasMatch = false;
+//     for (final String trigger in onMentionTriggers) {
+//       final RegExp regexp = RegExp(r'(?<![^\s<>])' + trigger + r'([^\s<>]+)$');
+//       if (regexp.hasMatch(text)) {
+//         hasMatch = true;
+//         currentMentionIndex = _textController.text.indexOf(regexp);
+//         currentTrigger = trigger;
+//         List<Widget> children = await onMention!(
+//           trigger,
+//           regexp.firstMatch(text)!.group(1)!,
+//           _onMentionClick,
+//         );
+//         _showMentionModal(children);
+//       }
+//     }
+//     if (!hasMatch) {
+//       _clearOverlay();
+//     }
+//   }
 
-  void _showMentionModal(List<Widget> children) {
-    final OverlayState overlay = Overlay.of(context)!;
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset topLeftCornerOffset = renderBox.localToGlobal(Offset.zero);
+//   void _onMentionClick(String value) {
+//     _textController.text = _textController.text.replaceRange(
+//       currentMentionIndex,
+//       _textController.text.length,
+//       currentTrigger + value,
+//     );
+//     _textController.selection = TextSelection.collapsed(
+//       offset: _textController.text.length,
+//     );
+//     _clearOverlay();
+//   }
 
-    double bottomPosition =
-        MediaQuery.of(context).size.height - topLeftCornerOffset.dy;
-    // if (widget.inputOptions.inputToolbarMargin != null) {
-    //   bottomPosition -= widget.inputOptions.inputToolbarMargin!.top -
-    //       widget.inputOptions.inputToolbarMargin!.bottom;
-    // }
+//   void _clearOverlay() {
+//     if (_overlayEntry != null && _overlayEntry!.mounted) {
+//       _overlayEntry?.remove();
+//       _overlayEntry?.dispose();
+//     }
+//   }
 
-    _clearOverlay();
+//   void _showMentionModal(List<Widget> children) {
+//     final OverlayState overlay = Overlay.of(context)!;
+//     final RenderBox renderBox = context.findRenderObject() as RenderBox;
+//     final Offset topLeftCornerOffset = renderBox.localToGlobal(Offset.zero);
 
-    _overlayEntry = OverlayEntry(
-      builder: (BuildContext context) {
-        return Positioned(
-          width: renderBox.size.width,
-          bottom: bottomPosition,
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height -
-                  bottomPosition -
-                  MediaQuery.of(context).padding.top -
-                  kToolbarHeight,
-            ),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                    width: 0.2, color: Theme.of(context).dividerColor),
-              ),
-            ),
-            child: Material(
-              color: Theme.of(context).selectedRowColor,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: children,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-    overlay.insert(_overlayEntry!);
-  }
+//     double bottomPosition =
+//         MediaQuery.of(context).size.height - topLeftCornerOffset.dy;
+//     // if (widget.inputOptions.inputToolbarMargin != null) {
+//     //   bottomPosition -= widget.inputOptions.inputToolbarMargin!.top -
+//     //       widget.inputOptions.inputToolbarMargin!.bottom;
+//     // }
+
+//     _clearOverlay();
+
+//     _overlayEntry = OverlayEntry(
+//       builder: (BuildContext context) {
+//         return Positioned(
+//           width: renderBox.size.width,
+//           bottom: bottomPosition,
+//           child: Container(
+//             constraints: BoxConstraints(
+//               maxHeight: MediaQuery.of(context).size.height -
+//                   bottomPosition -
+//                   MediaQuery.of(context).padding.top -
+//                   kToolbarHeight,
+//             ),
+//             decoration: BoxDecoration(
+//               border: Border(
+//                 top: BorderSide(
+//                     width: 0.2, color: Theme.of(context).dividerColor),
+//               ),
+//             ),
+//             child: Material(
+//               color: Theme.of(context).selectedRowColor,
+//               child: SingleChildScrollView(
+//                 child: Column(
+//                   children: children,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//     overlay.insert(_overlayEntry!);
+//   }
 }

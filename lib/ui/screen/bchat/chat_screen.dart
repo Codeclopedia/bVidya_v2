@@ -4,11 +4,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/group_chats_provider.dart';
-// import 'package:bvidya/core/constants/data.dart';
-import 'package:bvidya/core/sdk_helpers/typing_helper.dart';
-import 'package:bvidya/core/utils/common.dart';
-import 'package:bvidya/ui/screen/bchat/forward_dialog.dart';
+import '/controller/providers/bchat/group_chats_provider.dart';
+// import '/core/constants/data.dart';
+import '/core/sdk_helpers/typing_helper.dart';
+import '/core/utils/common.dart';
+import '/ui/screen/bchat/forward_dialog.dart';
 // import '/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';

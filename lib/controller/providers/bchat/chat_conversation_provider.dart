@@ -322,7 +322,7 @@ class ChatConversationChangeProvider extends ChangeNotifier {
     }
   }
 
-  void updateUnread() async {
+  Future updateUnread() async {
     try {
       for (var id in _chatConversationMap.entries) {
         final newVal = id.value;

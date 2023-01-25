@@ -3,14 +3,14 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/user_auth_provider.dart';
-import 'package:bvidya/core/utils/date_utils.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import '/core/utils/notification_controller.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/utils.dart';
+import '/controller/providers/user_auth_provider.dart';
+import '/core/utils/date_utils.dart';
 
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/helpers/call_helper.dart';
@@ -62,6 +62,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             .setup(ref.read(bChatProvider), user, update: true);
         await ref.read(groupConversationProvider.notifier).setup();
         await ref.read(callListProvider.notifier).setup();
+      } else {
+        ref
+            .read(chatConversationProvider.notifier)
+            .reset(ref.read(bChatProvider));
       }
     } else {
       print('reseting chat only');
@@ -99,8 +103,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     registerForContact('home_screen_contact', ref);
     registerForNewMessage('home_screen_chat', (msgs) {
       for (var lastMessage in msgs) {
-        print(
-            'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
+        // print(
+        //     'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
         if (lastMessage.conversationId != null) {
           if (lastMessage.chatType == ChatType.Chat) {
             ref
@@ -139,7 +143,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             child: Consumer(
               builder: (context, ref, child) {
                 final provider = ref.watch(chatConversationProvider);
-
                 final loading = provider.isLoading;
 
                 // ref.watch(chatConversationProvider
@@ -224,7 +227,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           textMessage = (callBody.callType == CallType.video)
               ? 'Video Call'
               : 'Audio call';
-        } catch (e) {}
+        } catch (e) {
+          textMessage = 'Call';
+        }
       }
     }
     // final online = model.isOnline?.statusDescription ?? ' Unknown';
@@ -365,57 +370,56 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _newMessageButton(BuildContext context) {
-    return Consumer(builder: (context, ref, child) {
-      return InkWell(
-        splashColor: AppColors.primaryColor,
-        onTap: () async {
-          final model =
-              await Navigator.pushNamed(context, RouteList.contactList);
-          setScreen(RouteList.home);
-          if (model != null) {
-            ref.read(chatConversationProvider).updateUi();
-            // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
-            // ref
-            //     .read(bChatSDKControllerProvider)
-            //     .reloadConversation(ref,reloadContacts: true);
-            // Navigator.pushNamed(context, RouteList.chatScreen,
-            //     arguments: model);
-          }
+    // return Consumer(builder: (context, ref, child) {
+    return InkWell(
+      splashColor: AppColors.primaryColor,
+      onTap: () async {
+        final model = await Navigator.pushNamed(context, RouteList.contactList);
+        setScreen(RouteList.home);
+        if (model != null) {
+          ref.read(chatConversationProvider).updateUi();
+          // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
+          // ref
+          //     .read(bChatSDKControllerProvider)
+          //     .reloadConversation(ref,reloadContacts: true);
+          // Navigator.pushNamed(context, RouteList.chatScreen,
+          //     arguments: model);
+        }
 
-          // _loadConversations(ref);
-        },
-        child: Row(
-          children: [
-            DottedBorder(
-              // radius: Radius.circular(3.5.w),
-              borderType: BorderType.Circle,
-              dashPattern: const [10, 4],
-              strokeWidth: 3.0,
-              color: AppColors.newMessageBorderColor,
-              child: SizedBox(
-                width: 7.w,
-                height: 7.w,
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.black,
-                ),
+        // _loadConversations(ref);
+      },
+      child: Row(
+        children: [
+          DottedBorder(
+            // radius: Radius.circular(3.5.w),
+            borderType: BorderType.Circle,
+            dashPattern: const [10, 4],
+            strokeWidth: 3.0,
+            color: AppColors.newMessageBorderColor,
+            child: SizedBox(
+              width: 7.w,
+              height: 7.w,
+              child: const Icon(
+                Icons.add,
+                color: Colors.black,
               ),
             ),
-            SizedBox(
-              width: 2.w,
+          ),
+          SizedBox(
+            width: 2.w,
+          ),
+          Text(
+            S.current.home_btx_new_message,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 10.sp,
+              color: AppColors.black,
             ),
-            Text(
-              S.current.home_btx_new_message,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 10.sp,
-                color: AppColors.black,
-              ),
-            ),
-          ],
-        ),
-      );
-    });
+          ),
+        ],
+      ),
+    );
+    // });
   }
 
   Widget _recentCallButton(BuildContext context) {
@@ -507,11 +511,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               const Spacer(),
               InkWell(
                 onTap: () async {
-                  final result = await Navigator.pushNamed(
-                      context, RouteList.searchContact);
+                  // final result =
+                  await Navigator.pushNamed(context, RouteList.searchContact);
                   // if (result == true) {
-                  ref.read(chatConversationProvider).updateUnread();
                   setScreen(RouteList.home);
+                  await ref.read(chatConversationProvider).updateUnread();
                   // ref.read(bChatSDKControllerProvider).loadConversations(ref);
                   // }
                 },
