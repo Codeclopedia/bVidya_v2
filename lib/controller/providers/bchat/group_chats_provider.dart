@@ -11,7 +11,7 @@ import '/core/ui_core.dart';
 final loadingMoreStateProvider =
     StateProvider.autoDispose<bool>((ref) => false);
 
-final hasMoreStateProvider = StateProvider.autoDispose<bool>((ref) => false);
+final hasMoreStateProvider = StateProvider.autoDispose<bool>((ref) => true);
 
 final groupChatProvider = StateNotifierProvider.autoDispose
     .family<GroupChatChangeNotifier, List<ChatMessage>, GroupConversationModel>(
@@ -26,7 +26,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
   // List<ChatMessage> get messages => _messagesMap.values.toList();
 
   bool _isLoadingMore = false;
-  // bool _hasMoreData = false;
+  bool _hasMoreData = false;
 
   // bool get hasMoreData => _hasMoreData;
 
@@ -54,7 +54,10 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
             _messagesMap.addAll({e.msgId: e});
           }
         }
-        ref.read(hasMoreStateProvider.notifier).state = chats?.length == 20;
+        _hasMoreData = chats?.length == 20;
+        if (mounted) {
+          ref.read(hasMoreStateProvider.notifier).state = _hasMoreData;
+        }
         // _hasMoreData = chats?.length == 20;
       } catch (e) {
         print('Error in loading chats');
@@ -86,6 +89,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
     try {
       if (grpModel.conversation != null &&
           _messagesMap.isNotEmpty &&
+          _hasMoreData &&
           !_isLoadingMore) {
         _isLoadingMore = true;
         // notifyListeners();
@@ -111,11 +115,11 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
             ...newMaps,
           });
         }
+        _hasMoreData = chats?.length == 20;
         ref.read(loadingMoreStateProvider.notifier).state = false;
 
         ref.read(hasMoreStateProvider.notifier).state = chats?.length == 20;
 
-        // _hasMoreData = chats?.length == 20;
         // ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
         // ref.read(chatHasMoreOldMessageProvider.notifier).state =
         //     chats?.length == 20;

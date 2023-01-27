@@ -400,21 +400,21 @@ onDeclineCallBusy(String senderFCM, String callerIdFrom, String callerName,
   // clearCall();
 }
 
-endCall(CallBody callBody, String to) {
-  try {
-    final content = {
-      'call_id': callBody.callId,
-      'type': NotiConstants.typeCall,
-      'action': NotiConstants.actionCallEnd
-    };
-    final message = ChatMessage.createCmdSendMessage(
-      targetId: to,
-      action: jsonEncode(content),
-    );
-    message.attributes?.addAll({"em_force_notification": true});
+// endCall(CallBody callBody, String to) {
+//   try {
+//     final content = {
+//       'call_id': callBody.callId,
+//       'type': NotiConstants.typeCall,
+//       'action': NotiConstants.actionCallEnd
+//     };
+//     final message = ChatMessage.createCmdSendMessage(
+//       targetId: to,
+//       action: jsonEncode(content),
+//     );
+//     message.attributes?.addAll({"em_force_notification": true});
 
-    ChatClient.getInstance.chatManager.sendMessage(message);
-  } catch (e) {
-    print('sending command failed $e');
-  }
-}
+//     ChatClient.getInstance.chatManager.sendMessage(message);
+//   } catch (e) {
+//     print('sending command failed $e');
+//   }
+// }

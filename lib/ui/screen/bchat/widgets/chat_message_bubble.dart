@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+// import 'package:flutter_file_preview/flutter_file_preview.dart';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
@@ -86,7 +88,7 @@ class ChatMessageBubble extends StatelessWidget {
                     senderUser.name,
                     style: TextStyle(
                         fontFamily: kFontFamily,
-                        fontSize: 10,
+                        fontSize: 7.sp,
                         color: Colors.grey),
                   ),
                 ),
@@ -150,6 +152,26 @@ class ChatMessageBubble extends StatelessWidget {
             break;
           }
         }
+      case MessageType.FILE:
+        ChatFileMessageBody body = message.body as ChatFileMessageBody;
+        return GestureDetector(
+            onTap: () {
+              if (body.fileStatus == DownloadStatus.SUCCESS) {
+                print('File local ${body.localPath}');
+                // FlutterFilePreview.openFile(body.localPath,
+                //     title: body.displayName ?? '');
+              } else {
+                print('File remote ${body.remotePath}');
+                // FlutterFilePreview.openFile(body.remotePath,
+                //     title: body.displayName ?? '');
+                // FilePreview.
+              }
+            },
+            child: _fileTypeBody(body));
+      case MessageType.VOICE:
+        ChatVoiceMessageBody body = message.body as ChatVoiceMessageBody;
+
+        return _fileTypeBodyVoice(body);
       default:
       // return const SizedBox.shrink();
     }
@@ -343,6 +365,7 @@ class ChatMessageBubble extends StatelessWidget {
 
   Widget _buildTextMessage(ChatTextMessageBody body) {
     bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
+
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
@@ -351,7 +374,7 @@ class ChatMessageBubble extends StatelessWidget {
       margin: EdgeInsets.only(
           left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
       decoration: _buildDecoration(),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -367,22 +390,10 @@ class ChatMessageBubble extends StatelessWidget {
               //   children: getMessage(body.content),
               // )),
               // const Spacer(),
-              SizedBox(width: 12.w)
+              SizedBox(width: body.content.length < 4 ? 8.w : 2.w)
             ],
           ),
           _buildTime(),
-          // Container(
-          //   width: 20.w,
-          //   alignment: Alignment.centerRight,
-          //   child: _buildTime(),
-          // )
-          // Row(
-          //   mainAxisSize: MainAxisSize.min,
-          //   mainAxisAlignment: MainAxisAlignment.end,
-          //   children: [const Spacer(), _buildTime()],
-          // )
-
-          // Align(alignment: Alignment.bottomRight, child: _buildTime())
         ],
       ),
     );
@@ -471,6 +482,195 @@ class ChatMessageBubble extends StatelessWidget {
   //     ),
   //   );
   // }
+
+  getFileSize(int? bytes, int decimals) {
+    if (bytes == null) {
+      return '';
+    }
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+
+  Widget _fileTypeBody(ChatFileMessageBody body) {
+    bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
+    String fileName = body.displayName ?? '';
+    String size = '';
+    Widget fileWidget = Icon(
+      Icons.file_copy,
+      color: Colors.white,
+      size: 25.w,
+    );
+    if (fileName.contains('.')) {
+      String fileType = fileName.split('.').last;
+      size = getFileSize(body.fileSize, 1);
+      // print('File type $fileType  ${getFileSize(body.fileSize, 1)}');
+      switch (fileType) {
+        case 'pdf':
+          fileWidget =
+              getSvgIcon('icon_file_pdf.svg', width: 25.w, color: Colors.white);
+          break;
+        case 'doc':
+        case 'docx':
+          fileWidget =
+              getSvgIcon('icon_file_doc.svg', width: 25.w, color: Colors.white);
+          break;
+        case 'txt':
+          fileWidget = getSvgIcon('icon_file_txt-file.svg',
+              width: 25.w, color: Colors.white);
+          break;
+      }
+    }
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: 20.w,
+        maxWidth: 50.w,
+      ),
+      margin: EdgeInsets.only(
+          left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
+      decoration: _buildDecoration(),
+      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (hasReply) _replyText(),
+          Container(
+            // width: 33.w,
+            // height: 33.w,
+            padding: EdgeInsets.all(4.w),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: !isOwnMessage
+                  ? const Color(0xFF6F3253)
+                  : const Color.fromARGB(255, 248, 213, 131),
+              borderRadius: BorderRadius.circular(2.w),
+            ),
+            child: Center(child: fileWidget),
+          ),
+          Row(
+            mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Flexible(child: _textMessage(fileName)),
+              // Flexible(
+              //     child: Wrap(
+              //   alignment: WrapAlignment.start,
+              //   children: getMessage(body.content),
+              // )),
+              // const Spacer(),
+              SizedBox(width: 3.w)
+            ],
+          ),
+          SizedBox(height: 1.w),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Size $size',
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 8.sp,
+                    color: isOwnMessage
+                        ? AppColors.chatBoxMessageMine
+                        : AppColors.chatBoxMessageOthers,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildTime(),
+            ],
+          )
+          // Container(
+          //   width: 20.w,
+          //   alignment: Alignment.centerRight,
+          //   child: _buildTime(),
+          // )
+          // Row(
+          //   mainAxisSize: MainAxisSize.min,
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [const Spacer(), _buildTime()],
+          // )
+
+          // Align(alignment: Alignment.bottomRight, child: _buildTime())
+        ],
+      ),
+    );
+  }
+
+  Widget _fileTypeBodyVoice(ChatVoiceMessageBody body) {
+    bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
+    String fileName = body.displayName ?? '';
+    String size = '';
+    Widget fileWidget =
+        getSvgIcon('icon_chat_audio.svg', width: 25.w, color: Colors.white);
+
+    if (fileName.contains('.')) {
+      size = getFileSize(body.fileSize, 1);
+    }
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: 20.w,
+        maxWidth: 50.w,
+      ),
+      margin: EdgeInsets.only(
+          left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
+      decoration: _buildDecoration(),
+      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (hasReply) _replyText(),
+          Container(
+            // width: 33.w,
+            // height: 33.w,
+            padding: EdgeInsets.all(4.w),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: !isOwnMessage
+                  ? const Color(0xFF6F3253)
+                  : const Color.fromARGB(255, 248, 213, 131),
+              borderRadius: BorderRadius.circular(2.w),
+            ),
+            child: Center(child: fileWidget),
+          ),
+          Row(
+            mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Flexible(child: _textMessage(fileName)),
+              // Flexible(
+              //     child: Wrap(
+              //   alignment: WrapAlignment.start,
+              //   children: getMessage(body.content),
+              // )),
+              // const Spacer(),
+              SizedBox(width: 3.w)
+            ],
+          ),
+          SizedBox(height: 1.w),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Size $size',
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontSize: 8.sp,
+                    color: isOwnMessage
+                        ? AppColors.chatBoxMessageMine
+                        : AppColors.chatBoxMessageOthers,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildTime(),
+            ],
+          )
+        ],
+      ),
+    );
+  }
 
   Widget _textMessage(String content) {
     // final bool isOwnMessage = message.from == currentUser.id;

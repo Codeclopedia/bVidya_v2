@@ -38,10 +38,12 @@ dependencies:
   firebase_core: ^2.4.1
   firebase_messaging: ^14.2.1
   flick_video_player: ^0.5.0
+  floating_draggable_widget: ^2.1.2
   flutter:
     sdk: flutter
   flutter_callkit_incoming: ^1.0.3+3
   flutter_easyloading: ^3.0.5
+  # flutter_file_preview: ^0.0.9
   flutter_hooks: ^0.18.5+1
   flutter_keyboard_visibility: ^5.4.0
   flutter_localizations:

@@ -8,7 +8,7 @@ import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 
 import '../state.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/utils/notification_controller.dart';
 
 String? lastUserId;
@@ -159,13 +159,29 @@ registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
   } catch (_) {}
 }
 
-registerGroupForNewMessage(String key,
-    Function(List<ChatMessage>) onNewMessages, Function() onUpdate) {
+registerGroupForNewMessage(
+    String key,
+    Function(List<ChatMessage>) onNewMessages,
+    Function() onUpdate,
+    Function(List<ChatCmdMessageBody>) onCmdMessage) {
+  print('group registering $key');
+
   try {
     ChatClient.getInstance.chatManager.addEventHandler(
         key,
         ChatEventHandler(
           onMessagesReceived: (msgs) => onNewMessages(msgs),
+          onCmdMessagesReceived: (messages) {
+            List<ChatCmdMessageBody> bodies = [];
+            for (var msg in messages) {
+              if (msg.chatType == ChatType.GroupChat &&
+                  msg.body.type == MessageType.CMD) {
+                ChatCmdMessageBody body = msg.body as ChatCmdMessageBody;
+                bodies.add(body);
+              }
+            }
+            onCmdMessage(bodies);
+          },
           onGroupMessageRead: (groupMessageAcks) {
             onUpdate();
           },
@@ -209,7 +225,10 @@ unregisterChatCallback(String key) {
   } catch (_) {}
 }
 
-registerChatCallback(String key, ChatMessagesChangeProvider provider,
+registerChatCallback(
+    String key,
+    ChatMessagesChangeProvider provider,
+    Function(List<ChatMessage>) onNewMessages,
     Function(Map<String, TypingCommand>) onCmdMessage) {
   try {
     ChatClient.getInstance.chatManager.addEventHandler(
@@ -218,7 +237,8 @@ registerChatCallback(String key, ChatMessagesChangeProvider provider,
           onCmdMessagesReceived: (messages) {
             Map<String, TypingCommand> bodies = {};
             for (var msg in messages) {
-              if (msg.body.type == MessageType.CMD) {
+              if (msg.chatType == ChatType.Chat &&
+                  msg.body.type == MessageType.CMD) {
                 ChatCmdMessageBody body = msg.body as ChatCmdMessageBody;
                 String content = body.action;
                 if (content == TypingCommand.typingStart.name) {
@@ -231,6 +251,7 @@ registerChatCallback(String key, ChatMessagesChangeProvider provider,
           },
           onMessagesReceived: (messages) {
             provider.addChats(messages);
+            onNewMessages(messages);
           },
           onMessagesDelivered: (messages) {
             provider.updateMessageDelivered(messages);

@@ -76,7 +76,9 @@ class ChatScreen extends HookConsumerWidget {
       f.init(ref);
       _loadMe();
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      registerChatCallback('chat_screen', f, (messages) {
+      registerChatCallback('chat_screen', f, (msgs) {
+        onMessagesReceived(msgs, ref);
+      }, (messages) {
         for (var entry in messages.entries) {
           if (entry.value == TypingCommand.typingStart) {
             // print('command=>${entry.key}: ${entry.value}');
@@ -367,14 +369,16 @@ class ChatScreen extends HookConsumerWidget {
                 ),
                 SizedBox(height: 1.h),
                 Container(
-                    // padding: EdgeInsets.all(1.w),
                     constraints:
                         BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
                     decoration: BoxDecoration(
                       color: AppColors.chatBoxBackgroundOthers,
                       borderRadius: BorderRadius.all(Radius.circular(3.w)),
                     ),
-                    child: ChatMessageBodyWidget(message: replyOf.message)
+                    padding: EdgeInsets.all(1.w),
+                    child: ChatMessageBodyWidget(
+                      message: replyOf.message,
+                    )
                     //  Column(
                     //   crossAxisAlignment: CrossAxisAlignment.start,
                     //   children: [
@@ -521,7 +525,7 @@ class ChatScreen extends HookConsumerWidget {
       case AttachType.docs:
         FilePickerResult? result = await FilePicker.platform.pickFiles(
           type: FileType.custom,
-          allowedExtensions: ['pdf', 'doc', 'txt'],
+          allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
         );
         if (result != null) {
           PlatformFile file = result.files.first;
@@ -881,7 +885,13 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    ref.read(bChatMessagesProvider(model).notifier).addChats(messages);
+    // ref.read(bChatMessagesProvider(model).notifier).addChats(messages);
+    for (var msg in messages) {
+      if (msg.conversationId == model.id && msg.from == model.id) {
+        ref.read(typingProvider(model.id).notifier).cancelTimer();
+        break;
+      }
+    }
   }
 
   Future<void> _onScroll(

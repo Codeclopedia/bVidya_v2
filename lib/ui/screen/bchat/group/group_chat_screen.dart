@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/group_typing_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -12,6 +13,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '../widgets/typing_indicator.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 import '../forward_dialog.dart';
 import '/data/models/contact_model.dart';
@@ -60,13 +62,13 @@ class GroupChatScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // final provider = ref.watch(groupChatProvider(model));
     useEffect(() {
+      _addHandler(ref);
       ref.read(groupChatProvider(model).notifier).init(ref);
       _scrollController = ScrollController();
       _myUserId = ChatClient.getInstance.currentUserId ?? '';
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
       _loadMembers(ref);
-      _addHandler(ref);
 
       return disposeAll;
     }, []);
@@ -134,21 +136,36 @@ class GroupChatScreen extends HookConsumerWidget {
 
   _addHandler(WidgetRef ref) async {
     registerGroupForNewMessage('group_chat_screen', (msg) {
+      print('msg  message=> ${msg.length}');
+
       onMessagesReceived(msg, ref);
     }, () {
       ref.read(groupChatProvider(model).notifier).updateUi();
+    }, (bodies) {
+      ref
+          .read(groupTypingUsersProvider(model.id).notifier)
+          .onReceiveCommandMessage(bodies);
     });
   }
 
   void disposeAll() {
-    ChatClient.getInstance.chatManager.removeEventHandler('group_chat_screen');
+    unregisterForNewMessage('group_chat_screen');
+    // ChatClient.getInstance.chatManager.removeEventHandler('group_chat_screen');
   }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
+    print('message=> ${messages.length}');
+
     ref.read(groupChatProvider(model).notifier).addChats(messages);
     for (var msg in messages) {
       print('msg: ${msg.from}');
       if (msg.chatType == ChatType.GroupChat && msg.conversationId != null) {
+        if (msg.conversationId == model.id) {
+          ref
+              .read(groupTypingUsersProvider(model.id).notifier)
+              .removeTyping(msg.from);
+        }
+
         ref
             .read(groupConversationProvider.notifier)
             .updateConversationMessage(msg, msg.conversationId!);
@@ -177,6 +194,7 @@ class GroupChatScreen extends HookConsumerWidget {
                         },
                       ),
                     ),
+                    _buildTypingUsers()
                     // if (typingUsers != null && typingUsers!.isNotEmpty)
                     //   ...typingUsers!.map((ChatUserInfo user) {
                     //     return _buildUserTyping(user.nickName ?? user.userId);
@@ -208,6 +226,68 @@ class GroupChatScreen extends HookConsumerWidget {
         _buildAttachedFile()
         // _buildChatInputBox(),
       ],
+    );
+  }
+
+  Widget _buildTypingUsers() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final typingUsers = ref.watch(groupTypingUsersProvider(model.id));
+        if (typingUsers.isEmpty) {
+          return const SizedBox.shrink();
+        } else {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                ...typingUsers
+                    .map(
+                      (e) => Padding(
+                        padding: EdgeInsets.only(right: 1.w),
+                        child: getCicleAvatar(radius: 3.w, e.name, model.image),
+                      ),
+                    )
+                    .toList(),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.w),
+                  decoration: BoxDecoration(
+                      color: AppColors.chatBoxBackgroundOthers,
+                      borderRadius: BorderRadius.all(Radius.circular(3.w))),
+                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+                  child: const TypingIndicator(),
+                  // child: JumpingDots(
+                  //   color: AppColors.chatBoxMessageOthers,
+                  //   radius: 1.w,
+                  //   numberOfDots: 4,
+                  //   // innerPadding: 1.w,
+                  // ),
+                ),
+                // RichText(
+                //   text: TextSpan(
+                //     children: [
+                //       TextSpan(
+                //           text: model.contact.name,
+                //           style: TextStyle(
+                //               fontSize: 12,
+                //               fontFamily: kFontFamily,
+                //               fontWeight: FontWeight.bold,
+                //               color: Colors.black)),
+                //       TextSpan(
+                //         text: ' is typing',
+                //         style: TextStyle(
+                //             fontFamily: kFontFamily,
+                //             fontSize: 12,
+                //             color: Colors.black),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -247,6 +327,11 @@ class GroupChatScreen extends HookConsumerWidget {
         _pickFile(AttachType.cameraPhoto, ref, context);
       },
       onAttach: (type) => _pickFile(type, ref, context),
+      onTextChange: () {
+        ref
+            .read(groupTypingUsersProvider(model.id).notifier)
+            .textChange(_me.userId.toString(), _me.name, _me.profileImage);
+      },
     );
   }
 
@@ -442,7 +527,7 @@ class GroupChatScreen extends HookConsumerWidget {
       case AttachType.docs:
         FilePickerResult? result = await FilePicker.platform.pickFiles(
           type: FileType.custom,
-          allowedExtensions: ['pdf', 'doc', 'txt'],
+          allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
         );
         if (result != null) {
           PlatformFile file = result.files.first;
@@ -1042,7 +1127,9 @@ class GroupChatScreen extends HookConsumerWidget {
                       color: AppColors.chatBoxBackgroundOthers,
                       borderRadius: BorderRadius.all(Radius.circular(3.w)),
                     ),
-                    child: ChatMessageBodyWidget(message: replyOf.message)),
+                    child: ChatMessageBodyWidget(
+                      message: replyOf.message,
+                    )),
               ],
             ),
           );

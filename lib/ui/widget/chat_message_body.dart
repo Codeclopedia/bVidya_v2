@@ -8,7 +8,7 @@ class ChatMessageBodyWidget extends StatelessWidget {
   final bool isOwnMessage;
 
   const ChatMessageBodyWidget(
-      {super.key, required this.message, this.isOwnMessage = true});
+      {super.key, required this.message, this.isOwnMessage = false});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +55,73 @@ class ChatMessageBodyWidget extends StatelessWidget {
             ],
           );
         }
+      case MessageType.FILE:
+        ChatFileMessageBody body = message.body as ChatFileMessageBody;
+        String fileName = body.displayName ?? '';
+        Widget fileWidget = Icon(
+          Icons.file_copy,
+          color: Colors.white,
+          size: 8.w,
+        );
+        if (fileName.contains('.')) {
+          String fileType = fileName.split('.').last;
+
+          switch (fileType) {
+            case 'pdf':
+              fileWidget = getSvgIcon('icon_file_pdf.svg',
+                  width: 8.w,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxMessageMine
+                      : AppColors.primaryColor);
+              break;
+            case 'doc':
+            case 'docx':
+              fileWidget = getSvgIcon('icon_file_doc.svg',
+                  width: 8.w,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxMessageMine
+                      : AppColors.primaryColor);
+              break;
+            case 'txt':
+              fileWidget = getSvgIcon('icon_file_txt-file.svg',
+                  width: 8.w,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxMessageMine
+                      : AppColors.primaryColor);
+              break;
+          }
+        }
+        return Padding(
+          padding: EdgeInsets.all(2.w),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              fileWidget,
+              SizedBox(width: 2.w),
+              Expanded(child: _textMessage(body.displayName ?? 'File')),
+            ],
+          ),
+        );
+      case MessageType.VOICE:
+        ChatVoiceMessageBody body = message.body as ChatVoiceMessageBody;
+        return Padding(
+          padding: EdgeInsets.all(2.w),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              getSvgIcon('icon_chat_audio.svg',
+                  width: 8.w,
+                  color: isOwnMessage
+                      ? AppColors.chatBoxMessageMine
+                      : AppColors.primaryColor),
+              SizedBox(width: 2.w),
+              Expanded(child: _textMessage(body.displayName ?? 'Audio file')),
+            ],
+          ),
+        );
+
       default:
       // return const SizedBox.shrink();
     }
