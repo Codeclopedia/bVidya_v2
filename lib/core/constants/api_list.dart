@@ -27,6 +27,10 @@ class ApiList {
 
   static const String fetchRtmMeet = 'meeting-rtm-token'; //POST
 
+  static const String personalClassRequests = 'personal-class-requests'; //GET
+  static const String requestedClasses = 'requested-personal-classes'; //GET
+  static const String requestClass = 'personal-class-request'; //POST
+
   //bLive
   static const String createLiveClass = 'live-class/create'; //POST
   static const String deleteLiveClass = 'live-class/delete/'; //GET

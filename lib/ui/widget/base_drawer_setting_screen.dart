@@ -1,3 +1,5 @@
+import 'package:bvidya/core/constants.dart';
+
 import '/data/models/response/auth/login_response.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
@@ -36,6 +38,15 @@ class BaseDrawerSettingScreen extends StatelessWidget {
         child: SafeArea(
             child: Stack(
           children: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, RouteList.home, (route) => false);
+                },
+                icon: Icon(
+                  Icons.adaptive.arrow_back,
+                  color: Colors.white,
+                )),
             Container(
               width: double.infinity,
               margin: EdgeInsets.only(top: 9.h),

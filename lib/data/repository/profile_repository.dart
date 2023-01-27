@@ -87,4 +87,14 @@ class ProfileRepository {
     }
     return null;
   }
+
+//get list of requested classes of student
+  Future<RequestedClassesBody> requestedClassList() async {
+    final result = await _api.getRequestedClassList(_authToken);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return RequestedClassesBody();
+    }
+  }
 }

@@ -36,6 +36,8 @@ export 'response/bmeet/start_meeting_response.dart';
 export 'response/bmeet/join_meeting_response.dart';
 export 'response/bmeet/user_rtm_response.dart';
 export 'response/bmeet/meeting_list_response.dart';
+export 'response/bmeet/requested_class_response.dart';
+export 'response/bmeet/class_request_response.dart';
 
 export 'response/blive/schedule_class_response.dart';
 export 'response/blive/live_class_response.dart';

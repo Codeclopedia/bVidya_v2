@@ -441,13 +441,25 @@ class ScheduleMeetScreen extends HookWidget {
 
   _pickTime(
       BuildContext context, Function(DateTime) onPick, WidgetRef ref) async {
-    TimeOfDay pickedTime = await showTimePicker(
+    // TimeOfDay pickedTime = await showTimePicker(
+    //       initialTime: TimeOfDay.now(),
+    //       context: context, //context of current state
+    //     ) ??
+    //     TimeOfDay.now();
+
+    TimeOfDay? pickedTime = await showTimePicker(
           initialTime: TimeOfDay.now(),
           context: context, //context of current state
+          builder: (context, child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+              child: child ?? Container(),
+            );
+          },
         ) ??
         TimeOfDay.now();
-
-    final now = DateTime.now();
+    // final now = DateTime.now();
 
     if (pickedTime != null) {
       onPick(DateTime(

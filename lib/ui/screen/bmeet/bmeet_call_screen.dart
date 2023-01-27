@@ -613,6 +613,7 @@ class BMeetCallScreen extends StatelessWidget {
 
   _buildToolItemIcon(
       {required IconData icon,
+      required Color? color,
       required String text,
       required Function() onTap}) {
     return Expanded(
@@ -627,7 +628,7 @@ class BMeetCallScreen extends StatelessWidget {
               height: 8.w,
               child: Icon(
                 icon,
-                color: Colors.white,
+                color: color,
               ),
             ),
             // child,
@@ -659,25 +660,26 @@ class BMeetCallScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               _buildToolItemIcon(
-                  text: provider.muted
-                      ? S.current.bmeet_tool_unmute
-                      : S.current.bmeet_tool_mute,
-                  onTap: () {
-                    if (provider.hostMute) {
-                      EasyLoading.showToast(
-                          S.current.bmeet_call_msg_diable_audio_host,
-                          duration: const Duration(seconds: 5),
-                          toastPosition: EasyLoadingToastPosition.bottom);
-                    } else {
-                      ref.read(bMeetCallChangeProvider).onToggleMute();
-                    }
-                  },
-                  icon: provider.muted ? Icons.mic : Icons.mic_off
-                  // child: getSvgIcon(
-                  //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
-                  //   width: 2.w,
-                  // )
-                  ),
+                text: provider.muted
+                    ? S.current.bmeet_tool_unmute
+                    : S.current.bmeet_tool_mute,
+                onTap: () {
+                  if (provider.hostMute) {
+                    EasyLoading.showToast(
+                        S.current.bmeet_call_msg_diable_audio_host,
+                        duration: const Duration(seconds: 5),
+                        toastPosition: EasyLoadingToastPosition.bottom);
+                  } else {
+                    ref.read(bMeetCallChangeProvider).onToggleMute();
+                  }
+                },
+                icon: provider.muted ? Icons.mic : Icons.mic_off,
+                color: provider.muted ? Colors.white : Colors.red,
+                // child: getSvgIcon(
+                //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
+                //   width: 2.w,
+                // )
+              ),
               _buildToolItemIcon(
                   text: provider.disableLocalCamera
                       ? S.current.bmeet_tool_stop_video
@@ -694,7 +696,8 @@ class BMeetCallScreen extends StatelessWidget {
                   },
                   icon: provider.disableLocalCamera
                       ? Icons.videocam
-                      : Icons.videocam_off
+                      : Icons.videocam_off,
+                  color: Colors.white
                   // child: getSvgIcon(
                   //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
                   ),
@@ -749,7 +752,8 @@ class BMeetCallScreen extends StatelessWidget {
                         onTap: () {
                           _showParticipantsList(context);
                         },
-                        icon: Icons.people
+                        icon: Icons.people,
+                        color: Colors.white
                         // child: getSvgIcon('vc_participants.svg'),
                         ),
                     if (provider.memberList.isNotEmpty)

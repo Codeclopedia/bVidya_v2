@@ -73,8 +73,16 @@ class StudentProfileScreen extends ConsumerWidget {
                 () {
               Navigator.pushNamed(context, RouteList.studentLearnings);
             }),
-            _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
-              Navigator.pushNamed(context, RouteList.notificationSetting);
+            // _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
+            //   Navigator.pushNamed(context, RouteList.notificationSetting);
+            //   // Navigator.push(
+            //   //   context,
+            //   //   MaterialPageRoute(
+            //   //       builder: (context) => const NotificationSettingScreen()),
+            //   // );
+            // }),
+            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () {
+              Navigator.pushNamed(context, RouteList.studentProfileSchdule);
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(

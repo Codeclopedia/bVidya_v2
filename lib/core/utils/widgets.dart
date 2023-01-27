@@ -228,10 +228,10 @@ Widget getCicleAvatar(String name, String image, {double? radius}) => Avatar(
             AssetImage(image),
           ),
 
-        if (image.isEmpty)
-          GenericSource(
-            const AssetImage('assets/images/dummy_profile.png'),
-          ),
+        // if (image.isEmpty)
+        //   GenericSource(
+        //     const AssetImage('assets/images/dummy_profile.png'),
+        //   ),
       ],
       placeholderColors: avatarPlaceHolderColors,
     );

@@ -44,3 +44,8 @@ final isFollowedInstructor =
   return list?.firstWhereOrNull((e) => e.instructorId?.toString() == id) !=
       null;
 });
+
+final requestedClassesProvider =
+    FutureProvider.autoDispose<RequestedClassesBody?>((ref) {
+  return ref.read(profileRepositoryProvider).requestedClassList();
+});

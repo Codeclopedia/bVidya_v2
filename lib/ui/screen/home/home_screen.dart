@@ -98,31 +98,31 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _addHandler(WidgetRef ref) {
     registerForContact('home_screen_contact', ref);
-    registerForNewMessage('home_screen_chat', (msgs) {
-      for (var lastMessage in msgs) {
-        // print(
-        //     'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
-        if (lastMessage.conversationId != null) {
-          if (lastMessage.chatType == ChatType.Chat) {
-            onNewChatMessage(lastMessage, ref);
-            // ref
-            //     .read(chatConversationProvider.notifier)
-            //     .updateConversationMessage(lastMessage, update: true);
-          } else if (lastMessage.chatType == ChatType.GroupChat) {
-            ref
-                .read(groupConversationProvider.notifier)
-                .updateConversationMessage(
-                    lastMessage, lastMessage.conversationId!,
-                    update: false);
-          }
-        }
-      }
-    });
+    // registerForNewMessage('home_screen_chat', (msgs) {
+    //   for (var lastMessage in msgs) {
+    //     // print(
+    //     //     'message ${lastMessage.conversationId} - ${lastMessage.chatType}');
+    //     if (lastMessage.conversationId != null) {
+    //       if (lastMessage.chatType == ChatType.Chat) {
+    //         onNewChatMessage(lastMessage, ref);
+    //         // ref
+    //         //     .read(chatConversationProvider.notifier)
+    //         //     .updateConversationMessage(lastMessage, update: true);
+    //       } else if (lastMessage.chatType == ChatType.GroupChat) {
+    //         ref
+    //             .read(groupConversationProvider.notifier)
+    //             .updateConversationMessage(
+    //                 lastMessage, lastMessage.conversationId!,
+    //                 update: false);
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   void _disposeAll() {
     unregisterForContact('home_screen_contact');
-    unregisterForNewMessage('home_screen_chat');
+    // unregisterForNewMessage('home_screen_chat');
   }
 
   Widget _chatListScreen(BuildContext context) {

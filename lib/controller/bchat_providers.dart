@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../core/helpers/duration.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/core/helpers/extensions.dart';
@@ -15,6 +16,7 @@ import '/data/repository/bchat_respository.dart';
 
 // import 'providers/bchat/chat_conversation_provider.dart';
 import 'providers/bchat/contact_list_provider.dart';
+import 'providers/bchat/group_call_provider.dart';
 import 'providers/bchat/groups_conversation_provider.dart';
 // import 'providers/p2p_call_provider.dart';
 // import 'providers/chat_messagelist_provider.dart';
@@ -257,3 +259,13 @@ final commonGroupsProvider = FutureProvider.family
   }
   return groupList;
 });
+
+
+final groupCallTimerProvider =
+    StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
+  (_) => DurationNotifier(),
+);
+
+final bGroupCallChangeProvider =
+    ChangeNotifierProvider.autoDispose<GroupCallProvider>(
+        (ref) => GroupCallProvider(ref.read(groupCallTimerProvider.notifier)));

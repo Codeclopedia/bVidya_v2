@@ -28,14 +28,20 @@ Future<Contacts?> addNewContactById(int contactId, WidgetRef ref) async {
 
 Future<ConversationModel?> onNewChatMessage(
     ChatMessage message, WidgetRef ref) async {
+  int startTime = DateTime.now().millisecondsSinceEpoch;
   int id = int.parse(message.conversationId!);
   Contacts? contact =
       await ref.read(contactListProvider.notifier).addContact(id);
   if (contact != null) {
-    return await ref
+    final model = await ref
         .read(chatConversationProvider.notifier)
         .addConversationMessageTo(contact, message);
+    int diff = DateTime.now().millisecondsSinceEpoch - startTime;
+    print('Diff=> $diff');
+    return model;
   }
+  int diff = DateTime.now().millisecondsSinceEpoch - startTime;
+  print('Diff NULL=> $diff');
   return null;
 }
 
@@ -183,7 +189,7 @@ class ChatConversationChangeNotifier
     }
     _chatConversationMap.addAll({newModel.id: newModel});
     state = _chatConversationMap.values.toList();
-    return model;
+    return newModel;
   }
 
   Future<ConversationModel?> addConversationByContact(
@@ -197,7 +203,7 @@ class ChatConversationChangeNotifier
           createIfNeed: true);
       if (conv == null) return null;
       final lastMessage = await conv.latestMessage();
-      if (lastMessage == null) return null;
+      // if (lastMessage == null) return null;
       model = ConversationModel(
         id: contact.userId.toString(),
         badgeCount: await conv.unreadCount(),

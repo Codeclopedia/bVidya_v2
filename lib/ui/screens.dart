@@ -58,6 +58,7 @@ export 'screen/profile/settings/report_problem_screen.dart';
 export 'screen/profile/student/profile_screen.dart';
 export 'screen/profile/student/my_learning_screen.dart';
 export 'screen/profile/student/student_profile_detail.dart';
+export 'screen/profile/student/student_schdule.dart';
 
 export 'screen/profile/teacher/teacher_dashboard_screen.dart';
 export 'screen/profile/teacher/teacher_profile.dart';

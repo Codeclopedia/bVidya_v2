@@ -476,6 +476,9 @@ class Routes {
         screen = const StudentProfileScreen();
         hasDrawer = true;
         break;
+      case RouteList.studentProfileSchdule:
+        screen = const StudentSchdule();
+        break;
 
       case RouteList.studentProfileDetail:
         //   screen = const StudentProfileScreen();

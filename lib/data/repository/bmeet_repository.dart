@@ -89,4 +89,38 @@ class BMeetRepository {
       return result.message ?? 'Error while leaving meeting';
     }
   }
+
+
+  Future<ClassRequestBody?> getClassRequests() async {
+    final result = await _api.getClassRequestList(
+      _authToken,
+    );
+    if (result.status == "success") {
+      return result.body!;
+    } else {
+      return null;
+    }
+  }
+
+  Future requestPersonalClass(
+      {required String topic,
+      required String classType,
+      required DateTime date,
+      required String time,
+      required String description,
+      required int instructorid}) async {
+    final result = await _api.requestPersonalClass(
+        authToken: _authToken,
+        topic: topic,
+        classType: classType,
+        datetime: date,
+        time: time,
+        description: description,
+        instructorid: instructorid);
+    if (result.status == "success") {
+      return result.message;
+    } else {
+      return "error";
+    }
+  }
 }

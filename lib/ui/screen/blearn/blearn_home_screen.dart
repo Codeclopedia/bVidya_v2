@@ -10,6 +10,7 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
 import '../../widgets.dart';
+import 'all_courses_page.dart';
 import 'components/blearntopbar.dart';
 import 'components/common.dart';
 import 'components/complemetry_course.dart';
@@ -136,12 +137,12 @@ class BLearnHomeScreen extends StatelessWidget {
               topcourses: body.topCourses),
           _buildWebinarTitle(),
           _buildWebinarContent(body.upcomingWebinars, ref),
-          _buildLearnCaption(context),
+          _buildLearnCaption(context, ref),
           _buildLearnList(body.bestInstructors),
           // _buildComplementary(),
           // _buildComplementaryList(),
           _buildEnroll(context),
-          _buildRecentCaption(context),
+          _buildRecentCaption(context, ref),
           _buildRecentList(body.recentlyAddedCourses),
           _buildTestimonialCaption(),
           _buildTestimonialList(body.testimonials),
@@ -520,7 +521,7 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLearnCaption(BuildContext context) {
+  Widget _buildLearnCaption(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.only(left: 4.w, right: 2.w, top: 2.h),
       child: Row(
@@ -532,6 +533,8 @@ class BLearnHomeScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
+              ref.read(selectedSearchTabCourseDetailProvider.notifier).state =
+                  1;
               Navigator.pushNamed(context, RouteList.bLearnAllCourses);
             },
             child: Row(
@@ -619,7 +622,7 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentCaption(BuildContext context) {
+  Widget _buildRecentCaption(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.only(top: 2.3.h, right: 1.3.h, left: 2.3.h),
       child: Row(
@@ -631,6 +634,8 @@ class BLearnHomeScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
+              ref.read(selectedSearchTabCourseDetailProvider.notifier).state =
+                  0;
               Navigator.pushNamed(context, RouteList.bLearnAllCourses);
             },
             child: Row(

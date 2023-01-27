@@ -110,7 +110,7 @@ class JoinMeetScreen extends HookWidget {
                       if (meetingId.length < 2) return;
                       joinMeeting(context, ref, meetingId, camOff, micOff);
                     },
-                    child: Text(S.current.bmeet_btn_start),
+                    child: Text(S.current.bmeet_btn_join),
                   );
                 },
               ),

@@ -80,10 +80,10 @@ class S {
     );
   }
 
-  /// `Email address can't be emply`
+  /// `Email address can't be empty`
   String get login_email_empty {
     return Intl.message(
-      'Email address can\'t be emply',
+      'Email address can\'t be empty',
       name: 'login_email_empty',
       desc: '',
       args: [],
@@ -120,10 +120,10 @@ class S {
     );
   }
 
-  /// `Password can't be emply`
+  /// `Password can't be empty`
   String get login_password_empty {
     return Intl.message(
-      'Password can\'t be emply',
+      'Password can\'t be empty',
       name: 'login_password_empty',
       desc: '',
       args: [],
@@ -220,10 +220,10 @@ class S {
     );
   }
 
-  /// `Mobile Number can't be emply`
+  /// `Mobile Number can't be empty`
   String get otp_login_mobile_empty {
     return Intl.message(
-      'Mobile Number can\'t be emply',
+      'Mobile Number can\'t be empty',
       name: 'otp_login_mobile_empty',
       desc: '',
       args: [],
@@ -350,10 +350,10 @@ class S {
     );
   }
 
-  /// `Full Name can't be emply`
+  /// `Full Name can't be empty`
   String get signup_fullname_empty {
     return Intl.message(
-      'Full Name can\'t be emply',
+      'Full Name can\'t be empty',
       name: 'signup_fullname_empty',
       desc: '',
       args: [],
@@ -380,10 +380,10 @@ class S {
     );
   }
 
-  /// `Email address can't be emply`
+  /// `Email address can't be empty`
   String get signup_email_empty {
     return Intl.message(
-      'Email address can\'t be emply',
+      'Email address can\'t be empty',
       name: 'signup_email_empty',
       desc: '',
       args: [],
@@ -420,10 +420,10 @@ class S {
     );
   }
 
-  /// `Mobile Number can't be emply`
+  /// `Mobile Number can't be empty`
   String get signup_mobile_empty {
     return Intl.message(
-      'Mobile Number can\'t be emply',
+      'Mobile Number can\'t be empty',
       name: 'signup_mobile_empty',
       desc: '',
       args: [],
@@ -460,10 +460,10 @@ class S {
     );
   }
 
-  /// `Password can't be emply`
+  /// `Password can't be empty`
   String get signup_password_empty {
     return Intl.message(
-      'Password can\'t be emply',
+      'Password can\'t be empty',
       name: 'signup_password_empty',
       desc: '',
       args: [],
@@ -500,10 +500,10 @@ class S {
     );
   }
 
-  /// `Confirm Password can't be emply`
+  /// `Confirm Password can't be empty`
   String get signup_confirm_password_empty {
     return Intl.message(
-      'Confirm Password can\'t be emply',
+      'Confirm Password can\'t be empty',
       name: 'signup_confirm_password_empty',
       desc: '',
       args: [],
@@ -630,10 +630,10 @@ class S {
     );
   }
 
-  /// `Email address can't be emply`
+  /// `Email address can't be empty`
   String get fp_email_empty {
     return Intl.message(
-      'Email address can\'t be emply',
+      'Email address can\'t be empty',
       name: 'fp_email_empty',
       desc: '',
       args: [],
@@ -2540,6 +2540,66 @@ class S {
     );
   }
 
+  /// `Class topic can't be empty`
+  String get t_request_class_empty_topic {
+    return Intl.message(
+      'Class topic can\'t be empty',
+      name: 't_request_class_empty_topic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class topic must contains at least 5 characters`
+  String get t_request_class_topic_invalid {
+    return Intl.message(
+      'Class topic must contains at least 5 characters',
+      name: 't_request_class_topic_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Class type`
+  String get t_request_class_type_hint {
+    return Intl.message(
+      'Select Class type',
+      name: 't_request_class_type_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class request type can't be empty`
+  String get t_request_class_empty_type {
+    return Intl.message(
+      'Class request type can\'t be empty',
+      name: 't_request_class_empty_type',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Request description type can't be empty`
+  String get t_request_class_empty_description {
+    return Intl.message(
+      'Class Request description type can\'t be empty',
+      name: 't_request_class_empty_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Request description must contains at least 5 characters`
+  String get t_request_class_description_invalid {
+    return Intl.message(
+      'Class Request description must contains at least 5 characters',
+      name: 't_request_class_description_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `New Group`
   String get groups_create_title {
     return Intl.message(
@@ -2600,10 +2660,10 @@ class S {
     );
   }
 
-  /// `Group Name can't be emply`
+  /// `Group Name can't be empty`
   String get group_error_empty {
     return Intl.message(
-      'Group Name can\'t be emply',
+      'Group Name can\'t be empty',
       name: 'group_error_empty',
       desc: '',
       args: [],
@@ -4045,6 +4105,16 @@ class S {
     return Intl.message(
       'Top Running Courses',
       name: 'td_running',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something went wrong! Try again.`
+  String get error {
+    return Intl.message(
+      'Something went wrong! Try again.',
+      name: 'error',
       desc: '',
       args: [],
     );

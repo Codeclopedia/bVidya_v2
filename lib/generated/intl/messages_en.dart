@@ -343,6 +343,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "drawer_setting": MessageLookupByLibrary.simpleMessage("Setting"),
         "emailHint":
             MessageLookupByLibrary.simpleMessage("Enter Your Email Address"),
+        "error": MessageLookupByLibrary.simpleMessage(
+            "Something went wrong! Try again."),
         "faqDesc":
             MessageLookupByLibrary.simpleMessage("Find your answers here"),
         "faq_title": MessageLookupByLibrary.simpleMessage("FAQ"),
@@ -354,7 +356,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "fp_email_caption":
             MessageLookupByLibrary.simpleMessage("Email Address"),
         "fp_email_empty": MessageLookupByLibrary.simpleMessage(
-            "Email address can\'t be emply"),
+            "Email address can\'t be empty"),
         "fp_email_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Email Address"),
         "fp_email_invalid":
@@ -368,7 +370,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "group_error_creating":
             MessageLookupByLibrary.simpleMessage("Error in creating group"),
         "group_error_empty":
-            MessageLookupByLibrary.simpleMessage("Group Name can\'t be emply"),
+            MessageLookupByLibrary.simpleMessage("Group Name can\'t be empty"),
         "group_error_invalid":
             MessageLookupByLibrary.simpleMessage("Group Name very short"),
         "groups_create_caption":
@@ -416,7 +418,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_email_caption":
             MessageLookupByLibrary.simpleMessage("Email Address"),
         "login_email_empty": MessageLookupByLibrary.simpleMessage(
-            "Email address can\'t be emply"),
+            "Email address can\'t be empty"),
         "login_email_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Email Address"),
         "login_email_invalid":
@@ -427,7 +429,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_password_caption":
             MessageLookupByLibrary.simpleMessage("Password"),
         "login_password_empty":
-            MessageLookupByLibrary.simpleMessage("Password can\'t be emply"),
+            MessageLookupByLibrary.simpleMessage("Password can\'t be empty"),
         "login_password_hint":
             MessageLookupByLibrary.simpleMessage("Enter Password"),
         "login_password_invalid": MessageLookupByLibrary.simpleMessage(
@@ -458,7 +460,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "otp_login_mobile_caption":
             MessageLookupByLibrary.simpleMessage("Mobile Number"),
         "otp_login_mobile_empty": MessageLookupByLibrary.simpleMessage(
-            "Mobile Number can\'t be emply"),
+            "Mobile Number can\'t be empty"),
         "otp_login_mobile_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Mobile Number"),
         "otp_login_mobile_invalid":
@@ -567,7 +569,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_confirm_password_caption":
             MessageLookupByLibrary.simpleMessage("Enter Confirm Password"),
         "signup_confirm_password_empty": MessageLookupByLibrary.simpleMessage(
-            "Confirm Password can\'t be emply"),
+            "Confirm Password can\'t be empty"),
         "signup_confirm_password_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Confirm Password"),
         "signup_confirm_password_invalid":
@@ -575,7 +577,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_email_caption":
             MessageLookupByLibrary.simpleMessage("Email Address"),
         "signup_email_empty": MessageLookupByLibrary.simpleMessage(
-            "Email address can\'t be emply"),
+            "Email address can\'t be empty"),
         "signup_email_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Email Address"),
         "signup_email_invalid":
@@ -591,7 +593,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_fullname_caption":
             MessageLookupByLibrary.simpleMessage("Full Name"),
         "signup_fullname_empty":
-            MessageLookupByLibrary.simpleMessage("Full Name can\'t be emply"),
+            MessageLookupByLibrary.simpleMessage("Full Name can\'t be empty"),
         "signup_fullname_hint":
             MessageLookupByLibrary.simpleMessage("Full Name"),
         "signup_header_title":
@@ -599,7 +601,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_mobile_caption":
             MessageLookupByLibrary.simpleMessage("Mobile Number"),
         "signup_mobile_empty": MessageLookupByLibrary.simpleMessage(
-            "Mobile Number can\'t be emply"),
+            "Mobile Number can\'t be empty"),
         "signup_mobile_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Mobile Number"),
         "signup_mobile_invalid":
@@ -608,7 +610,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signup_password_caption":
             MessageLookupByLibrary.simpleMessage("Enter Password"),
         "signup_password_empty":
-            MessageLookupByLibrary.simpleMessage("Password can\'t be emply"),
+            MessageLookupByLibrary.simpleMessage("Password can\'t be empty"),
         "signup_password_hint":
             MessageLookupByLibrary.simpleMessage("Enter Your Password"),
         "signup_password_invalid":
@@ -621,6 +623,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Teacher Followed"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
         "sureDlt": MessageLookupByLibrary.simpleMessage("Sure, want to delete"),
+        "t_request_class_description_invalid":
+            MessageLookupByLibrary.simpleMessage(
+                "Class Request description must contains at least 5 characters"),
+        "t_request_class_empty_description":
+            MessageLookupByLibrary.simpleMessage(
+                "Class Request description type can\'t be empty"),
+        "t_request_class_empty_topic":
+            MessageLookupByLibrary.simpleMessage("Class topic can\'t be empty"),
+        "t_request_class_empty_type": MessageLookupByLibrary.simpleMessage(
+            "Class request type can\'t be empty"),
+        "t_request_class_topic_invalid": MessageLookupByLibrary.simpleMessage(
+            "Class topic must contains at least 5 characters"),
+        "t_request_class_type_hint":
+            MessageLookupByLibrary.simpleMessage("Select Class type"),
         "t_schedule_caption":
             MessageLookupByLibrary.simpleMessage("Upcoming classes"),
         "t_schedule_class":

@@ -166,4 +166,24 @@ class ProfileApiService {
           status: 'error', message: 'Unknown error -$e');
     }
   }
+
+  Future<RequestedClassesResponse> getRequestedClassList(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response = await _dio.get(baseUrlApi + ApiList.requestedClasses);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print("response ${response.data} . ${response.realUri}");
+        return RequestedClassesResponse.fromJson(response.data);
+      } else {
+        return RequestedClassesResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print(e);
+      return RequestedClassesResponse(status: 'error');
+    }
+  }
 }

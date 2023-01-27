@@ -47,6 +47,8 @@ final bMeetCallChangeProvider =
     ChangeNotifierProvider.autoDispose<BMeetProvider>(
         (ref) => BMeetProvider(ref.read(callTimerProvider.notifier)));
 
-
+final bmeetClassesProvider = FutureProvider.autoDispose<ClassRequestBody?>(
+  (ref) => ref.watch(bMeetRepositoryProvider).getClassRequests(),
+);
 // final bMeetInitProvider = Provider.family<BMeetProvider, Meeting>(
 //     (ref, meeting) => ref.read(bMeetChangeProvider).init(meeting, false));

@@ -3,11 +3,11 @@
     "login_header_title":"Login",
     "login_email_caption":"Email Address",
     "login_email_hint":"Enter Your Email Address",
-    "login_email_empty":"Email address can't be emply",
+    "login_email_empty":"Email address can't be empty",
     "login_email_invalid":"Invalid Email Address",
     "login_password_caption":"Password",
     "login_password_hint":"Enter Password",
-    "login_password_empty":"Password can't be emply",
+    "login_password_empty":"Password can't be empty",
     "login_password_invalid":"Password must be at least 8 characters.",
     "login_btx_forgot_password_":"Forgot Password?",
     "login_btn_signin":"Sign In",
@@ -18,7 +18,7 @@
     "otp_login_header_title":"Login with OTP",
     "otp_login_mobile_caption":"Mobile Number",
     "otp_login_mobile_hint":"Enter Your Mobile Number",
-    "otp_login_mobile_empty":"Mobile Number can't be emply",
+    "otp_login_mobile_empty":"Mobile Number can't be empty",
     "otp_login_mobile_invalid":"Enter Valid Mobile Number",
     "otp_login_otp_caption":"Enter OTP",
     "otp_login_error_invalid":"Invalid OTP entered",
@@ -33,23 +33,23 @@
     "signup_header_title":"Create an Account",
     "signup_fullname_caption":"Full Name",
     "signup_fullname_hint":"Full Name",
-    "signup_fullname_empty":"Full Name can't be emply",
+    "signup_fullname_empty":"Full Name can't be empty",
     "signup_email_caption":"Email Address",
     "signup_email_hint":"Enter Your Email Address",
-    "signup_email_empty":"Email address can't be emply",
+    "signup_email_empty":"Email address can't be empty",
     "signup_email_invalid":"Invalid Email Address",
     "signup_mobile_caption":"Mobile Number",
     "signup_mobile_hint":"Enter Your Mobile Number",
-    "signup_mobile_empty":"Mobile Number can't be emply",
+    "signup_mobile_empty":"Mobile Number can't be empty",
     "signup_mobile_invalid":"Enter Valid Mobile Number",
     "signup_password_caption":"Enter Password",
     "signup_password_hint":"Enter Your Password",
-    "signup_password_empty":"Password can't be emply",
+    "signup_password_empty":"Password can't be empty",
     "signup_password_invalid":"Invalid Password",
 
     "signup_confirm_password_caption":"Enter Confirm Password",
     "signup_confirm_password_hint":"Enter Your Confirm Password",
-    "signup_confirm_password_empty":"Confirm Password can't be emply",
+    "signup_confirm_password_empty":"Confirm Password can't be empty",
     "signup_confirm_password_invalid":"Confirm Password Mismatch",
     
     "signup_otp_caption":"Enter OTP",
@@ -64,7 +64,7 @@
     "fp_desc_message":"Enter the email associated with your account and we'll send an email with instructions to reset your password.",
     "fp_email_caption":"Email Address",
     "fp_email_hint":"Enter Your Email Address",
-    "fp_email_empty":"Email address can't be emply",
+    "fp_email_empty":"Email address can't be empty",
     "fp_email_invalid":"Invalid Email Address",
     "fp_btn_submit":"Submit",
     "fp_btx_login_back":"Back to Login",
@@ -300,13 +300,23 @@
     "t_schedule_caption":"Upcoming classes",
     "t_schedule_no_class":"No Upcoming class",
 
+
+
+    "t_request_class_empty_topic":"Class topic can't be empty",
+    "t_request_class_topic_invalid":"Class topic must contains at least 5 characters",
+    "t_request_class_type_hint":"Select Class type",
+    "t_request_class_empty_type":"Class request type can't be empty",
+    "t_request_class_empty_description":"Class Request description type can't be empty",
+    "t_request_class_description_invalid":"Class Request description must contains at least 5 characters",
+
+
     "groups_create_title":"New Group",
     "groups_create_edit_title":"Edit Group",
     "groups_create_subject":"Add Subject",
     "groups_create_caption":"Group Title",
     "groups_create_hint_name":"Enter group name",
     "group_empty_no_contacts":"No Contacts",
-    "group_error_empty":"Group Name can't be emply",
+    "group_error_empty":"Group Name can't be empty",
     "group_error_invalid":"Group Name very short",
     "group_error_creating":"Error in creating group",
 
@@ -456,7 +466,10 @@
   "td_total_subs": "2.6 K",
   "td_watch_time": "60+ hrs",
   "td_courses": "Uploaded Courses",
-  "td_running": "Top Running Courses"
+  "td_running": "Top Running Courses",
+
+  "error":"Something went wrong! Try again."
+
 
 
 }

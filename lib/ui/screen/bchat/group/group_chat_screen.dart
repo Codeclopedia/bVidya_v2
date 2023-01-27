@@ -245,7 +245,7 @@ class GroupChatScreen extends HookConsumerWidget {
                     .map(
                       (e) => Padding(
                         padding: EdgeInsets.only(right: 1.w),
-                        child: getCicleAvatar(radius: 3.w, e.name, model.image),
+                        child: getCicleAvatar(radius: 3.w, e.name, e.profile),
                       ),
                     )
                     .toList(),

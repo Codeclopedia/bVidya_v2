@@ -202,4 +202,62 @@ class BMeetApiService {
       return MeetingListResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
+
+
+  Future<BaseResponse> requestPersonalClass(
+      {required String authToken,
+      required String topic,
+      required String description,
+      required String classType,
+      required int instructorid,
+      required DateTime datetime,
+      required String time}) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = authToken;
+
+      final data = {
+        'topic': topic,
+        'description': description,
+        'classtype': classType,
+        'instructor_id': instructorid,
+        'date': DateFormat('y-MM-dd').format(datetime).toString(),
+        'time': time.toString(),
+      };
+
+      final response =
+          await _dio.post(baseUrlApi + ApiList.requestClass, data: data);
+
+      if (response.statusCode == 200) {
+        print('request class ${jsonEncode(response.data)}');
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: 'Unknown error occurred');
+    }
+  }
+
+  Future<ClassRequestResponse> getClassRequestList(String authToken) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = authToken;
+      final response =
+          await _dio.get(baseUrlApi + ApiList.personalClassRequests);
+
+      if (response.statusCode == 200) {
+        print('Loading meeting list ');
+        return ClassRequestResponse.fromJson(response.data);
+      } else {
+        return ClassRequestResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      return ClassRequestResponse(
+        status: 'error',
+      );
+    }
+  }
 }

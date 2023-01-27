@@ -1,7 +1,11 @@
 // import 'package:flutter/material.dart';
+import 'package:bvidya/controller/bmeet_providers.dart';
+import 'package:bvidya/core/state.dart';
+import 'package:bvidya/ui/screen/blearn/components/common.dart';
+import 'package:bvidya/ui/widget/shimmer_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:sizer/sizer.dart';
 
+import '/data/models/response/bmeet/class_request_response.dart';
 import '../base_settings_noscroll.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
@@ -28,28 +32,55 @@ class TeacherClassRequest extends StatelessWidget {
               ),
               SizedBox(height: 1.h),
               Expanded(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: 80,
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, index) =>
-                      const Divider(color: AppColors.divider),
-                  itemBuilder: (context, index) {
-                    return _buldFollwedRow();
-                  },
-                ),
+                child: Consumer(builder: (context, ref, child) {
+                  return ref.watch(bmeetClassesProvider).when(
+                    data: (data) {
+                      if (data?.personalClasses?.isEmpty ?? true) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: data?.personalClasses?.length ?? 0,
+                        scrollDirection: Axis.vertical,
+                        separatorBuilder: (context, index) =>
+                            const Divider(color: AppColors.divider),
+                        itemBuilder: (context, index) {
+                          return _buildRequestRow(
+                              data?.personalClasses?[index] ?? PersonalClass());
+                        },
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      return buildEmptyPlaceHolder("Error");
+                    },
+                    loading: () {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: 20,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 1.h),
+                            child: CustomizableShimmerTile(
+                                height: 20.w, width: 100.w),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }),
               )
             ],
           ),
         ));
   }
 
-  Widget _buldFollwedRow() {
+  Widget _buildRequestRow(PersonalClass data) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
       child: Row(
         children: [
-          getCicleAvatar('A', '', radius: 3.h),
+          getCicleAvatar('A', data.studentImage ?? '', radius: 3.h),
           SizedBox(width: 5.w),
           Expanded(
             child: Column(
@@ -57,7 +88,7 @@ class TeacherClassRequest extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "User Name",
+                  data.studentName ?? "",
                   style: TextStyle(
                       fontSize: 12.sp,
                       fontFamily: kFontFamily,
@@ -67,7 +98,7 @@ class TeacherClassRequest extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(top: 0.3.h),
                   child: Text(
-                    "Private class request",
+                    data.type ?? "",
                     style: TextStyle(
                         fontSize: 8.sp,
                         color: AppColors.descTextColor,
@@ -80,11 +111,14 @@ class TeacherClassRequest extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                print("Hello");
+                chatwithstudent(data.studentName ?? "", data.userId ?? 0,
+                    data.instructorId ?? 0);
               },
               icon: getSvgIcon('icon_req_chat.svg'))
         ],
       ),
     );
   }
+
+  chatwithstudent(String studentname, int studentId, int instructorId) {}
 }

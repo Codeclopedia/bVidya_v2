@@ -17,6 +17,7 @@ class TeacherProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
+      showEmail: true,
       currentIndex: DrawerMenu.profile,
       bodyContent: Column(
           mainAxisSize: MainAxisSize.max,
