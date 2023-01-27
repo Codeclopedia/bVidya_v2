@@ -1,13 +1,15 @@
 import 'package:bvidya/core/constants.dart';
-import 'package:floating_draggable_widget/floating_draggable_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '/core/helpers/drag_position.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import 'end_drawer.dart';
+import 'floating_draggable_widget.dart';
 
 final drawerStateProvider = StateProvider<bool>((ref) => false);
+final drawerPositionProvider =
+    StateProvider<List<double>>((ref) => [75.w, 85.h]);
 
 class BaseDrawerPage extends StatefulWidget {
   final Widget body;
@@ -66,6 +68,7 @@ class _BaseDrawerPageState extends State<BaseDrawerPage> {
   }
 
   Widget _buildScreen(bool isOpen, WidgetRef ref) {
+    final intialPos = ref.read(drawerPositionProvider);
     return FloatingDraggableWidget(
       floatingWidget: isOpen
           ? const SizedBox.shrink()
@@ -78,8 +81,12 @@ class _BaseDrawerPageState extends State<BaseDrawerPage> {
             ),
       floatingWidgetHeight: 15.w,
       floatingWidgetWidth: 15.w,
-      dx: 70.w,
-      dy: 85.h,
+      dx: intialPos[0],
+      dy: intialPos[1],
+      onDragEnd: (x, y) {
+        ref.read(drawerPositionProvider.notifier).state = [x, y];
+      },
+
       // deleteWidgetDecoration: const BoxDecoration(
       //   gradient: LinearGradient(
       //     colors: [Colors.white12, Colors.grey],

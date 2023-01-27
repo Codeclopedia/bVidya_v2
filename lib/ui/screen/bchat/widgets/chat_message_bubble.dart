@@ -390,7 +390,7 @@ class ChatMessageBubble extends StatelessWidget {
               //   children: getMessage(body.content),
               // )),
               // const Spacer(),
-              SizedBox(width: body.content.length < 4 ? 8.w : 2.w)
+              SizedBox(width: body.content.length < 6 ? 8.w : 2.w)
             ],
           ),
           _buildTime(),

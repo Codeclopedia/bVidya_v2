@@ -217,6 +217,7 @@ class ForwardContactListDialog extends StatelessWidget {
     try {
       ChatMessage msg = ChatMessage.createSendMessage(
           body: message.body, to: model.id, chatType: model.chatType);
+          
       if (model.chatType == ChatType.GroupChat) {
         if (msg.body.type == MessageType.TXT) {
           msg.attributes = {
@@ -266,6 +267,7 @@ class ForwardContactListDialog extends StatelessWidget {
           };
         }
       }
+      msg.attributes?.addAll({"frwd_mId": message.msgId});
       msg.attributes?.addAll({"em_force_notification": true});
       final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
       print('Forwarded msg:${message.msgId}=> ${chat.msgId}');
