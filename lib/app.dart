@@ -3,14 +3,14 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '/core/helpers/foreground_message_helper.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
-
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '/core/state.dart';
 import '/core/utils.dart';
@@ -22,7 +22,7 @@ import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
-import 'core/utils/connectycubekit.dart';
+// import 'core/utils/connectycubekit.dart';
 import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
@@ -81,6 +81,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+
     if (state == AppLifecycleState.resumed) {
       debugPrint('Hello I m here foreground');
       // BChatSDKController.instance.loginOnlyInForeground();
@@ -109,6 +110,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           closeIncomingCall(message);
         }
       } else {
+        ForegroundMessageHelper.handleCallingNotificationForeground(message);
         // NotificationController.showErrorMessage('New Foreground : ${message.senderId}');
         // NotificationController.handleForegroundRemoteMessage(message);
         // NotificationController.shouldShowChatNotification(message);

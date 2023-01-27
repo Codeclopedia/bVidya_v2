@@ -3,9 +3,11 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:dotted_border/dotted_border.dart';
 
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/utils/notification_controller.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -16,8 +18,8 @@ import '/core/utils/date_utils.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
-import '/controller/bchat_providers.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/bchat_providers.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/core/constants.dart';
@@ -57,18 +59,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       //
       await BChatSDKController.instance.initChatSDK(user);
       await loadChats(ref);
-      // if (!ref.read(chatConversationProvider.notifier).initialized) {
-      //   print('setting up again');
-      //   await ref
-      //       .read(chatConversationProvider.notifier)
-      //       .setup(ref.read(bChatProvider), user, update: true);
+
       await ref.read(groupConversationProvider.notifier).setup();
       await ref.read(callListProvider.notifier).setup();
-      // } else {
-      //   ref
-      //       .read(chatConversationProvider.notifier)
-      //       .reset(ref.read(bChatProvider));
-      // }
     } else {
       print('reseting chat only');
       await loadChats(ref);
@@ -82,7 +75,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     }
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
-      NotificationController.displayNotificationRationale();
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+      // NotificationController.displayNotificationRationale();
     }
   }
 

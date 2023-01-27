@@ -2,10 +2,12 @@
 
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../utils/connectycubekit.dart';
+// import '../utils/connectycubekit.dart';
+import '../constants/notification_const.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/conversation_model.dart';
 
@@ -17,7 +19,7 @@ import '/data/models/response/bchat/p2p_call_response.dart';
 import '../constants/route_list.dart';
 import '../routes.dart';
 import '../ui_core.dart';
-// import '../utils/callkit_utils.dart';
+import '../utils/callkit_utils.dart';
 import '../utils/chat_utils.dart';
 import 'call_helper.dart';
 
@@ -105,32 +107,33 @@ class ForegroundMessageHelper {
     }
   }
 
-  static void handleCallNotification(ChatMessage msg, WidgetRef ref) async {
+  static handleCallingNotificationForeground(RemoteMessage message) async {
+    //
+    // dynamic mId = message.data['m'];
     try {
-      final diff = DateTime.now().millisecondsSinceEpoch - msg.serverTime;
+      final diff = DateTime.now().millisecondsSinceEpoch -
+          (message.sentTime?.millisecondsSinceEpoch ?? 0);
       print(
-          'foreground $diff ms  ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}');
+          'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
 
-      final body = CallMessegeBody.fromJson(
-          jsonDecode((msg.body as ChatCustomMessageBody).event));
+      final data = jsonDecode(message.data['e']);
+      String? type = data['type'];
+      if (type != NotiConstants.typeCall) {
+        return;
+      }
+      // print(' notification ${data['content']}');
+      final body = CallMessegeBody.fromJson(jsonDecode(data['content']));
       CallBody callBody = body.callBody;
-      // print(
-      //     'callId =>${callBody.callId} last->:$lastCallId  active:$activeCallId');
-      print(
-          'lastCallId: $lastCallId  active: $activeCallId current:${callBody.callId}');
 
       if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
         return;
       }
-
-      if (diff > 30000) return;
-
-      String fromId = msg.from!;
+      String fromId = message.data['f'];
       String fromName = body.fromName;
       String fromFCM = body.ext['fcm'];
       String image = body.fromImage;
       bool hasVideo = body.callType == CallType.video;
-      // print('${body.toJson()}');
+
       if (onGoingCallId != null) {
         if (onGoingCallId != callBody.callId) {
           await onDeclineCallBusy(
@@ -138,8 +141,50 @@ class ForegroundMessageHelper {
         }
         return;
       }
+
       await showIncomingCallScreen(
-          callBody, fromName, fromId, fromFCM, image, hasVideo,false);
+          callBody, fromName, fromId, fromFCM, image, hasVideo, true);
+    } catch (e) {
+      print('Error in call notification $e');
+    }
+  }
+
+  static void handleCallNotification(ChatMessage msg, WidgetRef ref) async {
+    try {
+      // final diff = lastCallTime?.millisecondsSinceEpoch ??
+      //     DateTime.now().millisecondsSinceEpoch - msg.serverTime;
+      // print(
+      //     'foreground $diff ms  ${msg.serverTime}  ${DateTime.now().millisecondsSinceEpoch}  ${lastCallTime?.millisecondsSinceEpoch}');
+
+      final body = CallMessegeBody.fromJson(
+          jsonDecode((msg.body as ChatCustomMessageBody).event));
+      // CallBody callBody = body.callBody;
+      // // print(
+      // //     'callId =>${callBody.callId} last->:$lastCallId  active:$activeCallId');
+      // print(
+      //     'lastCallId: $lastCallId  active: $activeCallId current:${callBody.callId}');
+
+      // if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
+      //   return;
+      // }
+
+      // if (diff > 30000) return;
+
+      String fromId = msg.from!;
+      String fromName = body.fromName;
+      // String fromFCM = body.ext['fcm'];
+      String image = body.fromImage;
+      // bool hasVideo = body.callType == CallType.video;
+      // print('${body.toJson()}');
+      // if (onGoingCallId != null) {
+      //   if (onGoingCallId != callBody.callId) {
+      //     await onDeclineCallBusy(
+      //         fromFCM, fromId, fromName, image, callBody, hasVideo);
+      //   }
+      //   return;
+      // }
+      // await showIncomingCallScreen(
+      //     callBody, fromName, fromId, fromFCM, image, hasVideo, false);
       CallListModel model = CallListModel(
         fromId,
         fromName,

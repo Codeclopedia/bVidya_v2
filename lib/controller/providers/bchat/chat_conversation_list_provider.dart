@@ -10,8 +10,8 @@ final chatConversationProvider = StateNotifierProvider<
     List<ConversationModel>>((ref) => ChatConversationChangeNotifier());
 
 Future loadChats(WidgetRef ref) async {
-  await ref.read(contactListProvider.notifier).setup(ref);
-  await ref.read(chatConversationProvider.notifier).setup(ref);
+  final list = await ref.read(contactListProvider.notifier).setup(ref);
+  await ref.read(chatConversationProvider.notifier).setup(ref, list);
 }
 
 Future<ConversationModel?> addNewContact(
@@ -57,10 +57,10 @@ class ChatConversationChangeNotifier
 
   final Map<String, ConversationModel> _chatConversationMap = {};
 
-  Future setup(WidgetRef ref) async {
+  Future setup(WidgetRef ref, List<Contacts> contacts) async {
     if (_isLoading) return;
     _isLoading = true;
-    final contacts = ref.read(contactListProvider);
+    // final contacts = ref.read(contactListProvider);
     // ref.read(conversationLoadingStateProvider.notifier).state = _isLoading;
 
     for (Contacts contact in contacts) {
@@ -69,7 +69,7 @@ class ChatConversationChangeNotifier
         final conv = await ChatClient.getInstance.chatManager.getConversation(
             contact.userId.toString(),
             type: ChatConversationType.Chat,
-            createIfNeed: false);
+            createIfNeed: true);
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
         if (lastMessage == null) continue;
@@ -194,7 +194,7 @@ class ChatConversationChangeNotifier
       final conv = await ChatClient.getInstance.chatManager.getConversation(
           contact.userId.toString(),
           type: ChatConversationType.Chat,
-          createIfNeed: false);
+          createIfNeed: true);
       if (conv == null) return null;
       final lastMessage = await conv.latestMessage();
       if (lastMessage == null) return null;

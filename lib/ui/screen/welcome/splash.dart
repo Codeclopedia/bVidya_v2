@@ -9,12 +9,12 @@ import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 //import '/app.dart';
-import '../../../core/utils/connectycubekit.dart';
+// import '../../../core/utils/connectycubekit.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/core/routes.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
-// import '/core/utils/callkit_utils.dart';
+import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
@@ -36,29 +36,14 @@ class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   Future _handleFirebaseMessages(
-      BuildContext context, WidgetRef ref, user) async {
-    if (user == null) {
-      Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, RouteList.login);
-      });
-      return;
-    }
-
-    // final initialAction = NotificationController.clickAction;
-    // if (initialAction != null &&
-    //     initialAction.payload != null &&
-    //     initialAction.channelKey == 'chat_channel') {
-    //   debugPrint(
-    //       'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
-
-    //   if (await NotificationController.handleChatNotificationAction(
-    //       initialAction.payload!, context, true)) {
-    //     debugPrint('  initialAction is not null');
-    //     return;
-    //   }
-    // } else {
-    //   debugPrint('  initialAction is null ${initialAction != null}');
+      BuildContext context, WidgetRef ref, User user) async {
+    // if (user == null) {
+    //   Future.delayed(const Duration(seconds: 6), () {
+    //     Navigator.pushReplacementNamed(context, RouteList.login);
+    //   });
+    //   return;
     // }
+
     Navigator.pushReplacementNamed(context, RouteList.home);
     // final message = await FirebaseMessaging.instance.getInitialMessage();
     // if (message != null && message.data.isNotEmpty) {
@@ -88,17 +73,14 @@ class SplashScreen extends ConsumerWidget {
           }
 
           await loadChats(ref);
-          // await ref
-          //     .read(chatConversationProvider.notifier)
-          //     .setup(ref.read(bChatProvider), next.value!);
-
+          
           await ref.read(groupConversationProvider.notifier).setup();
           await ref.read(callListProvider.notifier).setup();
 
-          await _handleFirebaseMessages(context, ref, next.value);
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
           print('Time taken: $diff ms');
           appLoaded = true;
+          Navigator.pushReplacementNamed(context, RouteList.home);
         } else {
           ref.read(splashImageProvider.notifier).state = Image.asset(
             'assets/images/loader.gif',

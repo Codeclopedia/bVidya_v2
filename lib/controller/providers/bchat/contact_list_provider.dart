@@ -18,15 +18,15 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
 
   final Map<int, Contacts> _contactsMap = {};
 
-  Future setup(WidgetRef ref) async {
-    if (_isLoading) return;
+  Future<List<Contacts>> setup(WidgetRef ref) async {
+    if (_isLoading) return state;
     _isLoading = true;
     // ref.read(contactLoadingStateProvider.notifier).state = _isLoading;
     final user = await getMeAsUser();
     if (user == null) {
       _isLoading = false;
       // ref.read(contactLoadingStateProvider.notifier).state = _isLoading;
-      return null;
+      return [];
     }
 
     final ids = await BChatContactManager.getContactList();
@@ -47,6 +47,7 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
 
     state = _contactsMap.values.toList();
     _isLoading = false;
+    return state;
     // ref.read(contactLoadingStateProvider.notifier).state = _isLoading;
   }
 
