@@ -3,6 +3,8 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/core/helpers/group_call_helper.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/controller/providers/bchat/groups_conversation_provider.dart';
@@ -25,8 +27,8 @@ final groupMuteProvider = StateProvider.autoDispose<bool>(
 class GroupInfoScreen extends HookConsumerWidget {
   final GroupConversationModel group;
   static final imageSize = 28.w;
-
-  const GroupInfoScreen({super.key, required this.group});
+  final bool fromChat;
+  const GroupInfoScreen({super.key, required this.group,this.fromChat = false});
 
   static final List<Contacts> contacts = [];
   @override
@@ -637,29 +639,55 @@ class GroupInfoScreen extends HookConsumerWidget {
                     SizedBox(
                       height: 3.h,
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
+                    Consumer(builder: (context, ref, child) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                // Navigator.pushNamedAndRemoveUntil(
+                                //     context,
+                                //     RouteList.chatScreen,
+                                //     (route) => route.isFirst);
+                              },
+                              child: _buildIcon('icon_pr_chat.svg')),
+                          InkWell(
+                              onTap: () async {
+                                final chat = await makeGroupCall(ref, context,
+                                    group.groupInfo, CallType.video);
+                                if (chat != null) {
+                                  // ref.read(groupChatProvider(model).notifier).addChat(chat);
+                                  setScreen(RouteList.groupInfo);
+                                } else {
+                                  AppSnackbar.instance
+                                      .error(context, 'Error in making call');
+                                }
+                              },
+                              child: _buildIcon('icon_pr_vcall.svg')),
+                          InkWell(
+                              onTap: () async {
+                                final chat = await makeGroupCall(ref, context,
+                                    group.groupInfo, CallType.audio);
+                                if (chat != null) {
+                                  // ref.read(groupChatProvider(model).notifier).addChat(chat);
+                                  setScreen(RouteList.groupInfo);
+                                } else {
+                                  AppSnackbar.instance
+                                      .error(context, 'Error in making call');
+                                }
+                              },
+                              child: _buildIcon('icon_pr_acall.svg')),
+                          InkWell(
                             onTap: () {
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  RouteList.chatScreen,
-                                  (route) => route.isFirst);
+                              Navigator.pushNamed(
+                                  context, RouteList.searchGroups);
                             },
-                            child: _buildIcon('icon_pr_chat.svg')),
-                        _buildIcon('icon_pr_vcall.svg'),
-                        _buildIcon('icon_pr_acall.svg'),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RouteList.searchGroups);
-                          },
-                          child: _buildIcon('icon_pr_search.svg'),
-                        ),
-                      ],
-                    ),
+                            child: _buildIcon('icon_pr_search.svg'),
+                          ),
+                        ],
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -674,7 +702,7 @@ class GroupInfoScreen extends HookConsumerWidget {
     return CircleAvatar(
       radius: 6.w,
       backgroundColor: AppColors.yellowAccent,
-      child: getSvgIcon(icon),
+      child: getSvgIcon(icon, width: 5.w),
     );
   }
 }

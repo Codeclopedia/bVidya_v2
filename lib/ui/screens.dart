@@ -24,6 +24,7 @@ export 'screen/bchat/group/group_info_screen.dart';
 export 'screen/bchat/group/group_info_screen.dart';
 export 'screen/bchat/group/group_chat_screen.dart';
 export 'screen/bchat/group/search_group_screen.dart';
+export 'screen/bchat/group/group_call_screen.dart';
 
 export 'base_back_screen.dart';
 

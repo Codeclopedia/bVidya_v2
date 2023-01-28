@@ -1,8 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/screen/bchat/group/group_call_screen.dart';
 // import '/app.dart';
 
-import '../controller/bchat_providers.dart';
+// import '../controller/bchat_providers.dart';
 import '/ui/screen/bchat/group/group_calls_screen.dart';
 import '/data/models/models.dart';
 import 'constants/route_list.dart';
@@ -14,7 +13,9 @@ class Routes {
   static bool isChatScreen(String fromId) {
     String cName = getCurrentScreen();
 
-    return cName == RouteList.home ||
+    return (cName == RouteList.home ||
+            cName == RouteList.homeDirect ||
+            cName == RouteList.homeDirectFromCall) ||
         (cName == RouteList.chatScreen && fromId == _currentId) ||
         (cName == RouteList.chatScreenDirect && fromId == _currentId);
   }
@@ -143,6 +144,17 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+      case RouteList.groupInfoChat:
+        if (settings.arguments is GroupConversationModel) {
+          _currentId = (settings.arguments as GroupConversationModel).id;
+          screen = GroupInfoScreen(
+            group: settings.arguments as GroupConversationModel,
+            fromChat: true,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
       case RouteList.groupInfo:
         if (settings.arguments is GroupConversationModel) {
           _currentId = (settings.arguments as GroupConversationModel).id;
@@ -167,22 +179,24 @@ class Routes {
           String callId = args['call_id'];
           Meeting meeting = args['meeting'];
           CallType callType = args['call_type'];
+          String prevScreen = args['prev_screen'];
           // RTMUserTokenResponse rtmToken = args['rtm_token'];
           User me = args['user'];
 
           screen = GroupCallScreen(
-            groupId: groupId,
-            groupName: groupName,
-            members: members,
-            callDirectionType: CallDirectionType.outgoing,
-            callId: callId,
-            callRequiestId: requestId,
-            callType: callType,
-            me: me,
-            meeting: meeting,
-            membersIds: '',
-            // rtmTokem: rtmToken,
-          );
+              groupId: groupId,
+              groupName: groupName,
+              members: members,
+              callDirectionType: CallDirectionType.outgoing,
+              callId: callId,
+              callRequiestId: requestId,
+              callType: callType,
+              me: me,
+              meeting: meeting,
+              membersIds: '',
+              prevScreen: prevScreen
+              // rtmTokem: rtmToken,
+              );
         } else {
           screen = _parameterMissing();
         }
@@ -199,19 +213,18 @@ class Routes {
           String callId = args['call_id'];
           CallType callType = args['call_type'];
           User me = args['user'];
-          bool direct = args['direct'];
+          String prevScreen = args['prev_screen'];
 
           screen = GroupCallScreen(
-            groupId: groupId,
-            groupName: groupName,
-            callDirectionType: CallDirectionType.incoming,
-            callId: callId,
-            callRequiestId: requestId,
-            callType: callType,
-            me: me,
-            membersIds: membersIds,
-            direct:direct
-          );
+              groupId: groupId,
+              groupName: groupName,
+              callDirectionType: CallDirectionType.incoming,
+              callId: callId,
+              callRequiestId: requestId,
+              callType: callType,
+              me: me,
+              membersIds: membersIds,
+              prevScreen: prevScreen);
         } else {
           screen = _parameterMissing();
         }
@@ -276,7 +289,7 @@ class Routes {
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
-          bool direct = args['direct'] ?? false;
+          String prevScreen = args['prev_screen'];
           String userId = args['user_id'];
 
           screen = ChatCallScreen(
@@ -287,7 +300,7 @@ class Routes {
               callDirection: direction,
               callType: CallType.video,
               otherUserId: userId,
-              direct: direct);
+              prevScreen: prevScreen);
         } else {
           screen = _parameterMissing();
         }
@@ -301,7 +314,7 @@ class Routes {
           String image = args['image'];
           CallBody callInfo = args['call_info'];
           CallDirectionType direction = args['call_direction_type'];
-          bool direct = args['direct'] ?? false;
+          String prevScreen = args['prev_screen'];
           String userId = args['user_id'];
           screen = ChatCallScreen(
               fcmToken: fcmToken,
@@ -311,7 +324,7 @@ class Routes {
               callDirection: direction,
               callType: CallType.audio,
               otherUserId: userId,
-              direct: direct);
+              prevScreen: prevScreen);
         } else {
           screen = _parameterMissing();
         }

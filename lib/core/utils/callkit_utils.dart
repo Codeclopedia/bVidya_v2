@@ -153,7 +153,7 @@ Future setupCallKit() async {
 
 Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
   final callId = remoteMessage.data['call_id'];
-  int fromId = remoteMessage.data['from_id'];
+  int fromId = int.parse(remoteMessage.data['from_id']);
   final groupId = remoteMessage.data['grp_id'];
   final name = remoteMessage.data['name'];
   final image = remoteMessage.data['image'];
@@ -420,7 +420,7 @@ onCallAccept(
     'image': callMessegeBody.fromImage,
     'call_info': callMessegeBody.callBody,
     'call_direction_type': CallDirectionType.incoming,
-    'direct': false,
+    'prev_screen': Routes.getCurrentScreen(),
     'user_id': fromId
   };
 

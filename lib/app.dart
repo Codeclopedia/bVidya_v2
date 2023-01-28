@@ -101,13 +101,16 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     FirebaseMessaging.onMessage.listen((message) async {
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
-      // debugPrint('firebase:onMessage -> ${message.toMap()} ');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
-          // handlShowIncomingCallNotification(message, ref: ref);
         } else if (action == NotiConstants.actionCallEnd) {
           closeIncomingCall(message);
+        }
+      } else if (message.data['type'] == NotiConstants.typeGroupCall) {
+        final String? action = message.data['action'];
+        if (action == NotiConstants.actionCallEnd) {
+          closeIncomingGroupCall(message);
         }
       } else {
         ForegroundMessageHelper.handleCallingNotificationForeground(message);

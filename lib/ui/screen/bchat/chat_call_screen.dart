@@ -42,7 +42,7 @@ class ChatCallScreen extends HookConsumerWidget {
   final CallDirectionType callDirection;
   final CallType callType;
   final String otherUserId;
-  final bool direct;
+  final String prevScreen;
 
   const ChatCallScreen(
       {super.key,
@@ -53,22 +53,22 @@ class ChatCallScreen extends HookConsumerWidget {
       required this.callType,
       required this.callDirection,
       required this.otherUserId,
-      this.direct = false});
+      required this.prevScreen});
 
   _finish(BuildContext context) async {
     if (_endingCall) {
       return;
     }
     _endingCall = true;
-    print('is Directly => $direct');
-    if (direct) {
+    print('is Directly => $prevScreen');
+    if (prevScreen.isEmpty) {
       // await FlutterCallkitIncoming.endAllCalls();
       clearCall();
       Navigator.pushReplacementNamed(context, RouteList.homeDirectFromCall);
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.splash, (route) => route.isFirst);
     } else {
-      setScreen('');
+      setScreen(prevScreen);
       Navigator.pop(context);
     }
     _endingCall = false;
@@ -77,7 +77,7 @@ class ChatCallScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      print('Init Directly => $direct');
+      print('Init Directly => $prevScreen');
       ref
           .read(audioCallChangeProvider.notifier)
           .init(callInfo, callDirection, callType);
@@ -369,18 +369,16 @@ class ChatCallScreen extends HookConsumerWidget {
                   }
                   // endCall(callInfo, otherUserId);
                   FCMApiService.instance.sendCallEndPush(
-                    fcmToken,
-                    NotiConstants.actionCallEnd,
-                    user.id.toString(),
-                    callInfo.callId,
-                    user.name,
-                    user.image,
-                    callType==CallType.video
-                  );
+                      fcmToken,
+                      NotiConstants.actionCallEnd,
+                      user.id.toString(),
+                      callInfo.callId,
+                      user.name,
+                      user.image,
+                      callType == CallType.video);
                 }
 
                 _finish(context);
-                
               },
               child: Container(
                 height: 12.w,

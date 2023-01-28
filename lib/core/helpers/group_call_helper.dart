@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../routes.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/constants/route_list.dart';
@@ -71,7 +72,7 @@ Future<bool> receiveGroupCall(
     // 'call_direction': CallDirectionType.incoming,
     'user': user,
     'members_ids': membersIds,
-    'direct': direct
+    'prev_screen': direct ? '' : Routes.getCurrentScreen()
   };
   Navigator.pushNamed(context, RouteList.groupCallScreenReceive,
       arguments: args);
@@ -161,6 +162,7 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
         // 'rtm_token': userRTMToken,
         'call_direction': CallDirectionType.outgoing,
         'user': me,
+        'prev_screen': Routes.getCurrentScreen()
       };
       await Navigator.pushNamed(context, RouteList.groupCallScreen,
           arguments: args);

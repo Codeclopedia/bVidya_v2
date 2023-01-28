@@ -6,7 +6,7 @@ import '/core/helpers/call_helper.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '../../dialog/add_contact_dialog.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants/agora_config.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -673,10 +673,20 @@ class ContactProfileScreen extends HookConsumerWidget {
                                 ),
                         ),
                         InkWell(
-                            onTap: () => makeVideoCall(contact, ref, context),
+                            onTap: () async {
+                              final msg =
+                                  await makeVideoCall(contact, ref, context);
+                              if (msg != null) {
+                                // ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
+                              }
+                              setScreen(RouteList.contactInfo);
+                            },
                             child: _buildIcon('icon_pr_vcall.svg')),
                         InkWell(
-                            onTap: () => makeAudioCall(contact, ref, context),
+                            onTap: () async {
+                              await makeAudioCall(contact, ref, context);
+                              setScreen(RouteList.contactInfo);
+                            },
                             child: _buildIcon('icon_pr_acall.svg')),
                         InkWell(
                           onTap: () {

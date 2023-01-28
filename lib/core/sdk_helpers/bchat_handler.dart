@@ -1,14 +1,13 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/sdk_helpers/typing_helper.dart';
 import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 
 import '../state.dart';
-// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/utils/notification_controller.dart';
 
 String? lastUserId;
@@ -165,7 +164,6 @@ registerGroupForNewMessage(
     Function() onUpdate,
     Function(List<ChatCmdMessageBody>) onCmdMessage) {
   print('group registering $key');
-
   try {
     ChatClient.getInstance.chatManager.addEventHandler(
         key,

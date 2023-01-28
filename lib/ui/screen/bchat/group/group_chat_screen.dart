@@ -5,12 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
-import 'package:bvidya/core/helpers/group_call_helper.dart';
-import 'package:bvidya/core/sdk_helpers/group_typing_helper.dart';
-import 'package:bvidya/data/models/contact_model.dart';
-import 'package:bvidya/data/models/conversation_model.dart';
-// import 'package:bvidya/data/models/models.dart';
+// import '/data/models/models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -18,9 +13,15 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '/core/helpers/call_helper.dart';
+import '/core/helpers/group_call_helper.dart';
+import '/core/sdk_helpers/group_typing_helper.dart';
+import '/data/models/contact_model.dart';
+import '/data/models/conversation_model.dart';
+
 import '../widgets/typing_indicator.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
-import '../forward_dialog.dart';
+import '../../../dialog/forward_dialog.dart';
 
 import '/core/utils/common.dart';
 
@@ -140,8 +141,7 @@ class GroupChatScreen extends HookConsumerWidget {
 
   _addHandler(WidgetRef ref) async {
     registerGroupForNewMessage('group_chat_screen', (msg) {
-      print('msg  message=> ${msg.length}');
-
+      // print('msg  message=> ${msg.length}');
       onMessagesReceived(msg, ref);
     }, () {
       ref.read(groupChatProvider(model).notifier).updateUi();
@@ -158,11 +158,10 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   void onMessagesReceived(List<ChatMessage> messages, WidgetRef ref) {
-    print('message=> ${messages.length}');
-
+    // print('message=> ${messages.length}');
     ref.read(groupChatProvider(model).notifier).addChats(messages);
     for (var msg in messages) {
-      print('msg: ${msg.from}');
+      // print('msg: ${msg.from}');
       if (msg.chatType == ChatType.GroupChat && msg.conversationId != null) {
         if (msg.conversationId == model.id) {
           ref
@@ -813,12 +812,12 @@ class GroupChatScreen extends HookConsumerWidget {
           .read(groupConversationProvider.notifier)
           .updateConversationMessage(sentMessage, model.id);
     } on ChatError catch (e) {
-      print("send failed, code: ${e.code}, desc: ${e.description}");
+      // print("send failed, code: ${e.code}, desc: ${e.description}");
       AppSnackbar.instance.error(navigatorKey.currentContext!,
           "send failed, code: ${e.code}, desc: ${e.description}");
       return e.description;
     } catch (e) {
-      print("send failed, code: $e");
+      // print("send failed, code: $e");
       AppSnackbar.instance.error(navigatorKey.currentContext!, "$e");
       return e.toString();
     }
@@ -1045,9 +1044,9 @@ class GroupChatScreen extends HookConsumerWidget {
           Expanded(
             child: InkWell(
               onTap: () async {
-                await Navigator.pushNamed(context, RouteList.groupInfo,
+                await Navigator.pushNamed(context, RouteList.groupInfoChat,
                     arguments: model);
-                setScreen(RouteList.chatScreen);
+                setScreen(RouteList.groupChatScreen);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

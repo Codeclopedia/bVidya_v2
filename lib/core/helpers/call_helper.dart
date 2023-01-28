@@ -59,7 +59,7 @@ Future<ChatMessage?> makeAudioCall(
       'fcm_token': contact.fcmToken,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
-      'direct': false,
+      'prev_screen': Routes.getCurrentScreen(),
       'user_id': contact.userId.toString()
     };
     hideLoading(ref);
@@ -102,7 +102,7 @@ Future<bool> receiveCall(BuildContext context, String fromId,
     'image': callMessegeBody.fromImage,
     'call_info': callMessegeBody.callBody,
     'call_direction_type': CallDirectionType.incoming,
-    'direct': true,
+    'prev_screen': direct?'': Routes.getCurrentScreen(),
     'user_id': fromId
   };
 
@@ -160,7 +160,7 @@ Future<ChatMessage?> makeVideoCall(
       'image': contact.profileImage,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
-      'direct': false,
+      'prev_screen': Routes.getCurrentScreen(),
       'user_id': contact.userId.toString()
     };
     // if (contact.fcmToken?.isNotEmpty == true) {

@@ -9,7 +9,7 @@ import '/controller/providers/bchat/group_chats_provider.dart';
 // import '/core/constants/data.dart';
 import '/core/sdk_helpers/typing_helper.dart';
 import '/core/utils/common.dart';
-import '/ui/screen/bchat/forward_dialog.dart';
+import '../../dialog/forward_dialog.dart';
 // import '/core/routes.dart';
 
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -228,95 +228,117 @@ class ChatScreen extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // SizedBox(width: 4.w),
+                  SizedBox(width: 2.w),
+                  // Expanded(
+                  //   child: Container(
+                  //     margin: EdgeInsets.symmetric(horizontal: 2.w),
+                  //     alignment: Alignment.center,
+                  //     constraints: BoxConstraints(
+                  //       minHeight: 2.h,
+                  //       maxHeight: 20.h,
+                  //     ),
+                  //     decoration: BoxDecoration(
+                  //         color: AppColors.cardWhite,
+                  //         borderRadius: BorderRadius.all(Radius.circular(3.w))),
+                  //     child: Stack(
+                  //       children: [
+                  //         AttachedFileView(
+                  //           attFile: attFile,
+                  //         ),
+                  //         Positioned(
+                  //           right: 0,
+                  //           top: 0,
+                  //           child: IconButton(
+                  //             onPressed: () {
+                  //               ref.read(attachedFile.notifier).state = null;
+                  //             },
+                  //             icon: const Icon(Icons.close, color: Colors.red),
+                  //           ),
+                  //         ),
+                  //         if (progress > 0)
+                  //           Center(
+                  //             child: CircularProgressIndicator(
+                  //                 value: progress.toDouble()),
+                  //           )
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 2.w),
                       alignment: Alignment.center,
                       constraints: BoxConstraints(
                         minHeight: 2.h,
-                        maxHeight: 20.h,
+                        maxHeight: 10.h,
                       ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.w),
                       decoration: BoxDecoration(
+                          border: Border.all(
+                              color: AppColors.primaryColor.withOpacity(0.5)),
                           color: AppColors.cardWhite,
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                      child: Stack(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AttachedFileView(
-                            attFile: attFile,
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "You",
+                                style: TextStyle(
+                                    color: AppColors.primaryColor,
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.image,
+                                    size: 4.w,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(width: 1.w),
+                                  Text(
+                                    attFile.file.path.split('/').last,
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 10.sp),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: IconButton(
-                              onPressed: () {
-                                ref.read(attachedFile.notifier).state = null;
-                              },
-                              icon: const Icon(Icons.close, color: Colors.red),
-                            ),
+                          Stack(
+                            children: [
+                              SizedBox(
+                                width: 20.w,
+                                child: AttachedFileView(
+                                  attFile: attFile,
+                                ),
+                              ),
+                              if (progress > 0)
+                                Center(
+                                  child: CircularProgressIndicator(
+                                      value: progress.toDouble()),
+                                )
+                            ],
                           ),
-                          if (progress > 0)
-                            Center(
-                              child: CircularProgressIndicator(
-                                  value: progress.toDouble()),
-                            )
+                          IconButton(
+                            onPressed: () {
+                              ref.read(attachedFile.notifier).state = null;
+                            },
+                            icon: const Icon(Icons.close, color: Colors.red),
+                          )
                         ],
                       ),
                     ),
                   ),
-                  // SizedBox(width: 2.w),
+                  // SizedBox(width: 1.w),
                   InkWell(
-                    onTap: () async {
-                      final ChatMessage msg;
-                      // final String content;
-                      if (attFile.messageType == MessageType.IMAGE) {
-                        msg = ChatMessage.createImageSendMessage(
-                          targetId: model.contact.userId.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        // content = 'Image file';
-                      } else if (attFile.messageType == MessageType.VIDEO) {
-                        msg = ChatMessage.createVideoSendMessage(
-                          targetId: model.contact.userId.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        // content = 'Video file';
-                      } else {
-                        msg = ChatMessage.createFileSendMessage(
-                          targetId: model.contact.userId.toString(),
-                          filePath: attFile.file.path,
-                          fileSize: attFile.file.size.toInt(),
-                        );
-                        // content = 'File';
-                      }
-                      msg.attributes = {
-                        "em_apns_ext": {
-                          // "em_push_title":
-                          //     "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
-                          // "em_push_content": content,
-                          'type': 'chat',
-                          'name': _me.name,
-                          'image': _me.profileImage,
-                          'content_type': msg.body.type.name,
-                        },
-                        // Adds the push template to the message.
-                        // "em_push_template": {
-                        //   // Sets the template name.
-                        //   "name": "default",
-                        //   // Sets the template title by specifying the variable.
-                        //   "title_args": [
-                        //     "${model.contact.name} sent you a ${attFile.messageType.name.toLowerCase()}"
-                        //   ],
-                        //   // Sets the template content by specifying the variable.
-                        //   "content_args": [
-                        //     (attFile.messageType.name.toLowerCase())
-                        //   ],
-                        // }
-                      };
-                      await _sendMessage(msg, ref);
-                      ref.read(attachedFile.notifier).state = null;
+                    onTap: () {
+                      _sendMediaFile(attFile, ref);
                     },
                     child: CircleAvatar(
                       radius: 5.w,
@@ -327,11 +349,70 @@ class ChatScreen extends HookConsumerWidget {
                         size: 20.0,
                       ),
                     ),
-                  )
+                  ),
+                  SizedBox(width: 2.w),
                 ],
               );
       },
     );
+  }
+
+  _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
+    showLoading(ref);
+    final ChatMessage msg;
+    String displayName = attFile.file.path.split('/').last;
+    // final String content;
+    if (attFile.messageType == MessageType.IMAGE) {
+      msg = ChatMessage.createImageSendMessage(
+        targetId: model.contact.userId.toString(),
+        filePath: attFile.file.path,
+        displayName: displayName,
+        fileSize: attFile.file.size.toInt(),
+      );
+      // content = 'Image file';
+    } else if (attFile.messageType == MessageType.VIDEO) {
+      msg = ChatMessage.createVideoSendMessage(
+        targetId: model.contact.userId.toString(),
+        filePath: attFile.file.path,
+        displayName: displayName,
+        fileSize: attFile.file.size.toInt(),
+      );
+      // content = 'Video file';
+    } else {
+      msg = ChatMessage.createFileSendMessage(
+        targetId: model.contact.userId.toString(),
+        filePath: attFile.file.path,
+        displayName: displayName,
+        fileSize: attFile.file.size.toInt(),
+      );
+      // content = 'File';
+    }
+    msg.attributes = {
+      "em_apns_ext": {
+        // "em_push_title":
+        //     "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
+        // "em_push_content": content,
+        'type': 'chat',
+        'name': _me.name,
+        'image': _me.profileImage,
+        'content_type': msg.body.type.name,
+      },
+      // Adds the push template to the message.
+      // "em_push_template": {
+      //   // Sets the template name.
+      //   "name": "default",
+      //   // Sets the template title by specifying the variable.
+      //   "title_args": [
+      //     "${model.contact.name} sent you a ${attFile.messageType.name.toLowerCase()}"
+      //   ],
+      //   // Sets the template content by specifying the variable.
+      //   "content_args": [
+      //     (attFile.messageType.name.toLowerCase())
+      //   ],
+      // }
+    };
+    await _sendMessage(msg, ref);
+    ref.read(attachedFile.notifier).state = null;
   }
 
   Widget _buildReplyBox() {

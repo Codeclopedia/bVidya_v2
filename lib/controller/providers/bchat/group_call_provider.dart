@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:bvidya/data/services/fcm_api_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +12,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '/data/services/fcm_api_service.dart';
 import '/core/utils/callkit_utils.dart';
 import '../p2p_call_provider.dart';
 import '/controller/bmeet_providers.dart';
@@ -160,6 +160,7 @@ class GroupCallProvider extends ChangeNotifier {
       }
     }
 
+    print('my_fcm ${_me.fcmToken}');
     // if (grpInfo == null || grpInfo.members.isEmpty) {
     //   final contactList =
     //       await BchatGroupManager.fetchContactsOfGroup(ref, groupId);
@@ -200,6 +201,7 @@ class GroupCallProvider extends ChangeNotifier {
         }
       }
       for (Contacts contact in contacts) {
+        print('contact fcm ${contact.fcmToken}');
         userList.addAll({
           contact.userId: GroupCallUser(
               contact.userId, contact, _callType == CallType.video)
@@ -232,8 +234,10 @@ class GroupCallProvider extends ChangeNotifier {
     _callRequestId = callRequestId;
     _groupId = groupId;
     // _memberContacts.addAll(memberContacts);
+    print('my_fcm ${_me.fcmToken}');
     // _callDirectiontype = callDirectiontype;
     for (Contacts contact in memberContacts) {
+      print('contact fcm ${contact.fcmToken}');
       userList.addAll({
         contact.userId:
             GroupCallUser(contact.userId, contact, _callType == CallType.video)
@@ -253,17 +257,21 @@ class GroupCallProvider extends ChangeNotifier {
       print('onMessage Group Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeGroupCall) {
         final String? action = message.data['action'];
+
         if (action == NotiConstants.actionCallDecline ||
-            action == NotiConstants.actionCallDeclineBusy) {
+            action == NotiConstants.actionCallDeclineBusy ||
+            action == NotiConstants.actionCallEnd) {
           String callId = message.data['call_id'];
           String grpId = message.data['grp_id'];
           if (callId != _callId || grpId != _groupId) {
             print('Invalid group');
             return;
           }
-          int fromId = message.data['from_id'];
+          int fromId = int.parse(message.data['from_id']);
           _groupCallingMembers.update(fromId, ((value) {
-            value.status = JoinStatus.decline;
+            value.status = action == NotiConstants.actionCallEnd
+                ? JoinStatus.ended
+                : JoinStatus.decline;
             value.widget = null;
             return value;
           }));
@@ -511,7 +519,9 @@ class GroupCallProvider extends ChangeNotifier {
               _groupCallingMembers.update(remoteUid, (value) {
                 value.enabledVideo = enabled;
                 if (enabled) {
-                  value.widget = _remoteView(remoteUid);
+                  value.widget = _localUid == remoteUid
+                      ? _localView()
+                      : _remoteView(remoteUid);
                 } else {
                   value.widget = getRectFAvatar(
                       value.contact.name, value.contact.profileImage);
@@ -618,13 +628,15 @@ class GroupCallProvider extends ChangeNotifier {
         List<String> fcmIds = [];
         for (var user in _groupCallingMembers.values) {
           if (user.status != JoinStatus.decline &&
+              user.status != JoinStatus.ended &&
               _me.id != user.contact.userId &&
               user.contact.fcmToken?.isNotEmpty == true) {
             fcmIds.add(user.contact.fcmToken!);
           }
         }
-        
+
         if (fcmIds.isNotEmpty) {
+          print('fcm =>${fcmIds}');
           await FCMApiService.instance.sendGroupCallEndPush(
               fcmIds,
               NotiConstants.actionCallEnd,
@@ -840,7 +852,7 @@ class GroupCallProvider extends ChangeNotifier {
         rtcEngine: engine,
         canvas: VideoCanvas(
           uid: uid,
-          renderMode: RenderModeType.renderModeFit,
+          renderMode: RenderModeType.renderModeHidden,
           isScreenView: false,
           sourceType: VideoSourceType.videoSourceRemote,
         ),

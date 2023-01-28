@@ -55,11 +55,15 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
-      // if (action == NotiConstants.actionCallStart) {
-      //   // handlShowIncomingCallNotification(message);
-      // } else
+
       if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
+      }
+    } else if (message.data['type'] == NotiConstants.typeGroupCall) {
+      final String? action = message.data['action'];
+
+      if (action == NotiConstants.actionCallEnd) {
+        closeIncomingGroupCall(message);
       }
     } else {
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');

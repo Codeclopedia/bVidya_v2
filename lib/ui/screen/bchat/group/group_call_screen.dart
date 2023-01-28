@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/controller/providers/p2p_call_provider.dart';
+// import 'package:bvidya/controller/providers/p2p_call_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
 import '/controller/bchat_providers.dart';
@@ -29,7 +29,7 @@ class GroupCallScreen extends StatelessWidget {
   final String groupName;
   final User me;
   final String membersIds;
-  final bool direct;
+  final String prevScreen;
 
   const GroupCallScreen({
     Key? key,
@@ -41,9 +41,10 @@ class GroupCallScreen extends StatelessWidget {
     required this.callDirectionType,
     required this.me,
     required this.membersIds,
+    required this.prevScreen,
     this.meeting,
     this.members,
-    this.direct = false,
+
     // this.rtmTokem,
   }) : super(key: key);
 
@@ -144,13 +145,16 @@ class GroupCallScreen extends StatelessWidget {
         .read(bGroupCallChangeProvider)
         .endCurrentCall(callDirectionType, groupName);
     hideLoading(ref);
+
     if (error != null) {
       print('error:$error');
       AppSnackbar.instance.error(context, error);
     } else {}
-    if (!direct) {
+    if (prevScreen.isNotEmpty) {
       Navigator.pop(context);
+      setScreen(prevScreen);
     } else {
+      setScreen(RouteList.homeDirect);
       Navigator.pushNamedAndRemoveUntil(
         context,
         RouteList.homeDirect,
@@ -573,6 +577,8 @@ class GroupCallScreen extends StatelessWidget {
       children: [
         // view.view,
         Container(
+          width: double.infinity,
+          height: double.infinity,
           padding: const EdgeInsets.all(1),
           color: Colors.black,
           child: view.widget,
