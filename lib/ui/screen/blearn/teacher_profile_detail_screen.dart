@@ -1,3 +1,5 @@
+import 'package:shimmer/shimmer.dart';
+
 import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';
 import '/controller/profile_providers.dart';
@@ -51,10 +53,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Consumer(builder: (context, ref, child) {
-                    print(instructor.id);
                     return ref
-                        .watch(bLearnInstructorProfileProvider(
-                            instructor.id.toString()))
+                        .watch(bLearnProfileProvider(instructor.id.toString()))
                         .when(
                           data: (data) {
                             if (data == null) {
@@ -148,7 +148,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(ProfileDataBody body, BuildContext context) {
+  Widget _buildContent(ProfileDetailBody body, BuildContext context) {
     // if (body.followers?.isNotEmpty == true) {
     //   follwersCount = (body.followers?[0].count ?? 0).toString();
     // }
@@ -162,12 +162,13 @@ class TeacherProfileDetailScreen extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(right: 6.w, left: 6.w),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 children: [
                   Text(
-                    body.followers?[0].count.toString() ?? "",
+                    body.followersCount.toString(),
                     style: TextStyle(
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
@@ -185,11 +186,11 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    body.watchtime?[0].total ?? "0",
+                    body.totalWatchtime ?? "",
                     style: TextStyle(
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w600,
-                        fontSize: 5.w),
+                        fontSize: 4.5.w),
                   ),
                   Text(
                     S.current.teacher_watch,
@@ -209,23 +210,39 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                             onPressed: () async {
                               ref.read(bLearnFollowInstructorProvider(
                                   instructor.id.toString()));
-                              ref.refresh(bLearnInstructorProfileProvider(
+                              ref.refresh(bLearnProfileProvider(
                                   instructor.id.toString()));
                               // ref.refresh(isFollowedInstructor(
                               //     instructor.id.toString()));
                             },
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(data
-                                        ? AppColors.iconGreyColor
-                                        : AppColors.primaryColor)),
+                            style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: data
+                                    ? AppColors.iconGreyColor
+                                    : AppColors.primaryColor),
                             child: data
                                 ? Text(S.current.teacher_followed)
                                 : Text(S.current.teacher_follow));
                       },
                       error: (error, stackTrace) =>
                           buildEmptyPlaceHolder('error in loading data'),
-                      loading: () => buildLoading,
+                      loading: () => Shimmer.fromColors(
+                        highlightColor: Colors.white,
+                        baseColor: Colors.grey,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              // ref.read(bLearnFollowInstructorProvider(
+                              //     instructor.id.toString()));
+                              // ref.refresh(bLearnProfileProvider(
+                              //     instructor.id.toString()));
+                              // ref.refresh(isFollowedInstructor(
+                              //     instructor.id.toString()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                backgroundColor: AppColors.iconGreyColor),
+                            child: Text("      ")),
+                      ),
                     );
 
                 // return ElevatedButton(
@@ -350,7 +367,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     ),
                 selectedIndex == 0
                     ? _buildCoursesList(body.courses)
-                    : _buildAboutList(body.profile)
+                    : _buildAboutList(body)
               ],
             );
           },
@@ -566,7 +583,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAboutList(Profile? profile) {
+  Widget _buildAboutList(ProfileDetailBody? profileBody) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -582,30 +599,10 @@ class TeacherProfileDetailScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 2.h),
-        _buildInstructorDetail(profile),
+        _buildInstructorDetail(profileBody?.profile),
         SizedBox(height: 1.h),
         _buildTestimonialCaption(),
-        Consumer(builder: (context, ref, child) {
-          return ref.watch(bLearnInstructorsProvider).when(
-                data: (data) {
-                  return _buildTestimonialList(data?.categories);
-                },
-                error: (error, stackTrace) => buildEmptyPlaceHolder("Error"),
-                loading: () => SizedBox(
-                  height: 22.h,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    physics: const NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.only(left: 2.w),
-                    itemBuilder: (context, index) {
-                      return CustomizableShimmerTile(height: 22.h, width: 40.w);
-                    },
-                  ),
-                ),
-              );
-        }),
+        _buildTestimonialList(profileBody?.courseFeedbacks),
       ],
     );
   }
@@ -625,8 +622,8 @@ Widget _buildTestimonialCaption() {
   );
 }
 
-Widget _buildTestimonialList(List<Instructor>? instructors) {
-  if (instructors == null || instructors.isEmpty) {
+Widget _buildTestimonialList(List<CourseFeedback>? feedbackList) {
+  if (feedbackList == null || feedbackList.isEmpty) {
     return const SizedBox.shrink();
   }
   return Container(
@@ -636,10 +633,10 @@ Widget _buildTestimonialList(List<Instructor>? instructors) {
     child: ListView.builder(
       shrinkWrap: true,
       padding: EdgeInsets.all(0.5.h),
-      itemCount: instructors.length,
+      itemCount: feedbackList.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
-        final instructor = instructors[index];
+        final feedbackData = feedbackList[index];
         return Container(
           width: 70.w,
           margin: EdgeInsets.only(right: 3.w, left: 2.w),
@@ -656,7 +653,7 @@ Widget _buildTestimonialList(List<Instructor>? instructors) {
               Row(
                 children: [
                   getCicleAvatar(
-                      instructor.name ?? 'AA', instructor.image ?? '',
+                      feedbackData.name ?? 'AA', feedbackData.image ?? '',
                       radius: 8.w),
                   SizedBox(width: 4.w),
                   Expanded(
@@ -665,14 +662,14 @@ Widget _buildTestimonialList(List<Instructor>? instructors) {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          instructor.name ?? '',
+                          feedbackData.name ?? '',
                           style: TextStyle(
                               fontSize: 11.sp,
                               fontFamily: kFontFamily,
                               fontWeight: FontWeight.bold,
                               color: Colors.black),
                         ),
-                        buildRatingBar(4.0),
+                        buildRatingBar(feedbackData.rating?.toDouble() ?? 3.0),
                       ],
                     ),
                   ),
@@ -680,7 +677,7 @@ Widget _buildTestimonialList(List<Instructor>? instructors) {
               ),
               SizedBox(height: 2.w),
               Text(
-                instructor.specialization ?? '',
+                feedbackData.comment ?? '',
                 maxLines: 4,
                 style: TextStyle(
                   fontFamily: kFontFamily,

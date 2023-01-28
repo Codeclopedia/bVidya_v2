@@ -8,6 +8,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../routes.dart';
 import '/core/utils/callkit_utils.dart';
 import '../constants.dart';
 import '../sdk_helpers/bchat_call_manager.dart';
@@ -66,9 +67,7 @@ Future<ChatMessage?> makeAudioCall(
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
     //       callBody, user.id.toString(), user.name, user.image, false);
     // }
-
-    Navigator.pushNamed(context, RouteList.bChatAudioCall, arguments: map);
-    return logCallEvent(
+    final chat = await logCallEvent(
         ref,
         callBody.callId,
         user.name,
@@ -84,11 +83,44 @@ Future<ChatMessage?> makeAudioCall(
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
         );
+
+    await Navigator.pushNamed(context, RouteList.bChatAudioCall,
+        arguments: map);
+    return chat;
   } else {
     hideLoading(ref);
     AppSnackbar.instance.error(context, 'Error while making call');
     return null;
   }
+}
+
+Future<bool> receiveCall(BuildContext context, String fromId,
+    CallMessegeBody callMessegeBody, bool direct) async {
+  Map<String, dynamic> callMap = {
+    'name': callMessegeBody.fromName,
+    'fcm_token': callMessegeBody.ext['fcm'],
+    'image': callMessegeBody.fromImage,
+    'call_info': callMessegeBody.callBody,
+    'call_direction_type': CallDirectionType.incoming,
+    'direct': true,
+    'user_id': fromId
+  };
+
+  if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
+      Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
+    // BuildContext ctx = navigatorKey.currentContext ?? context;
+
+    print('Already on call screen');
+    // Navigator.pop(ctx);
+    return true;
+  }
+  Navigator.pushReplacementNamed(
+      context,
+      callMessegeBody.callType == CallType.video
+          ? RouteList.bChatVideoCall
+          : RouteList.bChatAudioCall,
+      arguments: callMap);
+  return true;
 }
 
 Future<ChatMessage?> makeVideoCall(
@@ -136,9 +168,7 @@ Future<ChatMessage?> makeVideoCall(
     //       callBody, user.id.toString(), user.name, user.image, true);
     // }
     hideLoading(ref);
-
-    Navigator.pushNamed(context, RouteList.bChatVideoCall, arguments: map);
-    return logCallEvent(
+    final chat = await logCallEvent(
         ref,
         callBody.callId,
         user.name,
@@ -150,6 +180,10 @@ Future<ChatMessage?> makeVideoCall(
         user.fcmToken,
         contact.profileImage,
         callBody: callBody);
+
+    await Navigator.pushNamed(context, RouteList.bChatVideoCall,
+        arguments: map);
+    return chat;
   } else {
     AppSnackbar.instance.error(context, 'Error while making call');
     hideLoading(ref);

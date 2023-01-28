@@ -45,71 +45,76 @@ class BLearnHomeScreen extends StatelessWidget {
                   }
                 },
                 error: (error, stackTrace) => buildEmptyPlaceHolder('$error'),
-                loading: () => buildloadingbar());
+                loading: () => buildloadingbar(context));
           },
         ),
       ),
     );
   }
 
-  Widget buildloadingbar() {
+  Widget buildloadingbar(BuildContext context) {
     return ListView(
       shrinkWrap: true,
+      scrollDirection: Axis.vertical,
       children: [
         SizedBox(
           height: 5.w,
         ),
         Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: CustomizableShimmerTile(height: 30.w, width: 100.w),
+          padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.03),
+          child: CustomizableShimmerTile(height: 40.w, width: 90.w),
         ),
         SizedBox(
           height: 5.w,
         ),
+        _buildExploreCaption(context),
         SizedBox(
           height: 62.w,
           child: ListView(
             shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             children: [
               SizedBox(
-                width: 5.w,
+                width: 3.w,
               ),
-              CustomizableShimmerTile(height: 60.w, width: 40.w),
+              CustomizableShimmerTile(height: 70.w, width: 50.w),
               SizedBox(
-                width: 5.w,
+                width: 3.w,
               ),
-              CustomizableShimmerTile(height: 60.w, width: 40.w),
+              CustomizableShimmerTile(height: 70.w, width: 50.w),
               SizedBox(
-                width: 5.w,
+                width: 3.w,
               ),
-              CustomizableShimmerTile(height: 60.w, width: 40.w),
+              CustomizableShimmerTile(height: 70.w, width: 50.w),
             ],
           ),
         ),
         SizedBox(
-          height: 5.w,
+          height: 3.w,
+        ),
+        _buildRecommended(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
+        ),
+        SizedBox(
+          height: 1.w,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CustomizableShimmerTile(height: 20.w, width: 40.w),
         ),
         SizedBox(
-          height: 5.w,
+          height: 1.w,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CustomizableShimmerTile(height: 20.w, width: 40.w),
         ),
         SizedBox(
-          height: 5.w,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CustomizableShimmerTile(height: 20.w, width: 40.w),
-        ),
-        SizedBox(
-          height: 5.w,
+          height: 1.w,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),

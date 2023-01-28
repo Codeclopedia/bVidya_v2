@@ -29,6 +29,7 @@ class ChatMessageBubble extends StatelessWidget {
   final bool isNextSameAuthor;
   final bool isPreviousSameAuthor;
   final bool showOtherUserName;
+  // final bool showAvatar;
 
   final Function(Mention)? onPressMention;
   const ChatMessageBubble(
@@ -41,6 +42,7 @@ class ChatMessageBubble extends StatelessWidget {
       this.isAfterDateSeparator = false,
       this.isBeforeDateSeparator = false,
       this.showOtherUserName = false,
+      // this.showAvatar = false,
       this.onPressMention})
       : super(key: key);
 
@@ -63,14 +65,15 @@ class ChatMessageBubble extends StatelessWidget {
           //     radius: 6.w,
           //     senderUser.nickName ?? senderUser.userId,
           //     senderUser.avatarUrl ?? ''),
-          Opacity(
-            opacity: !isOwnMessage &&
-                    (!isPreviousSameAuthor || isBeforeDateSeparator)
-                ? 1
-                : 0,
-            child: getCicleAvatar(
-                radius: 6.w, senderUser.name, senderUser.profileImage),
-          ),
+          if (showOtherUserName)
+            Opacity(
+              opacity: !isOwnMessage &&
+                      (!isPreviousSameAuthor || isBeforeDateSeparator)
+                  ? 1
+                  : 0,
+              child: getCicleAvatar(
+                  radius: 6.w, senderUser.name, senderUser.profileImage),
+            ),
           Column(
             crossAxisAlignment: isOwnMessage
                 ? CrossAxisAlignment.end
@@ -96,15 +99,13 @@ class ChatMessageBubble extends StatelessWidget {
             ],
           ),
           // if (isOwnMessage && !isPreviousSameAuthor)
-          // getCicleAvatar(
-          //     radius: 6.w,
-          //     senderUser.nickName ?? senderUser.userId,
-          //     senderUser.avatarUrl ?? '')
-          Opacity(
-            opacity: isOwnMessage && !isPreviousSameAuthor ? 1 : 0,
-            child: getCicleAvatar(
-                radius: 6.w, senderUser.name, senderUser.profileImage),
-          ),
+
+          // if (showOtherUserName)
+          //   Opacity(
+          //     opacity: isOwnMessage && !isPreviousSameAuthor ? 1 : 0,
+          //     child: getCicleAvatar(
+          //         radius: 6.w, senderUser.name, senderUser.profileImage),
+          //   ),
         ],
       ),
     );
@@ -143,15 +144,30 @@ class ChatMessageBubble extends StatelessWidget {
               child: _videoOnly(body));
         }
       case MessageType.CUSTOM:
-        {
-          ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
+        ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
+        if (message.chatType == ChatType.GroupChat) {
+          try {
+            // print('JSON=> ${body.event}');
+            final callBody =
+                GroupCallMessegeBody.fromJson(jsonDecode(body.event));
+
+            return _callBody(callBody.callType);
+          } catch (e) {
+            // print('Error Grp=> $e');
+            break;
+          }
+        } else if (message.chatType == ChatType.Chat) {
           try {
             final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-            return _callBody(callBody);
+
+            return _callBody(callBody.callType);
           } catch (e) {
             break;
           }
+        } else {
+          break;
         }
+
       case MessageType.FILE:
         ChatFileMessageBody body = message.body as ChatFileMessageBody;
         return GestureDetector(
@@ -179,9 +195,9 @@ class ChatMessageBubble extends StatelessWidget {
     // return message.body.type == MessageType.TXT ? _onlyText() : _imageOnly(me);
   }
 
-  Widget _callBody(CallMessegeBody body) {
+  Widget _callBody(CallType callType) {
     String content =
-        '${isOwnMessage ? 'Outgoing' : 'Incoming'} ${body.callType == CallType.video ? 'Video Call' : 'Audio call'}';
+        '${isOwnMessage ? 'Outgoing' : 'Incoming'} ${callType == CallType.video ? 'Video Call' : 'Audio call'}';
 
     return Container(
       constraints: BoxConstraints(
@@ -206,7 +222,7 @@ class ChatMessageBubble extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               getSvgIcon(
-                body.callType == CallType.video
+                callType == CallType.video
                     ? 'icon_vcall.svg'
                     : 'icon_acall.svg',
                 width: 4.w,

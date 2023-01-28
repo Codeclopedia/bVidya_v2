@@ -36,7 +36,7 @@ class TeacherClassRequest extends StatelessWidget {
                   return ref.watch(bmeetClassesProvider).when(
                     data: (data) {
                       if (data?.personalClasses?.isEmpty ?? true) {
-                        return const SizedBox.shrink();
+                        return buildEmptyPlaceHolder("No Class Requests.");
                       }
 
                       return ListView.separated(

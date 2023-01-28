@@ -5,7 +5,9 @@
 import 'dart:convert';
 
 import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:bvidya/core/helpers/group_call_helper.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 //import '/app.dart';
@@ -73,7 +75,7 @@ class SplashScreen extends ConsumerWidget {
           }
 
           await loadChats(ref);
-          
+
           await ref.read(groupConversationProvider.notifier).setup();
           await ref.read(callListProvider.notifier).setup();
 
@@ -121,35 +123,21 @@ class SplashScreen extends ConsumerWidget {
       BuildContext context, User user) async {
     await loadCallOnInit();
     if (activeCallMap != null && activeCallId != null) {
-      String fromId = activeCallMap!['from_id'];
-      String fromName = activeCallMap!['from_name'];
-      String callerFCM = activeCallMap!['caller_fcm'];
-      String image = activeCallMap!['image'];
-      CallBody body = CallBody.fromJson(jsonDecode(activeCallMap!['body']));
-      bool hasVideo = activeCallMap!['has_video'] == 'true';
-
-      Map<String, dynamic> callMap = {
-        'name': fromName,
-        'fcm_token': callerFCM,
-        'image': image,
-        'call_info': body,
-        'call_direction_type': CallDirectionType.incoming,
-        'direct': true,
-        'user_id': fromId
-      };
-
-      if (Routes.getCurrentScreen() == RouteList.bChatAudioCall ||
-          Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
-        // BuildContext ctx = navigatorKey.currentContext ?? context;
-
-        print('Already on call screen');
-        // Navigator.pop(ctx);
-        return true;
+      String type = activeCallMap!['type'];
+      if (type == NotiConstants.typeGroupCall) {
+        // String fromId = activeCallMap!['from_id'];
+        String grpId = activeCallMap!['grp_id'];
+        GroupCallMessegeBody body =
+            GroupCallMessegeBody.fromJson(jsonDecode(activeCallMap!['body']));
+        return await receiveGroupCall(context, body.requestId, body.memberIds,
+            body.callId, grpId, body.groupName, body.callType,true);
+      } else if (type == NotiConstants.typeCall) {
+        String fromId = activeCallMap!['from_id'];
+        CallMessegeBody callMessegeBody =
+            CallMessegeBody.fromJson(jsonDecode(activeCallMap!['body']));
+        return await receiveCall(context, fromId, callMessegeBody, true);
       }
-      Navigator.pushReplacementNamed(context,
-          hasVideo ? RouteList.bChatVideoCall : RouteList.bChatAudioCall,
-          arguments: callMap);
-      return true;
+      // return false;
     } else {
       print('active callId => $activeCallId $lastUserId');
     }

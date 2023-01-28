@@ -188,6 +188,7 @@ class GroupMeberInfo {
   final ChatGroup group;
   final String userId;
   GroupMeberInfo(this.members, this.group, this.userId);
+  
 }
 
 class ForwardModel {

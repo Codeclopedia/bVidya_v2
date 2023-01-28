@@ -6,11 +6,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 // import '../utils/connectycubekit.dart';
 import '/data/models/call_message_body.dart';
-import '/data/models/models.dart';
 import '../constants.dart';
 import '../ui_core.dart';
 import '../utils/callkit_utils.dart';
-import 'call_helper.dart';
 
 class BackgroundHelper {
   static handleRemoteMessageBackground(RemoteMessage message) async {
@@ -21,7 +19,12 @@ class BackgroundHelper {
       String? type = extra['type'];
       if (type == NotiConstants.typeCall) {
         debugPrint('InComin call=>  ');
-        _showCallingNotification(message);
+        showCallingNotification(message, true);
+        return;
+      }
+      if (type == NotiConstants.typeGroupCall) {
+        debugPrint('InComin call=>  ');
+        showGroupCallingNotification(message, true);
         return;
       }
       // NotificationController.showErrorMessage('New Background : $extra');
@@ -94,7 +97,39 @@ class BackgroundHelper {
     }
   }
 
-  static _showCallingNotification(RemoteMessage message) async {
+  static showCallingNotification(RemoteMessage message, bool background) async {
+    try {
+      final diff = DateTime.now().millisecondsSinceEpoch -
+          (message.sentTime?.millisecondsSinceEpoch ?? 0);
+      print(
+          'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
+
+      final data = jsonDecode(message.data['e']);
+      String? type = data['type'];
+      if (type != NotiConstants.typeCall) {
+        return;
+      }
+
+      final body = CallMessegeBody.fromJson(jsonDecode(data['content']));
+      if (body.callId == lastCallId || body.callId == activeCallId) {
+        return;
+      }
+      String fromId = message.data['f'];
+
+      if (onGoingCallId != null) {
+        if (onGoingCallId != body.callId) {
+          await onDeclineCallBusy(body, fromId);
+        }
+        return;
+      }
+      await showIncomingCallScreen(body, fromId, background);
+    } catch (e) {
+      print('Error in call notification $e');
+    }
+  }
+
+  static showGroupCallingNotification(
+      RemoteMessage message, bool background) async {
     //
     // dynamic mId = message.data['m'];
     try {
@@ -104,30 +139,24 @@ class BackgroundHelper {
           'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
 
       final data = jsonDecode(message.data['e']);
-
-      // print(' notification ${data['content']}');
-      final body = CallMessegeBody.fromJson(jsonDecode(data['content']));
-      CallBody callBody = body.callBody;
-
-      if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
+      String? type = data['type'];
+      if (type != NotiConstants.typeGroupCall) {
         return;
       }
-      String fromId = message.data['f'];
-      String fromName = body.fromName;
-      String fromFCM = body.ext['fcm'];
-      String image = body.fromImage;
-      bool hasVideo = body.callType == CallType.video;
+      final body = GroupCallMessegeBody.fromJson(jsonDecode(data['content']));
+      if (body.callId == lastCallId || body.callId == activeCallId) {
+        return;
+      }
+      String grpId = message.data['g'].toString();
+      String fromId = message.data['f'].toString();
 
       if (onGoingCallId != null) {
-        if (onGoingCallId != callBody.callId) {
-          await onDeclineCallBusy(
-              fromFCM, fromId, fromName, image, callBody, hasVideo);
+        if (onGoingCallId != body.callId) {
+          await onDeclineGrpCallBusy(fromId, grpId, body);
         }
         return;
       }
-
-      await showIncomingCallScreen(
-          callBody, fromName, fromId, fromFCM, image, hasVideo, true);
+      await showIncomingGroupCallScreen(body, fromId, grpId, background);
     } catch (e) {
       print('Error in call notification $e');
     }

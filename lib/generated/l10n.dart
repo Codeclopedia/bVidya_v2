@@ -1450,10 +1450,10 @@ class S {
     );
   }
 
-  /// `You currently have no meetings\n scheduled on the selected date. \n Select a different date.`
+  /// `No scheduled Meetings.`
   String get bmeet_no_meetings {
     return Intl.message(
-      'You currently have no meetings\n scheduled on the selected date. \n Select a different date.',
+      'No scheduled Meetings.',
       name: 'bmeet_no_meetings',
       desc: '',
       args: [],
@@ -2885,6 +2885,86 @@ class S {
     return Intl.message(
       'Chats',
       name: 'settingChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear Chat`
+  String get clearChat {
+    return Intl.message(
+      'Clear Chat',
+      name: 'clearChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blocked Users`
+  String get blockedUser {
+    return Intl.message(
+      'Blocked Users',
+      name: 'blockedUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chat Backup`
+  String get ChatBackup {
+    return Intl.message(
+      'Chat Backup',
+      name: 'ChatBackup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Export Chat`
+  String get ExportChat {
+    return Intl.message(
+      'Export Chat',
+      name: 'ExportChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you really want to clear the chats?`
+  String get ClearChatMessage {
+    return Intl.message(
+      'Do you really want to clear the chats?',
+      name: 'ClearChatMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes, Clear chats`
+  String get ClearChatConfirm {
+    return Intl.message(
+      'Yes, Clear chats',
+      name: 'ClearChatConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want Backup the chat?`
+  String get ChatBackupMessage {
+    return Intl.message(
+      'Do you want Backup the chat?',
+      name: 'ChatBackupMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes, Backup the chat`
+  String get ChatBackupConfirm {
+    return Intl.message(
+      'Yes, Backup the chat',
+      name: 'ChatBackupConfirm',
       desc: '',
       args: [],
     );

@@ -323,13 +323,13 @@ class BLearnApiService {
   //         status: 'error', message: 'Unknown error - $e');
   //   }
   // }
-  Future<ProfileDetailResponse> getInstructorProfileDetail(
-      String authToken, String instructorId) async {
+  Future<ProfileDetailResponse> getProfileDetail(
+      String authToken, String id) async {
     try {
       _dio.options.headers["X-Auth-Token"] = authToken;
       // print('$authToken - $instructorId');
-      final response = await _dio
-          .get('$baseUrlApi${ApiList.lmsInstructorProfile}$instructorId');
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.lmsProfileDetail}$id');
 
       if (response.statusCode == 200) {
         // print('${jsonEncode(response.data)}');

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import '/data/models/response/bchat/p2p_call_response.dart';
 import '/core/helpers/call_helper.dart';
+import 'models.dart';
 
 enum CallStatus { missed, ongoing, end }
 
@@ -40,7 +40,7 @@ class CallMessegeBody {
         duration = json['duration'] ?? 0,
         status = CallStatus.values[json['status'] as int],
         callType = CallType.values[json['call_type'] as int],
-        callBody =CallBody.fromJson(jsonDecode(json['call_body'])),
+        callBody = CallBody.fromJson(jsonDecode(json['call_body'])),
         ext = json['ext'];
 
   Map<String, dynamic> toJson() {
@@ -55,6 +55,78 @@ class CallMessegeBody {
     data['call_type'] = callType.index;
     data['call_body'] = jsonEncode(callBody.toJson());
     data['ext'] = ext;
+    return data;
+  }
+}
+
+class GroupCallMessegeBody {
+  final int requestId;
+  final String callId;
+  // final int fromId;
+  final String fromFCM;
+  final String fromName;
+  final String fromImage;
+// final String groupId;
+
+  final String groupName;
+  final String groupImage;
+  final String memberIds;
+
+  final Meeting meeting;
+  final CallStatus status;
+  final int duration;
+
+  // final Map<String, dynamic> ext;
+  final CallType callType;
+
+  GroupCallMessegeBody({
+    required this.requestId,
+    required this.callId,
+    required this.fromFCM,
+    // required this.fromId,
+    required this.fromName,
+    required this.fromImage,
+    required this.memberIds,
+    // required this.groupId,
+    required this.groupName,
+    required this.groupImage,
+    required this.status,
+    required this.duration,
+    required this.callType,
+    required this.meeting,
+    // required this.ext,
+  });
+
+  GroupCallMessegeBody.fromJson(Map<String, dynamic> json)
+      : requestId = json['request_id'] ?? 0,
+        callId = json['call_id'],
+        fromName = json['from_name'],
+        fromImage = json['from_image'] ?? '',
+        fromFCM = json['from_fcm'],
+        groupName = json['grp_name'],
+        groupImage = json['grp_image'],
+        memberIds = json['members_ids'],
+        duration = json['duration'] ?? 0,
+        status = CallStatus.values[json['status'] as int],
+        callType = CallType.values[json['call_type'] as int],
+        meeting = Meeting.fromJson(jsonDecode(json['meeting']));
+  // ext = json['ext'];
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['request_id'] = requestId;
+    data['call_id'] = callId;
+    data['from_name'] = fromName;
+    data['from_image'] = fromImage;
+    data['from_fcm'] = fromFCM;
+    data['grp_name'] = groupName;
+    data['grp_image'] = groupImage;
+    data['members_ids'] = memberIds;
+    data['duration'] = duration;
+    data['status'] = status.index;
+    data['call_type'] = callType.index;
+    data['meeting'] = jsonEncode(meeting.toJson());
+    // data['ext'] = ext;
     return data;
   }
 }

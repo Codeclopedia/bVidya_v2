@@ -79,9 +79,9 @@ final bLearnInstructorCoursesProvider =
   return ref.read(bLearnRepositoryProvider).getInstructorCourses(id);
 });
 
-final bLearnInstructorProfileProvider =
-    FutureProvider.autoDispose.family<ProfileDataBody?, String>((ref, id) {
-  return ref.read(bLearnRepositoryProvider).getTeacherProfileDetail(id);
+final bLearnProfileProvider =
+    FutureProvider.autoDispose.family<ProfileDetailBody?, String>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).getProfileDetail(id);
 });
 
 final bLearnFollowInstructorProvider = FutureProvider.autoDispose

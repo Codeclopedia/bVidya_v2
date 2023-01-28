@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '/data/models/response/bchat/p2p_call_response.dart';
+import '../../data/models/call_message_body.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 extension RemoteMessageExt on RemoteMessage {
@@ -11,8 +11,12 @@ extension RemoteMessageExt on RemoteMessage {
     return jsonDecode(data["content"]);
   }
 
-  CallBody? payload() {
-    return CallBody?.fromJson(getContent());
+  CallMessegeBody? payload() {
+    return CallMessegeBody?.fromJson(getContent());
+  }
+
+  GroupCallMessegeBody? grpPayload() {
+    return GroupCallMessegeBody?.fromJson(getContent());
   }
 }
 

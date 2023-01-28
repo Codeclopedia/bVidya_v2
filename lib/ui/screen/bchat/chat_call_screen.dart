@@ -369,20 +369,18 @@ class ChatCallScreen extends HookConsumerWidget {
                   }
                   // endCall(callInfo, otherUserId);
                   FCMApiService.instance.sendCallEndPush(
-                      fcmToken,
-                      NotiConstants.actionCallEnd,
-                      callInfo,
-                      user.id.toString(),
-                      user.name,
-                      callType == CallType.video);
+                    fcmToken,
+                    NotiConstants.actionCallEnd,
+                    user.id.toString(),
+                    callInfo.callId,
+                    user.name,
+                    user.image,
+                    callType==CallType.video
+                  );
                 }
 
                 _finish(context);
-                // if (direct) {
-                //   Navigator.pushReplacementNamed(context, RouteList.home);
-                // } else {
-                //   Navigator.pop(context);
-                // }
+                
               },
               child: Container(
                 height: 12.w,

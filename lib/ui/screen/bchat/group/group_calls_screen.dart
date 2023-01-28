@@ -73,21 +73,21 @@ class GroupRecentCallScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(CallListModel model) {
+  Widget _contactRow(GroupCallListModel model) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          getCicleAvatar(model.name, ''),
+          getCicleAvatar(model.groupName, model.groupImage),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.name,
+                  model.groupName,
                   style: TextStyle(
                     fontFamily: kFontFamily,
                     color: AppColors.contactNameTextColor,

@@ -2,10 +2,54 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '../../controller/bchat_providers.dart';
+import '../state.dart';
 import '/data/models/models.dart';
 
 class BchatGroupManager {
   BchatGroupManager._();
+
+  static Future<ChatGroup?> getGroupInfo(String groupId) async {
+    try {
+      // return await ChatClient.getInstance.groupManager.fetchMemberListFromServer(groupId)
+    } catch (e) {
+      print('Error creating group $e');
+    }
+    return null;
+  }
+
+  static Future<List<Contact>> fetchContactsOfGroup(
+      WidgetRef ref, String groupId) async {
+try {
+    ChatGroup info =
+        await ChatClient.getInstance.groupManager.getGroupWithId(groupId) ??
+            await ChatClient.getInstance.groupManager
+                .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+    final membersIds = info.memberList ?? [];
+    if (!membersIds.contains(info.owner)) {
+      membersIds.add(info.owner!);
+    }
+    String userIds = membersIds.join(',');
+    if (userIds.isNotEmpty) {
+      final contacts = await ref.read(bChatProvider).getContactsByIds(userIds);
+      return contacts??[];
+    }
+  } catch (e) {
+    print('error in loading members of $groupId');
+  }
+    return [];
+  }
+
+  static Future<ChatGroup?> getGroupById(String groupId) async {
+    try {
+      return await ChatClient.getInstance.groupManager
+          .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+    } catch (e) {
+      print('Error creating group $e');
+    }
+    return null;
+  }
+
   static Future<ChatGroup?> createNewGroup(
       String name, String? desc, List<String> ids, String image,
       {bool public = true}) async {

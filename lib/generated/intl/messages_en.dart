@@ -35,6 +35,16 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "Account": MessageLookupByLibrary.simpleMessage("Account"),
+        "ChatBackup": MessageLookupByLibrary.simpleMessage("Chat Backup"),
+        "ChatBackupConfirm":
+            MessageLookupByLibrary.simpleMessage("Yes, Backup the chat"),
+        "ChatBackupMessage": MessageLookupByLibrary.simpleMessage(
+            "Do you want Backup the chat?"),
+        "ClearChatConfirm":
+            MessageLookupByLibrary.simpleMessage("Yes, Clear chats"),
+        "ClearChatMessage": MessageLookupByLibrary.simpleMessage(
+            "Do you really want to clear the chats?"),
+        "ExportChat": MessageLookupByLibrary.simpleMessage("Export Chat"),
         "accnt_security": MessageLookupByLibrary.simpleMessage("Security"),
         "atc_audio": MessageLookupByLibrary.simpleMessage("Audio"),
         "atc_audio_desc": MessageLookupByLibrary.simpleMessage("Share audios"),
@@ -127,6 +137,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enter Broadcast ID or Link Here."),
         "blive_txt_start_title":
             MessageLookupByLibrary.simpleMessage("BroadCast ID or Link"),
+        "blockedUser": MessageLookupByLibrary.simpleMessage("Blocked Users"),
         "bmeet": MessageLookupByLibrary.simpleMessage("bMeet"),
         "bmeet_btn_join": MessageLookupByLibrary.simpleMessage("Join"),
         "bmeet_btn_schedule": MessageLookupByLibrary.simpleMessage("Schedule"),
@@ -214,8 +225,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Grand or restrict audio access"),
         "bmeet_mute_title": MessageLookupByLibrary.simpleMessage(
             "Always mute my microphone on start"),
-        "bmeet_no_meetings": MessageLookupByLibrary.simpleMessage(
-            "You currently have no meetings\n scheduled on the selected date. \n Select a different date."),
+        "bmeet_no_meetings":
+            MessageLookupByLibrary.simpleMessage("No scheduled Meetings."),
         "bmeet_schedule_heading":
             MessageLookupByLibrary.simpleMessage("Schedule a Meeting"),
         "bmeet_sharable_caption":
@@ -275,6 +286,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_menu_reply": MessageLookupByLibrary.simpleMessage("Reply"),
         "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
         "chat_replying": m2,
+        "clearChat": MessageLookupByLibrary.simpleMessage("Clear Chat"),
         "confDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block conference reminder notifications"),
         "confRem": MessageLookupByLibrary.simpleMessage("Conference Reminder"),

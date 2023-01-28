@@ -141,9 +141,8 @@ class BLearnRepository {
     }
   }
 
-  Future<ProfileDataBody?> getTeacherProfileDetail(String instructorId) async {
-    final result =
-        await _api.getInstructorProfileDetail(_authToken, instructorId);
+  Future<ProfileDetailBody?> getProfileDetail(String id) async {
+    final result = await _api.getProfileDetail(_authToken, id);
     if (result.status == successfull && result.body != null) {
       return result.body!;
     } else {

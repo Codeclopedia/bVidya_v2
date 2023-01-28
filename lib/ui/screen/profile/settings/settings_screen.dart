@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
             getTwoRowSettingItem(
                 S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
                 () {
-              // Navigator.pushNamed(context, RouteList.studentProfile);
+              Navigator.pushNamed(context, RouteList.chatSetting);
             }),
             getTwoRowSettingItem(S.current.settingsNoti, S.current.notiHistory,
                 "ic_set_noty.svg", () {

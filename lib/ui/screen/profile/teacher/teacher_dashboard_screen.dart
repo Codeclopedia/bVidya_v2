@@ -40,8 +40,7 @@ class TeacherDashboard extends StatelessWidget {
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
         child: UserConsumer(builder: (context, user, ref) {
-          final data =
-              ref.watch(bLearnInstructorProfileProvider(user.id.toString()));
+          final data = ref.watch(bLearnProfileProvider(user.id.toString()));
           return data.when(
               data: (data) {
                 if (data == null) {
@@ -66,7 +65,7 @@ class TeacherDashboard extends StatelessWidget {
                       _buildRevenue(),
                       SizedBox(height: 2.h),
                       _buildPerformance(
-                          data.followers?[0].count, data.watchtime?[0].total),
+                          data.followersCount, data.totalWatchtime),
                       SizedBox(height: 3.h),
                       _buildUploadedCourse(),
                       SizedBox(height: 1.h),
@@ -143,8 +142,6 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   Widget _buildPerformance(int? followers, String? totalWatchTime) {
-    String watchTime = totalWatchTime ?? '0';
-
     return Row(
       children: [
         SizedBox(
@@ -258,14 +255,18 @@ class TeacherDashboard extends StatelessWidget {
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
-                            child: Text(
-                              watchTime,
-                              // S.current.td_watch_time,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18.sp,
-                                  fontFamily: kFontFamily,
-                                  color: AppColors.primaryColor),
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                totalWatchTime ?? "",
+                                // S.current.td_watch_time,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                    fontFamily: kFontFamily,
+                                    color: AppColors.primaryColor),
+                              ),
                             ),
                           ),
                         ],
@@ -307,11 +308,6 @@ class TeacherDashboard extends StatelessWidget {
               fontFamily: kFontFamily,
               fontWeight: FontWeight.w600,
               fontSize: 16.sp),
-        ),
-        TextButton(
-          style: textButtonStyle,
-          onPressed: () {},
-          child: Text(S.current.teacher_view_all),
         ),
       ],
     );

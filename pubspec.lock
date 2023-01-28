@@ -190,13 +190,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.16.0"
-  connectycube_flutter_call_kit:
-    dependency: "direct main"
-    description:
-      name: connectycube_flutter_call_kit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.1"
   convert:
     dependency: transitive
     description:

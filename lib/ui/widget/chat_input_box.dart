@@ -10,7 +10,7 @@ import '/core/ui_core.dart';
 import '../widgets.dart';
 
 final emojiVisibleProvider = StateProvider.autoDispose<bool>((ref) => false);
-final textInputStateProvider = StateProvider.autoDispose<bool>((ref) => false);
+final textInputStateProvider = StateProvider.autoDispose<bool>((ref) => true);
 
 class ChatInputBox extends ConsumerStatefulWidget {
   final Future<String?> Function(String) onSend;

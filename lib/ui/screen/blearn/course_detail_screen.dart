@@ -128,8 +128,38 @@ class CourseDetailScreen extends StatelessWidget {
             );
           },
           error: ((error, stackTrace) => buildEmptyPlaceHolder('Error')),
-          loading: () => buildLoading);
+          loading: () => customLoadingView());
     });
+  }
+
+  Widget customLoadingView() {
+    return ListView(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+          child: CustomizableShimmerTile(height: 60.w, width: 100.w),
+        ),
+        SizedBox(
+          height: 3.w,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+          child: CustomizableShimmerTile(height: 20.w, width: 100.w),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.w),
+          child: CustomizableShimmerTile(height: 10.w, width: 70.w),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.w),
+          child: CustomizableShimmerTile(height: 40.w, width: 70.w),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.w),
+          child: CustomizableShimmerTile(height: 80.w, width: 70.w),
+        ),
+      ],
+    );
   }
 
   Widget _builCurriculumView(CourseDetailBody? coursedata) {

@@ -111,6 +111,11 @@ class LessonListTile extends StatelessWidget {
                     openIndex == index
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
+                    color: isSubscribed
+                        ? Colors.black
+                        : index == 0
+                            ? Colors.black
+                            : Colors.grey,
                   ),
                 ),
               ],

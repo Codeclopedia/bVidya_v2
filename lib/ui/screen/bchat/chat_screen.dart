@@ -25,7 +25,7 @@ import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/utils/chat_utils.dart';
 import '/core/helpers/call_helper.dart';
@@ -670,10 +670,10 @@ class ChatScreen extends HookConsumerWidget {
                   formatDateSeparator(
                       DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
                   style: TextStyle(
-                    fontFamily: kFontFamily,
-                    color: Colors.grey,
-                    fontSize: 8.sp,
-                  ),
+                      fontFamily: kFontFamily,
+                      color: AppColors.black,
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             SwipeTo(

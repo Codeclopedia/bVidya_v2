@@ -13,8 +13,21 @@ class CallListModel {
   final String msgId;
   final CallMessegeBody body;
 
-  CallListModel(
-      this.userId, this.name, this.image, this.outgoing, this.time, this.msgId, this.body);
+  CallListModel(this.userId, this.name, this.image, this.outgoing, this.time,
+      this.msgId, this.body);
+}
+
+class GroupCallListModel {
+  final String groupId;
+  final String groupName;
+  final String groupImage;
+  final int time;
+  final bool outgoing;
+  final String msgId;
+  final GroupCallMessegeBody body;
+
+  GroupCallListModel(this.groupId, this.groupName, this.groupImage, this.outgoing,
+      this.time, this.msgId, this.body);
 }
 
 Future<Map<String, CallListModel>> getCallList() async {
@@ -37,10 +50,10 @@ Future<Map<String, CallListModel>> getCallList() async {
           CallListModel model;
           if (isOwnMessage) {
             model = CallListModel(m.to.toString(), callBody.toName,
-                callBody.toImage, true, m.serverTime,m.msgId, callBody);
+                callBody.toImage, true, m.serverTime, m.msgId, callBody);
           } else {
             model = CallListModel(m.from.toString(), callBody.fromName,
-                callBody.fromImage, false, m.serverTime,m.msgId, callBody);
+                callBody.fromImage, false, m.serverTime, m.msgId, callBody);
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {
@@ -54,12 +67,12 @@ Future<Map<String, CallListModel>> getCallList() async {
   return {};
 }
 
-Future<Map<String, CallListModel>> getGroupCallList() async {
+Future<Map<String, GroupCallListModel>> getGroupCallList() async {
   try {
     final me = (await getMeAsUser())!;
     final list =
         await ChatClient.getInstance.chatManager.loadAllConversations();
-    Map<String, CallListModel> maps = {};
+    Map<String, GroupCallListModel> maps = {};
     for (var conv in list) {
       if (conv.type != ChatConversationType.GroupChat) {
         continue;
@@ -69,15 +82,16 @@ Future<Map<String, CallListModel>> getGroupCallList() async {
       for (var m in messages) {
         try {
           ChatCustomMessageBody body = m.body as ChatCustomMessageBody;
-          final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+          final callBody =
+              GroupCallMessegeBody.fromJson(jsonDecode(body.event));
           bool isOwnMessage = m.from == me.id.toString();
-          CallListModel model;
+          GroupCallListModel model;
           if (isOwnMessage) {
-            model = CallListModel(m.to.toString(), callBody.toName,
-                callBody.toImage, true, m.serverTime,m.msgId, callBody);
+            model = GroupCallListModel(m.to.toString(), callBody.groupName,
+                callBody.groupImage, true, m.serverTime, m.msgId, callBody);
           } else {
-            model = CallListModel(m.from.toString(), callBody.toName,
-                callBody.toImage, true, m.serverTime,m.msgId, callBody);
+            model = GroupCallListModel(m.from.toString(), callBody.groupName,
+                callBody.groupImage, false, m.serverTime, m.msgId, callBody);
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {

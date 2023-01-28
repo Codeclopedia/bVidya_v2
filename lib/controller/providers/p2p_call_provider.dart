@@ -97,7 +97,6 @@ class P2PCallProvider extends ChangeNotifier {
       print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
-
         if (action == NotiConstants.actionCallDecline ||
             action == NotiConstants.actionCallDeclineBusy) {
           if (!_disconnected && !_endCall) {

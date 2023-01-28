@@ -63,7 +63,7 @@ class GroupTypingHelper extends StateNotifier<List<GroupTypingUser>> {
     // print('received command');
     for (var user in users) {
       user.startTime = DateTime.now().millisecondsSinceEpoch;
-      _groupUsersMap.addAll({user.userId: user});
+      _groupUsersMap.addAll({user._groupId: user});
     }
     state = _groupUsersMap.values.toList();
     _timer?.cancel();

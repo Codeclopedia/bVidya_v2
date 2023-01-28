@@ -61,7 +61,7 @@ class BMeetRepository {
 
   Future<JoinMeeting?> joinMeeting(String id) async {
     final result = await _api.joinMeet(_authToken, id);
-    if (result.status == successfull) {
+    if (result.status == successfull && result.body?.meeting != null) {
       return result.body!.meeting;
     } else {
       return null;
@@ -89,7 +89,6 @@ class BMeetRepository {
       return result.message ?? 'Error while leaving meeting';
     }
   }
-
 
   Future<ClassRequestBody?> getClassRequests() async {
     final result = await _api.getClassRequestList(

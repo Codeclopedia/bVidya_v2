@@ -15,13 +15,11 @@ import '../sdk_helpers/bchat_call_manager.dart';
 import '../state.dart';
 import '/app.dart';
 import '/data/models/call_message_body.dart';
-import '/data/models/response/bchat/p2p_call_response.dart';
 import '../constants/route_list.dart';
 import '../routes.dart';
 import '../ui_core.dart';
-import '../utils/callkit_utils.dart';
 import '../utils/chat_utils.dart';
-import 'call_helper.dart';
+import 'background_helper.dart';
 
 class ForegroundMessageHelper {
   static void handleChatNotification(
@@ -107,45 +105,23 @@ class ForegroundMessageHelper {
     }
   }
 
-  static handleCallingNotificationForeground(RemoteMessage message) async {
-    //
-    // dynamic mId = message.data['m'];
-    try {
-      final diff = DateTime.now().millisecondsSinceEpoch -
-          (message.sentTime?.millisecondsSinceEpoch ?? 0);
-      print(
-          'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
-
-      final data = jsonDecode(message.data['e']);
-      String? type = data['type'];
-      if (type != NotiConstants.typeCall) {
+  static void handleCallingNotificationForeground(RemoteMessage message) {
+    if (message.data.isNotEmpty &&
+        message.data['alert'] != null &&
+        message.data['e'] != null) {
+      final extra = jsonDecode(message.data['e']);
+      String? type = extra['type'];
+      print('Type $type =>$extra');
+      if (type == NotiConstants.typeCall) {
+        debugPrint('InComing call=>  ');
+        BackgroundHelper.showCallingNotification(message, false);
         return;
       }
-      // print(' notification ${data['content']}');
-      final body = CallMessegeBody.fromJson(jsonDecode(data['content']));
-      CallBody callBody = body.callBody;
-
-      if (callBody.callId == lastCallId || callBody.callId == activeCallId) {
+      if (type == NotiConstants.typeGroupCall) {
+        debugPrint('InComing Group call=>  ');
+        BackgroundHelper.showGroupCallingNotification(message, false);
         return;
       }
-      String fromId = message.data['f'];
-      String fromName = body.fromName;
-      String fromFCM = body.ext['fcm'];
-      String image = body.fromImage;
-      bool hasVideo = body.callType == CallType.video;
-
-      if (onGoingCallId != null) {
-        if (onGoingCallId != callBody.callId) {
-          await onDeclineCallBusy(
-              fromFCM, fromId, fromName, image, callBody, hasVideo);
-        }
-        return;
-      }
-
-      await showIncomingCallScreen(
-          callBody, fromName, fromId, fromFCM, image, hasVideo, true);
-    } catch (e) {
-      print('Error in call notification $e');
     }
   }
 

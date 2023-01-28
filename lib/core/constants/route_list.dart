@@ -36,6 +36,8 @@ class RouteList {
   static const String searchContact = '/search-contact';
   static const String groups = '/groups';
   static const String groupCalls = '/groups-calls';
+  static const String groupCallScreen = '/group-call-screen';
+  static const String groupCallScreenReceive = '/group-call-screen-receive';
 
   static const String searchGroups = '/search-groups';
   static const String newGroupContacts = '/new-group-contacts';
@@ -80,7 +82,7 @@ class RouteList {
   //Settings
   static const String settings = '/settings';
   static const String accountSetting = '/account-setting';
-  // static const String chatSetting = '/chat-setting';
+  static const String chatSetting = '/chat-setting';
   static const String notificationSetting = '/notification-setting';
   static const String resetPassword = '/reset-password';
   static const String help = '/help';

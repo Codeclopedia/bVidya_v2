@@ -60,7 +60,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
       // } else
       if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
-      } 
+      }
     } else {
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');
       // await BChatSDKController.instance.loginOnlyInBackground();

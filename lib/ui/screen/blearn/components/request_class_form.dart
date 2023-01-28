@@ -75,358 +75,315 @@ class RequestClassForm extends HookWidget {
                       topRight: Radius.circular(10.w),
                       topLeft: Radius.circular(10.w)),
                 ),
-                child: Consumer(builder: (consumercontext, ref, child) {
-                  return ref
-                      .watch(bLearnInstructorProfileProvider(
-                          instructor.id.toString()))
-                      .when(
-                        data: (data) {
-                          if (data == null) {
-                            return SizedBox(
-                              height: 20.h,
-                              child: buildEmptyPlaceHolder('No Data'),
-                            );
-                          }
-                          // ref.read(teacherOccupation.notifier).state =
-                          //     data.profile?.occupation ?? '';
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4.w),
-                            child: ListView(
-                              children: [
-                                Form(
-                                  key: _formKey,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(S.current.request_class_title,
-                                          style: textStyleHeading),
-                                      SizedBox(height: 10.w),
-                                      Text(S.current.request_class_topic,
-                                          style: textStyleCaption),
-                                      SizedBox(
-                                        height: 2.w,
-                                      ),
-                                      TextFormField(
-                                          controller: topicController,
-                                          // focusNode: phoneFocusNode,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty == true) {
-                                              return S.current
-                                                  .t_request_class_empty_topic;
-                                            }
-                                            if (value.length < 5) {
-                                              return S.current
-                                                  .t_request_class_topic_invalid;
-                                            }
-                                            return null;
-                                          },
-                                          autocorrect: false,
-                                          textInputAction: TextInputAction.next,
-                                          decoration:
-                                              inputNewGroupStyle.copyWith(
-                                            hintText: S.current
-                                                .request_class_topic_hint,
-                                          )),
-                                      SizedBox(
-                                        height: 5.w,
-                                      ),
-                                      Text(S.current.request_class_type,
-                                          style: textStyleCaption),
-                                      SizedBox(
-                                        height: 2.w,
-                                      ),
-                                      DropdownButtonFormField2(
-                                        decoration: inputNewGroupStyle.copyWith(
-                                          hintText: S.current
-                                              .t_request_class_type_hint,
-                                        ),
-                                        isExpanded: true,
-                                        // hint: const Text(
-                                        //   "Select Class type",
-                                        //   style: TextStyle(fontSize: 14),
-                                        // ),
-                                        icon: const Icon(
-                                          Icons.arrow_drop_down,
-                                          color: Colors.black45,
-                                        ),
-                                        iconSize: 10.w,
+                child: Consumer(builder: (context, ref, child) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
+                    child: ListView(
+                      children: [
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(S.current.request_class_title,
+                                  style: textStyleHeading),
+                              SizedBox(height: 10.w),
+                              Text(S.current.request_class_topic,
+                                  style: textStyleCaption),
+                              SizedBox(
+                                height: 2.w,
+                              ),
+                              TextFormField(
+                                  controller: topicController,
+                                  // focusNode: phoneFocusNode,
+                                  validator: (value) {
+                                    if (value == null ||
+                                        value.isEmpty == true) {
+                                      return S
+                                          .current.t_request_class_empty_topic;
+                                    }
+                                    if (value.length < 5) {
+                                      return S.current
+                                          .t_request_class_topic_invalid;
+                                    }
+                                    return null;
+                                  },
+                                  autocorrect: false,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: inputNewGroupStyle.copyWith(
+                                    hintText:
+                                        S.current.request_class_topic_hint,
+                                  )),
+                              SizedBox(
+                                height: 5.w,
+                              ),
+                              Text(S.current.request_class_type,
+                                  style: textStyleCaption),
+                              SizedBox(
+                                height: 2.w,
+                              ),
+                              DropdownButtonFormField2(
+                                decoration: inputNewGroupStyle.copyWith(
+                                  hintText: S.current.t_request_class_type_hint,
+                                ),
+                                isExpanded: true,
+                                // hint: const Text(
+                                //   "Select Class type",
+                                //   style: TextStyle(fontSize: 14),
+                                // ),
+                                icon: const Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Colors.black45,
+                                ),
+                                iconSize: 10.w,
 
-                                        dropdownDecoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 0,
-                                            child: Text("Group"),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 1,
-                                            child: Text("Personal"),
+                                dropdownDecoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 0,
+                                    child: Text("Group"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 1,
+                                    child: Text("Personal"),
+                                  )
+                                ],
+                                validator: (value) {
+                                  if (value == null) {
+                                    return S.current.t_request_class_empty_type;
+                                  }
+                                  return null;
+                                },
+                                onChanged: (value) {
+                                  switch (value) {
+                                    case 0:
+                                      classTypeController.text = "Group";
+                                      ref
+                                          .watch(
+                                              currentClassTypeProvider.notifier)
+                                          .state = 0;
+                                      break;
+                                    case 1:
+                                      classTypeController.text = "Personal";
+                                      ref
+                                          .watch(
+                                              currentClassTypeProvider.notifier)
+                                          .state = 1;
+                                      break;
+                                  }
+                                },
+                              ),
+                              // TextFormField(
+                              //   controller: classTypeController,
+                              //   autofocus: false,
+                              //   readOnly: true,
+                              //   showCursor: false,
+                              //   keyboardType: TextInputType.none,
+                              //   validator: (value) {
+                              //     if (value == null ||
+                              //         value.isEmpty == true ||
+                              //         _startTime == null) {
+                              //       return S.current.bmeet_empty_start;
+                              //     }
+                              //     if (_startTime
+                              //             ?.isBefore(DateTime.now()) ==
+                              //         true) {
+                              //       return S
+                              //           .current.bmeet_invalid_start;
+                              //     }
+                              //     return null;
+                              //   },
+                              //   onTap: () {
+                              //     final returndata =
+                              //         _pickType(context, ref);
+
+                              //   },
+                              //   onFieldSubmitted: (value) {},
+                              //   // focusNode: _startFocus,
+                              //   decoration: inputMeetStyle.copyWith(
+                              //       hintText:
+                              //           S.current.bmeet_hint_start,
+                              //       suffixIcon: const Icon(
+                              //         Icons.keyboard_arrow_down,
+                              //       )),
+                              // ),
+                              SizedBox(
+                                height: 5.w,
+                              ),
+                              Text(S.current.request_class_description,
+                                  style: textStyleCaption),
+                              SizedBox(
+                                height: 2.w,
+                              ),
+                              TextFormField(
+                                  controller: descriptionController,
+                                  // focusNode: phoneFocusNode,
+                                  validator: (value) {
+                                    if (value?.isEmpty ?? false) {
+                                      return S.current
+                                          .t_request_class_empty_description;
+                                    }
+                                    if (value!.length < 5) {
+                                      return S.current
+                                          .t_request_class_description_invalid;
+                                    }
+                                    return null;
+                                  },
+                                  maxLines: 10,
+                                  autocorrect: false,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                      hintText: S.current
+                                          .request_class_description_hint,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        borderSide: const BorderSide(
+                                            color: AppColors.inputBoxBorder,
+                                            width: 1.0),
+                                      ),
+                                      fillColor: AppColors.inputBoxFill,
+                                      filled: true,
+                                      hintStyle: TextStyle(
+                                        fontSize: 9.sp,
+                                        fontFamily: kFontFamily,
+                                        color: AppColors.inputHintText,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        gapPadding: 4.0,
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      constraints:
+                                          BoxConstraints(maxHeight: 30.w))),
+                              SizedBox(height: 3.h),
+                              Text(S.current.bmeet_caption_date,
+                                  style: textStyleCaption),
+                              SizedBox(height: 3.h),
+                              Consumer(builder: (context, ref, child) {
+                                return TextFormField(
+                                  controller: _dateController,
+                                  autofocus: false,
+                                  showCursor: false,
+                                  validator: (value) {
+                                    if (value == null ||
+                                        value.isEmpty == true ||
+                                        _selectedDate == null) {
+                                      return S.current.bmeet_empty_date;
+                                    }
+                                    return null;
+                                  },
+                                  onTap: () async {
+                                    _selectedDate = await _pickDate(context);
+                                    ref
+                                            .read(selectedDateProvider.notifier)
+                                            .state =
+                                        _selectedDate ?? DateTime.now();
+                                    if (_selectedDate != null) {
+                                      _dateController.text =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(_selectedDate!);
+                                    }
+                                  },
+                                  // focusNode: _dateFocus,
+                                  decoration: inputMeetStyle.copyWith(
+                                      hintText: S.current.bmeet_hint_date,
+                                      suffixIcon:
+                                          const Icon(Icons.edit_calendar)),
+                                );
+                              }),
+                              SizedBox(height: 3.h),
+                              Text(S.current.bmeet_caption_starttime,
+                                  style: textStyleCaption),
+                              SizedBox(height: 3.h),
+                              TextFormField(
+                                controller: _timeController,
+                                autofocus: false,
+                                readOnly: true,
+                                showCursor: false,
+                                keyboardType: TextInputType.none,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty == true ||
+                                      _startTime == null) {
+                                    return S.current.bmeet_empty_start;
+                                  }
+                                  if (_startTime?.isBefore(DateTime.now()) ==
+                                      true) {
+                                    return S.current.bmeet_invalid_start;
+                                  }
+                                  return null;
+                                },
+                                onTap: () {
+                                  _pickTime(context, (time) {
+                                    print(time);
+                                    _startTime = time;
+                                    final dt = DateFormat.jm().format(time);
+                                    print('dt: $dt');
+                                    _timeController.text = dt;
+                                  }, ref);
+                                },
+                                onFieldSubmitted: (value) {},
+                                // focusNode: _startFocus,
+                                decoration: inputMeetStyle.copyWith(
+                                    hintText: S.current.bmeet_hint_start,
+                                    suffixIcon: const Icon(
+                                      Icons.keyboard_arrow_down,
+                                    )),
+                              ),
+                              SizedBox(height: 6.h),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2.w),
+                          child: SizedBox(
+                            height: 15.w,
+                            width: 100.w,
+                            child: ElevatedButton(
+                                style: elevatedButtonStyle,
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    showLoading(ref);
+                                    final response = await ref
+                                        .read(bMeetRepositoryProvider)
+                                        .requestPersonalClass(
+                                            topic: topicController.text,
+                                            classType: classTypeController.text,
+                                            description:
+                                                descriptionController.text,
+                                            date:
+                                                _selectedDate ?? DateTime.now(),
+                                            time: _timeController.text,
+                                            instructorid: instructor.id ?? 0);
+                                    response == "error"
+                                        ? showTopSnackBar(
+                                            Overlay.of(context)!,
+                                            CustomSnackBar.error(
+                                                message: S.current.error),
                                           )
-                                        ],
-                                        validator: (value) {
-                                          if (value == null) {
-                                            return S.current
-                                                .t_request_class_empty_type;
-                                          }
-                                          return null;
-                                        },
-                                        onChanged: (value) {
-                                          switch (value) {
-                                            case 0:
-                                              classTypeController.text =
-                                                  "Group";
-                                              ref
-                                                  .watch(
-                                                      currentClassTypeProvider
-                                                          .notifier)
-                                                  .state = 0;
-                                              break;
-                                            case 1:
-                                              classTypeController.text =
-                                                  "Personal";
-                                              ref
-                                                  .watch(
-                                                      currentClassTypeProvider
-                                                          .notifier)
-                                                  .state = 1;
-                                              break;
-                                          }
-                                        },
-                                      ),
-                                      // TextFormField(
-                                      //   controller: classTypeController,
-                                      //   autofocus: false,
-                                      //   readOnly: true,
-                                      //   showCursor: false,
-                                      //   keyboardType: TextInputType.none,
-                                      //   validator: (value) {
-                                      //     if (value == null ||
-                                      //         value.isEmpty == true ||
-                                      //         _startTime == null) {
-                                      //       return S.current.bmeet_empty_start;
-                                      //     }
-                                      //     if (_startTime
-                                      //             ?.isBefore(DateTime.now()) ==
-                                      //         true) {
-                                      //       return S
-                                      //           .current.bmeet_invalid_start;
-                                      //     }
-                                      //     return null;
-                                      //   },
-                                      //   onTap: () {
-                                      //     final returndata =
-                                      //         _pickType(context, ref);
-
-                                      //   },
-                                      //   onFieldSubmitted: (value) {},
-                                      //   // focusNode: _startFocus,
-                                      //   decoration: inputMeetStyle.copyWith(
-                                      //       hintText:
-                                      //           S.current.bmeet_hint_start,
-                                      //       suffixIcon: const Icon(
-                                      //         Icons.keyboard_arrow_down,
-                                      //       )),
-                                      // ),
-                                      SizedBox(
-                                        height: 5.w,
-                                      ),
-                                      Text(S.current.request_class_description,
-                                          style: textStyleCaption),
-                                      SizedBox(
-                                        height: 2.w,
-                                      ),
-                                      TextFormField(
-                                          controller: descriptionController,
-                                          // focusNode: phoneFocusNode,
-                                          validator: (value) {
-                                            if (value?.isEmpty ?? false) {
-                                              return S.current
-                                                  .t_request_class_empty_description;
-                                            }
-                                            if (value!.length < 5) {
-                                              return S.current
-                                                  .t_request_class_description_invalid;
-                                            }
-                                            return null;
-                                          },
-                                          maxLines: 10,
-                                          autocorrect: false,
-                                          textInputAction: TextInputAction.next,
-                                          decoration: InputDecoration(
-                                              hintText: S.current
-                                                  .request_class_description_hint,
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12.0),
-                                                borderSide: const BorderSide(
-                                                    color: AppColors
-                                                        .inputBoxBorder,
-                                                    width: 1.0),
-                                              ),
-                                              fillColor: AppColors.inputBoxFill,
-                                              filled: true,
-                                              hintStyle: TextStyle(
-                                                fontSize: 9.sp,
-                                                fontFamily: kFontFamily,
-                                                color: AppColors.inputHintText,
-                                              ),
-                                              border: OutlineInputBorder(
-                                                gapPadding: 4.0,
-                                                borderRadius:
-                                                    BorderRadius.circular(12.0),
-                                              ),
-                                              constraints: BoxConstraints(
-                                                  maxHeight: 30.w))),
-                                      SizedBox(height: 3.h),
-                                      Text(S.current.bmeet_caption_date,
-                                          style: textStyleCaption),
-                                      SizedBox(height: 3.h),
-                                      Consumer(builder: (context, ref, child) {
-                                        return TextFormField(
-                                          controller: _dateController,
-                                          autofocus: false,
-                                          showCursor: false,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty == true ||
-                                                _selectedDate == null) {
-                                              return S.current.bmeet_empty_date;
-                                            }
-                                            return null;
-                                          },
-                                          onTap: () async {
-                                            _selectedDate =
-                                                await _pickDate(context);
-                                            ref
-                                                    .read(selectedDateProvider
-                                                        .notifier)
-                                                    .state =
-                                                _selectedDate ?? DateTime.now();
-                                            if (_selectedDate != null) {
-                                              _dateController.text =
-                                                  DateFormat('dd-MM-yyyy')
-                                                      .format(_selectedDate!);
-                                            }
-                                          },
-                                          // focusNode: _dateFocus,
-                                          decoration: inputMeetStyle.copyWith(
-                                              hintText:
-                                                  S.current.bmeet_hint_date,
-                                              suffixIcon: const Icon(
-                                                  Icons.edit_calendar)),
-                                        );
-                                      }),
-                                      SizedBox(height: 3.h),
-                                      Text(S.current.bmeet_caption_starttime,
-                                          style: textStyleCaption),
-                                      SizedBox(height: 3.h),
-                                      TextFormField(
-                                        controller: _timeController,
-                                        autofocus: false,
-                                        readOnly: true,
-                                        showCursor: false,
-                                        keyboardType: TextInputType.none,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty == true ||
-                                              _startTime == null) {
-                                            return S.current.bmeet_empty_start;
-                                          }
-                                          if (_startTime
-                                                  ?.isBefore(DateTime.now()) ==
-                                              true) {
-                                            return S
-                                                .current.bmeet_invalid_start;
-                                          }
-                                          return null;
-                                        },
-                                        onTap: () {
-                                          _pickTime(context, (time) {
-                                            print(time);
-                                            _startTime = time;
-                                            final dt =
-                                                DateFormat.jm().format(time);
-                                            print('dt: $dt');
-                                            _timeController.text = dt;
-                                          }, ref);
-                                        },
-                                        onFieldSubmitted: (value) {},
-                                        // focusNode: _startFocus,
-                                        decoration: inputMeetStyle.copyWith(
-                                            hintText:
-                                                S.current.bmeet_hint_start,
-                                            suffixIcon: const Icon(
-                                              Icons.keyboard_arrow_down,
-                                            )),
-                                      ),
-                                      SizedBox(height: 6.h),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.w),
-                                  child: SizedBox(
-                                    height: 15.w,
-                                    width: 100.w,
-                                    child: ElevatedButton(
-                                        style: elevatedButtonStyle,
-                                        onPressed: () async {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            showLoading(ref);
-                                            final response = await ref
-                                                .read(bMeetRepositoryProvider)
-                                                .requestPersonalClass(
-                                                    topic: topicController.text,
-                                                    classType:
-                                                        classTypeController
-                                                            .text,
-                                                    description:
-                                                        descriptionController
-                                                            .text,
-                                                    date: _selectedDate ??
-                                                        DateTime.now(),
-                                                    time: _timeController.text,
-                                                    instructorid:
-                                                        instructor.id ?? 0);
-                                            response == "error"
-                                                ? showTopSnackBar(
-                                                    Overlay.of(context)!,
-                                                    CustomSnackBar.error(
-                                                        message:
-                                                            S.current.error),
-                                                  )
-                                                : showTopSnackBar(
-                                                    Overlay.of(context)!,
-                                                    CustomSnackBar.success(
-                                                        message: response),
-                                                  );
-                                            hideLoading(ref);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child:
-                                            Text(S.current.request_class_request
-                                                // style: TextStyle(
-                                                //   fontSize: 16.sp,
-                                                //   fontFamily: kFontFamily,
-                                                // )
-                                                )),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        error: (error, stackTrace) =>
-                            buildEmptyPlaceHolder('error in loading data'),
-                        loading: () =>
-                            const CircularProgressIndicator.adaptive(),
-                      );
+                                        : showTopSnackBar(
+                                            Overlay.of(context)!,
+                                            CustomSnackBar.success(
+                                                message: response),
+                                          );
+                                    hideLoading(ref);
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Text(S.current.request_class_request
+                                    // style: TextStyle(
+                                    //   fontSize: 16.sp,
+                                    //   fontFamily: kFontFamily,
+                                    // )
+                                    )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 }),
               ),
               IconButton(

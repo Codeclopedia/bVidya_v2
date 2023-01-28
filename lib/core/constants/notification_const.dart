@@ -5,4 +5,6 @@ class NotiConstants {
   static const String actionCallEnd = 'CALL_END';
   static const String actionCallDecline = 'CALL_DECLINE';
   static const String actionCallDeclineBusy = 'CALL_DECLINE_BUSY';
+
+  static const String typeGroupCall = 'group_call';
 }

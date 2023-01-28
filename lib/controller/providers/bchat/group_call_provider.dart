@@ -1,19 +1,33 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:agora_rtm/agora_rtm.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
-import '/core/state.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:bvidya/data/services/fcm_api_service.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '/core/utils/callkit_utils.dart';
+import '../p2p_call_provider.dart';
+import '/controller/bmeet_providers.dart';
+import '/core/constants.dart';
+import '/core/helpers/call_helper.dart';
+import '/core/helpers/bmeet_helper.dart';
+
+import '/core/state.dart';
+import '../../bchat_providers.dart';
 
 import '/core/helpers/duration.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
 final raisedHandMeetingProvider = StateProvider<String>((ref) => '');
-
 
 class GroupCallProvider extends ChangeNotifier {
   final MethodChannel _iosScreenShareChannel =
@@ -26,11 +40,14 @@ class GroupCallProvider extends ChangeNotifier {
   bool _localUserJoined = false;
   bool get localUserJoined => _localUserJoined;
 
-  bool _kickOut = false;
-  bool get kickOut => _kickOut;
+  bool get endCall => _endCall;
+  bool _disconnected = false;
+  bool get disconnected => _disconnected;
+  // bool _kickOut = false;
+  // bool get kickOut => _kickOut;
 
 //
-  int _screenShareId = 0;
+  // int _screenShareId = 0;
 
 //
   bool _isPreviewReady = false;
@@ -41,12 +58,12 @@ class GroupCallProvider extends ChangeNotifier {
   bool get allMuted => _allMuted;
 
 //
-  bool _hostDisableCamera = false;
-  bool get hostCamera => _hostDisableCamera;
+  // bool _hostDisableCamera = false;
+  // bool get hostCamera => _hostDisableCamera;
 
 //
-  bool _hostMute = false;
-  bool get hostMute => _hostMute;
+  // bool _hostMute = false;
+  // bool get hostMute => _hostMute;
 
 //
   bool _muted = false;
@@ -68,20 +85,17 @@ class GroupCallProvider extends ChangeNotifier {
   Set<int> get remoteUsersIds => _userRemoteIds;
   final Set<int> _userRemoteIds = HashSet();
 
-//
-  final Map<int, GroupCallConnectedUser> _userList = <int, GroupCallConnectedUser>{};
-  Map<int, GroupCallConnectedUser> get userList => _userList;
+  CallConnectionStatus _status = CallConnectionStatus.Connecting;
+
+  CallConnectionStatus get status => _status;
 
 //
-  final List<AgoraRtmMember> _memberList = [];
-  List<AgoraRtmMember> get memberList => _memberList;
+  final Map<int, GroupCallUser> _groupCallingMembers = <int, GroupCallUser>{};
+  Map<int, GroupCallUser> get userList => _groupCallingMembers;
 
   bool _initialized = false;
   bool _initializingScreenShare = false;
   bool get initializingScreenShare => _initializingScreenShare;
-
-  // bool _ended = false;
-  // bool get ended => _ended;
 
 //
   bool _shareScreen = false;
@@ -92,294 +106,468 @@ class GroupCallProvider extends ChangeNotifier {
   RtcEngineEx get engine => _engine;
 
 //
-  late AgoraRtmClient _rtmClient;
-  AgoraRtmChannel? _rtmChannel;
-
-//
   late final Meeting _meeting;
   late final CallType _callType;
+  late final String _groupId;
+  // late final ChatGroup groupModel;
+  // late final RTMUserTokenResponse rtmTokem;
+
+  late final String _callId;
+  late final int _callRequestId;
+  late final CallDirectionType callDirectionType;
+  late final User _me;
+  AssetsAudioPlayer? _player;
+  Timer? _timer;
+  // final List<Contacts> _memberContacts = [];
 
   final DurationNotifier _callTimerProvider;
 
   GroupCallProvider(this._callTimerProvider);
 
-  // void startMeetingTimer() async {
-  // _meetingTimer = Timer.periodic(
-  //   const Duration(seconds: 1),
-  //   (meetingTimer) {
-  //     int min = (_meetingDuration ~/ 60);
-  //     int sec = (_meetingDuration % 60).toInt();
-
-  //     _meetingDurationTxt = '$min:$sec';
-
-  //     if (checkNoSignleDigit(min)) {
-  //       _meetingDurationTxt = '0$min:$sec';
-  //     }
-  //     if (checkNoSignleDigit(sec)) {
-  //       if (checkNoSignleDigit(min)) {
-  //         _meetingDurationTxt = '0$min:0$sec';
-  //       } else {
-  //         _meetingDurationTxt = '$min:0$sec';
-  //       }
-  //     }
-  //     _meetingDuration = _meetingDuration + 1;
-  //   },
-  // );
-  // }
-
   WidgetRef? _ref;
-  
-  void init(WidgetRef ref, Meeting meeting, CallType callType, String rtmToken,
-      String rtmUser, int userid) {
+
+  bool _isReceiving = false;
+
+  String? _error;
+  String? get error => _error;
+  void initReceiver(
+      BuildContext context,
+      WidgetRef ref,
+      int requestId,
+      String callId,
+      String groupId,
+      CallType callType,
+      User user,
+      String membersIds) async {
+    if (_isReceiving) return;
+    _ref = ref;
+
+    _callType = callType;
+    _me = user;
+    _callId = callId;
+    _callRequestId = requestId;
+    _isReceiving = true;
+    _groupId = groupId;
+    // final grpInfo = ref.read(groupMembersInfo(_groupId)).valueOrNull;
+
+    final List<Contacts> contacts = [];
+    if (membersIds.isNotEmpty) {
+      final conts = await ref.read(bChatProvider).getContactsByIds(membersIds);
+      if (conts?.isNotEmpty == true) {
+        contacts.addAll(conts!
+            .map((e) => Contacts.fromContact(e, ContactStatus.group))
+            .toList());
+      }
+    }
+
+    // if (grpInfo == null || grpInfo.members.isEmpty) {
+    //   final contactList =
+    //       await BchatGroupManager.fetchContactsOfGroup(ref, groupId);
+    //   contacts.addAll(
+    //       contactList.map((e) => Contacts.fromContact(e, ContactStatus.group)));
+    // } else {
+    //   contacts.addAll(grpInfo.members);
+    // }
+    if (contacts.isEmpty) {
+      setError('Error getting contacts');
+      return;
+    }
+
+    // _memberContacts.addAll(grpInfo.members);
+    final JoinMeeting? joinMeeting =
+        await ref.read(bMeetRepositoryProvider).joinMeeting(callId);
+    if (joinMeeting != null) {
+      Meeting smeeting = Meeting(joinMeeting.appid, joinMeeting.channel,
+          joinMeeting.token, 'audience', joinMeeting.audienceLatency);
+      _meeting = smeeting;
+      // final userRTMToken = await ref
+      //     .read(bMeetRepositoryProvider)
+      //     .fetchUserToken(1000000 + user.id, user.name);
+
+      // _callDirectiontype = CallDirectionType.incoming;
+
+      if (!await handleCameraAndMic(Permission.microphone)) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          AppSnackbar.instance.error(context, 'Need microphone permission');
+          // return;
+        }
+      }
+      if (!await handleCameraAndMic(Permission.camera) &&
+          callType == CallType.video) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          AppSnackbar.instance.error(context, 'Need camera permission');
+          // return;
+        }
+      }
+      for (Contacts contact in contacts) {
+        userList.addAll({
+          contact.userId: GroupCallUser(
+              contact.userId, contact, _callType == CallType.video)
+        });
+      }
+      _createRTMClient();
+    } else {
+      await Future.delayed(const Duration(seconds: 2));
+      setError('Error joining call');
+    }
+  }
+
+  void init(
+      WidgetRef ref,
+      int callRequestId,
+      String callId,
+      String groupId,
+      User me,
+      Meeting meeting,
+      CallType callType,
+      List<Contacts> memberContacts,
+      CallDirectionType callDirectiontype) {
     if (_initialized) return;
     _ref = ref;
     _initialized = true;
     _meeting = meeting;
     _callType = callType;
-    _createRTMClient(rtmToken, rtmUser, userid);
+    _me = me;
+    _callId = callId;
+    _callRequestId = callRequestId;
+    _groupId = groupId;
+    // _memberContacts.addAll(memberContacts);
+    // _callDirectiontype = callDirectiontype;
+    for (Contacts contact in memberContacts) {
+      userList.addAll({
+        contact.userId:
+            GroupCallUser(contact.userId, contact, _callType == CallType.video)
+      });
+    }
+    _createRTMClient();
   }
 
-  void _createRTMClient(String rtmToken, String rtmUser, int userid) async {
+  void _createRTMClient() async {
     if (_meeting.appid.isEmpty) {
       // print('Meeting App ID is emply');
+      setError('Meeting App ID is emply');
       return;
     }
-    _rtmClient = await AgoraRtmClient.createInstance(_meeting.appid);
-    _rtmClient.onMessageReceived =
-        (AgoraRtmMessage message, String peerId) async {
-      // debugPrint('Peer ID $peerId');
-      debugPrint('onMessageReceived=> msg: ${message.text}');
-      if (message.text == 'remove') {
-        // _ref?.read(endedMeetingProvider.notifier).state = true;
-        // print('Removing user');
-        _kickOut = true;
-        // _ended = true;
-        notifyListeners();
-        return;
+    setOnGoing(_callId);
+    FirebaseMessaging.onMessage.listen((message) {
+      print('onMessage Group Call Screen=> ${message.data}');
+      if (message.data['type'] == NotiConstants.typeGroupCall) {
+        final String? action = message.data['action'];
+        if (action == NotiConstants.actionCallDecline ||
+            action == NotiConstants.actionCallDeclineBusy) {
+          String callId = message.data['call_id'];
+          String grpId = message.data['grp_id'];
+          if (callId != _callId || grpId != _groupId) {
+            print('Invalid group');
+            return;
+          }
+          int fromId = message.data['from_id'];
+          _groupCallingMembers.update(fromId, ((value) {
+            value.status = JoinStatus.decline;
+            value.widget = null;
+            return value;
+          }));
+
+          if (!_disconnected && !_endCall) {
+            bool isAllRejected = true;
+            for (var user in _groupCallingMembers.values) {
+              if (user.status != JoinStatus.ended &&
+                  user.status != JoinStatus.decline) {
+                isAllRejected = false;
+                break;
+              }
+            }
+            _endCall = isAllRejected;
+            if (_endCall) {
+              if (_timer?.isActive == true) {
+                _timer?.cancel();
+                _player?.stop();
+                _callTimerProvider.reset();
+                clearCall();
+              }
+            }
+
+            if (action == NotiConstants.actionCallDeclineBusy) {
+              // Fluttertoast.showToast(
+              //     msg: "${body.calleeName} is  Busy",
+              //     toastLength: Toast.LENGTH_SHORT,
+              //     gravity: ToastGravity.CENTER,
+              //     timeInSecForIosWeb: 1,
+              //     backgroundColor: Colors.red,
+              //     textColor: Colors.white,
+              //     fontSize: 16.0);
+            }
+            // _endCall = true;
+            // _read.reset();
+            // clearCall();
+            // activeCallId = null;
+            // _updateMemberList();
+            notifyListeners();
+          }
+        }
       }
-
-      if (message.text == 'mic_off') {
-        _hostMute = true;
-        notifyListeners();
-
-        EasyLoading.showToast(
-          'You are muted by host.',
-          duration: const Duration(seconds: 3),
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-        await _engine.muteLocalAudioStream(true);
-      } else if (message.text == 'mic_on') {
-        _hostMute = false;
-
-        notifyListeners();
-        await _engine.muteLocalAudioStream(false);
-        EasyLoading.showToast(
-          'Host un-muted you.\n Now you can enable your mic.',
-          duration: const Duration(seconds: 3),
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-      } else if (message.text == 'videocam_off') {
-        _hostDisableCamera = true;
-        notifyListeners();
-
-        EasyLoading.showToast(
-          'Host disabled your camera',
-          duration: const Duration(seconds: 3),
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-        await _engine.muteLocalVideoStream(true);
-      } else if (message.text == 'videocam_on') {
-        _hostDisableCamera = false;
-        notifyListeners();
-
-        await _engine.muteLocalVideoStream(false);
-        EasyLoading.showToast(
-          'You can enable your camera now',
-          duration: const Duration(seconds: 3),
-          toastPosition: EasyLoadingToastPosition.bottom,
-        );
-      }
-    };
+    });
 
     try {
       // print('User $rtmUser');
-      await _rtmClient.login(rtmToken, rtmUser);
-      await _initAgoraRTC(userid);
-      await _createJoinRTMChannel();
+      // await _rtmClient.login(rtmToken.rtmToken, rtmToken.rtmUser!);
+      await _initAgoraRTC(_me.id);
 
       /// RTM
-    } catch (errorCode) {}
+    } catch (errorCode) {
+      setError('error agroa rtc $errorCode');
+    }
+  }
+
+  setError(String message) async {
+    _error = message;
+    print('Error =>$message ');
+    try {
+      notifyListeners();
+    } catch (e) {
+      await Future.delayed(const Duration(seconds: 2));
+      notifyListeners();
+    }
+  }
+
+  bool _endCall = false;
+  _outgoingTimer() async {
+    // _player = AudioPlayer();
+    _player = AssetsAudioPlayer.newPlayer();
+    //  String audioasset = "assets/audio/Basic.mp3";
+    // ByteData bytes = await rootBundle.load(audioasset); //load sound from assets
+    // Uint8List soundbytes =
+    // bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+
+    _timer = Timer(const Duration(seconds: 30), () {
+      _endCall = true;
+      _callTimerProvider.reset();
+
+      print('Timer ended here');
+      notifyListeners();
+    });
+    try {
+      await _player?.open(Audio('assets/audio/Basic.mp3'));
+      await _player?.play();
+
+      // await _player?.play(AssetSource('audio/Basic.mp3'));
+    } catch (e) {
+      print('$e');
+    }
   }
 
   Future<void> _initAgoraRTC(int userid) async {
     _engine = createAgoraRtcEngineEx();
-
     await _engine.initialize(RtcEngineContext(
       appId: _meeting.appid,
       channelProfile: ChannelProfileType.channelProfileCommunication,
     ));
     _engine.registerEventHandler(
       RtcEngineEventHandler(
-        onRejoinChannelSuccess: (connection, elapsed) {},
-        onError: (err, msg) {},
-
-        onMediaDeviceChanged: (deviceType) {},
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          _localUserJoined = true;
-          _localUid = connection.localUid ?? 0;
-          _userRemoteIds.add(_localUid);
-          _userList.addAll(
-              {_localUid: GroupCallConnectedUser(_localUid, '', _localView())});
-          _updateMemberList();
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          _userList.addAll({
-            remoteUid: GroupCallConnectedUser(remoteUid, '', _remoteView(remoteUid))
-          });
-          // notifyListeners();
-          _updateMemberList();
-        },
-        onRemoteVideoStateChanged:
-            (connection, remoteUid, state, reason, elapsed) {
-          print(
-              'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
-        },
-        onLeaveChannel: (connection, stats) {
-          // int userId = connection.localUid ?? 0;
-          // if (userId < 1000000) {
-          //   _screenShareId = 0;
-          //   _shareScreen = false;
-          //   _userRemoteIds.remove(userid);
-          //   _userList.removeWhere((key, value) => key == userid);
-          //   _initializingScreenShare = false;
-          //   _userList.update(
-          //     _localUid,
-          //     (value) {
-          //       value.widget = _localView();
-          //       return value;
-          //     },
-          //   );
-          // _userList.addAll(
-          //     {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
-          // _updateMemberList();
-          if (_localUserJoined) {
-            _localUserJoined = false;
-            // print('User Id:$userid');
-            notifyListeners();
-          }
-        },
-        onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
-          _userRemoteIds.remove(remoteUid);
-          _userList.removeWhere((key, value) => key == remoteUid);
-
-          // if (remoteUid < 1000000) {
-          //   _screenShareId = 0;
-          //   _shareScreen = false;
-          //   _initializingScreenShare = false;
-          // }
-
-          // _userRemoteIds.removeWhere((item) => item == remoteUid);
-          // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
-          _updateMemberList();
-        },
-
-        onAudioVolumeIndication:
-            (connection, speakers, speakerNumber, totalVolume) {
-          for (var speaker in speakers) {
-            if ((speaker.volume ?? 0) > 5) {
-              // print(
-              //     '[onAudioVolumeIndication] uid: ${speaker.uid}, volume: ${speaker.volume}');
-              _userList.forEach((key, value) {
-                //Highlighting local user
-                //In this callback, the local user is represented by an uid of 0.
-                if ((_localUid.compareTo(key) == 0) && (speaker.uid == 0)) {
-                  _userList.update(key, (value) {
-                    value.isSpeaking = true;
-                    return value;
-                  });
-                }
-
-                //Highlighting remote user
-                else if (key.compareTo(speaker.uid ?? 0) == 0) {
-                  _userList.update(key, (value) {
-                    value.isSpeaking = true;
-                    return value;
-                  });
-                } else {
-                  _userList.update(key, (value) {
-                    value.isSpeaking = false;
-                    return value;
-                  });
-                }
-              });
-            }
-            if (_localUserJoined) notifyListeners();
-          }
-        },
-        onUserMuteAudio: (connection, remoteUid, muted) {
-          if (_userList.containsKey(remoteUid)) {
-            _userList.update(remoteUid, (value) {
-              value.muteAudio = muted;
-              return value;
-            });
-          }
-          notifyListeners();
-        },
-        onUserEnableVideo: (connection, remoteUid, enabled) {
-          if (_userList.containsKey(remoteUid)) {
-            _userList.update(remoteUid, (value) {
-              value.enabledVideo = enabled;
-              if (enabled) {
-                value.widget = _remoteView(remoteUid);
+          onRejoinChannelSuccess: (connection, elapsed) {},
+          onError: (err, msg) {},
+          onMediaDeviceChanged: (deviceType) {},
+          onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+            _localUserJoined = true;
+            _localUid = connection.localUid ?? 0;
+            _status = CallConnectionStatus.Ringing;
+            _outgoingTimer();
+            // _userRemoteIds.add(_localUid);
+            _groupCallingMembers.update(_localUid, ((value) {
+              value.status = JoinStatus.connected;
+              if (value.enabledVideo) {
+                value.widget = _localView();
               } else {
-                value.widget = getRectFAvatar(value.name, '');
+                value.widget = getRectFAvatar(
+                    value.contact.name, value.contact.profileImage);
               }
               return value;
-            });
+            }));
+            // _userList.addAll({_localUid: GroupCallUser(_localUid, _localView())});
+            _updateMemberList();
+          },
+          onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+            if (_status == CallConnectionStatus.Ringing) {
+              _status == CallConnectionStatus.Connected;
+              _callTimerProvider.start();
+              _timer?.cancel();
+              _player?.stop();
+            }
+
+            _groupCallingMembers.update(remoteUid, ((value) {
+              value.status = JoinStatus.connected;
+              if (value.enabledVideo) {
+                value.widget = _remoteView(remoteUid);
+              } else {
+                value.widget = getRectFAvatar(
+                    value.contact.name, value.contact.profileImage);
+              }
+              return value;
+            }));
+            // _userList.addAll(
+            // {remoteUid: GroupCallUser(remoteUid, _remoteView(remoteUid))});
+            // notifyListeners();
+            _updateMemberList();
+          },
+          // onRemoteVideoStateChanged:
+          //     (connection, remoteUid, state, reason, elapsed) {
+          //   print(
+          //       'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
+          // },
+          onLeaveChannel: (connection, stats) {
+            int remoteUid = connection.localUid ?? 0;
+            _groupCallingMembers.update(remoteUid, ((value) {
+              value.status = JoinStatus.ended;
+              value.widget = null;
+              return value;
+            }));
+            // int userId = connection.localUid ?? 0;
+            // if (userId < 1000000) {
+            //   _screenShareId = 0;
+            //   _shareScreen = false;
+            //   _userRemoteIds.remove(userid);
+            //   _userList.removeWhere((key, value) => key == userid);
+            //   _initializingScreenShare = false;
+            //   _userList.update(
+            //     _localUid,
+            //     (value) {
+            //       value.widget = _localView();
+            //       return value;
+            //     },
+            //   );
+            // _userList.addAll(
+            //     {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
+            // _updateMemberList();
+            if (_localUserJoined) {
+              _localUserJoined = false;
+              // print('User Id:$userid');
+              notifyListeners();
+            }
+          },
+          onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
+            _userRemoteIds.remove(remoteUid);
+            _groupCallingMembers.update(remoteUid, ((value) {
+              value.status = JoinStatus.ended;
+              value.widget = null;
+              return value;
+            }));
+            // _userList.removeWhere((key, value) => key == remoteUid);
+
+            // if (remoteUid < 1000000) {
+            //   _screenShareId = 0;
+            //   _shareScreen = false;
+            //   _initializingScreenShare = false;
+            // }
+
+            // _userRemoteIds.removeWhere((item) => item == remoteUid);
+            // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
+            _updateMemberList();
+          },
+          onAudioVolumeIndication:
+              (connection, speakers, speakerNumber, totalVolume) {
+            for (var speaker in speakers) {
+              if ((speaker.volume ?? 0) > 5) {
+                // print(
+                //     '[onAudioVolumeIndication] uid: ${speaker.uid}, volume: ${speaker.volume}');
+                _groupCallingMembers.forEach((key, value) {
+                  //Highlighting local user
+                  //In this callback, the local user is represented by an uid of 0.
+                  if ((_localUid.compareTo(key) == 0) && (speaker.uid == 0)) {
+                    _groupCallingMembers.update(key, (value) {
+                      value.isSpeaking = true;
+                      return value;
+                    });
+                  }
+
+                  //Highlighting remote user
+                  else if (key.compareTo(speaker.uid ?? 0) == 0) {
+                    _groupCallingMembers.update(key, (value) {
+                      value.isSpeaking = true;
+                      return value;
+                    });
+                  } else {
+                    _groupCallingMembers.update(key, (value) {
+                      value.isSpeaking = false;
+                      return value;
+                    });
+                  }
+                });
+              }
+              // if (_localUserJoined) notifyListeners();
+              _updateMemberList();
+            }
+          },
+          onUserMuteAudio: (connection, remoteUid, muted) {
+            if (_groupCallingMembers.containsKey(remoteUid)) {
+              _groupCallingMembers.update(remoteUid, (value) {
+                value.muteAudio = muted;
+                return value;
+              });
+            }
+            _updateMemberList();
+          },
+          onUserEnableVideo: (connection, remoteUid, enabled) {
+            if (_groupCallingMembers.containsKey(remoteUid)) {
+              _groupCallingMembers.update(remoteUid, (value) {
+                value.enabledVideo = enabled;
+                if (enabled) {
+                  value.widget = _remoteView(remoteUid);
+                } else {
+                  value.widget = getRectFAvatar(
+                      value.contact.name, value.contact.profileImage);
+                }
+                return value;
+              });
+            }
+            _updateMemberList();
           }
-        },
-        // onUserInfoUpdated: (uid, info) {
-        //   // print(
-        //   //     '[onUserInfoUpdated] uid: $uid, info: ${info.uid} , account:${info.userAccount}');
-        // },
-        // onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
-        //   // print(
-        //   //     '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
-        // },
-      ),
+
+          // onUserInfoUpdated: (uid, info) {
+          //   // print(
+          //   //     '[onUserInfoUpdated] uid: $uid, info: ${info.uid} , account:${info.userAccount}');
+          // },
+          // onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
+          //   // print(
+          //   //     '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
+          // },
+          ),
     );
 
-    // if (_enableVideo) {
-    //   await _engine.enableVideo();
-    // } else {
-    //   await _engine.disableVideo();
-    // }
-
-    await _engine.enableVideo();
-    await _engine.enableLocalVideo(true);
+    if (_callType == CallType.video) {
+      _disableLocalCamera = false;
+      await _engine.enableVideo();
+      await _engine.enableLocalVideo(true);
+      await _engine.setDefaultAudioRouteToSpeakerphone(true);
+      await _engine.setVideoEncoderConfiguration(
+        const VideoEncoderConfiguration(
+          dimensions: VideoDimensions(width: 640, height: 360),
+          frameRate: 15,
+          bitrate: 0,
+        ),
+      );
+    } else {
+      _disableLocalCamera = true;
+      await _engine.disableVideo();
+      await _engine.enableLocalVideo(false);
+      await _engine.setDefaultAudioRouteToSpeakerphone(false);
+    }
+    await _engine.muteLocalVideoStream(_disableLocalCamera);
     await _engine.enableAudioVolumeIndication(
         interval: 250, smooth: 3, reportVad: true);
     await _engine.muteLocalAudioStream(_muted);
-    await _engine.muteLocalVideoStream(_disableLocalCamera);
+    // await _engine.muteLocalVideoStream(_disableLocalCamera);
     // await _engine.enableVideo();
 // await _engine.setEnableSpeakerphone(speakerOn)
-    await _engine.setVideoEncoderConfiguration(
-      const VideoEncoderConfiguration(
-        dimensions: VideoDimensions(width: 640, height: 360),
-        frameRate: 15,
-        bitrate: 0,
-      ),
-    );
 
     await _engine.startPreview();
     await _engine.joinChannel(
         token: _meeting.token,
         channelId: _meeting.channel,
-        uid: 1000000 + userid,
-        options: const ChannelMediaOptions(
+        uid: userid,
+        options: ChannelMediaOptions(
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
           clientRoleType: ClientRoleType.clientRoleBroadcaster,
-          publishCameraTrack: true,
+          publishCameraTrack: _callType == CallType.video,
           publishScreenTrack: false,
         ));
     _isPreviewReady = true;
@@ -388,42 +576,12 @@ class GroupCallProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Timer? _timer;
-  Future<void> _createJoinRTMChannel() async {
-    try {
-      _rtmChannel = await _rtmClient.createChannel(_meeting.channel);
-      await _rtmChannel?.join();
-      _rtmChannel?.onMessageReceived = (message, fromMember) {
-        if (message.text == 'raise_hand') {
-          //from id
-          _timer?.cancel();
-          _ref?.read(raisedHandMeetingProvider.notifier).state =
-              fromMember.userId.split(':')[1];
-          _timer = Timer(const Duration(seconds: 2), () {
-            _ref?.read(raisedHandMeetingProvider.notifier).state = '';
-          });
-        } else if (message.text == 'mute_all') {
-          _hostMute = true;
-          notifyListeners();
-        } else if (message.text == 'unmute_all') {
-          _hostMute = false;
-          notifyListeners();
-        } else if (message.text == 'leave') {
-          _kickOut = true;
-          // _ref?.read(endedMeetingProvider.notifier).state = true;
-          notifyListeners();
-          return;
-        }
-      };
-    } catch (errorCode) {}
-  }
-
-  void onToggleAllMute() {
-    _allMuted = !_allMuted;
-    _engine.muteAllRemoteAudioStreams(_allMuted);
-    debugPrint('mute All $allMuted');
-    notifyListeners();
-  }
+  // void onToggleAllMute() {
+  //   _allMuted = !_allMuted;
+  //   _engine.muteAllRemoteAudioStreams(_allMuted);
+  //   debugPrint('mute All $allMuted');
+  //   notifyListeners();
+  // }
 
   void updateIndex(int index) {
     _indexValue = index;
@@ -439,53 +597,47 @@ class GroupCallProvider extends ChangeNotifier {
   }
 
   void _updateMemberList() async {
-    if (_rtmChannel == null) {
-      notifyListeners();
-      return;
-    }
-
-    // for (var e in _userList.keys) {
-    //   print('_updateMemberList : $e');
-    // }
-    _memberList.clear();
-    _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
-    for (var e in _memberList) {
-      String user = e.userId;
-
-      if (user.contains(':')) {
-        int id = int.tryParse(user.split(':')[0]) ?? 0;
-        String name = user.split(':')[1];
-        if (_userList.containsKey(id)) {
-          _userList.update(
-            id,
-            (value) {
-              value.name = name;
-              return value;
-            },
-          );
-        } else {
-          // if (id == _localUid) {
-          //   _userList.addAll({id: ConnectedUserInfo(id, name, _localView())});
-          // } else if (id != _screenShareId) {
-          //   _userList
-          //       .addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
-          // }
-          // _userList.addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
-        }
-      }
-    }
-    // if (_screenShareId == 1000) {
-    //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
-    // }
-    // _viewModels = getRenderViews();
     if (_localUserJoined) notifyListeners();
   }
 
-  void sendPeerMessage(String userId, String content) async {
-    AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
-    try {
-      await _rtmClient.sendMessageToPeer(userId, message, false, false);
-    } catch (e) {}
+  // void sendPeerMessage(String userId, String content) async {
+  //   AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
+  //   try {
+  //     await _rtmClient.sendMessageToPeer(userId, message, false, false);
+  //   } catch (e) {}
+  // }
+
+  Future<String?> endCurrentCall(
+      CallDirectionType callDirectionType, String grpName) async {
+    if (_disconnected || _userRemoteIds.length > 2) {
+      return null;
+    }
+    if (callDirectionType == CallDirectionType.outgoing) {
+      if (status == CallConnectionStatus.Connecting ||
+          status == CallConnectionStatus.Ringing) {
+        List<String> fcmIds = [];
+        for (var user in _groupCallingMembers.values) {
+          if (user.status != JoinStatus.decline &&
+              _me.id != user.contact.userId &&
+              user.contact.fcmToken?.isNotEmpty == true) {
+            fcmIds.add(user.contact.fcmToken!);
+          }
+        }
+        
+        if (fcmIds.isNotEmpty) {
+          await FCMApiService.instance.sendGroupCallEndPush(
+              fcmIds,
+              NotiConstants.actionCallEnd,
+              _me.id,
+              _groupId,
+              _callId,
+              grpName,
+              _me.image,
+              _callType == CallType.video);
+        }
+      }
+    }
+    return await _ref?.read(bMeetRepositoryProvider).leaveMeet(_callRequestId);
   }
 
   void toggleVolume() async {
@@ -543,7 +695,7 @@ class GroupCallProvider extends ChangeNotifier {
         _shareScreen = true;
         _initializingScreenShare = false;
 
-        _userList.update(
+        _groupCallingMembers.update(
           _localUid,
           (value) {
             value.widget = _localScreenView();
@@ -594,7 +746,7 @@ class GroupCallProvider extends ChangeNotifier {
         publishScreenCaptureVideo: false,
       ));
 
-      _userList.update(
+      _groupCallingMembers.update(
         _localUid,
         (value) {
           value.widget = _localView();
@@ -618,44 +770,39 @@ class GroupCallProvider extends ChangeNotifier {
     await _engine.switchCamera();
   }
 
-  Future sendMuteAll() async {
-    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('mute_all'));
-  }
-
-  Future sendRaiseHand() async {
-    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('raise_hand'));
-
-    _timer?.cancel();
-//Show to sender too
-    _ref?.read(raisedHandMeetingProvider.notifier).state =
-        S.current.bmeet_user_you;
-    _timer = Timer(const Duration(seconds: 2), () {
-      _ref?.read(raisedHandMeetingProvider.notifier).state = '';
-    });
-  }
+  // Future sendMuteAll() async {
+  //   _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('mute_all'));
+  // }
 
   // Future sendVideoOffAll() async {
   //   _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('disable_video'));
   // }
 
-  Future sendLeaveApi() async {
-    await _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave'));
-  }
+  // Future sendLeaveApi() async {
+  //   await _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave'));
+  // }
 
-  Future _leaveApi() async {
-    // await _rtmChannel?.se
-    await _rtmChannel?.leave();
-  }
+  // Future _leaveApi() async {
+  //   // await _rtmChannel?.se
+  //   await _rtmChannel?.leave();
+  // }
 
-  Future disposeAgora() async {
-    await _engine.stopPreview();
-    if (_meeting.role == 'host') {
-      await _leaveApi();
+  disconnect() async {
+    if (_disconnected) {
+      return;
     }
-    await _engine.leaveChannel();
-    await _engine.release();
-    await _rtmClient.logout();
-    await _rtmClient.destroy();
+    _disconnected = true;
+    try {
+      if (_timer?.isActive == true) {
+        _timer?.cancel();
+      }
+      setOnGoing(null);
+      await _player?.stop();
+      await _player?.dispose();
+
+      await _engine.leaveChannel();
+      await _engine.release();
+    } catch (_) {}
   }
 
   @override
@@ -666,26 +813,12 @@ class GroupCallProvider extends ChangeNotifier {
     // _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
     // clear users
 
-    disposeAgora();
+    disconnect();
+    _groupCallingMembers.clear();
     _userRemoteIds.clear();
+    _disconnected = true;
     super.dispose();
   }
-
-  // List<ViewModel> getRenderViews() {
-  //   List<ViewModel> list = [];
-  //   Set<int> users = _userRemoteIds;
-  //   bool isIMSpeaking = speakingUsers[_localUid]?.isSpeaking ?? false;
-  //   list.add(ViewModel(_localUid, 'userName', _localView(), isIMSpeaking));
-  //   for (var uid in users) {
-  //     if (uid == 1000) {
-  //       list.add(ViewModel(uid, 'userName', _remoteScreenView(), false));
-  //     } else if (uid != localUid) {
-  //       bool isSpeaking = speakingUsers[uid]?.isSpeaking ?? false;
-  //       list.add(ViewModel(uid, 'userName', _remoteView(uid), isSpeaking));
-  //     }
-  //   }
-  //   return list;
-  // }
 
   StatefulWidget _localView() {
     return AgoraVideoView(
@@ -732,8 +865,6 @@ class GroupCallProvider extends ChangeNotifier {
     );
   }
 
-  void disconnectAll() {}
-
   void startRecording() {
     // _engine.startAudioRecording(config);
   }
@@ -764,13 +895,16 @@ class GroupCallProvider extends ChangeNotifier {
 //   }
 // }
 
-class GroupCallConnectedUser {
+class GroupCallUser {
   final int uid;
-  Widget widget;
-  String name;
+  final Contacts contact;
+  Widget? widget;
+
   bool isSpeaking = false;
   bool muteAudio = false;
   bool enabledVideo = false;
-
-  GroupCallConnectedUser(this.uid, this.name, this.widget);
+  JoinStatus status = JoinStatus.ringing;
+  GroupCallUser(this.uid, this.contact, this.enabledVideo);
 }
+
+enum JoinStatus { ringing, decline, connected, ended }

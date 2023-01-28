@@ -18,6 +18,7 @@ class AttachedFileView extends StatelessWidget {
                 Radius.circular(1.w),
               ),
               child: Image(
+                fit: BoxFit.cover,
                 image: FileImage(
                     File(attFile.file.thumbPath ?? attFile.file.path)),
               ),
@@ -34,6 +35,7 @@ class AttachedFileView extends StatelessWidget {
                         Radius.circular(1.w),
                       ),
                       child: Image(
+                          fit: BoxFit.cover,
                           image: FileImage(File(
                               attFile.file.thumbPath ?? attFile.file.path))),
                     ))

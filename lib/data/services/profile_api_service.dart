@@ -58,6 +58,14 @@ class ProfileApiService {
     }
   }
 
+  // Future<NotificationsResponse> getNotificationSettings() async {
+  //   final sharedprefInstance = await SharedPreferences.getInstance();
+  //   final jsonData = sharedprefInstance.getString("NotificationSettings");
+
+  //   final notificationdata = NotificationsResponse.fromRawJson(jsonData ?? "");
+  //   return notificationdata;
+  // }
+
   Future<SubscribedCoursesResponse> getSubscribedCourses(String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
 

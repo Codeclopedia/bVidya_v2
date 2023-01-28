@@ -5,7 +5,12 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/call_helper.dart';
+import 'package:bvidya/core/helpers/group_call_helper.dart';
 import 'package:bvidya/core/sdk_helpers/group_typing_helper.dart';
+import 'package:bvidya/data/models/contact_model.dart';
+import 'package:bvidya/data/models/conversation_model.dart';
+// import 'package:bvidya/data/models/models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -16,8 +21,7 @@ import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 import '../widgets/typing_indicator.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 import '../forward_dialog.dart';
-import '/data/models/contact_model.dart';
-import '/data/models/conversation_model.dart';
+
 import '/core/utils/common.dart';
 
 import '/app.dart';
@@ -104,7 +108,7 @@ class GroupChatScreen extends HookConsumerWidget {
         body: ColouredBoxBar(
           topBar: selectedItems.isNotEmpty
               ? _menuBar(context, selectedItems, ref)
-              : _topBar(context),
+              : _topBar(context, ref),
           body: _chatList(context),
         ),
       ),
@@ -658,10 +662,15 @@ class GroupChatScreen extends HookConsumerWidget {
                   formatDateSeparator(
                       DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
                   style: TextStyle(
-                    fontFamily: kFontFamily,
-                    color: Colors.grey,
-                    fontSize: 8.sp,
-                  ),
+                      fontFamily: kFontFamily,
+                      color: AppColors.black,
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w600),
+                  // style: TextStyle(
+                  //   fontFamily: kFontFamily,
+                  //   color: Colors.grey,
+                  //   fontSize: 8.sp,
+                  // ),
                 ),
               ),
             SwipeTo(
@@ -1009,7 +1018,7 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _topBar(BuildContext context) {
+  Widget _topBar(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
       child: Row(
@@ -1069,17 +1078,35 @@ class GroupChatScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          // IconButton(
-          //   onPressed: (() {}),
-          //   icon: getSvgIcon('icon_audio_call.svg'),
-          // ),
-          // SizedBox(
-          //   width: 1.w,
-          // ),
-          // IconButton(
-          //   onPressed: (() {}),
-          //   icon: getSvgIcon('icon_video_call.svg'),
-          // ),
+          IconButton(
+            onPressed: () async {
+              final chat = await makeGroupCall(
+                  ref, context, model.groupInfo, CallType.audio);
+              if (chat != null) {
+                ref.read(groupChatProvider(model).notifier).addChat(chat);
+                setScreen(RouteList.groupChatScreen);
+              } else {
+                AppSnackbar.instance.error(context, 'Error in making call');
+              }
+            },
+            icon: getSvgIcon('icon_audio_call.svg'),
+          ),
+          SizedBox(
+            width: 1.w,
+          ),
+          IconButton(
+            onPressed: () async {
+              final chat = await makeGroupCall(
+                  ref, context, model.groupInfo, CallType.video);
+              if (chat != null) {
+                ref.read(groupChatProvider(model).notifier).addChat(chat);
+                setScreen(RouteList.groupChatScreen);
+              } else {
+                AppSnackbar.instance.error(context, 'Error in making call');
+              }
+            },
+            icon: getSvgIcon('icon_video_call.svg'),
+          ),
         ],
       ),
     );

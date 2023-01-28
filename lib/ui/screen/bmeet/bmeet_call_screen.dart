@@ -648,159 +648,154 @@ class BMeetCallScreen extends StatelessWidget {
   }
 
   Widget _toolbar() {
-    return Container(
-      // padding: EdgeInsets.only(left: 6.w, right: 5.w),
-      padding: EdgeInsets.only(top: 1.h),
-      alignment: Alignment.center,
-      child: Consumer(
-        builder: (context, ref, child) {
-          final provider = ref.watch(bMeetCallChangeProvider);
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _buildToolItemIcon(
-                text: provider.muted
-                    ? S.current.bmeet_tool_unmute
-                    : S.current.bmeet_tool_mute,
+    return Consumer(
+      builder: (context, ref, child) {
+        final provider = ref.watch(bMeetCallChangeProvider);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            _buildToolItemIcon(
+              text: provider.muted
+                  ? S.current.bmeet_tool_unmute
+                  : S.current.bmeet_tool_mute,
+              onTap: () {
+                if (provider.hostMute) {
+                  EasyLoading.showToast(
+                      S.current.bmeet_call_msg_diable_audio_host,
+                      duration: const Duration(seconds: 5),
+                      toastPosition: EasyLoadingToastPosition.bottom);
+                } else {
+                  ref.read(bMeetCallChangeProvider).onToggleMute();
+                }
+              },
+              icon: provider.muted ? Icons.mic : Icons.mic_off,
+              color: provider.muted ? Colors.white : Colors.red,
+              // child: getSvgIcon(
+              //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
+              //   width: 2.w,
+              // )
+            ),
+            _buildToolItemIcon(
+                text: provider.disableLocalCamera
+                    ? S.current.bmeet_tool_stop_video
+                    : S.current.bmeet_tool_video,
                 onTap: () {
-                  if (provider.hostMute) {
+                  if (provider.hostCamera) {
                     EasyLoading.showToast(
-                        S.current.bmeet_call_msg_diable_audio_host,
+                        S.current.bmeet_call_msg_diable_camera_host,
                         duration: const Duration(seconds: 5),
                         toastPosition: EasyLoadingToastPosition.bottom);
                   } else {
-                    ref.read(bMeetCallChangeProvider).onToggleMute();
+                    ref.read(bMeetCallChangeProvider).toggleCamera();
                   }
                 },
-                icon: provider.muted ? Icons.mic : Icons.mic_off,
-                color: provider.muted ? Colors.white : Colors.red,
+                icon: provider.disableLocalCamera
+                    ? Icons.videocam
+                    : Icons.videocam_off,
+                color: Colors.white
                 // child: getSvgIcon(
-                //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
-                //   width: 2.w,
-                // )
-              ),
-              _buildToolItemIcon(
-                  text: provider.disableLocalCamera
-                      ? S.current.bmeet_tool_stop_video
-                      : S.current.bmeet_tool_video,
-                  onTap: () {
-                    if (provider.hostCamera) {
-                      EasyLoading.showToast(
-                          S.current.bmeet_call_msg_diable_camera_host,
-                          duration: const Duration(seconds: 5),
-                          toastPosition: EasyLoadingToastPosition.bottom);
-                    } else {
-                      ref.read(bMeetCallChangeProvider).toggleCamera();
-                    }
-                  },
-                  icon: provider.disableLocalCamera
-                      ? Icons.videocam
-                      : Icons.videocam_off,
-                  color: Colors.white
-                  // child: getSvgIcon(
-                  //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
-                  ),
-
-              // provider.muted
-              //     ? Image.asset(
-              //         'assets/icons/svg/mic_off.png',
-              //         height: 3.h,
-              //         width: 3.h,
-              //       )
-              //     : SvgPicture.asset(
-              //         'assets/icons/svg/mic_icon.svg',
-              //         height: 3.h,
-              //         width: 3.h,
-              //       )),
-              // GestureDetector(
-              //     onTap: () {
-              //       _onShareWithEmptyFields(context, meetingId, 'Meeting');
-              //     },
-              //     child: SvgPicture.asset(
-              //       'assets/icons/svgs/ic_set_share.svg',
-              //       height: 3.h,
-              //       width: 3.h,
-              //       color: Colors.white,
-              //     )),
-              // SizedBox(
-              //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
-              _buildToolItem(
-                text: provider.shareScreen
-                    ? S.current.bmeet_tool_stop_sshare
-                    : S.current.bmeet_tool_share_screen,
-                onTap: () {
-                  provider.toggleShareScreen();
-                },
-                child: Center(
-                  child: provider.initializingScreenShare
-                      ? const CircularProgressIndicator()
-                      : Icon(
-                          provider.shareScreen
-                              ? Icons.stop_screen_share
-                              : Icons.screen_share,
-                          color: Colors.white,
-                          size: 6.w,
-                        ),
+                //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
                 ),
+
+            // provider.muted
+            //     ? Image.asset(
+            //         'assets/icons/svg/mic_off.png',
+            //         height: 3.h,
+            //         width: 3.h,
+            //       )
+            //     : SvgPicture.asset(
+            //         'assets/icons/svg/mic_icon.svg',
+            //         height: 3.h,
+            //         width: 3.h,
+            //       )),
+            // GestureDetector(
+            //     onTap: () {
+            //       _onShareWithEmptyFields(context, meetingId, 'Meeting');
+            //     },
+            //     child: SvgPicture.asset(
+            //       'assets/icons/svgs/ic_set_share.svg',
+            //       height: 3.h,
+            //       width: 3.h,
+            //       color: Colors.white,
+            //     )),
+            // SizedBox(
+            //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
+            _buildToolItem(
+              text: provider.shareScreen
+                  ? S.current.bmeet_tool_stop_sshare
+                  : S.current.bmeet_tool_share_screen,
+              onTap: () {
+                provider.toggleShareScreen();
+              },
+              child: Center(
+                child: provider.initializingScreenShare
+                    ? const CircularProgressIndicator()
+                    : Icon(
+                        provider.shareScreen
+                            ? Icons.stop_screen_share
+                            : Icons.screen_share,
+                        color: Colors.white,
+                        size: 6.w,
+                      ),
               ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    _buildToolItemIcon(
-                        text: S.current.bmeet_tool_participants,
-                        onTap: () {
-                          _showParticipantsList(context);
-                        },
-                        icon: Icons.people,
-                        color: Colors.white
-                        // child: getSvgIcon('vc_participants.svg'),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  _buildToolItemIcon(
+                      text: S.current.bmeet_tool_participants,
+                      onTap: () {
+                        _showParticipantsList(context);
+                      },
+                      icon: Icons.people,
+                      color: Colors.white
+                      // child: getSvgIcon('vc_participants.svg'),
+                      ),
+                  if (provider.memberList.isNotEmpty)
+                    Positioned(
+                      right: 2.w,
+                      top: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(0.5.h),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.yellowAccent,
                         ),
-                    if (provider.memberList.isNotEmpty)
-                      Positioned(
-                        right: 2.w,
-                        top: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(0.5.h),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.yellowAccent,
-                          ),
-                          alignment: Alignment.topRight,
-                          child: Text(
-                            "${provider.memberList.length}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 8.sp,
-                                letterSpacing: .5,
-                                color: Colors.black),
-                          ),
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          "${provider.memberList.length}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 8.sp,
+                              letterSpacing: .5,
+                              color: Colors.black),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
-              _buildToolItem(
-                text: S.current.bmeet_tool_raisehand,
-                onTap: () {
-                  provider.sendRaiseHand();
-                },
-                child: getSvgIcon('vc_raise_hand.svg'),
+            ),
+            _buildToolItem(
+              text: S.current.bmeet_tool_raisehand,
+              onTap: () {
+                provider.sendRaiseHand();
+              },
+              child: getSvgIcon('vc_raise_hand.svg'),
+            ),
+            _buildToolItem(
+              text: S.current.bmeet_tool_more,
+              onTap: () {
+                _addMoreDetails(context, provider);
+              },
+              child: const Icon(
+                Icons.more_horiz,
+                color: Colors.white,
               ),
-              _buildToolItem(
-                text: S.current.bmeet_tool_more,
-                onTap: () {
-                  _addMoreDetails(context, provider);
-                },
-                child: const Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 

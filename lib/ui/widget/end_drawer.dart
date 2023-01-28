@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 
 import '/ui/widget/drawer/curved_drawer.dart';
 import '/core/constants.dart';
@@ -34,21 +34,6 @@ class EndDrawer extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Positioned(
-          top: 86.85.h,
-          right: 17.5.w,
-          child: InkWell(
-            onTap: () => scaffoldKey.currentState?.closeEndDrawer(),
-            child: SvgPicture.asset(
-              'assets/icons/svgs/arc_type1.svg',
-              color: currentIndex == DrawerMenu.bChat
-                  ? AppColors.yellowAccent
-                  : AppColors.drawerBackgroundColor,
-              width: 8.w,
-              height: 12.h,
-            ),
-          ),
-        ),
         Align(
           alignment: Alignment.centerRight,
           child: Container(
