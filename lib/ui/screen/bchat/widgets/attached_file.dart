@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/core/constants.dart';
 
 import '../models/attach_type.dart';
 import '/core/ui_core.dart';
@@ -12,6 +13,7 @@ class AttachedFileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(2.w),
       child: attFile.messageType == MessageType.IMAGE
           ? ClipRRect(
               borderRadius: BorderRadius.all(
@@ -25,11 +27,11 @@ class AttachedFileView extends StatelessWidget {
             )
           : (attFile.messageType == MessageType.VIDEO
               ? (attFile.file.thumbPath == null
-                  ? SizedBox(
-                      width: 20.w,
-                      height: 20.w,
-                      child: getSvgIcon('icon_chat_media.svg'),
-                    )
+                  ? getSvgIcon(
+                      width: 10.h - 4.w,
+                      'icon_chat_media.svg',
+                      color: AppColors.primaryColor,
+                      fit: BoxFit.contain)
                   : ClipRRect(
                       borderRadius: BorderRadius.all(
                         Radius.circular(1.w),
@@ -39,11 +41,10 @@ class AttachedFileView extends StatelessWidget {
                           image: FileImage(File(
                               attFile.file.thumbPath ?? attFile.file.path))),
                     ))
-              : SizedBox(
-                  width: 20.w,
-                  height: 20.w,
-                  child: getSvgIcon('icon_chat_doc.svg'),
-                )),
+              : getSvgIcon('icon_chat_doc.svg',
+                  color: AppColors.primaryColor,
+                  width: 10.h - 4.w,
+                  fit: BoxFit.contain)),
     );
   }
 }

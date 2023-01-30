@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import 'package:bvidya/core/utils/connectycubekit.dart';
+// import '/core/utils/connectycubekit.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -102,7 +102,7 @@ Future<bool> receiveCall(BuildContext context, String fromId,
     'image': callMessegeBody.fromImage,
     'call_info': callMessegeBody.callBody,
     'call_direction_type': CallDirectionType.incoming,
-    'prev_screen': direct?'': Routes.getCurrentScreen(),
+    'prev_screen': direct ? '' : Routes.getCurrentScreen(),
     'user_id': fromId
   };
 

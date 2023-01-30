@@ -1,4 +1,4 @@
-import '/data/models/models.dart';
+// import '/data/models/models.dart';
 
 import '/core/state.dart';
 import '/data/repository/auth_repository.dart';
@@ -20,9 +20,9 @@ final loginRepositoryProvider = Provider<AuthRepository>(
   (_) => AuthRepository(_.read(apiServiceProvider)),
 );
 
-final loadUserProvider = FutureProvider<User?>(
-  (ref) => ref.watch(loginRepositoryProvider).init(),
-);
+// final loadUserProvider = FutureProvider<User?>(
+//   (ref) => ref.watch(loginRepositoryProvider).init(),
+// );
 
 final authLoadProvider = FutureProvider.autoDispose(
   (ref) async => ref.watch(loginRepositoryProvider).init(),

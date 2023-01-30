@@ -53,6 +53,7 @@ class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
   }
 
   void clear() {
+    _callListMap.clear();
     state = [];
   }
 
@@ -109,6 +110,7 @@ class GroupCallMessageNotifier extends StateNotifier<List<GroupCallListModel>> {
   }
 
   void clear() {
+    _callListMap.clear();
     state = [];
   }
 

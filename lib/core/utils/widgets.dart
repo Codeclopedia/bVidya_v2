@@ -156,12 +156,15 @@ ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body) {
 }
 
 SvgPicture getSvgIcon(String name,
-        {double? width = 24.0, Color? color, double height = 24.0}) =>
+        {double? width = 24.0,
+        Color? color,
+        double height = 24.0,
+        BoxFit fit = BoxFit.fitWidth}) =>
     SvgPicture.asset(
       'assets/icons/svgs/$name',
       width: width,
       color: color,
-      fit: BoxFit.fitWidth,
+      fit: fit,
     );
 
 Image getPngIcon(String name,

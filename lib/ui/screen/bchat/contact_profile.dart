@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';

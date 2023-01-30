@@ -12,7 +12,7 @@ final forwardedProvider =
     StateProvider.family.autoDispose<bool, String>((ref, id) => false);
 
 Future showForwardList(
-    BuildContext context, ChatMessage message, String exceptId) async {
+    BuildContext context, List<ChatMessage> messages, String exceptId) async {
   final User? user = await getMeAsUser();
   if (user == null) return;
   showModalBottomSheet(
@@ -23,20 +23,20 @@ Future showForwardList(
       return GestureDetector(
         onTap: () => Navigator.of(context).pop(),
         child: ForwardContactListDialog(
-            message: message, exceptId: exceptId, user: user),
+            messages: messages, exceptId: exceptId, user: user),
       );
     },
   );
 }
 
 class ForwardContactListDialog extends StatelessWidget {
-  final ChatMessage message;
+  final List<ChatMessage> messages;
   final String exceptId;
 
   final User user;
   const ForwardContactListDialog(
       {Key? key,
-      required this.message,
+      required this.messages,
       required this.exceptId,
       required this.user})
       : super(key: key);
@@ -89,8 +89,18 @@ class ForwardContactListDialog extends StatelessWidget {
                                         ref.watch(
                                             forwardedProvider(element.id)),
                                         () async {
-                                      final sent = await _sendMessage(element);
-                                      if (sent != null) {
+                                      bool sent = false;
+                                      for (var message in messages) {
+                                        final msg = await _sendMessage(
+                                            element, message);
+                                        if (msg != null) {
+                                          sent = true;
+                                        } else {
+                                          break;
+                                        }
+                                      }
+                                      // final sent = await _sendMessage(element);
+                                      if (sent) {
                                         ref
                                             .read(forwardedProvider(element.id)
                                                 .notifier)
@@ -213,11 +223,12 @@ class ForwardContactListDialog extends StatelessWidget {
     );
   }
 
-  Future<ChatMessage?> _sendMessage(ForwardModel model) async {
+  Future<ChatMessage?> _sendMessage(
+      ForwardModel model, ChatMessage message) async {
     try {
       ChatMessage msg = ChatMessage.createSendMessage(
           body: message.body, to: model.id, chatType: model.chatType);
-          
+
       if (model.chatType == ChatType.GroupChat) {
         if (msg.body.type == MessageType.TXT) {
           msg.attributes = {

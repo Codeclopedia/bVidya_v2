@@ -40,15 +40,15 @@ Future joinGroupCall(BuildContext context, WidgetRef ref, String callId,
   showLoading(ref);
 }
 
-Future<bool> receiveGroupCall(
-    BuildContext context,
-    int requestId,
-    String membersIds,
-    String callId,
-    String groupId,
-    String grpName,
-    CallType callType,
-    bool direct) async {
+Future<bool> receiveGroupCall(BuildContext context,
+    {required int requestId,
+    required String membersIds,
+    required String callId,
+    required String groupId,
+    required String grpName,
+    required String grpImage,
+    required CallType callType,
+    required bool direct}) async {
   User? user = await getMeAsUser();
   if (user == null) return false;
 
@@ -71,6 +71,7 @@ Future<bool> receiveGroupCall(
     'call_type': callType,
     // 'call_direction': CallDirectionType.incoming,
     'user': user,
+    'group_image': grpImage,
     'members_ids': membersIds,
     'prev_screen': direct ? '' : Routes.getCurrentScreen()
   };
@@ -155,10 +156,11 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
         'group_id': group.groupId,
         'group_name': group.name,
         'members': contacts,
-        'request_call_id': scheduledMeeting.id,
-        'call_id': scheduledMeeting.meetingId,
+        'request_call_id': callMessageBody.requestId,
+        'call_id': callMessageBody.callId,
         'meeting': meeting,
         'call_type': callType,
+        'group_image': callMessageBody.groupImage,
         // 'rtm_token': userRTMToken,
         'call_direction': CallDirectionType.outgoing,
         'user': me,

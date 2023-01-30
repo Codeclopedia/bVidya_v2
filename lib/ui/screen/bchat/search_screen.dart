@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 
 import '../../../controller/providers/bchat/contact_list_provider.dart';
 import '/ui/dialog/add_contact_dialog.dart';

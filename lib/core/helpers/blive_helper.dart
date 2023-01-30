@@ -37,13 +37,17 @@ Future joinBroadcast(
   //   hideLoading(ref);
   //   return;
   // }
+
   if (liveClassResponse.status != 'successfull' ||
       liveClassResponse.body == null) {
     hideLoading(ref);
-    AppSnackbar.instance.error(
-        context,
-        liveClassResponse.message ??
-            'Error joing broadcast, Please try after some time');
+    liveClassResponse.message == "Incorrect Broadcast ID"
+        ? AppSnackbar.instance.error(context,
+            'Webinar has not started yet. You can join once the webinar is started.')
+        : AppSnackbar.instance.error(
+            context,
+            liveClassResponse.message ??
+                'Error joing webinar, Please try after some time');
 
     return;
   }
@@ -54,18 +58,18 @@ Future joinBroadcast(
     hideLoading(ref);
     if (userToken == null) {
       AppSnackbar.instance
-          .error(context, 'Error joing broadcast, Please try after some time');
+          .error(context, 'Error joing webinar, Please try after some time');
       return;
     }
     if (userToken.roomStatus == 'Locked' || userToken.appid.isEmpty) {
-      AppSnackbar.instance.error(context, 'Broadcast not live or full');
+      AppSnackbar.instance.error(context, 'Webinar not live or full');
       return;
     }
 
     final user = await getMeAsUser();
     if (user == null) {
       AppSnackbar.instance
-          .error(context, 'Error joing broadcast, Please try after some time');
+          .error(context, 'Error joing Webinar, Please try after some time');
       return;
     }
     final args = <String, dynamic>{
@@ -79,6 +83,6 @@ Future joinBroadcast(
     AppSnackbar.instance.error(
         context,
         liveClassResponse.message ??
-            'Error joing broadcast, Please try after some time');
+            'Error joing webinar, Please try after some time');
   }
 }

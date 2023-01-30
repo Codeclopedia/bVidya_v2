@@ -1,8 +1,8 @@
-import 'package:bvidya/controller/profile_providers.dart';
-import 'package:bvidya/core/ui_core.dart';
-import 'package:bvidya/ui/screen/blearn/components/common.dart';
-import 'package:bvidya/ui/widget/sliding_tab.dart';
-import 'package:bvidya/ui/widgets.dart';
+import '/controller/profile_providers.dart';
+import '/core/ui_core.dart';
+import '/ui/screen/blearn/components/common.dart';
+import '/ui/widget/sliding_tab.dart';
+import '/ui/widgets.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/state.dart';

@@ -14,7 +14,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '/data/services/fcm_api_service.dart';
 import '/core/utils/callkit_utils.dart';
-import '../p2p_call_provider.dart';
+// import '../p2p_call_provider.dart';
 import '/controller/bmeet_providers.dart';
 import '/core/constants.dart';
 import '/core/helpers/call_helper.dart';
@@ -54,8 +54,8 @@ class GroupCallProvider extends ChangeNotifier {
   bool get isPreviewReady => _isPreviewReady;
 
 //
-  bool _allMuted = true;
-  bool get allMuted => _allMuted;
+  // bool _allMuted = true;
+  // bool get allMuted => _allMuted;
 
 //
   // bool _hostDisableCamera = false;
@@ -85,10 +85,11 @@ class GroupCallProvider extends ChangeNotifier {
   Set<int> get remoteUsersIds => _userRemoteIds;
   final Set<int> _userRemoteIds = HashSet();
 
-  CallConnectionStatus _status = CallConnectionStatus.Connecting;
+  // CallConnectionStatus _status = CallConnectionStatus.Connecting;
 
-  CallConnectionStatus get status => _status;
+  // CallConnectionStatus get status => _status;
 
+  late CallDirectionType _callDirectionType;
 //
   final Map<int, GroupCallUser> _groupCallingMembers = <int, GroupCallUser>{};
   Map<int, GroupCallUser> get userList => _groupCallingMembers;
@@ -148,7 +149,10 @@ class GroupCallProvider extends ChangeNotifier {
     _callRequestId = requestId;
     _isReceiving = true;
     _groupId = groupId;
+    _callDirectionType = CallDirectionType.incoming;
     // final grpInfo = ref.read(groupMembersInfo(_groupId)).valueOrNull;
+
+    print('receive callId:=> $_callId');
 
     final List<Contacts> contacts = [];
     if (membersIds.isNotEmpty) {
@@ -160,15 +164,8 @@ class GroupCallProvider extends ChangeNotifier {
       }
     }
 
-    print('my_fcm ${_me.fcmToken}');
-    // if (grpInfo == null || grpInfo.members.isEmpty) {
-    //   final contactList =
-    //       await BchatGroupManager.fetchContactsOfGroup(ref, groupId);
-    //   contacts.addAll(
-    //       contactList.map((e) => Contacts.fromContact(e, ContactStatus.group)));
-    // } else {
-    //   contacts.addAll(grpInfo.members);
-    // }
+    // print('my_fcm ${_me.fcmToken}');
+
     if (contacts.isEmpty) {
       setError('Error getting contacts');
       return;
@@ -201,8 +198,8 @@ class GroupCallProvider extends ChangeNotifier {
         }
       }
       for (Contacts contact in contacts) {
-        print('contact fcm ${contact.fcmToken}');
-        userList.addAll({
+        // print('contact fcm ${contact.fcmToken}');
+        _groupCallingMembers.addAll({
           contact.userId: GroupCallUser(
               contact.userId, contact, _callType == CallType.video)
         });
@@ -233,12 +230,14 @@ class GroupCallProvider extends ChangeNotifier {
     _callId = callId;
     _callRequestId = callRequestId;
     _groupId = groupId;
+    _callDirectionType = CallDirectionType.outgoing;
+    print('outgoing callId:=> $_callId');
     // _memberContacts.addAll(memberContacts);
-    print('my_fcm ${_me.fcmToken}');
+    // print('my_fcm ${_me.fcmToken}');
     // _callDirectiontype = callDirectiontype;
     for (Contacts contact in memberContacts) {
-      print('contact fcm ${contact.fcmToken}');
-      userList.addAll({
+      // print('contact fcm ${contact.fcmToken}');
+      _groupCallingMembers.addAll({
         contact.userId:
             GroupCallUser(contact.userId, contact, _callType == CallType.video)
       });
@@ -254,64 +253,45 @@ class GroupCallProvider extends ChangeNotifier {
     }
     setOnGoing(_callId);
     FirebaseMessaging.onMessage.listen((message) {
-      print('onMessage Group Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeGroupCall) {
         final String? action = message.data['action'];
 
         if (action == NotiConstants.actionCallDecline ||
             action == NotiConstants.actionCallDeclineBusy ||
             action == NotiConstants.actionCallEnd) {
+          // print('onMessage Group Call Screen=> ${message.data}');
           String callId = message.data['call_id'];
           String grpId = message.data['grp_id'];
+          // print('callId=>$_callId : groupId =>$_groupId');
           if (callId != _callId || grpId != _groupId) {
             print('Invalid group');
             return;
           }
           int fromId = int.parse(message.data['from_id']);
-          _groupCallingMembers.update(fromId, ((value) {
-            value.status = action == NotiConstants.actionCallEnd
-                ? JoinStatus.ended
-                : JoinStatus.decline;
-            value.widget = null;
-            return value;
-          }));
-
-          if (!_disconnected && !_endCall) {
-            bool isAllRejected = true;
-            for (var user in _groupCallingMembers.values) {
-              if (user.status != JoinStatus.ended &&
-                  user.status != JoinStatus.decline) {
-                isAllRejected = false;
-                break;
-              }
-            }
-            _endCall = isAllRejected;
-            if (_endCall) {
-              if (_timer?.isActive == true) {
-                _timer?.cancel();
-                _player?.stop();
-                _callTimerProvider.reset();
-                clearCall();
-              }
-            }
-
-            if (action == NotiConstants.actionCallDeclineBusy) {
-              // Fluttertoast.showToast(
-              //     msg: "${body.calleeName} is  Busy",
-              //     toastLength: Toast.LENGTH_SHORT,
-              //     gravity: ToastGravity.CENTER,
-              //     timeInSecForIosWeb: 1,
-              //     backgroundColor: Colors.red,
-              //     textColor: Colors.white,
-              //     fontSize: 16.0);
-            }
-            // _endCall = true;
-            // _read.reset();
-            // clearCall();
-            // activeCallId = null;
-            // _updateMemberList();
-            notifyListeners();
+          // print('fromId $fromId');
+          if (_groupCallingMembers.containsKey(fromId)) {
+            _groupCallingMembers.update(fromId, ((value) {
+              value.status = action == NotiConstants.actionCallEnd
+                  ? JoinStatus.ended
+                  : JoinStatus.decline;
+              value.widget = null;
+              return value;
+            }));
+          } else {
+            print('Invalid group memeber $fromId');
           }
+
+          if (action == NotiConstants.actionCallDeclineBusy) {
+            // Fluttertoast.showToast(
+            //     msg: "${body.calleeName} is  Busy",
+            //     toastLength: Toast.LENGTH_SHORT,
+            //     gravity: ToastGravity.CENTER,
+            //     timeInSecForIosWeb: 1,
+            //     backgroundColor: Colors.red,
+            //     textColor: Colors.white,
+            //     fontSize: 16.0);
+          }
+          maybeDropCall();
         }
       }
     });
@@ -378,7 +358,7 @@ class GroupCallProvider extends ChangeNotifier {
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
             _localUserJoined = true;
             _localUid = connection.localUid ?? 0;
-            _status = CallConnectionStatus.Ringing;
+            // _status = CallConnectionStatus.Ringing;
             _outgoingTimer();
             // _userRemoteIds.add(_localUid);
             _groupCallingMembers.update(_localUid, ((value) {
@@ -395,13 +375,14 @@ class GroupCallProvider extends ChangeNotifier {
             _updateMemberList();
           },
           onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-            if (_status == CallConnectionStatus.Ringing) {
-              _status == CallConnectionStatus.Connected;
+            if (_userRemoteIds.isEmpty) {
+              // _status == CallConnectionStatus.Connected;
               _callTimerProvider.start();
               _timer?.cancel();
               _player?.stop();
             }
 
+            _userRemoteIds.add(remoteUid);
             _groupCallingMembers.update(remoteUid, ((value) {
               value.status = JoinStatus.connected;
               if (value.enabledVideo) {
@@ -459,6 +440,7 @@ class GroupCallProvider extends ChangeNotifier {
               value.widget = null;
               return value;
             }));
+            maybeDropCall();
             // _userList.removeWhere((key, value) => key == remoteUid);
 
             // if (remoteUid < 1000000) {
@@ -469,7 +451,7 @@ class GroupCallProvider extends ChangeNotifier {
 
             // _userRemoteIds.removeWhere((item) => item == remoteUid);
             // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
-            _updateMemberList();
+            // _updateMemberList();
           },
           onAudioVolumeIndication:
               (connection, speakers, speakerNumber, totalVolume) {
@@ -586,25 +568,18 @@ class GroupCallProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void onToggleAllMute() {
-  //   _allMuted = !_allMuted;
-  //   _engine.muteAllRemoteAudioStreams(_allMuted);
-  //   debugPrint('mute All $allMuted');
-  //   notifyListeners();
-  // }
-
   void updateIndex(int index) {
     _indexValue = index;
     notifyListeners();
   }
 
-  bool checkNoSignleDigit(int no) {
-    int len = no.toString().length;
-    if (len == 1) {
-      return true;
-    }
-    return false;
-  }
+  // bool checkNoSignleDigit(int no) {
+  //   int len = no.toString().length;
+  //   if (len == 1) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   void _updateMemberList() async {
     if (_localUserJoined) notifyListeners();
@@ -617,38 +592,37 @@ class GroupCallProvider extends ChangeNotifier {
   //   } catch (e) {}
   // }
 
-  Future<String?> endCurrentCall(
-      CallDirectionType callDirectionType, String grpName) async {
+  Future<String?> endCurrentCall(String grpName) async {
     if (_disconnected || _userRemoteIds.length > 2) {
       return null;
     }
-    if (callDirectionType == CallDirectionType.outgoing) {
-      if (status == CallConnectionStatus.Connecting ||
-          status == CallConnectionStatus.Ringing) {
-        List<String> fcmIds = [];
-        for (var user in _groupCallingMembers.values) {
-          if (user.status != JoinStatus.decline &&
-              user.status != JoinStatus.ended &&
-              _me.id != user.contact.userId &&
-              user.contact.fcmToken?.isNotEmpty == true) {
-            fcmIds.add(user.contact.fcmToken!);
-          }
-        }
-
-        if (fcmIds.isNotEmpty) {
-          print('fcm =>${fcmIds}');
-          await FCMApiService.instance.sendGroupCallEndPush(
-              fcmIds,
-              NotiConstants.actionCallEnd,
-              _me.id,
-              _groupId,
-              _callId,
-              grpName,
-              _me.image,
-              _callType == CallType.video);
-        }
+    // if (_callDirectionType == CallDirectionType.outgoing) {
+    //   if (status == CallConnectionStatus.Connecting ||
+    //       status == CallConnectionStatus.Ringing) {
+    List<String> fcmIds = [];
+    for (var user in _groupCallingMembers.values) {
+      if (user.status != JoinStatus.decline &&
+          user.status != JoinStatus.ended &&
+          _me.id != user.contact.userId &&
+          user.contact.fcmToken?.isNotEmpty == true) {
+        fcmIds.add(user.contact.fcmToken!);
       }
     }
+
+    if (fcmIds.isNotEmpty) {
+      // print('fcm =>${fcmIds}');
+      await FCMApiService.instance.sendGroupCallEndPush(
+          fcmIds,
+          NotiConstants.actionCallEnd,
+          _me.id,
+          _groupId,
+          _callId,
+          grpName,
+          _me.image,
+          _callType == CallType.video);
+    }
+    // }
+    // }
     return await _ref?.read(bMeetRepositoryProvider).leaveMeet(_callRequestId);
   }
 
@@ -780,6 +754,40 @@ class GroupCallProvider extends ChangeNotifier {
 
   void onSwitchCamera() async {
     await _engine.switchCamera();
+  }
+
+  void maybeDropCall() {
+    if (!_disconnected && !_endCall) {
+      bool isAllRejected = true;
+      for (var user in _groupCallingMembers.values) {
+        if (user.contact.userId == _me.id) continue;
+        // print('user ${user.contact.name} => ${user.status}');
+        if (user.status != JoinStatus.ended &&
+            user.status != JoinStatus.decline) {
+          isAllRejected = false;
+          break;
+        }
+      }
+      print('$isAllRejected');
+      if (isAllRejected && _callDirectionType == CallDirectionType.outgoing) {
+        if (_userRemoteIds.isEmpty) {
+          _timer?.cancel();
+          _player?.stop();
+          _callTimerProvider.reset();
+        }
+      }
+      _endCall = isAllRejected;
+      if (_endCall) {
+        clearCall();
+      }
+
+      // _endCall = true;
+      // _read.reset();
+      // clearCall();
+      // activeCallId = null;
+      // _updateMemberList();
+      notifyListeners();
+    }
   }
 
   // Future sendMuteAll() async {

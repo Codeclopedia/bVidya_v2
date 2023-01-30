@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/call_helper.dart';
-import 'package:bvidya/core/helpers/group_call_helper.dart';
+import '/core/helpers/call_helper.dart';
+import '/core/helpers/group_call_helper.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/controller/providers/bchat/groups_conversation_provider.dart';
@@ -28,7 +28,8 @@ class GroupInfoScreen extends HookConsumerWidget {
   final GroupConversationModel group;
   static final imageSize = 28.w;
   final bool fromChat;
-  const GroupInfoScreen({super.key, required this.group,this.fromChat = false});
+  const GroupInfoScreen(
+      {super.key, required this.group, this.fromChat = false});
 
   static final List<Contacts> contacts = [];
   @override

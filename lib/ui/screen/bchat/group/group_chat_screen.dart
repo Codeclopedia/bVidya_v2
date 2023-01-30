@@ -5,7 +5,6 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import '/data/models/models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -13,9 +12,16 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '/app.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/group_call_helper.dart';
 import '/core/sdk_helpers/group_typing_helper.dart';
+import '/core/constants.dart';
+import '/core/state.dart';
+import '/core/ui_core.dart';
+import '/core/utils.dart';
+import '/core/utils/date_utils.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 
@@ -25,7 +31,6 @@ import '../../../dialog/forward_dialog.dart';
 
 import '/core/utils/common.dart';
 
-import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
 import '/ui/base_back_screen.dart';
 import '/ui/dialog/message_menu_popup.dart';
@@ -33,13 +38,7 @@ import '/ui/dialog/message_menu_popup.dart';
 import '../widgets/attached_file.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '../models/attach_type.dart';
-import '/core/sdk_helpers/bchat_handler.dart';
 
-import '/core/constants.dart';
-import '/core/state.dart';
-import '/core/ui_core.dart';
-import '/core/utils.dart';
-import '/core/utils/date_utils.dart';
 import '../../../widgets.dart';
 import '../models/reply_model.dart';
 import '../../../widget/chat_input_box.dart';
@@ -168,7 +167,6 @@ class GroupChatScreen extends HookConsumerWidget {
               .read(groupTypingUsersProvider(model.id).notifier)
               .removeTyping(msg.from);
         }
-
         ref
             .read(groupConversationProvider.notifier)
             .updateConversationMessage(msg, msg.conversationId!);
@@ -351,40 +349,114 @@ class GroupChatScreen extends HookConsumerWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2.w),
                       alignment: Alignment.center,
                       constraints: BoxConstraints(
-                        minHeight: 5.h,
-                        maxHeight: 20.h,
+                        minHeight: 2.h,
+                        maxHeight: 10.h,
                       ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.w),
                       decoration: BoxDecoration(
+                          border: Border.all(
+                              color: AppColors.primaryColor.withOpacity(0.5)),
                           color: AppColors.cardWhite,
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                      child: Stack(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AttachedFileView(
-                            attFile: attFile,
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: IconButton(
-                              onPressed: () {
-                                ref.read(attachedGroupFile.notifier).state =
-                                    null;
-                              },
-                              icon: const Icon(Icons.close, color: Colors.red),
-                            ),
-                          ),
-                          if (progress > 0)
-                            Center(
-                              child: CircularProgressIndicator(
-                                value: progress.toDouble(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                S.current.bmeet_user_you,
+                                style: TextStyle(
+                                    fontFamily: kFontFamily,
+                                    color: AppColors.primaryColor,
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600),
                               ),
-                            )
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.image,
+                                    size: 4.w,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(width: 1.w),
+                                  Text(
+                                    attFile.file.path.split('/').last,
+                                    style: TextStyle(
+                                        fontFamily: kFontFamily,
+                                        color: Colors.grey,
+                                        fontSize: 10.sp),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          Stack(
+                            children: [
+                              SizedBox(
+                                width: 20.w,
+                                child: AttachedFileView(
+                                  attFile: attFile,
+                                ),
+                              ),
+                              if (progress > 0)
+                                Center(
+                                  child: CircularProgressIndicator(
+                                      value: progress.toDouble()),
+                                )
+                            ],
+                          ),
+                          // IconButton(
+                          //   onPressed: () {
+                          //     ref.read(attachedGroupFile.notifier).state = null;
+                          //   },
+                          //   icon: const Icon(Icons.close, color: Colors.red),
+                          // )
                         ],
                       ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: Container(
+                  //     alignment: Alignment.center,
+                  //     constraints: BoxConstraints(
+                  //       minHeight: 5.h,
+                  //       maxHeight: 20.h,
+                  //     ),
+                  //     decoration: BoxDecoration(
+                  //         color: AppColors.cardWhite,
+                  //         borderRadius: BorderRadius.all(Radius.circular(3.w))),
+                  //     child: Stack(
+                  //       children: [
+                  //         AttachedFileView(
+                  //           attFile: attFile,
+                  //         ),
+                  //         Positioned(
+                  //           right: 0,
+                  //           top: 0,
+                  //           child: IconButton(
+                  //             onPressed: () {
+                  //               ref.read(attachedGroupFile.notifier).state =
+                  //                   null;
+                  //             },
+                  //             icon: const Icon(Icons.close, color: Colors.red),
+                  //           ),
+                  //         ),
+                  //         if (progress > 0)
+                  //           Center(
+                  //             child: CircularProgressIndicator(
+                  //               value: progress.toDouble(),
+                  //             ),
+                  //           )
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   InkWell(
                     onTap: () async {
                       final ChatMessage msg;
@@ -437,7 +509,8 @@ class GroupChatScreen extends HookConsumerWidget {
                         size: 20.0,
                       ),
                     ),
-                  )
+                  ),
+                  SizedBox(width: 2.w),
                 ],
               );
       },
@@ -741,7 +814,7 @@ class GroupChatScreen extends HookConsumerWidget {
     } else if (action == 1) {
       //Forward
       // AppSnackbar.instance.message(context, 'Need to implement');
-      await showForwardList(context, message, model.id);
+      await showForwardList(context, [message], model.id);
     } else if (action == 2) {
       //Reply
       String name = message.attributes?['from_name'] ?? '';
@@ -951,14 +1024,17 @@ class GroupChatScreen extends HookConsumerWidget {
             ),
           ),
           Visibility(
-            visible: selectedItems.length == 1 &&
-                selectedItems.first.body.type != MessageType.CUSTOM,
+            visible:
+                // selectedItems.length == 1 &&
+                selectedItems
+                    .where((e) => e.body.type == MessageType.CUSTOM)
+                    .isEmpty,
+            // selectedItems.first.body.type != MessageType.CUSTOM,
             child: Row(
               children: [
                 IconButton(
                   onPressed: () async {
-                    await showForwardList(
-                        context, selectedItems.first, model.id);
+                    await showForwardList(context, selectedItems, model.id);
 
                     // ref
                     //     .read(bhatMessagesProvider(model).notifier)

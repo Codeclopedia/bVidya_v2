@@ -97,6 +97,7 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                       textDirection: TextDirection.ltr,
                       child: TextField(
                         focusNode: focusNode,
+                        
                         controller: _textController,
                         onChanged: (value) {
                           // WidgetsBinding.instance

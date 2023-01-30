@@ -4,10 +4,10 @@
 
 import 'dart:convert';
 
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
-import 'package:bvidya/core/helpers/group_call_helper.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_handler.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/core/helpers/group_call_helper.dart';
+import '/core/sdk_helpers/bchat_handler.dart';
+import '/data/models/call_message_body.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 //import '/app.dart';
@@ -62,7 +62,7 @@ class SplashScreen extends ConsumerWidget {
       (previous, next) async {
         if (next.value != null) {
           final startTime = DateTime.now().millisecondsSinceEpoch;
-          await ref.read(userAuthChangeProvider).loadUser();
+          await ref.read(userLoginStateProvider.notifier).loadUser();
 
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
@@ -129,8 +129,15 @@ class SplashScreen extends ConsumerWidget {
         String grpId = activeCallMap!['grp_id'];
         GroupCallMessegeBody body =
             GroupCallMessegeBody.fromJson(jsonDecode(activeCallMap!['body']));
-        return await receiveGroupCall(context, body.requestId, body.memberIds,
-            body.callId, grpId, body.groupName, body.callType,true);
+        return await receiveGroupCall(context,
+            requestId: body.requestId,
+            membersIds: body.memberIds,
+            callId: body.callId,
+            groupId: grpId,
+            grpName: body.groupName,
+            grpImage: body.groupImage,
+            callType: body.callType,
+            direct: true);
       } else if (type == NotiConstants.typeCall) {
         String fromId = activeCallMap!['from_id'];
         CallMessegeBody callMessegeBody =

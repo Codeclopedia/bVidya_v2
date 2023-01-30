@@ -17,6 +17,7 @@ import '/core/utils.dart';
 // import '/core/utils/chat_utils.dart';
 // import 'controller/providers/bchat/chat_conversation_provider.dart';
 import 'controller/providers/bchat/groups_conversation_provider.dart';
+import 'controller/providers/user_auth_provider.dart';
 import 'core/constants.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
@@ -75,6 +76,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
 
     initLoading();
     _firebase();
+
     NotificationController.startListeningNotificationEvents();
   }
 
@@ -189,6 +191,33 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(userLoginStateProvider, (previous, next) {
+      if (previous != null && next == null) {
+        BuildContext? cntx = navigatorKey.currentContext;
+        if (cntx != null) {
+          Navigator.pushNamedAndRemoveUntil(
+              cntx, RouteList.login, (route) => false);
+        }
+      }
+    });
+    // ref.listen(userLoginStateProvider),
+    //     (previous, next) {
+    //   if (previous != null && next == null) {
+    //     // ref.read(userAuthChangeProvider).setUserSigned(false);
+    //     // print('User is null');
+    //     Navigator.pushNamedAndRemoveUntil(
+    //         context, RouteList.login, (route) => route.isFirst);
+    //   }
+    // });
+    // final provider = ref.watch(userAuthChangeProvider);
+    // provider.addListener(() {
+    //   if (provider.user == null && provider.isUserSigned) {
+    //     ref.read(userAuthChangeProvider).setUserSigned(false);
+    //     // print('User is null');
+    //     Navigator.pushNamedAndRemoveUntil(
+    //         context, RouteList.login, (route) => route.isFirst);
+    //   }
+    // });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeLight,

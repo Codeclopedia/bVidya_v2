@@ -52,12 +52,13 @@ android {
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 16
-        versionName '0.1.6'
+        versionCode 17
+        versionName '0.1.7'
     }
 
     buildTypes {
         release {
+            // applicationId "com.bvidya"
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

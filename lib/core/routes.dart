@@ -174,6 +174,7 @@ class Routes {
           Map args = settings.arguments as Map<String, dynamic>;
           String groupId = args['group_id'];
           String groupName = args['group_name'];
+          String groupImage = args['group_image'];
           List<Contacts> members = args['members'] ?? [];
           int requestId = args['request_call_id'] as int;
           String callId = args['call_id'];
@@ -187,6 +188,7 @@ class Routes {
               groupId: groupId,
               groupName: groupName,
               members: members,
+              groupImage: groupImage,
               callDirectionType: CallDirectionType.outgoing,
               callId: callId,
               callRequiestId: requestId,
@@ -209,6 +211,7 @@ class Routes {
           String membersIds = args['members_ids'];
           String groupId = args['group_id'];
           String groupName = args['group_name'];
+          String groupImage = args['group_image'];
           int requestId = args['request_call_id'] as int;
           String callId = args['call_id'];
           CallType callType = args['call_type'];
@@ -218,6 +221,7 @@ class Routes {
           screen = GroupCallScreen(
               groupId: groupId,
               groupName: groupName,
+              groupImage: groupImage,
               callDirectionType: CallDirectionType.incoming,
               callId: callId,
               callRequiestId: requestId,

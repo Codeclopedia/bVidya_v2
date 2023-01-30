@@ -176,6 +176,11 @@ class GroupConversationChangeNotifier
     _groupConversationMap.remove(groupId);
     state = _groupConversationMap.values.toList();
   }
+
+  void clear() {
+    _groupConversationMap.clear();
+    state = [];
+  }
 }
 
 // class GroupConversationChangeProvider extends ChangeNotifier {

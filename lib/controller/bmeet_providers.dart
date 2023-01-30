@@ -24,8 +24,7 @@ final bMeetHistoryProvider = FutureProvider.autoDispose<Meetings?>(
   (ref) => ref.watch(bMeetRepositoryProvider).fetchMeetingList(),
 );
 
-final selectedDateProvider =
-    StateProvider.autoDispose<DateTime>((_) => DateTime.now());
+final selectedDateProvider = StateProvider<DateTime>((_) => DateTime.now());
 
 final selectedClassDateProvider =
     StateProvider.autoDispose<DateTime>((_) => DateTime.now());

@@ -53,7 +53,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     if (widget.direct || !BChatSDKController.instance.isInitialized) {
       final user = await getMeAsUser();
       if (user == null) {
-        ref.read(userAuthChangeProvider.notifier).logout();
+        ref.read(userLoginStateProvider.notifier).logout();
         return;
       }
       //
@@ -475,7 +475,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               SizedBox(width: 7.w),
               InkWell(
                 onTap: () async {
-                  if (user.role == 'teacher' || user.role == 'admin') {
+                  if (user.role == 'teacher' ||
+                      user.role == 'instructor' ||
+                      user.role == 'admin') {
                     await Navigator.pushNamed(
                         context, RouteList.teacherProfile);
                   } else {
@@ -541,16 +543,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               SizedBox(width: 5.w),
-              // IconButton(
-              //   onPressed: () async {
-              //     // await _signOutAsync();
-              //     // Navigator.pop(context);
-              //     final pref = await SharedPreferences.getInstance();
-              //     await pref.clear();
-              //     Navigator.pushReplacementNamed(context, RouteList.login);
-              //   },
-              //   icon: const Icon(Icons.logout, color: Colors.white),
-              // )
             ],
           );
         },

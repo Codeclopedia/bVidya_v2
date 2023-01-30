@@ -15,6 +15,9 @@ class ApiList {
   static const String changePassword = 'User/ChangePassword';
   static const String updateProfile = 'profile/update';
   static const String updateProfileImage = 'profile/upload';
+  static const String deleteUserAccount = 'account-dismiss';
+
+
 
   //bMeet
   static const String meetingList = 'meeting/meetings'; //GET

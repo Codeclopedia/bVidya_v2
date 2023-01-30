@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 // import '/core/constants/data.dart';
 import '/core/sdk_helpers/typing_helper.dart';
@@ -49,7 +49,8 @@ import 'widgets/typing_indicator.dart';
 // const String commandTypingEnd = "TypingEnd";
 
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
-final sendingFileProgress = StateProvider.autoDispose<int>((_) => 0);
+final sendingFileProgress =
+    StateProvider.autoDispose.family<int, String>((_, id) => 0);
 
 // ignore: must_be_immutable
 class ChatScreen extends HookConsumerWidget {
@@ -221,7 +222,7 @@ class ChatScreen extends HookConsumerWidget {
     return Consumer(
       builder: (context, ref, child) {
         AttachedFile? attFile = ref.watch(attachedFile);
-        int progress = ref.watch(sendingFileProgress);
+
         return attFile == null
             ? _buildChatInputBox()
             : Row(
@@ -282,55 +283,54 @@ class ChatScreen extends HookConsumerWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "You",
-                                style: TextStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.image,
-                                    size: 4.w,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(width: 1.w),
-                                  Text(
-                                    attFile.file.path.split('/').last,
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 10.sp),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          Stack(
-                            children: [
-                              SizedBox(
-                                width: 20.w,
-                                child: AttachedFileView(
-                                  attFile: attFile,
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  S.current.bmeet_user_you,
+                                  style: TextStyle(
+                                      color: AppColors.primaryColor,
+                                      fontSize: 15.sp,
+                                      fontFamily: kFontFamily,
+                                      fontWeight: FontWeight.w600),
                                 ),
-                              ),
-                              if (progress > 0)
-                                Center(
-                                  child: CircularProgressIndicator(
-                                      value: progress.toDouble()),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.image,
+                                      size: 4.w,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(width: 1.w),
+                                    Expanded(
+                                      child: Text(
+                                        attFile.file.path.split('/').last,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontFamily: kFontFamily,
+                                            color: Colors.grey,
+                                            fontSize: 10.sp),
+                                      ),
+                                    ),
+                                  ],
                                 )
-                            ],
+                              ],
+                            ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              ref.read(attachedFile.notifier).state = null;
-                            },
-                            icon: const Icon(Icons.close, color: Colors.red),
-                          )
+                          SizedBox(
+                            width: 10.h,
+                            child: AttachedFileView(
+                              attFile: attFile,
+                            ),
+                          ),
+                          // IconButton(
+                          //   onPressed: () {
+                          //     ref.read(attachedFile.notifier).state = null;
+                          //   },
+                          //   icon: const Icon(Icons.close, color: Colors.red),
+                          // )
                         ],
                       ),
                     ),
@@ -411,7 +411,7 @@ class ChatScreen extends HookConsumerWidget {
       //   ],
       // }
     };
-    await _sendMessage(msg, ref);
+    await _sendMessage(msg, ref, isFile: true);
     ref.read(attachedFile.notifier).state = null;
   }
 
@@ -739,6 +739,11 @@ class ChatScreen extends HookConsumerWidget {
             message.body.type == MessageType.CUSTOM;
         // print('notReply -> $notReply , type=> ${message.chatType} ');
 
+        int progress = 0;
+        if (isOwnMessage) {
+          progress = ref.watch(sendingFileProgress(message.msgId));
+        }
+
         return Column(
           // crossAxisAlignment:
           //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -782,14 +787,14 @@ class ChatScreen extends HookConsumerWidget {
                   width: double.infinity,
                   color: isSelected ? Colors.grey.shade200 : Colors.transparent,
                   child: ChatMessageBubble(
-                    message: message,
-                    isOwnMessage: isOwnMessage,
-                    senderUser: isOwnMessage ? _me : model.contact,
-                    isPreviousSameAuthor: isPreviousSameAuthor,
-                    isNextSameAuthor: isNextSameAuthor,
-                    isAfterDateSeparator: isAfterDateSeparator,
-                    isBeforeDateSeparator: isBeforeDateSeparator,
-                  ),
+                      message: message,
+                      isOwnMessage: isOwnMessage,
+                      senderUser: isOwnMessage ? _me : model.contact,
+                      isPreviousSameAuthor: isPreviousSameAuthor,
+                      isNextSameAuthor: isNextSameAuthor,
+                      isAfterDateSeparator: isAfterDateSeparator,
+                      isBeforeDateSeparator: isBeforeDateSeparator,
+                      progress: progress),
                 ),
               ),
             ),
@@ -835,7 +840,7 @@ class ChatScreen extends HookConsumerWidget {
       } else if (action == 1) {
         //Forward
         // AppSnackbar.instance.message(context, 'Need to implement');
-        await showForwardList(context, message, model.id);
+        await showForwardList(context, [message], model.id);
       } else if (action == 2) {
         //Reply
         bool isOwnMessage = message.from != model.id;
@@ -858,7 +863,8 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref) async {
+  Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref,
+      {bool isFile = false}) async {
     // if (_me == null) return 'User details not loaded yet';
     try {
       msg.attributes?.addAll({"em_force_notification": true});
@@ -868,25 +874,35 @@ class ChatScreen extends HookConsumerWidget {
         ref.read(chatModelProvider).clearReplyBox();
       }
 
+      print('pre:msgId ${msg.msgId}');
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {
-            hideLoading(ref);
-            ref.read(sendingFileProgress.notifier).state = 0;
+            if (isFile) {
+              hideLoading(ref);
+              ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
+            }
+
             // FCMApiService.instance.sendChatPush(
             //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
             // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
           },
           onError: (error) {
-            hideLoading(ref);
-            ref.read(sendingFileProgress.notifier).state = 0;
+            if (isFile) {
+              hideLoading(ref);
+              ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
+            }
             AppSnackbar.instance
                 .error(navigatorKey.currentContext!, error.description);
             // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
           },
           onProgress: (progress) {
-            showLoading(ref);
-            ref.read(sendingFileProgress.notifier).state = progress;
+            if (isFile) {
+              showLoading(ref);
+              ref.read(sendingFileProgress(msg.msgId).notifier).state =
+                  progress;
+            }
+
             // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
           },
         ),
@@ -895,7 +911,9 @@ class ChatScreen extends HookConsumerWidget {
       final chat = await ref
           .read(bChatMessagesProvider(model).notifier)
           .sendMessage(msg);
+
       if (chat != null) {
+        print('post:msgId ${chat.msgId}');
         ref.read(chatConversationProvider.notifier).addConversationMessage(msg);
         _scrollController.animateTo(
           0.0,
@@ -1089,14 +1107,17 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
           Visibility(
-            visible: selectedItems.length == 1 &&
-                selectedItems.first.body.type != MessageType.CUSTOM,
+            visible:
+                // selectedItems.length == 1 &&
+                selectedItems
+                    .where((e) => e.body.type == MessageType.CUSTOM)
+                    .isEmpty,
+            // selectedItems.first.body.type != MessageType.CUSTOM,
             child: Row(
               children: [
                 IconButton(
                   onPressed: () async {
-                    await showForwardList(
-                        context, selectedItems.first, model.id);
+                    await showForwardList(context, selectedItems, model.id);
                     // ref
                     //     .read(bhatMessagesProvider(model).notifier)
                     //     .deleteMessages(selectedItems);

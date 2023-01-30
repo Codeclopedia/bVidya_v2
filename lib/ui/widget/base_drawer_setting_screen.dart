@@ -1,7 +1,7 @@
-import 'package:bvidya/core/constants.dart';
+import '/core/constants.dart';
 
 import '/data/models/response/auth/login_response.dart';
-import '/core/constants/colors.dart';
+// import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import 'base_drawer_page.dart';

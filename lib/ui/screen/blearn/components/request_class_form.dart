@@ -1,5 +1,5 @@
-import 'package:bvidya/controller/bmeet_providers.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/controller/bmeet_providers.dart';
+import '/ui/screens.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';

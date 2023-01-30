@@ -1,8 +1,8 @@
 // import 'package:flutter/material.dart';
-import 'package:bvidya/controller/bmeet_providers.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/ui/screen/blearn/components/common.dart';
-import 'package:bvidya/ui/widget/shimmer_tile.dart';
+import '/controller/bmeet_providers.dart';
+import '/core/state.dart';
+import '/ui/screen/blearn/components/common.dart';
+import '/ui/widget/shimmer_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '/data/models/response/bmeet/class_request_response.dart';

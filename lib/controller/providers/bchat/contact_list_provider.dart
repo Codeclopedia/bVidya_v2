@@ -1,8 +1,8 @@
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/core/utils.dart';
-import 'package:bvidya/data/models/models.dart';
-import 'package:bvidya/data/services/bchat_api_service.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/state.dart';
+import '/core/utils.dart';
+import '/data/models/models.dart';
+import '/data/services/bchat_api_service.dart';
 
 final contactLoadingStateProvider = StateProvider<bool>((ref) => false);
 
@@ -84,5 +84,10 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
       return contact;
     }
     return null;
+  }
+
+  void clear() {
+    _contactsMap.clear();
+    state = [];
   }
 }

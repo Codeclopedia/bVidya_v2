@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
-// import 'package:bvidya/controller/providers/p2p_call_provider.dart';
+// import '/controller/providers/p2p_call_provider.dart';
+import '/ui/screen/blearn/components/common.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pip_view/pip_view.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/group_call_provider.dart';
@@ -27,14 +29,17 @@ class GroupCallScreen extends StatelessWidget {
   final Meeting? meeting;
   final String groupId;
   final String groupName;
+  final String groupImage;
   final User me;
   final String membersIds;
   final String prevScreen;
 
-  const GroupCallScreen({
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  GroupCallScreen({
     Key? key,
     required this.groupId,
     required this.groupName,
+    required this.groupImage,
     required this.callId,
     required this.callRequiestId,
     required this.callType,
@@ -44,8 +49,6 @@ class GroupCallScreen extends StatelessWidget {
     required this.prevScreen,
     this.meeting,
     this.members,
-
-    // this.rtmTokem,
   }) : super(key: key);
 
   @override
@@ -58,39 +61,58 @@ class GroupCallScreen extends StatelessWidget {
           return false;
         },
         child: Scaffold(
+          key: _scaffoldKey,
           resizeToAvoidBottomInset: !isFloating,
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF222222),
           // appBar: _appBar(context),
-          bottomNavigationBar: _toolbar(context),
-          body: Stack(children: [
-            Consumer(builder: (context, ref, child) {
-              final provider = ref.watch(bGroupCallChangeProvider);
-              if (callDirectionType == CallDirectionType.outgoing) {
-                provider.init(ref, callRequiestId, callId, groupId, me,
-                    meeting!, callType, members!, callDirectionType);
-              } else {
-                provider.initReceiver(context, ref, callRequiestId, callId,
-                    groupId, callType, me, membersIds);
-              }
-              ref.listen(bGroupCallChangeProvider, (previous, next) {
-                if (next.error != null) {
-                  AppSnackbar.instance.error(context, next.error!);
-                  _onCallEnd(context, ref);
-                }
-              });
+          // bottomNavigationBar: _toolbar(context),
+          body: SafeArea(
+            child: Stack(children: [
+              if (callType == CallType.audio) ..._buildAudioCallScreen(),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  _buildRow(context),
+                  Expanded(
+                    child: Consumer(builder: (context, ref, child) {
+                      final provider = ref.watch(bGroupCallChangeProvider);
+                      if (callDirectionType == CallDirectionType.outgoing) {
+                        provider.init(ref, callRequiestId, callId, groupId, me,
+                            meeting!, callType, members!, callDirectionType);
+                      } else {
+                        provider.initReceiver(context, ref, callRequiestId,
+                            callId, groupId, callType, me, membersIds);
+                      }
+                      ref.listen(bGroupCallChangeProvider, (previous, next) {
+                        if (next.error != null) {
+                          AppSnackbar.instance.error(context, next.error!);
+                          _onCallEnd(context, ref);
+                        }
+                      });
 
-              ref.listen(bGroupCallChangeProvider, (previous, next) {
-                if (next.endCall) {
-                  _onCallEnd(context, ref);
-                }
-              });
+                      ref.listen(
+                          bGroupCallChangeProvider.select(
+                              (value) => value.endCall), (previous, next) {
+                        // print('$previous to =>  $next ');
+                        if (previous != true && next) {
+                          _onCallEnd(context, ref);
+                        }
+                      });
 
-              return provider.localUserJoined
-                  ? _buildGridVideoView(provider)
-                  : const Center(child: CircularProgressIndicator());
-            }),
-            _buildRow(context),
-          ]),
+                      return provider.localUserJoined
+                          ? _buildGridVideoView(provider)
+                          : const Center(child: CircularProgressIndicator());
+                    }),
+                  ),
+                ],
+              ),
+              Positioned(
+                bottom: 1.h,
+                left: 4.w,
+                child: _toolbar(context),
+              ),
+            ]),
+          ),
         ),
       );
     });
@@ -99,8 +121,15 @@ class GroupCallScreen extends StatelessWidget {
   Widget _buildRow(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        IconButton(
+            onPressed: () {
+              SystemChrome.setPreferredOrientations(
+                  [DeviceOrientation.portraitUp]);
+              PIPView.of(context)?.presentBelow(const GroupsScreen());
+            },
+            icon: getSvgIcon('arrow_back.svg', color: Colors.white)),
         Container(
           padding: const EdgeInsets.all(10),
           alignment: Alignment.topLeft,
@@ -124,33 +153,81 @@ class GroupCallScreen extends StatelessWidget {
             },
           ),
         ),
-        IconButton(
-          onPressed: () {
-            SystemChrome.setPreferredOrientations(
-                [DeviceOrientation.portraitUp]);
-            PIPView.of(context)?.presentBelow(const GroupsScreen());
-          },
-          icon: const Icon(
-            Icons.close_fullscreen_outlined,
-            color: Colors.white,
-          ),
-        ),
+        const Spacer(),
+        Consumer(builder: (context, ref, child) {
+          final provider = ref.watch(bGroupCallChangeProvider);
+
+          return IconButton(
+            onPressed: () {
+              _showMemebers(context, provider.userList.values.toList());
+            },
+            icon: const Icon(
+              Icons.people_alt,
+              color: Colors.white,
+            ),
+          );
+        }),
       ],
     );
   }
 
+  PersistentBottomSheetController? _controller;
+
+  _showMemebers(BuildContext context, List<GroupCallUser> users) {
+    _controller = _scaffoldKey.currentState
+        ?.showBottomSheet(backgroundColor: Colors.transparent, (context) {
+      return GestureDetector(
+        onTap: () => Navigator.of(context).pop(),
+        child: MemberListDialog(
+          users: users,
+          user: me,
+          showVideo: callType == CallType.video,
+        ),
+      );
+    });
+
+    // showBottomSheet(
+    //   context: context,
+    // isScrollControlled: true,
+    //   backgroundColor: Colors.transparent,
+    //   builder: (context) {
+    //     return GestureDetector(
+    //       onTap: () => Navigator.of(context).pop(),
+    //       child: MemberListDialog(
+    //         users: users,
+    //         user: me,
+    //         showVideo: callType == CallType.video,
+    //       ),
+    //     );
+    //   },
+    // ));
+  }
+
   _onCallEnd(BuildContext context, WidgetRef ref) async {
     showLoading(ref);
-    final error = await ref
-        .read(bGroupCallChangeProvider)
-        .endCurrentCall(callDirectionType, groupName);
+    final error =
+        await ref.read(bGroupCallChangeProvider).endCurrentCall(groupName);
     hideLoading(ref);
 
     if (error != null) {
       print('error:$error');
-      AppSnackbar.instance.error(context, error);
+      Fluttertoast.showToast(
+          msg: error,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 8.sp);
+      // AppSnackbar.instance.error(context, error);
     } else {}
     if (prevScreen.isNotEmpty) {
+      try {
+        if (_controller != null) {
+          _controller?.close();
+        }
+      } catch (e) {}
+
       Navigator.pop(context);
       setScreen(prevScreen);
     } else {
@@ -163,41 +240,95 @@ class GroupCallScreen extends StatelessWidget {
     }
   }
 
-  PreferredSizeWidget _appBar(BuildContext context) {
-    return AppBar(
-        backgroundColor: Colors.black,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: _toolbar(context));
+  // Widget _buildAudioBackground() {
+  //   return Container(
+  //     height: double.infinity,
+  //     width: double.infinity,
+  //     decoration: BoxDecoration(
+  //       color: Colors.black,
+  //       image: DecorationImage(
+  //         fit: BoxFit.cover,
+  //         colorFilter: ColorFilter.mode(
+  //             Colors.black.withOpacity(0.3), BlendMode.dstATop),
+  //         image: getImageProvider(groupImage),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  List<Widget> _buildAudioCallScreen() {
+    return [
+      if (groupImage.isNotEmpty)
+        Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.3), BlendMode.dstATop),
+              image: getImageProvider(groupImage),
+            ),
+          ),
+        ),
+      Padding(
+        padding: EdgeInsets.only(top: 15.h),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Column(
+            children: [
+              getCicleAvatar(groupName, groupImage, radius: 20.w),
+              Text(
+                'Group Call',
+                style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 5.w),
+              ),
+              Text(
+                groupName,
+                style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 6.w),
+              ),
+            ],
+          ),
+        ),
+      )
+    ];
   }
 
   Widget _toolbar(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
       final provider = ref.read(bGroupCallChangeProvider);
-      return SizedBox(
+      return Container(
+          // margin: EdgeInsets.symmetric(horizontal: 6.w),
+          // alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(3.w),
+          ),
           // padding: EdgeInsets.only(left: 6.w, right: 5.w),
           // alignment: Alignment.center,
-          width: 85.w,
-          height: 12.h,
+          width: 92.w,
+          // height: 10.h,
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Visibility(
-                visible: callType == CallType.video,
-                child: GestureDetector(
+            children: [
+              if (callType == CallType.video)
+                GestureDetector(
                   onTap: () {
                     provider.onSwitchCamera();
                   },
-                  // child: Icon(
-                  //   Icons.switch_camera,
-                  //   color: Colors.white,
-                  //   size: 8.w,
-                  // ),
                   child: getSvgIcon(width: 8.w, 'vc_camera_flip.svg'),
                 ),
-              ),
               GestureDetector(
                 onTap: () {
                   provider.onToggleMute();
@@ -211,9 +342,8 @@ class GroupCallScreen extends StatelessWidget {
                 //     width: 8.w,
                 //     provider.mute ? 'vc_mic_off.svg' : 'vc_mic_on.svg'),
               ),
-              Visibility(
-                visible: callType == CallType.video,
-                child: GestureDetector(
+              if (callType == CallType.video)
+                GestureDetector(
                   onTap: () {
                     //
                     provider.toggleCamera();
@@ -229,10 +359,8 @@ class GroupCallScreen extends StatelessWidget {
                   //     width: 8.w,
                   //     provider.videoOn ? 'vc_video_off.svg' : 'vc_video_on.svg'),
                 ),
-              ),
-              Visibility(
-                visible: callType == CallType.audio,
-                child: GestureDetector(
+              if (callType == CallType.audio)
+                GestureDetector(
                   onTap: () {
                     provider.toggleVolume();
                   },
@@ -244,332 +372,31 @@ class GroupCallScreen extends StatelessWidget {
                     size: 10.w,
                   ),
                 ),
-              ),
-              Consumer(builder: (context, ref, child) {
-                return InkWell(
-                  onTap: () async {
-                    _onCallEnd(context, ref);
-                    // _finish(context);
-                  },
-                  child: Container(
-                    height: 12.w,
-                    width: 20.w,
-
-                    // padding: EdgeInsets.zero,
-                    decoration: BoxDecoration(
-                      color: AppColors.redBColor,
-                      borderRadius: BorderRadius.circular(3.w),
-                    ),
-                    child: Icon(
-                      Icons.call_end_rounded,
-                      color: Colors.white,
-                      size: 8.w,
-                    ),
-                    // child: getSvgIcon("hang_up.svg"),
+              GestureDetector(
+                onTap: () async {
+                  _onCallEnd(context, ref);
+                  // _finish(context);
+                },
+                child: Container(
+                  height: 12.w,
+                  width: 20.w,
+                  // padding: EdgeInsets.zero,
+                  decoration: BoxDecoration(
+                    color: AppColors.redBColor,
+                    borderRadius: BorderRadius.circular(3.w),
                   ),
-                );
-              })
+                  child: Icon(
+                    Icons.call_end_rounded,
+                    color: Colors.white,
+                    size: 8.w,
+                  ),
+                  // child: getSvgIcon("hang_up.svg"),
+                ),
+              )
             ],
           ));
     });
   }
-
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-      child: Consumer(builder: (context, ref, child) {
-        bool volume = ref.watch(bGroupCallChangeProvider).speakerOn;
-        // bool volume = false;
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      // ref.read(bGroupCallChangeProvider).onSwitchCamera();
-                    },
-                    icon: getSvgIcon('vc_camera_flip.svg'),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      // ref.read(bGroupCallChangeProvider).toggleVolume();
-                    },
-                    icon:
-                        // ignore: prefer_const_constructors
-                        getSvgIcon(
-                            color: Colors.white,
-                            volume ? 'vc_volume_off.svg' : 'vc_volume.svg'),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: InkWell(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Expanded(child: buildBText('GroupCall')),
-                      const Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: InkWell(
-                onTap: () async {
-                  _onCallEnd(context, ref);
-                },
-                child: Container(
-                  width: 6.w,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-                  decoration: BoxDecoration(
-                      color: AppColors.redBColor,
-                      borderRadius: BorderRadius.all(Radius.circular(2.w))),
-                  child: Text(
-                    S.current.btn_end,
-                    style: TextStyle(fontSize: 12.sp, color: Colors.white),
-                  ),
-                ),
-              ),
-            )
-          ],
-        );
-      }),
-    );
-  }
-
-  Widget _buildToolItem(
-      {required Widget child,
-      required String text,
-      required Function() onTap}) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              padding: EdgeInsets.all(1.w),
-              width: 8.w,
-              height: 8.w,
-              child: child,
-            ),
-            // child,
-            Text(
-              text,
-              maxLines: 1,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 7.sp,
-                color: Colors.white,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  _buildToolItemIcon(
-      {required IconData icon,
-      required String text,
-      required Function() onTap}) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              padding: EdgeInsets.all(1.w),
-              width: 8.w,
-              height: 8.w,
-              child: Icon(
-                icon,
-                color: Colors.white,
-              ),
-            ),
-            // child,
-            Text(
-              text,
-              maxLines: 1,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                fontSize: 7.sp,
-                color: Colors.white,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget _toolbar() {
-  //   return Container(
-  //     // padding: EdgeInsets.only(left: 6.w, right: 5.w),
-  //     padding: EdgeInsets.only(top: 1.h),
-  //     alignment: Alignment.center,
-  //     child: Consumer(
-  //       builder: (context, ref, child) {
-  //         final provider = ref.watch(bGroupCallChangeProvider);
-  //         return Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           crossAxisAlignment: CrossAxisAlignment.center,
-  //           children: <Widget>[
-  //             _buildToolItemIcon(
-  //                 text: provider.muted
-  //                     ? S.current.bmeet_tool_unmute
-  //                     : S.current.bmeet_tool_mute,
-  //                 onTap: () {
-  //                   if (provider.hostMute) {
-  //                     EasyLoading.showToast(
-  //                         S.current.bmeet_call_msg_diable_audio_host,
-  //                         duration: const Duration(seconds: 5),
-  //                         toastPosition: EasyLoadingToastPosition.bottom);
-  //                   } else {
-  //                     ref.read(bGroupCallChangeProvider).onToggleMute();
-  //                   }
-  //                 },
-  //                 icon: provider.muted ? Icons.mic : Icons.mic_off
-  //                 // child: getSvgIcon(
-  //                 //   provider.muted ? 'vc_mic_on.svg' : 'vc_mic_off.svg',
-  //                 //   width: 2.w,
-  //                 // )
-  //                 ),
-  //             _buildToolItemIcon(
-  //                 text: provider.disableLocalCamera
-  //                     ? S.current.bmeet_tool_stop_video
-  //                     : S.current.bmeet_tool_video,
-  //                 onTap: () {
-  //                   if (provider.hostCamera) {
-  //                     EasyLoading.showToast(
-  //                         S.current.bmeet_call_msg_diable_camera_host,
-  //                         duration: const Duration(seconds: 5),
-  //                         toastPosition: EasyLoadingToastPosition.bottom);
-  //                   } else {
-  //                     ref.read(bGroupCallChangeProvider).toggleCamera();
-  //                   }
-  //                 },
-  //                 icon: provider.disableLocalCamera
-  //                     ? Icons.videocam
-  //                     : Icons.videocam_off
-  //                 // child: getSvgIcon(
-  //                 //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
-  //                 ),
-
-  //             // provider.muted
-  //             //     ? Image.asset(
-  //             //         'assets/icons/svg/mic_off.png',
-  //             //         height: 3.h,
-  //             //         width: 3.h,
-  //             //       )
-  //             //     : SvgPicture.asset(
-  //             //         'assets/icons/svg/mic_icon.svg',
-  //             //         height: 3.h,
-  //             //         width: 3.h,
-  //             //       )),
-  //             // GestureDetector(
-  //             //     onTap: () {
-  //             //       _onShareWithEmptyFields(context, meetingId, 'Meeting');
-  //             //     },
-  //             //     child: SvgPicture.asset(
-  //             //       'assets/icons/svgs/ic_set_share.svg',
-  //             //       height: 3.h,
-  //             //       width: 3.h,
-  //             //       color: Colors.white,
-  //             //     )),
-  //             // SizedBox(
-  //             //     width: 5.h, height: 5.h, child: _buildShareScreen(provider)),
-  //             _buildToolItem(
-  //               text: provider.shareScreen
-  //                   ? S.current.bmeet_tool_stop_sshare
-  //                   : S.current.bmeet_tool_share_screen,
-  //               onTap: () {
-  //                 provider.toggleShareScreen();
-  //               },
-  //               child: Center(
-  //                 child: provider.initializingScreenShare
-  //                     ? const CircularProgressIndicator()
-  //                     : Icon(
-  //                         provider.shareScreen
-  //                             ? Icons.stop_screen_share
-  //                             : Icons.screen_share,
-  //                         color: Colors.white,
-  //                         size: 6.w,
-  //                       ),
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Stack(
-  //                 children: [
-  //                   _buildToolItemIcon(
-  //                       text: S.current.bmeet_tool_participants,
-  //                       onTap: () {
-  //                         // _showParticipantsList(context);
-  //                       },
-  //                       icon: Icons.people
-  //                       // child: getSvgIcon('vc_participants.svg'),
-  //                       ),
-  //                   if (provider.memberList.isNotEmpty)
-  //                     Positioned(
-  //                       right: 2.w,
-  //                       top: 0,
-  //                       child: Container(
-  //                         padding: EdgeInsets.all(0.5.h),
-  //                         decoration: const BoxDecoration(
-  //                           shape: BoxShape.circle,
-  //                           color: AppColors.yellowAccent,
-  //                         ),
-  //                         alignment: Alignment.topRight,
-  //                         child: Text(
-  //                           "${provider.memberList.length}",
-  //                           textAlign: TextAlign.center,
-  //                           style: TextStyle(
-  //                               fontSize: 8.sp,
-  //                               letterSpacing: .5,
-  //                               color: Colors.black),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                 ],
-  //               ),
-  //             ),
-  //             _buildToolItem(
-  //               text: S.current.bmeet_tool_raisehand,
-  //               onTap: () {
-  //                 provider.sendRaiseHand();
-  //               },
-  //               child: getSvgIcon('vc_raise_hand.svg'),
-  //             ),
-  //             _buildToolItem(
-  //               text: S.current.bmeet_tool_more,
-  //               onTap: () {
-  //                 // _addMoreDetails(context, provider);
-  //               },
-  //               child: const Icon(
-  //                 Icons.more_horiz,
-  //                 color: Colors.white,
-  //               ),
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   Widget _videoView(GroupCallUser view) {
     return Expanded(
@@ -690,6 +517,7 @@ class GroupCallScreen extends StatelessWidget {
   }
 
   Widget _buildGridVideoView(GroupCallProvider provider) {
+    if (callType == CallType.audio) return const SizedBox.shrink();
     if (provider.remoteUsersIds.length < 8) {
       // if (screenshareid == 1000) {
       //   return RtcRemoteView.SurfaceView(uid: 10000);
@@ -761,5 +589,129 @@ class GroupCallScreen extends StatelessWidget {
             );
           });
     }
+  }
+}
+
+class MemberListDialog extends StatelessWidget {
+  final List<GroupCallUser> users;
+  final bool showVideo;
+
+  final User user;
+  const MemberListDialog({
+    Key? key,
+    required this.users,
+    required this.user,
+    required this.showVideo,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color.fromRGBO(0, 0, 0, 0.001),
+      child: GestureDetector(
+        onTap: () {},
+        child: DraggableScrollableSheet(
+            initialChildSize: 0.3,
+            minChildSize: 0.2,
+            maxChildSize: 0.8,
+            builder: (_, controller) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25.0),
+                    topRight: Radius.circular(25.0),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.remove,
+                      color: Colors.grey[600],
+                    ),
+                    Expanded(
+                      child: users.isEmpty
+                          ? buildEmptyPlaceHolder('No Members')
+                          : ListView.separated(
+                              itemBuilder: (_, index) {
+                                var u = users[index];
+
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 4.w, vertical: 1.h),
+                                  child: Row(
+                                    children: [
+                                      getCicleAvatar(u.contact.name,
+                                          u.contact.profileImage),
+                                      SizedBox(width: 2.w),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              user.id == u.contact.userId
+                                                  ? S.current.bmeet_user_you
+                                                  : u.contact.name,
+                                              style: TextStyle(
+                                                fontFamily: kFontFamily,
+                                                fontSize: 11.sp,
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              u.status.name.toUpperCase(),
+                                              style: TextStyle(
+                                                fontFamily: kFontFamily,
+                                                fontSize: 8.sp,
+                                                color: (u.status ==
+                                                            JoinStatus
+                                                                .connected ||
+                                                        u.status ==
+                                                            JoinStatus.ringing)
+                                                    ? Colors.black45
+                                                    : Colors.red.shade400,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 1.w),
+                                      Row(
+                                        children: [
+                                          Icon(u.muteAudio
+                                              ? Icons.mic_off_rounded
+                                              : Icons.mic_outlined),
+                                          if (showVideo)
+                                            Icon(u.enabledVideo
+                                                ? Icons.videocam_rounded
+                                                : Icons.videocam_off_rounded),
+                                        ],
+                                      )
+                                    ],
+                                    // leading: ,
+                                    // title: Text(user.id == u.contact.userId
+                                    //     ? S.current.bmeet_user_you
+                                    //     : u.contact.name),
+                                    // subtitle: Text(
+                                    //   u.status.name.toUpperCase(),
+                                    // ),
+                                    // trailing: ,
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, index) => const Divider(
+                                    color: Colors.black,
+                                    height: 1,
+                                  ),
+                              itemCount: users.length),
+                    ),
+                  ],
+                ),
+              );
+            }),
+      ),
+    );
   }
 }

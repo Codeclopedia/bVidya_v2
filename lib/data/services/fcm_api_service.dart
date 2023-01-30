@@ -173,6 +173,7 @@ class FCMApiService {
       'android': {'priority': 'normal'},
       'priority': 10
     };
+    print('fcm request.callId: $callId , grpId:$grpId');
     var response =
         await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
     if (response.statusCode == 200) {

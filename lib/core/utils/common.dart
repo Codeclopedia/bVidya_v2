@@ -1,9 +1,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:intl/intl.dart';
 
+import '/controller/providers/bchat/contact_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/data/models/models.dart';
 import '/controller/bmeet_providers.dart';
 import '/controller/blive_providers.dart';
@@ -12,7 +13,6 @@ import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/blearn_providers.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/user_auth_provider.dart';
 // import '/core/ui_core.dart';
 
@@ -20,7 +20,7 @@ import '../state.dart';
 import '../sdk_helpers/bchat_sdk_controller.dart';
 
 Future<String?> postLoginSetup(WidgetRef ref) async {
-  final user = await ref.read(userAuthChangeProvider).loadUser();
+  final user = await ref.read(userLoginStateProvider.notifier).loadUser();
   if (user == null) {
     return 'Error occurred, Please restart app';
   }
@@ -45,11 +45,11 @@ Future<String?> postLoginSetup(WidgetRef ref) async {
 
 Future updateUser(WidgetRef ref, User user) async {
   ref.read(loginRepositoryProvider).updateUser(user);
-  ref.read(userAuthChangeProvider.notifier).updateUser(user);
+  ref.read(userLoginStateProvider.notifier).updateUser(user);
 }
 
 Future updateProfile(WidgetRef ref, Profile profile) async {
-  final user = await ref.read(userAuthChangeProvider.notifier).loadUser();
+  final user = await ref.read(userLoginStateProvider.notifier).loadUser();
   if (user != null) {
     final map = user.toJson()
       ..addAll({
@@ -72,7 +72,7 @@ Future updateProfile(WidgetRef ref, Profile profile) async {
 }
 
 Future updateProfileData(WidgetRef ref, UpdatedProfile profile) async {
-  final user = await ref.read(userAuthChangeProvider.notifier).loadUser();
+  final user = await ref.read(userLoginStateProvider.notifier).loadUser();
   if (user != null) {
     final map = user.toJson()
       ..addAll({
@@ -95,7 +95,7 @@ Future updateProfileData(WidgetRef ref, UpdatedProfile profile) async {
 }
 
 Future updateUserImage(WidgetRef ref, String image) async {
-  final user = await ref.read(userAuthChangeProvider.notifier).loadUser();
+  final user = await ref.read(userLoginStateProvider.notifier).loadUser();
   if (user != null) {
     final map = user.toJson()..addAll({'image': image});
     final newUser = User.fromJson(map);
@@ -145,4 +145,18 @@ Future copyToClipboardGroup(List<ChatMessage> messages) async {
           content); //.then(( value ) => print('copied'));
     }
   }
+}
+
+Future logoutApp(WidgetRef ref) async {
+  await ChatClient.getInstance.logout();
+  // final pref = await SharedPreferences.getInstance();
+  // await pref.clear();
+  ref.invalidate(authLoadProvider);
+  ref.read(groupConversationProvider.notifier).clear();
+  ref.read(groupCallListProvider.notifier).clear();
+  ref.read(callListProvider.notifier).clear();
+  ref.read(contactListProvider.notifier).clear();
+  ref.read(chatConversationProvider.notifier).clear();
+  ref.read(userLoginStateProvider.notifier).logout();
+  BChatSDKController.instance.destroyed();
 }

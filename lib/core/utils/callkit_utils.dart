@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/group_call_helper.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
-// import 'package:bvidya/data/models/response/bmeet/start_meeting_response.dart';
+import '/core/helpers/group_call_helper.dart';
+import '/data/models/call_message_body.dart';
+// import '/data/models/response/bmeet/start_meeting_response.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -40,6 +40,9 @@ DateTime? get lastCallTime => _lastCallTime;
 
 setOnGoing(String? callId) {
   _onGoingCallId = callId;
+  if (callId != null) {
+    _activeCallId = callId;
+  }
 }
 
 clearCall() async {
@@ -152,8 +155,8 @@ Future setupCallKit() async {
 }
 
 Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
-  final callId = remoteMessage.data['call_id'];
   int fromId = int.parse(remoteMessage.data['from_id']);
+  final callId = remoteMessage.data['call_id'];
   final groupId = remoteMessage.data['grp_id'];
   final name = remoteMessage.data['name'];
   final image = remoteMessage.data['image'];
@@ -185,7 +188,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
     extra: {
       'from_id': fromId.toString(),
       'grp_id': groupId,
-      'type': NotiConstants.typeCall,
+      'type': NotiConstants.typeGroupCall,
     },
     android: const AndroidParams(
       // backgroundUrl: '$baseImageApi$callerImage',
@@ -397,8 +400,15 @@ onGroupCallAccept(
     return;
   }
   _futureClearPref();
-  receiveGroupCall(context, body.requestId, body.memberIds, body.callId, grpId,
-      body.groupName, body.callType,false);
+  receiveGroupCall(context,
+      requestId: body.requestId,
+      membersIds: body.memberIds,
+      callId: body.callId,
+      groupId: grpId,
+      grpName: body.groupName,
+      grpImage: body.groupImage,
+      callType: body.callType,
+      direct: false);
 }
 
 onCallAccept(

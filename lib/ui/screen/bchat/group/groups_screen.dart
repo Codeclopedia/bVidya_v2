@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/core/helpers/call_helper.dart';
+import '/data/models/call_message_body.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import '/ui/dialog/group_conv_menu_dialog.dart';
@@ -140,6 +144,18 @@ class GroupsScreen extends HookConsumerWidget {
       if (model.lastMessage!.body.type == MessageType.TXT) {
         final body = model.lastMessage!.body as ChatTextMessageBody;
         textMessage = body.content;
+      } else if (model.lastMessage!.body.type == MessageType.CUSTOM) {
+        try {
+          ChatCustomMessageBody body =
+              model.lastMessage!.body as ChatCustomMessageBody;
+          final callBody =
+              GroupCallMessegeBody.fromJson(jsonDecode(body.event));
+          textMessage = (callBody.callType == CallType.video)
+              ? 'Video Call'
+              : 'Audio call';
+        } catch (e) {
+          textMessage = 'Call';
+        }
       }
     }
 

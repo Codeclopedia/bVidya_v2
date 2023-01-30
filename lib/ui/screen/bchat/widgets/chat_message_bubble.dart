@@ -29,6 +29,7 @@ class ChatMessageBubble extends StatelessWidget {
   final bool isNextSameAuthor;
   final bool isPreviousSameAuthor;
   final bool showOtherUserName;
+  final int progress;
   // final bool showAvatar;
 
   final Function(Mention)? onPressMention;
@@ -43,6 +44,7 @@ class ChatMessageBubble extends StatelessWidget {
       this.isBeforeDateSeparator = false,
       this.showOtherUserName = false,
       // this.showAvatar = false,
+      this.progress = 0,
       this.onPressMention})
       : super(key: key);
 
@@ -275,6 +277,8 @@ class ChatMessageBubble extends StatelessWidget {
             bottom: 1.h,
             child: _buildTime(),
           ),
+          if (progress > 0)
+            Center(child: CircularProgressIndicator(value: progress.toDouble()))
         ],
       ),
     );
@@ -311,6 +315,8 @@ class ChatMessageBubble extends StatelessWidget {
               color: Colors.white,
             ),
           ),
+          if (progress > 0)
+            Center(child: CircularProgressIndicator(value: progress.toDouble()))
         ],
       ),
     );

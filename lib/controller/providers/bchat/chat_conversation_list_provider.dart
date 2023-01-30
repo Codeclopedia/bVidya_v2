@@ -28,7 +28,7 @@ Future<Contacts?> addNewContactById(int contactId, WidgetRef ref) async {
 
 Future<ConversationModel?> onNewChatMessage(
     ChatMessage message, WidgetRef ref) async {
-  int startTime = DateTime.now().millisecondsSinceEpoch;
+  // int startTime = DateTime.now().millisecondsSinceEpoch;
   int id = int.parse(message.conversationId!);
   Contacts? contact =
       await ref.read(contactListProvider.notifier).addContact(id);
@@ -36,12 +36,12 @@ Future<ConversationModel?> onNewChatMessage(
     final model = await ref
         .read(chatConversationProvider.notifier)
         .addConversationMessageTo(contact, message);
-    int diff = DateTime.now().millisecondsSinceEpoch - startTime;
-    print('Diff=> $diff');
+    // int diff = DateTime.now().millisecondsSinceEpoch - startTime;
+    // print('Diff=> $diff');
     return model;
   }
-  int diff = DateTime.now().millisecondsSinceEpoch - startTime;
-  print('Diff NULL=> $diff');
+  // int diff = DateTime.now().millisecondsSinceEpoch - startTime;
+  // print('Diff NULL=> $diff');
   return null;
 }
 
@@ -239,5 +239,10 @@ class ChatConversationChangeNotifier
       }
     }
     state = _chatConversationMap.values.toList();
+  }
+
+  void clear() {
+    _chatConversationMap.clear();
+    state = [];
   }
 }

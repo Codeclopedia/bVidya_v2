@@ -1,4 +1,4 @@
-import 'package:bvidya/core/constants.dart';
+import '/core/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '/core/helpers/drag_position.dart';
@@ -29,6 +29,7 @@ class _BaseDrawerPageState extends State<BaseDrawerPage> {
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
+    
   }
 
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
