@@ -7,12 +7,13 @@ import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/ui/widget/chat_reply_body.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:images_picker/images_picker.dart';
+// import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '../models/media.dart';
 import '/app.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/group_call_helper.dart';
@@ -501,7 +502,7 @@ class GroupChatScreen extends HookConsumerWidget {
           // File file = xFile.path;
           final Media media = Media(
               path: xFile.path,
-              size: (await xFile.length()).toDouble(),
+              size: (await xFile.length()),
               thumbPath: xFile.path);
           ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.IMAGE);
@@ -518,9 +519,7 @@ class GroupChatScreen extends HookConsumerWidget {
             quality: 25,
           );
           final Media media = Media(
-              path: xFile.path,
-              size: (await xFile.length()).toDouble(),
-              thumbPath: thumb);
+              path: xFile.path, size: (await xFile.length()), thumbPath: thumb);
           ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.VIDEO);
         }
@@ -537,7 +536,7 @@ class GroupChatScreen extends HookConsumerWidget {
           if (isImage) {
             final Media media = Media(
                 path: file.absolute.path,
-                size: (await file.length()).toDouble(),
+                size: (await file.length()),
                 thumbPath: file.absolute.path);
             ref.read(attachedGroupFile.notifier).state =
                 AttachedFile(media, MessageType.IMAGE);
@@ -551,7 +550,7 @@ class GroupChatScreen extends HookConsumerWidget {
             );
             final Media media = Media(
                 path: file.absolute.path,
-                size: (await file.length()).toDouble(),
+                size: (await file.length()),
                 thumbPath: thumb);
             ref.read(attachedGroupFile.notifier).state =
                 AttachedFile(media, MessageType.VIDEO);
@@ -565,9 +564,8 @@ class GroupChatScreen extends HookConsumerWidget {
         );
         if (result != null) {
           PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
+          final Media media =
+              Media(path: file.path!, size: (await File(file.path!).length()));
           ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.VOICE);
         }
@@ -580,9 +578,8 @@ class GroupChatScreen extends HookConsumerWidget {
         );
         if (result != null) {
           PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
+          final Media media =
+              Media(path: file.path!, size: (await File(file.path!).length()));
           ref.read(attachedGroupFile.notifier).state =
               AttachedFile(media, MessageType.FILE);
         }
@@ -592,66 +589,66 @@ class GroupChatScreen extends HookConsumerWidget {
     }
   }
 
-  _pickFiles(AttachType type, WidgetRef ref) async {
-    switch (type) {
-      case AttachType.cameraPhoto:
-        List<Media>? res = await ImagesPicker.openCamera(
-          quality: 0.8,
-          pickType: PickType.image,
-          maxSize: 5000, //5 MB
-        );
-        // print(res);
-        if (res != null) {
-          final Media media = res.first;
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.IMAGE);
-        }
-        return;
-      case AttachType.cameraVideo:
-        List<Media>? res = await ImagesPicker.openCamera(
-          quality: 0.8,
-          pickType: PickType.video,
-          maxSize: 10000, //10 MB
-        );
-        if (res != null) {
-          final Media media = res.first;
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.VIDEO);
-        }
-        return;
-      case AttachType.media:
-        List<Media>? res = await ImagesPicker.pick(
-          count: 1,
-          pickType: PickType.all,
-          language: Language.System,
-          maxSize: 5000,
-        );
-        if (res != null) {
-          final Media media = res.first;
-          print('path ${media.path}');
-          final f = File(media.path);
-          if (await f.exists()) {
-            bool isImage = media.path.toLowerCase().endsWith('png') ||
-                media.path.toLowerCase().endsWith('jpg') ||
-                media.path.toLowerCase().endsWith('jpeg');
-            ref.read(attachedGroupFile.notifier).state = AttachedFile(
-                media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
-          } else {
-            print('path ${media.path} is not exist ');
-          }
-          // File('Fil')
+  // _pickFiles(AttachType type, WidgetRef ref) async {
+  //   switch (type) {
+  //     case AttachType.cameraPhoto:
+  //       List<Media>? res = await ImagesPicker.openCamera(
+  //         quality: 0.8,
+  //         pickType: PickType.image,
+  //         maxSize: 5000, //5 MB
+  //       );
+  //       // print(res);
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         ref.read(attachedGroupFile.notifier).state =
+  //             AttachedFile(media, MessageType.IMAGE);
+  //       }
+  //       return;
+  //     case AttachType.cameraVideo:
+  //       List<Media>? res = await ImagesPicker.openCamera(
+  //         quality: 0.8,
+  //         pickType: PickType.video,
+  //         maxSize: 10000, //10 MB
+  //       );
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         ref.read(attachedGroupFile.notifier).state =
+  //             AttachedFile(media, MessageType.VIDEO);
+  //       }
+  //       return;
+  //     case AttachType.media:
+  //       List<Media>? res = await ImagesPicker.pick(
+  //         count: 1,
+  //         pickType: PickType.all,
+  //         language: Language.System,
+  //         maxSize: 5000,
+  //       );
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         print('path ${media.path}');
+  //         final f = File(media.path);
+  //         if (await f.exists()) {
+  //           bool isImage = media.path.toLowerCase().endsWith('png') ||
+  //               media.path.toLowerCase().endsWith('jpg') ||
+  //               media.path.toLowerCase().endsWith('jpeg');
+  //           ref.read(attachedGroupFile.notifier).state = AttachedFile(
+  //               media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
+  //         } else {
+  //           print('path ${media.path} is not exist ');
+  //         }
+  //         // File('Fil')
 
-        }
-        break;
+  //       }
+  //       break;
 
-      case AttachType.audio:
-        // fileExts = ['aac', 'mp3', 'wav'];
-        break;
-      case AttachType.docs:
-        // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-        break;
-    }
-  }
+  //     case AttachType.audio:
+  //       // fileExts = ['aac', 'mp3', 'wav'];
+  //       break;
+  //     case AttachType.docs:
+  //       // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
+  //       break;
+  //   }
+  // }
 
   Widget _buildMessageList(WidgetRef ref) {
     final chatList = ref.watch(groupChatProvider(model)).reversed.toList();

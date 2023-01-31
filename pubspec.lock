@@ -29,13 +29,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  animate_icons:
-    dependency: "direct main"
-    description:
-      name: animate_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   archive:
     dependency: transitive
     description:
@@ -623,13 +616,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.5+2"
-  images_picker:
-    dependency: "direct main"
-    description:
-      name: images_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.11"
   infinite_listview:
     dependency: transitive
     description:
@@ -665,13 +651,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.7.0"
-  jumping_dot:
-    dependency: "direct main"
-    description:
-      name: jumping_dot
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
   lints:
     dependency: transitive
     description:
@@ -897,7 +876,7 @@ packages:
     source: hosted
     version: "4.2.4"
   provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: provider
       url: "https://pub.dartlang.org"
@@ -1210,7 +1189,7 @@ packages:
     source: hosted
     version: "3.0.1"
   uuid:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: uuid
       url: "https://pub.dartlang.org"

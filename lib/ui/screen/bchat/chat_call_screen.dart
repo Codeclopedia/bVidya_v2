@@ -248,10 +248,7 @@ class ChatCallScreen extends HookConsumerWidget {
 
   Widget _buildLocalView(int id, RtcEngine? engine) {
     return engine == null
-        ? Image.asset(
-            "assets/images/pexels-juan-gomez-2589653.jpg",
-            fit: BoxFit.cover,
-          )
+        ? getRectFAvatar(name, image)
         : AgoraVideoView(
             controller: VideoViewController(
               rtcEngine: engine,

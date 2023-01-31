@@ -64,7 +64,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       await ref.read(callListProvider.notifier).setup();
     } else {
       print('reseting chat only');
-      await loadChats(ref);
+      try {
+        await loadChats(ref);
+      } catch (e) {}
+
       // ref
       //     .read(chatConversationProvider.notifier)
       //     .reset(ref.read(bChatProvider));

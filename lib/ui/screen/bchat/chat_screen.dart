@@ -13,7 +13,7 @@ import '../../dialog/forward_dialog.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart';
+// import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
@@ -32,6 +32,7 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
 import 'models/attach_type.dart';
+import 'models/media.dart';
 import 'models/reply_model.dart';
 import 'widgets/attached_file.dart';
 import 'widgets/chat_message_bubble.dart';
@@ -443,7 +444,7 @@ class ChatScreen extends HookConsumerWidget {
           // File file = xFile.path;
           final Media media = Media(
               path: xFile.path,
-              size: (await xFile.length()).toDouble(),
+              size: (await xFile.length()),
               thumbPath: xFile.path);
           ref.read(attachedFile.notifier).state =
               AttachedFile(media, MessageType.IMAGE);
@@ -460,9 +461,7 @@ class ChatScreen extends HookConsumerWidget {
             quality: 25,
           );
           final Media media = Media(
-              path: xFile.path,
-              size: (await xFile.length()).toDouble(),
-              thumbPath: thumb);
+              path: xFile.path, size: (await xFile.length()), thumbPath: thumb);
           ref.read(attachedFile.notifier).state =
               AttachedFile(media, MessageType.VIDEO);
         }
@@ -479,7 +478,7 @@ class ChatScreen extends HookConsumerWidget {
           if (isImage) {
             final Media media = Media(
                 path: file.absolute.path,
-                size: (await file.length()).toDouble(),
+                size: (await file.length()),
                 thumbPath: file.absolute.path);
             ref.read(attachedFile.notifier).state =
                 AttachedFile(media, MessageType.IMAGE);
@@ -493,7 +492,7 @@ class ChatScreen extends HookConsumerWidget {
             );
             final Media media = Media(
                 path: file.absolute.path,
-                size: (await file.length()).toDouble(),
+                size: (await file.length()),
                 thumbPath: thumb);
             ref.read(attachedFile.notifier).state =
                 AttachedFile(media, MessageType.VIDEO);
@@ -507,9 +506,8 @@ class ChatScreen extends HookConsumerWidget {
         );
         if (result != null) {
           PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
+          final Media media =
+              Media(path: file.path!, size: (await File(file.path!).length()));
           ref.read(attachedFile.notifier).state =
               AttachedFile(media, MessageType.VOICE);
         }
@@ -522,9 +520,8 @@ class ChatScreen extends HookConsumerWidget {
         );
         if (result != null) {
           PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
+          final Media media =
+              Media(path: file.path!, size: (await File(file.path!).length()));
           ref.read(attachedFile.notifier).state =
               AttachedFile(media, MessageType.FILE);
         }

@@ -606,27 +606,27 @@ class BLearnHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildComplementaryList() {
-    return Container(
-      height: 14.h,
-      color: Colors.white,
-      child: ListView.builder(
-        padding: EdgeInsets.all(0.5.h),
-        itemCount: complementryItems.length,
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (BuildContext context, int index) {
-          return const ComplementryCourseItem();
-          // final row = complementryItems.entries.elementAt(index);
-          // return ComplementryCourseItem(
-          //   color: complementryItemsColors[row.key]!,
-          //   image: row.value,
-          //   title: row.key,
-          // );
-        },
-      ),
-    );
-  }
+  // Widget _buildComplementaryList() {
+  //   return Container(
+  //     height: 14.h,
+  //     color: Colors.white,
+  //     child: ListView.builder(
+  //       padding: EdgeInsets.all(0.5.h),
+  //       itemCount: complementryItems.length,
+  //       shrinkWrap: true,
+  //       scrollDirection: Axis.horizontal,
+  //       itemBuilder: (BuildContext context, int index) {
+  //         return const ComplementryCourseItem();
+  //         // final row = complementryItems.entries.elementAt(index);
+  //         // return ComplementryCourseItem(
+  //         //   color: complementryItemsColors[row.key]!,
+  //         //   image: row.value,
+  //         //   title: row.key,
+  //         // );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildRecentCaption(BuildContext context, WidgetRef ref) {
     return Padding(
