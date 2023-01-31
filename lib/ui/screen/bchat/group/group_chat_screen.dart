@@ -845,9 +845,11 @@ class GroupChatScreen extends HookConsumerWidget {
             if (isFile) {
               ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
             }
+            BuildContext? cntx = navigatorKey.currentContext;
+            if (cntx != null) {
+              AppSnackbar.instance.error(cntx, error.description);
+            }
 
-            AppSnackbar.instance
-                .error(navigatorKey.currentContext!, error.description);
             // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
           },
           onProgress: (progress) {

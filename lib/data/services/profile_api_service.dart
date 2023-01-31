@@ -41,7 +41,7 @@ class ProfileApiService {
   }
 
   Future<UserProfileResponse> getUserProfile(String token) async {
-    print(token);
+    // print(token);
     _dio.options.headers['X-Auth-Token'] = token;
     try {
       final response = await _dio.get(baseUrlApi + ApiList.userProfile);

@@ -89,15 +89,24 @@ class CourseDetailScreen extends StatelessWidget {
                                         width: 90.w,
                                         height: 12.w,
                                         child: ElevatedButton(
-                                          onPressed: () {
+                                          onPressed: () async {
                                             showLoading(ref);
-                                            ref.read(
-                                                blearnSubscribeCourseProvider(
-                                                    course.id ?? 0));
+                                            await ref
+                                                .read(bLearnRepositoryProvider)
+                                                .subscribeCourse(
+                                                    course.id ?? 1);
                                             ref.refresh(
                                                 bLearnCourseDetailProvider(
                                                     course.id ?? 0));
                                             hideLoading(ref);
+                                            // showLoading(ref);
+                                            // ref.read(
+                                            //     blearnSubscribeCourseProvider(
+                                            //         course.id ?? 0));
+                                            // ref.refresh(
+                                            //     bLearnCourseDetailProvider(
+                                            //         course.id ?? 0));
+                                            // hideLoading(ref);
                                           },
                                           style: elevatedButtonStyle,
                                           child: const Text("Start Learning"),

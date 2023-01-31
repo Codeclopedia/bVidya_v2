@@ -1,3 +1,5 @@
+import 'package:bvidya/core/utils.dart';
+
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
@@ -24,24 +26,27 @@ class SettingsScreen extends StatelessWidget {
                 () {
               Navigator.pushNamed(context, RouteList.accountSetting);
             }),
-            getTwoRowSettingItem(
-                S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
-                () {
-              Navigator.pushNamed(context, RouteList.chatSetting);
-            }),
-            getTwoRowSettingItem(S.current.settingsNoti, S.current.notiHistory,
-                "ic_set_noty.svg", () {
-              Navigator.pushNamed(context, RouteList.notificationSetting);
-            }),
+            // getTwoRowSettingItem(
+            //     S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
+            //     () {
+            //   Navigator.pushNamed(context, RouteList.chatSetting);
+            // }),
+            // getTwoRowSettingItem(S.current.settingsNoti, S.current.notiHistory,
+            //     "ic_set_noty.svg", () {
+            //   Navigator.pushNamed(context, RouteList.notificationSetting);
+            // }),
             getTwoRowSettingItem(
                 S.current.settingHelp, S.current.helpCenter, "ic_set_help.svg",
                 () {
               Navigator.pushNamed(context, RouteList.help);
             }),
-            _buildSingleLineItem(
-                S.current.settingShare, "ic_set_share.svg", () {}),
-            _buildSingleLineItem(
-                S.current.settingRate, "ic_set_rate.svg", () {}),
+            _buildSingleLineItem(S.current.settingShare, "ic_set_share.svg",
+                () {
+              shareApp();
+            }),
+            _buildSingleLineItem(S.current.settingRate, "ic_set_rate.svg", () {
+              rateApp(context);
+            }),
           ]),
     );
   }

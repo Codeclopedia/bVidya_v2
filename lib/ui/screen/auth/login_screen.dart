@@ -167,7 +167,7 @@ class LoginScreen extends HookWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 3.h),
+                    SizedBox(height: 3.w),
                     Align(
                       alignment: Alignment.center,
                       child: RichText(

@@ -1,8 +1,7 @@
-import 'package:shimmer/shimmer.dart';
+import 'package:bvidya/ui/screens.dart';
 
 import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';
-import '/controller/profile_providers.dart';
 import '/data/models/models.dart';
 import '/core/constants/route_list.dart';
 
@@ -65,7 +64,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                             }
                             // ref.read(teacherOccupation.notifier).state =
                             //     data.profile?.occupation ?? '';
-                            return _buildContent(data, context);
+                            return _buildContent(data, context, ref);
                           },
                           error: (error, stackTrace) =>
                               buildEmptyPlaceHolder('error in loading data'),
@@ -148,7 +147,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(ProfileDetailBody body, BuildContext context) {
+  Widget _buildContent(
+      ProfileDetailBody body, BuildContext context, WidgetRef ref) {
     // if (body.followers?.isNotEmpty == true) {
     //   follwersCount = (body.followers?[0].count ?? 0).toString();
     // }
@@ -201,56 +201,76 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                   )
                 ],
               ),
-              Consumer(builder: (context, ref, child) {
-                return ref
-                    .watch(isFollowedInstructor(instructor.id.toString()))
-                    .when(
-                      data: (data) {
-                        return ElevatedButton(
-                            onPressed: () async {
-                              ref.read(bLearnFollowInstructorProvider(
-                                  instructor.id.toString()));
-                              ref.refresh(bLearnProfileProvider(
-                                  instructor.id.toString()));
-                              // ref.refresh(isFollowedInstructor(
-                              //     instructor.id.toString()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: data
-                                    ? AppColors.iconGreyColor
-                                    : AppColors.primaryColor),
-                            child: data
-                                ? Text(S.current.teacher_followed)
-                                : Text(S.current.teacher_follow));
-                      },
-                      error: (error, stackTrace) =>
-                          buildEmptyPlaceHolder('error in loading data'),
-                      loading: () => Shimmer.fromColors(
-                        highlightColor: Colors.white,
-                        baseColor: Colors.grey,
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              // ref.read(bLearnFollowInstructorProvider(
-                              //     instructor.id.toString()));
-                              // ref.refresh(bLearnProfileProvider(
-                              //     instructor.id.toString()));
-                              // ref.refresh(isFollowedInstructor(
-                              //     instructor.id.toString()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: AppColors.iconGreyColor),
-                            child: Text("      ")),
-                      ),
-                    );
+              ElevatedButton(
+                  onPressed: () async {
+                    showLoading(ref);
+                    await ref
+                        .read(bLearnRepositoryProvider)
+                        .followInstructor(instructor.id.toString());
+                    hideLoading(ref);
+                    ref.refresh(
+                        bLearnProfileProvider(instructor.id.toString()));
+                    // ref.refresh(isFollowedInstructor(
+                    //     instructor.id.toString()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: body.isFollowed ?? false
+                          ? AppColors.iconGreyColor
+                          : AppColors.primaryColor),
+                  child: body.isFollowed ?? false
+                      ? Text(S.current.teacher_followed)
+                      : Text(S.current.teacher_follow))
+              // Consumer(builder: (context, ref, child) {
+              //   return ref
+              //       .watch(isFollowedInstructor(instructor.id.toString()))
+              //       .when(
+              //         data: (data) {
+              //           return ElevatedButton(
+              //               onPressed: () async {
+              //                 ref.read(bLearnFollowInstructorProvider(
+              //                     instructor.id.toString()));
+              //                 ref.refresh(bLearnProfileProvider(
+              //                     instructor.id.toString()));
+              //                 // ref.refresh(isFollowedInstructor(
+              //                 //     instructor.id.toString()));
+              //               },
+              //               style: ElevatedButton.styleFrom(
+              //                   padding: EdgeInsets.zero,
+              //                   backgroundColor: body.isFollowed ?? false
+              //                       ? AppColors.iconGreyColor
+              //                       : AppColors.primaryColor),
+              //               child: body.isFollowed ?? false
+              //                   ? Text(S.current.teacher_followed)
+              //                   : Text(S.current.teacher_follow));
+              //         },
+              //         error: (error, stackTrace) =>
+              //             buildEmptyPlaceHolder('error'),
+              //         loading: () => Shimmer.fromColors(
+              //           highlightColor: Colors.white,
+              //           baseColor: Colors.grey,
+              //           child: ElevatedButton(
+              //               onPressed: () async {
+              //                 // ref.read(bLearnFollowInstructorProvider(
+              //                 //     instructor.id.toString()));
+              //                 // ref.refresh(bLearnProfileProvider(
+              //                 //     instructor.id.toString()));
+              //                 // ref.refresh(isFollowedInstructor(
+              //                 //     instructor.id.toString()));
+              //               },
+              //               style: ElevatedButton.styleFrom(
+              //                   padding: EdgeInsets.zero,
+              //                   backgroundColor: AppColors.iconGreyColor),
+              //               child: Text("      ")),
+              //         ),
+              //       );
 
-                // return ElevatedButton(
-                //     onPressed: () async {
-                //        ref.read(bLearnFollowInstructorProvider(instructor.id.toString()));
-                //     },
-                //     child: Text(S.current.teacher_follow));
-              })
+              //   // return ElevatedButton(
+              //   //     onPressed: () async {
+              //   //        ref.read(bLearnFollowInstructorProvider(instructor.id.toString()));
+              //   //     },
+              //   //     child: Text(S.current.teacher_follow));
+              // })
             ],
           ),
         ),
@@ -624,7 +644,9 @@ Widget _buildTestimonialCaption() {
 
 Widget _buildTestimonialList(List<CourseFeedback>? feedbackList) {
   if (feedbackList == null || feedbackList.isEmpty) {
-    return const SizedBox.shrink();
+    return SizedBox(
+        height: 22.h,
+        child: Center(child: buildEmptyPlaceHolder("No Testimonials.")));
   }
   return Container(
     margin: EdgeInsets.only(top: 0.8.h),

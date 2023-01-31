@@ -734,46 +734,49 @@ class BMeetCallScreen extends StatelessWidget {
                   //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
                   ),
 
-              Stack(
-                children: [
-                  _buildToolItemIcon(
-                      text: S.current.bmeet_tool_participants,
-                      onTap: () {
-                        _showParticipantsList(context);
-                      },
-                      icon: Icons.people,
-                      color: Colors.white
-                      // child: getSvgIcon('vc_participants.svg'),
-                      ),
-                  if (provider.memberList.isNotEmpty)
-                    Positioned(
-                      right: 2.w,
-                      top: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(0.5.h),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.yellowAccent,
+              SizedBox(
+                width: 15.w,
+                child: Stack(
+                  children: [
+                    _buildToolItemIcon(
+                        text: S.current.bmeet_tool_participants,
+                        onTap: () {
+                          _showParticipantsList(context);
+                        },
+                        icon: Icons.people,
+                        color: Colors.white
+                        // child: getSvgIcon('vc_participants.svg'),
                         ),
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          "${provider.memberList.length}",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 8.sp,
-                              letterSpacing: .5,
-                              color: Colors.black),
+                    if (provider.memberList.isNotEmpty)
+                      Positioned(
+                        right: 1.w,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(0.5.h),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.yellowAccent,
+                          ),
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            "${provider.memberList.length}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 8.sp,
+                                letterSpacing: .5,
+                                color: Colors.black),
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
               _buildToolItem(
                 text: S.current.bmeet_tool_raisehand,
                 onTap: () {
                   provider.sendRaiseHand();
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.back_hand_rounded,
                   color: Colors.white,
                 ),
@@ -801,6 +804,8 @@ class BMeetCallScreen extends StatelessWidget {
       children: [
         // view.view,
         Container(
+          width: double.infinity,
+          height: double.infinity,
           padding: const EdgeInsets.all(1),
           color: Colors.black,
           child: view.widget,

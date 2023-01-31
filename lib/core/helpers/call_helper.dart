@@ -125,7 +125,7 @@ Future<bool> receiveCall(BuildContext context, String fromId,
 
 Future<ChatMessage?> makeVideoCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
-  if (activeCallId != null) {
+  if (onGoingCallId != null) {
     AppSnackbar.instance.error(context, 'Already on call');
     return null;
   }
@@ -193,7 +193,7 @@ Future<ChatMessage?> makeVideoCall(
 
 Future<ChatMessage?> makeCall(
     CallListModel model, WidgetRef ref, BuildContext context) async {
-  if (activeCallId != null) {
+  if (onGoingCallId != null) {
     AppSnackbar.instance.error(context, 'Already on call');
     return null;
   }

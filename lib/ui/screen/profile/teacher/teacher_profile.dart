@@ -73,8 +73,9 @@ class TeacherProfile extends StatelessWidget {
                 Navigator.pushNamed(context, RouteList.teacherClassRequest);
               }
             }),
-            _buildContent(
-                S.current.profile_invite, 'profile_invite.svg', () {}),
+            _buildContent(S.current.profile_invite, 'profile_invite.svg', () {
+              shareApp();
+            }),
             Consumer(builder: (context, ref, child) {
               return _buildContent(
                   S.current.profile_logout, 'profile_logout.svg', () {

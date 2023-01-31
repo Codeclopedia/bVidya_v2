@@ -77,7 +77,7 @@ class LessonListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lesson ${index + 1}',
+                        'Module ${index + 1}',
                         style: TextStyle(
                           color: isSubscribed
                               ? Colors.black
@@ -124,7 +124,7 @@ class LessonListTile extends StatelessWidget {
           if (openIndex == index)
             ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: lesson.playlist?.length,
               itemBuilder: (context, playlistIndex) {
                 return Padding(

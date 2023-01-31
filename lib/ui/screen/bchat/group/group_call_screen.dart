@@ -210,7 +210,6 @@ class GroupCallScreen extends StatelessWidget {
     final error =
         await ref.read(bGroupCallChangeProvider).endCurrentCall(groupName);
     hideLoading(ref);
-
     if (error != null) {
       print('error:$error');
       Fluttertoast.showToast(
@@ -230,12 +229,12 @@ class GroupCallScreen extends StatelessWidget {
           _controller?.close();
         }
       } catch (e) {}
-
+      clearCall();
       Navigator.pop(context);
       setScreen(prevScreen);
     } else {
       setScreen(RouteList.homeDirect);
-
+      clearCall();
       Navigator.pushNamedAndRemoveUntil(
         context,
         RouteList.homeDirect,

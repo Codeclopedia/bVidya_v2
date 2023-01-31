@@ -8,7 +8,7 @@ import 'package:collection/collection.dart';
 import '/core/utils/chat_utils.dart';
 
 import '../../dialog/contact_menu_dialog.dart';
-import '/controller/providers/bchat/chat_conversation_provider.dart';
+// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 
 import '/controller/bchat_providers.dart';

@@ -16,6 +16,7 @@ export 'screen/bchat/search_screen.dart';
 export 'screen/bchat/chat_call_screen.dart';
 export 'screen/bchat/full_screen_image.dart';
 export 'screen/bchat/chat_video_player_screen.dart';
+export 'screen/bchat/pdf_viewer_screen.dart';
 
 export 'screen/bchat/group/groups_screen.dart';
 export 'screen/bchat/group/create_new_group_screen.dart';

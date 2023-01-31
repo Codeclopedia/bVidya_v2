@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/file_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
 
 import 'package:flutter/gestures.dart';
@@ -173,17 +176,8 @@ class ChatMessageBubble extends StatelessWidget {
       case MessageType.FILE:
         ChatFileMessageBody body = message.body as ChatFileMessageBody;
         return GestureDetector(
-            onTap: () {
-              if (body.fileStatus == DownloadStatus.SUCCESS) {
-                print('File local ${body.localPath}');
-                // FlutterFilePreview.openFile(body.localPath,
-                //     title: body.displayName ?? '');
-              } else {
-                print('File remote ${body.remotePath}');
-                // FlutterFilePreview.openFile(body.remotePath,
-                //     title: body.displayName ?? '');
-                // FilePreview.
-              }
+            onTap: () async {
+              handleChatFileOption(context, body);
             },
             child: _fileTypeBody(body));
       case MessageType.VOICE:

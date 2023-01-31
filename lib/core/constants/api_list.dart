@@ -21,7 +21,6 @@ class ApiList {
 
   //bMeet
   static const String meetingList = 'meeting/meetings'; //GET
-
   static const String createMeet = 'meeting/create'; //POST
   static const String startMeet = 'meeting/start/'; //GET
   static const String joinMeet = 'meeting/join/'; //GET

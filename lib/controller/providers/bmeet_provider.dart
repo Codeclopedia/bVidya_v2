@@ -324,11 +324,11 @@ class BMeetProvider extends ChangeNotifier {
           }
           notifyListeners();
         },
-        onUserEnableVideo: (connection, remoteUid, enabled) {
+        onUserMuteVideo: (connection, remoteUid, muted) {
           if (_userList.containsKey(remoteUid)) {
             _userList.update(remoteUid, (value) {
-              value.enabledVideo = enabled;
-              if (enabled) {
+              value.enabledVideo = !muted;
+              if (value.enabledVideo) {
                 value.widget = _remoteView(remoteUid);
               } else {
                 value.widget = getRectFAvatar(value.name, '');
@@ -496,6 +496,17 @@ class BMeetProvider extends ChangeNotifier {
   void toggleCamera() async {
     _disableLocalCamera = !_disableLocalCamera;
     await _engine.muteLocalVideoStream(_disableLocalCamera);
+    if (_userList.containsKey(_localUid)) {
+      _userList.update(_localUid, (value) {
+        value.enabledVideo = _disableLocalCamera;
+        if (value.enabledVideo) {
+          value.widget = _localView();
+        } else {
+          value.widget = getRectFAvatar(value.name, '');
+        }
+        return value;
+      });
+    }
     notifyListeners();
   }
 

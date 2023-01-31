@@ -175,11 +175,17 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
   _lastCallId = callId;
   _lastCallTime = remoteMessage.sentTime;
 
+  String? avImage;
+  if (image.isNotEmpty) {
+    avImage = '$baseImageApi$image';
+  } else {
+    avImage = null;
+  }
   // print('from ID $fromId');
   await FlutterCallkitIncoming.endCall(callId);
   final kitParam = CallKitParams(
     appName: 'bVidya',
-    avatar: '$baseImageApi$image',
+    avatar: avImage,
     id: callId,
     nameCaller: name,
     textAccept: 'Accept',
@@ -206,7 +212,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
       supportsVideo: hasVideo,
     ),
     type: hasVideo ? 1 : 0,
-    handle: name,
+    handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-$name',
   );
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }
@@ -232,11 +238,17 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   _lastCallId = callId;
   _lastCallTime = remoteMessage.sentTime;
 
+  String? avImage;
+  if (image.isNotEmpty) {
+    avImage = '$baseImageApi$image';
+  } else {
+    avImage = null;
+  }
   // print('from ID $fromId');
   await FlutterCallkitIncoming.endCall(callId);
   final kitParam = CallKitParams(
     appName: 'bVidya',
-    avatar: '$baseImageApi$image',
+    avatar: avImage,
     id: callId,
     nameCaller: name,
     textAccept: 'Accept',
@@ -262,7 +274,8 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
       supportsVideo: hasVideo,
     ),
     type: hasVideo ? 1 : 0,
-    handle: name,
+    // handle: name,
+    handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-$name',
   );
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }
@@ -284,11 +297,18 @@ showIncomingCallScreen(
   _lastCallTime = DateTime.now();
   _activeCallId = body.callId;
   _lastCallId = _activeCallId;
+  String? avImage;
+
+  if (body.fromImage.isNotEmpty) {
+    avImage = '$baseImageApi${body.fromImage}';
+  } else {
+    avImage = null;
+  }
   print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
   bool hasVideo = body.callType == CallType.video;
   final kitParam = CallKitParams(
     appName: 'bVidya',
-    avatar: '$baseImageApi${body.fromImage}',
+    avatar: avImage,
     id: body.callId,
     nameCaller: body.fromName,
     textAccept: 'Accept',
@@ -315,7 +335,8 @@ showIncomingCallScreen(
       supportsVideo: hasVideo,
     ),
     type: hasVideo ? 1 : 0,
-    handle: body.fromName,
+    handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${body.fromName}',
+    // handle: body.fromName,
   );
   try {
     await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
@@ -341,17 +362,27 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
   _lastCallTime = DateTime.now();
   _activeCallId = callBody.callId;
   _lastCallId = _activeCallId;
+  String? avImage = callBody.groupImage;
+  if (avImage.isEmpty) {
+    avImage = callBody.fromImage;
+  }
+  if (avImage.isNotEmpty) {
+    avImage = '$baseImageApi$avImage';
+  } else {
+    avImage = null;
+  }
   bool hasVideo = callBody.callType == CallType.video;
 
-  print('valid group Call Called => active: $_activeCallId last:$_lastCallId');
+  // print('valid group Call Called => active: $_activeCallId last:$_lastCallId');
   final kitParam = CallKitParams(
     appName: 'bVidya',
-    avatar: '$baseImageApi${callBody.fromImage}',
+    avatar: avImage,
     id: callBody.callId,
     nameCaller: callBody.fromName,
     textAccept: 'Accept',
     textDecline: 'Decline',
-    textCallback: 'Call back',
+
+    // textCallback: 'Call back',
     extra: {
       'type': NotiConstants.typeGroupCall,
       'from_id': fromId,
@@ -374,7 +405,7 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
       supportsVideo: hasVideo,
     ),
     type: hasVideo ? 1 : 0,
-    handle: callBody.groupName,
+    handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${callBody.groupName}',
   );
   try {
     await FlutterCallkitIncoming.showCallkitIncoming(kitParam);
@@ -557,11 +588,17 @@ onDeclineCallBusy(
     user?.image ?? '',
     callMessegeBody.callType == CallType.video,
   );
+  String? avImage = callMessegeBody.fromImage;
+  if (avImage.isNotEmpty) {
+    avImage = '$baseImageApi$avImage';
+  } else {
+    avImage = null;
+  }
 
   await FlutterCallkitIncoming.endCall(callMessegeBody.callId);
   final kitParam = CallKitParams(
     appName: 'bVidya',
-    avatar: '$baseImageApi${callMessegeBody.fromName}',
+    avatar: avImage,
     id: callMessegeBody.callId,
     nameCaller: callMessegeBody.fromName,
     textAccept: 'Accept',
@@ -589,7 +626,8 @@ onDeclineCallBusy(
       supportsVideo: hasVideo,
     ),
     type: hasVideo ? 1 : 0,
-    handle: callMessegeBody.fromName,
+    handle:
+        '${hasVideo ? 'Video Call' : 'Audio Call'}-${callMessegeBody.fromName}',
   );
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }

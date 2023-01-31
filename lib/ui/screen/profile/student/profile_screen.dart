@@ -2,6 +2,8 @@
 
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/utils.dart';
+
 import '/core/utils/common.dart';
 
 import '/controller/profile_providers.dart';
@@ -96,8 +98,9 @@ class StudentProfileScreen extends ConsumerWidget {
               });
               hideLoading(ref);
             }),
-            _buildContent(
-                S.current.profile_invite, "profile_invite.svg", () {}),
+            _buildContent(S.current.profile_invite, "profile_invite.svg", () {
+              shareApp();
+            }),
             Consumer(builder: (context, ref, child) {
               return _buildContent(
                   S.current.profile_logout, "profile_logout.svg", () {

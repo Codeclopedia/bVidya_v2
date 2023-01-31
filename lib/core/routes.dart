@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import '/app.dart';
 
 // import '../controller/bchat_providers.dart';
@@ -132,7 +133,15 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+      case RouteList.pdfFileViewer:
+        if (settings.arguments is PDFDocument) {
+          final document = settings.arguments as PDFDocument;
+          screen = PdFViewerScreen(document: document);
+        } else {
+          screen = _parameterMissing();
+        }
 
+        break;
       case RouteList.groupChatScreenDirect:
         if (settings.arguments is GroupConversationModel) {
           _currentId = (settings.arguments as GroupConversationModel).id;

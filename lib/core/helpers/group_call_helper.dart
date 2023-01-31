@@ -3,7 +3,11 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:flutter/foundation.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import '../routes.dart';
+import '../utils/callkit_utils.dart';
 import '/controller/bchat_providers.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/constants/route_list.dart';
@@ -12,11 +16,9 @@ import '/core/helpers/call_helper.dart';
 import '/core/utils.dart';
 import '/data/models/call_message_body.dart';
 import '/data/models/models.dart';
-import 'package:flutter/foundation.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-import '../../controller/bmeet_providers.dart';
-import '../../ui/screens.dart';
+import '/controller/bmeet_providers.dart';
+import '/ui/screens.dart';
 import '../constants/notification_const.dart';
 import '../sdk_helpers/bchat_call_manager.dart';
 import '../sdk_helpers/bchat_group_manager.dart';
@@ -94,6 +96,10 @@ Future<ChatMessage?> makeGroupCallFromHistory(
 
 Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
     ChatGroup group, CallType callType) async {
+  if (onGoingCallId != null) {
+    AppSnackbar.instance.error(context, 'Already on call');
+    return null;
+  }
   User? me = await getMeAsUser();
   if (me == null) {
     return null;

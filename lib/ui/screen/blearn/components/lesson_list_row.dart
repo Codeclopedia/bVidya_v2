@@ -74,7 +74,7 @@ class LessonListRow extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Lesson ${index + 1}',
+                              'Module ${index + 1}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 8.sp,
@@ -113,7 +113,7 @@ class LessonListRow extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Lesson ${index + 1}',
+                                  'Module ${index + 1}',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 8.sp,
@@ -151,7 +151,7 @@ class LessonListRow extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Lesson ${index + 1}',
+                                  'Module ${index + 1}',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 8.sp,

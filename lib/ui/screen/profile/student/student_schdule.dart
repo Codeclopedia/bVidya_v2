@@ -9,9 +9,7 @@ import '/core/state.dart';
 import '/data/models/response/bmeet/requested_class_response.dart';
 import '../base_settings_noscroll.dart';
 
-final scheduledClassTabIndexProvider = StateProvider<int>(
-  (ref) => 0,
-);
+final scheduledClassTabIndexProvider = StateProvider<int>((ref) => 0);
 
 class StudentSchdule extends StatelessWidget {
   const StudentSchdule({super.key});
@@ -40,7 +38,13 @@ class StudentSchdule extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 2.w),
                       child: ref.watch(requestedClassesProvider).when(
                             data: (data) {
-                              if (data?.requestedClasses?.isEmpty ?? false) {
+                              if (data == null) {
+                                return Center(
+                                  child: buildEmptyPlaceHolder(
+                                      "No requested classes"),
+                                );
+                              }
+                              if (data.requestedClasses?.isEmpty ?? false) {
                                 return Center(
                                   child: buildEmptyPlaceHolder(
                                       "No requested classes"),
@@ -49,10 +53,10 @@ class StudentSchdule extends StatelessWidget {
 
                               return ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: data?.requestedClasses?.length,
+                                itemCount: data.requestedClasses?.length,
                                 itemBuilder: (context, index) {
                                   return _buildRequestRow(
-                                      data?.requestedClasses?[index] ??
+                                      data.requestedClasses?[index] ??
                                           RequestedClass());
                                 },
                               );

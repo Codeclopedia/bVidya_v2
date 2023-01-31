@@ -7,17 +7,13 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/ui/widget/chat_reply_body.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
-// import '/core/constants/data.dart';
 import '/core/sdk_helpers/typing_helper.dart';
 import '/core/utils/common.dart';
 import '../../dialog/forward_dialog.dart';
-// import '/core/routes.dart';
 
-// import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
-// import 'package:jumping_dot/jumping_dot.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
@@ -26,7 +22,6 @@ import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 import '/app.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
-// import '/controller/providers/bchat/chat_conversation_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/utils/chat_utils.dart';
 import '/core/helpers/call_helper.dart';
@@ -328,7 +323,6 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
-    showLoading(ref);
     final ChatMessage msg;
     String displayName = attFile.file.path.split('/').last;
     // final String content;
@@ -344,6 +338,7 @@ class ChatScreen extends HookConsumerWidget {
       msg = ChatMessage.createVideoSendMessage(
         targetId: model.contact.userId.toString(),
         filePath: attFile.file.path,
+        thumbnailLocalPath: attFile.file.thumbPath,
         displayName: displayName,
         fileSize: attFile.file.size.toInt(),
       );
@@ -367,22 +362,11 @@ class ChatScreen extends HookConsumerWidget {
         'image': _me.profileImage,
         'content_type': msg.body.type.name,
       },
-      // Adds the push template to the message.
-      // "em_push_template": {
-      //   // Sets the template name.
-      //   "name": "default",
-      //   // Sets the template title by specifying the variable.
-      //   "title_args": [
-      //     "${model.contact.name} sent you a ${attFile.messageType.name.toLowerCase()}"
-      //   ],
-      //   // Sets the template content by specifying the variable.
-      //   "content_args": [
-      //     (attFile.messageType.name.toLowerCase())
-      //   ],
-      // }
     };
+    showLoading(ref);
     await _sendMessage(msg, ref, isFile: true);
     ref.read(attachedFile.notifier).state = null;
+    hideLoading(ref);
   }
 
   Widget _buildReplyBox() {
@@ -550,85 +534,85 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  _pickFiles(AttachType type, WidgetRef ref) async {
-    switch (type) {
-      case AttachType.cameraPhoto:
-        List<Media>? res = await ImagesPicker.openCamera(
-          quality: 0.8,
-          pickType: PickType.image,
-          maxSize: 5000, //5 MB
-        );
-        print(res);
-        if (res != null) {
-          final Media media = res.first;
-          ref.read(attachedFile.notifier).state =
-              AttachedFile(media, MessageType.IMAGE);
-        }
-        return;
-      case AttachType.cameraVideo:
-        List<Media>? res = await ImagesPicker.openCamera(
-          quality: 0.8,
-          pickType: PickType.video,
-          maxSize: 10000, //10 MB
-        );
-        print(res);
-        if (res != null) {
-          final Media media = res.first;
-          ref.read(attachedFile.notifier).state =
-              AttachedFile(media, MessageType.VIDEO);
-        }
-        return;
-      case AttachType.media:
-        List<Media>? res = await ImagesPicker.pick(
-          count: 1,
-          pickType: PickType.all,
-          language: Language.System,
-          maxSize: 5000,
-        );
-        print(res);
-        if (res != null) {
-          final Media media = res.first;
-          bool isImage = media.path.toLowerCase().endsWith('png') ||
-              media.path.toLowerCase().endsWith('jpg') ||
-              media.path.toLowerCase().endsWith('jpeg');
-          ref.read(attachedFile.notifier).state = AttachedFile(
-              media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
-        }
-        break;
-      // ;
-      case AttachType.audio:
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['aac', 'mp3', 'wav'],
-        );
-        if (result != null) {
-          PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
-          ref.read(attachedFile.notifier).state =
-              AttachedFile(media, MessageType.VOICE);
-        }
-        // fileExts = ['aac', 'mp3', 'wav'];
-        break;
-      case AttachType.docs:
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['pdf', 'doc', 'txt'],
-        );
-        if (result != null) {
-          PlatformFile file = result.files.first;
-          final Media media = Media(
-              path: file.path!,
-              size: (await File(file.path!).length()).toDouble());
-          ref.read(attachedFile.notifier).state =
-              AttachedFile(media, MessageType.FILE);
-        }
-        // docPaths = await DocumentsPicker.pickDocuments;
-        // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-        break;
-    }
-  }
+  // _pickFiles(AttachType type, WidgetRef ref) async {
+  //   switch (type) {
+  //     case AttachType.cameraPhoto:
+  //       List<Media>? res = await ImagesPicker.openCamera(
+  //         quality: 0.8,
+  //         pickType: PickType.image,
+  //         maxSize: 5000, //5 MB
+  //       );
+  //       print(res);
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         ref.read(attachedFile.notifier).state =
+  //             AttachedFile(media, MessageType.IMAGE);
+  //       }
+  //       return;
+  //     case AttachType.cameraVideo:
+  //       List<Media>? res = await ImagesPicker.openCamera(
+  //         quality: 0.8,
+  //         pickType: PickType.video,
+  //         maxSize: 10000, //10 MB
+  //       );
+  //       print(res);
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         ref.read(attachedFile.notifier).state =
+  //             AttachedFile(media, MessageType.VIDEO);
+  //       }
+  //       return;
+  //     case AttachType.media:
+  //       List<Media>? res = await ImagesPicker.pick(
+  //         count: 1,
+  //         pickType: PickType.all,
+  //         language: Language.System,
+  //         maxSize: 5000,
+  //       );
+  //       print(res);
+  //       if (res != null) {
+  //         final Media media = res.first;
+  //         bool isImage = media.path.toLowerCase().endsWith('png') ||
+  //             media.path.toLowerCase().endsWith('jpg') ||
+  //             media.path.toLowerCase().endsWith('jpeg');
+  //         ref.read(attachedFile.notifier).state = AttachedFile(
+  //             media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
+  //       }
+  //       break;
+  //     // ;
+  //     case AttachType.audio:
+  //       FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //         type: FileType.custom,
+  //         allowedExtensions: ['aac', 'mp3', 'wav'],
+  //       );
+  //       if (result != null) {
+  //         PlatformFile file = result.files.first;
+  //         final Media media = Media(
+  //             path: file.path!,
+  //             size: (await File(file.path!).length()).toDouble());
+  //         ref.read(attachedFile.notifier).state =
+  //             AttachedFile(media, MessageType.VOICE);
+  //       }
+  //       // fileExts = ['aac', 'mp3', 'wav'];
+  //       break;
+  //     case AttachType.docs:
+  //       FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //         type: FileType.custom,
+  //         allowedExtensions: ['pdf', 'doc', 'txt'],
+  //       );
+  //       if (result != null) {
+  //         PlatformFile file = result.files.first;
+  //         final Media media = Media(
+  //             path: file.path!,
+  //             size: (await File(file.path!).length()).toDouble());
+  //         ref.read(attachedFile.notifier).state =
+  //             AttachedFile(media, MessageType.FILE);
+  //       }
+  //       // docPaths = await DocumentsPicker.pickDocuments;
+  //       // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
+  //       break;
+  //   }
+  // }
 
   Widget _buildMessageList(WidgetRef ref) {
     final chatList = ref.watch(bChatMessagesProvider(model)).reversed.toList();
@@ -800,12 +784,12 @@ class ChatScreen extends HookConsumerWidget {
         ref.read(chatModelProvider).clearReplyBox();
       }
 
-      print('pre:msgId ${msg.msgId}');
+      // print('pre:msgId ${msg.msgId}');
       msg.setMessageStatusCallBack(
         MessageStatusCallBack(
           onSuccess: () {
             if (isFile) {
-              hideLoading(ref);
+              // hideLoading(ref);
               ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
             }
 
@@ -815,16 +799,18 @@ class ChatScreen extends HookConsumerWidget {
           },
           onError: (error) {
             if (isFile) {
-              hideLoading(ref);
+              // hideLoading(ref);
               ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
             }
-            AppSnackbar.instance
-                .error(navigatorKey.currentContext!, error.description);
+            BuildContext? cntx = navigatorKey.currentContext;
+            if (cntx != null) {
+              AppSnackbar.instance.error(cntx, error.description);
+            }
             // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
           },
           onProgress: (progress) {
             if (isFile) {
-              showLoading(ref);
+              // showLoading(ref);
               ref.read(sendingFileProgress(msg.msgId).notifier).state =
                   progress;
             }
@@ -847,6 +833,9 @@ class ChatScreen extends HookConsumerWidget {
           curve: Curves.easeInOut,
         );
         return null;
+      } else {
+        AppSnackbar.instance
+            .error(navigatorKey.currentContext!, "Error while sending message");
       }
     } on ChatError catch (e) {
       print("send failed, code: ${e.code}, desc: ${e.description}");

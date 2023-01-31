@@ -65,7 +65,7 @@ class ChatCallScreen extends HookConsumerWidget {
     print('is Directly => $prevScreen');
     if (prevScreen.isEmpty) {
       // await FlutterCallkitIncoming.endAllCalls();
-      clearCall();
+      // clearCall();
       Navigator.pushReplacementNamed(context, RouteList.homeDirectFromCall);
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.splash, (route) => route.isFirst);
@@ -73,6 +73,7 @@ class ChatCallScreen extends HookConsumerWidget {
       setScreen(prevScreen);
       Navigator.pop(context);
     }
+    clearCall();
     _endingCall = false;
   }
 

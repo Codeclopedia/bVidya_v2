@@ -51,6 +51,8 @@ class RouteList {
   static const String bChatVideoCall = '/chat_video_call';
   static const String bChatAudioCall = '/chat_audio_call';
 
+  static const String pdfFileViewer = '/pdf-file-viewer';
+
   // static const String bChatVideoCallDirect = '/chat_video_call-direct';
   // static const String bChatAudioCallDirect = '/chat_audio_call-direct';
 

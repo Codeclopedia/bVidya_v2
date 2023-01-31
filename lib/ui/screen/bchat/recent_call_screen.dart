@@ -53,6 +53,7 @@ class RecentCallScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return SwipeActionCell(
                     key: ObjectKey(callList[index].msgId),
+                    backgroundColor: Colors.white,
                     // onTap: () async {
                     //   makeCall(callList[index], ref, context);
                     // },
@@ -100,9 +101,9 @@ class RecentCallScreen extends StatelessWidget {
                       final item =
                           await makeCall(callList[index], ref, context);
                       if (item != null) {
-                        setScreen(RouteList.recentCalls);
                         ref.read(callListProvider.notifier).addMessage(item);
                       }
+                      setScreen(RouteList.recentCalls);
                     }),
                   );
                 },
@@ -130,12 +131,6 @@ class RecentCallScreen extends StatelessWidget {
   Widget _contactRow(CallListModel model, Function() onCall) {
     final date = DateTime.fromMillisecondsSinceEpoch(model.time);
     String time = formatDateCall(date);
-    // if (!DateUtils.isSameDay(date, DateTime.now())) {
-    //   time = DateFormat('EE, d MMM, yyyy').format(date);
-    // }
-    // time += DateFormat('h:mm a')
-    //     .format(DateTime.fromMillisecondsSinceEpoch(model.time))
-    //     .toUpperCase();
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
@@ -157,9 +152,7 @@ class RecentCallScreen extends StatelessWidget {
                     fontSize: 13.sp,
                   ),
                 ),
-                SizedBox(
-                  height: 0.5.h,
-                ),
+                SizedBox(height: 0.5.h),
                 Text(
                   time,
                   style: TextStyle(

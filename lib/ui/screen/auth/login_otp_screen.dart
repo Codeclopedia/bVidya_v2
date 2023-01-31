@@ -160,7 +160,7 @@ class LoginOtpScreen extends HookWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 3.h,
+                        height: 3.w,
                       ),
                       Align(
                         alignment: Alignment.center,
