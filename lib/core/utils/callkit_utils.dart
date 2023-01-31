@@ -3,20 +3,18 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/common.dart';
 import '/core/helpers/group_call_helper.dart';
 import '/data/models/call_message_body.dart';
-// import '/data/models/response/bmeet/start_meeting_response.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '/data/models/response/auth/login_response.dart';
-// import '/data/models/response/bchat/p2p_call_response.dart';
 import '/data/services/fcm_api_service.dart';
 
 import '../routes.dart';
-// import '/core/helpers/extensions.dart';
 import '/app.dart';
 import '../constants.dart';
 import '../helpers/call_helper.dart';
@@ -119,6 +117,7 @@ Future setupCallKit() async {
           GroupCallMessegeBody.fromJson(jsonDecode(map['body']));
       switch (event.event) {
         case Event.ACTION_CALL_ACCEPT:
+          showOnLock(true);
           onGroupCallAccept(fromId, grpId, body);
           break;
         case Event.ACTION_CALL_DECLINE:
@@ -137,6 +136,7 @@ Future setupCallKit() async {
     CallMessegeBody body = CallMessegeBody.fromJson(jsonDecode(map['body']));
     switch (event.event) {
       case Event.ACTION_CALL_ACCEPT:
+        showOnLock(true);
         _activeCallId = body.callId;
         _activeCallMap = map;
         _lastCallTime = DateTime.now();

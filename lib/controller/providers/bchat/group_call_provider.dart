@@ -4,9 +4,9 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import '/core/utils/common.dart';
 
 import 'package:flutter/foundation.dart';
-// import 'package:flutter/services.dart';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,7 +14,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '/data/services/fcm_api_service.dart';
 import '/core/utils/callkit_utils.dart';
-// import '../p2p_call_provider.dart';
 import '/controller/bmeet_providers.dart';
 import '/core/constants.dart';
 import '/core/helpers/call_helper.dart';
@@ -859,6 +858,7 @@ class GroupCallProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    showOnLock(false);
     _localUserJoined = false;
 
     // _callTimerProvider.reset();

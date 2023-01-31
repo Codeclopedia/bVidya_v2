@@ -23,8 +23,12 @@ if (flutterVersionName == null) {
 
 def keystorePropertiesFile = rootProject.file("key.properties")
 def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
+if (keystorePropertiesFile.exists()) {
+    // keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
@@ -50,21 +54,17 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.bvidya"
-        // applicationId "com.example.flozzademo"
+        // applicationId "com.bvidya"
         //
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 20
-        versionName '0.2.0'
+        versionName '2.0.0'
     }
     signingConfigs {
         release {
-        //   storeFile file("../keystore.jks")
-        //   storePassword "Bharat@123"
-        //   keyAlias "bharatkey"
-        //   keyPassword "Bharat@123"
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
             storeFile file(keystoreProperties['storeFile'])
@@ -73,7 +73,7 @@ android {
       }
     buildTypes {
         release {
-            // applicationId "com.bvidya"
+            
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../routes.dart';
@@ -28,13 +29,13 @@ import '../ui_core.dart';
 Future joinGroupCall(BuildContext context, WidgetRef ref, String callId,
     CallType callType) async {
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return;
     }
   }
   if (!await handleCameraAndMic(Permission.camera)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need camera permission');
       return;
     }
@@ -106,14 +107,14 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
   }
 
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return null;
     }
   }
   if (callType == CallType.video &&
       !await handleCameraAndMic(Permission.camera)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need camera permission');
       return null;
     }

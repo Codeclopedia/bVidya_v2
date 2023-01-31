@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:bvidya/app.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:audioplayers/audioplayers.dart';
@@ -15,7 +18,7 @@ import '/core/constants/notification_const.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 // import 'package:permission_handler/permission_handler.dart';
-
+import '/core/utils/common.dart';
 // import '/core/helpers/bmeet_helper.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
@@ -40,7 +43,7 @@ class P2PCallProvider extends ChangeNotifier {
   // bool _remoteVideoOn = false;
   // bool get remoteVideoOn => _remoteVideoOn;
 
-  bool _isInitialized = false;
+  // bool _isInitialized = false;
 
   bool _speakerOn = false;
   bool get speakerOn => _speakerOn;
@@ -85,14 +88,12 @@ class P2PCallProvider extends ChangeNotifier {
     //   return;
     // }
     // showOutGoingCall(body, callType == CallType.video);
-    _isInitialized = true;
+    // _isInitialized = true;
     _callType = callType;
     setOnGoing(body.callId);
-    // _read.reset();
-    // _currentCallType = callType;
+
     _callDirection = type;
     _body = body;
-    // FirebaseMessaging.
     FirebaseMessaging.onMessage.listen((message) {
       // print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
@@ -121,15 +122,19 @@ class P2PCallProvider extends ChangeNotifier {
     });
 
     if (!await handleCameraAndMic(Permission.microphone)) {
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        // AppSnackbar.instance.error(context, 'Need microphone permission');
+      if (navigatorKey.currentContext != null) {
+        AppSnackbar.instance
+            .error(navigatorKey.currentContext!, 'Need microphone permission');
       }
+      return;
     }
     if (callType == CallType.video) {
       if (!await handleCameraAndMic(Permission.camera)) {
-        if (defaultTargetPlatform == TargetPlatform.android) {
-          // AppSnackbar.instance.error(context, 'Need microphone permission');
+        if (navigatorKey.currentContext != null) {
+          AppSnackbar.instance
+              .error(navigatorKey.currentContext!, 'Need camera permission');
         }
+        return;
       }
     }
 
@@ -270,7 +275,6 @@ class P2PCallProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   toggleVideo(BuildContext context) async {
     try {
       // if (_currentCallType == CallType.audio) {
@@ -356,8 +360,9 @@ class P2PCallProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    showOnLock(false);
     disconnect();
-    _isInitialized = false;
+    // _isInitialized = false;
     setOnGoing(null);
     FlutterCallkitIncoming.endAllCalls();
     print('Dispose call screen');

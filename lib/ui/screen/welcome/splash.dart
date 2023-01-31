@@ -37,24 +37,6 @@ final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
-  Future _handleFirebaseMessages(
-      BuildContext context, WidgetRef ref, User user) async {
-    // if (user == null) {
-    //   Future.delayed(const Duration(seconds: 6), () {
-    //     Navigator.pushReplacementNamed(context, RouteList.login);
-    //   });
-    //   return;
-    // }
-
-    Navigator.pushReplacementNamed(context, RouteList.home);
-    // final message = await FirebaseMessaging.instance.getInitialMessage();
-    // if (message != null && message.data.isNotEmpty) {
-    //   handleRemoteMessage(message, context);
-    // } else {
-    //   Navigator.pushReplacementNamed(context, RouteList.home);
-    // }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(
@@ -146,7 +128,7 @@ class SplashScreen extends ConsumerWidget {
       }
       // return false;
     } else {
-      print('active callId => $activeCallId $lastUserId');
+      // print('active callId => $activeCallId $lastUserId');
     }
     await BChatSDKController.instance.initChatSDK(user);
     final initialAction = NotificationController.clickAction;

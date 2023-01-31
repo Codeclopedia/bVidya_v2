@@ -2,18 +2,14 @@
 // ignore_for_file: lines_longer_than_80_chars, avoid_classes_with_only_static_members
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+    show
+        defaultTargetPlatform,
+        // kIsWeb,
+        TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
+
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     // if (kIsWeb) {
@@ -21,9 +17,9 @@ class DefaultFirebaseOptions {
     // }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        return _android;
       case TargetPlatform.iOS:
-        return ios;
+        return _ios;
       // case TargetPlatform.macOS:
       //   return macos;
       default:
@@ -53,7 +49,15 @@ class DefaultFirebaseOptions {
   //     androidClientId:
   //         "514489874522-dao2cp991k2e01je93foa6212vf5vvma.apps.googleusercontent.com");
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static const FirebaseOptions _androidRelease = FirebaseOptions(
+      apiKey: 'AIzaSyD4fRnkRb67JCQfl5H21oqPCvl6QYYjFro',
+      appId: '1:119301962380:android:5671a204619bc8b01299a9',
+      messagingSenderId: '119301962380',
+      projectId: 'bvidya-36b76',
+      androidClientId:
+          "119301962380-kkavcfo1a54hbhti2s9l0hncvpgtf0bb.apps.googleusercontent.com");
+
+  static const FirebaseOptions _android = FirebaseOptions(
       apiKey: 'AIzaSyDcRdUvdV3s9WUY1fZ_uHiyHkAez1OfXgQ',
       appId: '1:556221488660:android:97eba12527006e4e925101',
       messagingSenderId: '556221488660',
@@ -61,7 +65,7 @@ class DefaultFirebaseOptions {
       androidClientId:
           "556221488660-eidolne52inj44cq8etetl0dsvsfob3u.apps.googleusercontent.com");
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static const FirebaseOptions _ios = FirebaseOptions(
       apiKey: 'AIzaSyB8sVMXhK5uvXnkMI0Ng1rq3CoAgr0-3sE',
       appId: '1:556221488660:ios:68066b9e56a6eaf3925101',
       messagingSenderId: '556221488660',

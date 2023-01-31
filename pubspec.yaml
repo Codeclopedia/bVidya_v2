@@ -53,6 +53,7 @@ dependencies:
   flutter_svg: ^1.1.5
   flutter_swipe_action_cell: ^3.0.7
   flutter_switch: ^0.3.2
+  # flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.1.2
   google_fonts: ^3.0.1
   grouped_list: ^5.1.2

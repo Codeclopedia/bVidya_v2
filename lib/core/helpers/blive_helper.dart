@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:permission_handler/permission_handler.dart';
 
 import '/controller/blive_providers.dart';
@@ -17,7 +18,7 @@ Future joinBroadcast(
   String broadcastStreamId,
 ) async {
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return;
     }

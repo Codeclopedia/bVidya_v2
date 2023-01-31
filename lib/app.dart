@@ -14,8 +14,7 @@ import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '/core/state.dart';
 import '/core/utils.dart';
-// import '/core/utils/chat_utils.dart';
-// import 'controller/providers/bchat/chat_conversation_provider.dart';
+
 import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'controller/providers/user_auth_provider.dart';
 import 'core/constants.dart';
@@ -23,7 +22,6 @@ import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
-// import 'core/utils/connectycubekit.dart';
 import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
@@ -116,9 +114,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
       } else {
         ForegroundMessageHelper.handleCallingNotificationForeground(message);
-        // NotificationController.showErrorMessage('New Foreground : ${message.senderId}');
-        // NotificationController.handleForegroundRemoteMessage(message);
-        // NotificationController.shouldShowChatNotification(message);
       }
     });
 
@@ -200,24 +195,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
       }
     });
-    // ref.listen(userLoginStateProvider),
-    //     (previous, next) {
-    //   if (previous != null && next == null) {
-    //     // ref.read(userAuthChangeProvider).setUserSigned(false);
-    //     // print('User is null');
-    //     Navigator.pushNamedAndRemoveUntil(
-    //         context, RouteList.login, (route) => route.isFirst);
-    //   }
-    // });
-    // final provider = ref.watch(userAuthChangeProvider);
-    // provider.addListener(() {
-    //   if (provider.user == null && provider.isUserSigned) {
-    //     ref.read(userAuthChangeProvider).setUserSigned(false);
-    //     // print('User is null');
-    //     Navigator.pushNamedAndRemoveUntil(
-    //         context, RouteList.login, (route) => route.isFirst);
-    //   }
-    // });
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeLight,

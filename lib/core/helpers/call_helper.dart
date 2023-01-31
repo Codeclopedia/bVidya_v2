@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 // import '/core/utils/connectycubekit.dart';
@@ -40,7 +41,7 @@ Future<ChatMessage?> makeAudioCall(
     return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return null;
     }
@@ -135,13 +136,13 @@ Future<ChatMessage?> makeVideoCall(
     return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return null;
     }
   }
   if (!await handleCameraAndMic(Permission.camera)) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need camera permission');
       return null;
     }

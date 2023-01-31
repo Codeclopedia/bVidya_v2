@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '/controller/providers/bchat/contact_list_provider.dart';
@@ -175,4 +178,19 @@ Future deleteAccount(WidgetRef ref) async {
   final response = await ref.read(apiServiceProvider).deleteAccount();
   BChatSDKController.instance.destroyed();
   await ref.read(userLoginStateProvider.notifier).logout();
+}
+
+showOnLock(bool show) async {
+  // if (!Platform.isAndroid) {
+  //   return;
+  // }
+  // try {
+  //   const String methodChannel = 'channel.unlock';
+  //   const platform = MethodChannel(methodChannel);
+  //   await platform.invokeMethod('update', {
+  //     'state': show ? 'ON' : 'OFF',
+  //   });
+  // } catch (e) {
+  //   print('Error=> $e');
+  // }
 }
