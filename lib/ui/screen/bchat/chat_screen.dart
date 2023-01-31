@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/ui/widget/chat_reply_body.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 // import '/core/constants/data.dart';
@@ -230,41 +231,7 @@ class ChatScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(width: 2.w),
-                  // Expanded(
-                  //   child: Container(
-                  //     margin: EdgeInsets.symmetric(horizontal: 2.w),
-                  //     alignment: Alignment.center,
-                  //     constraints: BoxConstraints(
-                  //       minHeight: 2.h,
-                  //       maxHeight: 20.h,
-                  //     ),
-                  //     decoration: BoxDecoration(
-                  //         color: AppColors.cardWhite,
-                  //         borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                  //     child: Stack(
-                  //       children: [
-                  //         AttachedFileView(
-                  //           attFile: attFile,
-                  //         ),
-                  //         Positioned(
-                  //           right: 0,
-                  //           top: 0,
-                  //           child: IconButton(
-                  //             onPressed: () {
-                  //               ref.read(attachedFile.notifier).state = null;
-                  //             },
-                  //             icon: const Icon(Icons.close, color: Colors.red),
-                  //           ),
-                  //         ),
-                  //         if (progress > 0)
-                  //           Center(
-                  //             child: CircularProgressIndicator(
-                  //                 value: progress.toDouble()),
-                  //           )
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
+
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 2.w),
@@ -281,6 +248,7 @@ class ChatScreen extends HookConsumerWidget {
                           color: AppColors.cardWhite,
                           borderRadius: BorderRadius.all(Radius.circular(3.w))),
                       child: Row(
+                        mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
@@ -297,6 +265,7 @@ class ChatScreen extends HookConsumerWidget {
                                       fontWeight: FontWeight.w600),
                                 ),
                                 Row(
+                                  mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Icon(
                                       Icons.image,
@@ -304,10 +273,11 @@ class ChatScreen extends HookConsumerWidget {
                                       color: Colors.grey,
                                     ),
                                     SizedBox(width: 1.w),
-                                    Expanded(
+                                    Flexible(
                                       child: Text(
                                         attFile.file.path.split('/').last,
-                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        // maxLines: 1,
                                         style: TextStyle(
                                             fontFamily: kFontFamily,
                                             color: Colors.grey,
@@ -421,54 +391,12 @@ class ChatScreen extends HookConsumerWidget {
         bool show = ref.watch(chatModelProvider).isReplyBoxVisible;
         if (show) {
           ReplyModel replyOf = ref.watch(chatModelProvider).replyOn!;
-          return Container(
-            width: 90.w,
-            margin: EdgeInsets.only(bottom: 1.h),
-            padding: EdgeInsets.all(2.w),
-            decoration: BoxDecoration(
-              color: AppColors.chatBoxBackgroundMine,
-              borderRadius: BorderRadius.all(Radius.circular(3.w)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Replying to ${replyOf.fromName}',
-                      style: textStyleWhite,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        ref.read(chatModelProvider).clearReplyBox();
-                      },
-                      child: const Icon(Icons.close, color: Colors.white),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 1.h),
-                Container(
-                    constraints:
-                        BoxConstraints(minHeight: 5.h, maxHeight: 25.h),
-                    decoration: BoxDecoration(
-                      color: AppColors.chatBoxBackgroundOthers,
-                      borderRadius: BorderRadius.all(Radius.circular(3.w)),
-                    ),
-                    padding: EdgeInsets.all(1.w),
-                    child: ChatMessageBodyWidget(
-                      message: replyOf.message,
-                    )
-                    //  Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    //     ChatMessageBodyWidget(message: replyOf.message)
-                    //   ],
-                    // ),
-                    ),
-              ],
-            ),
+          return ChatReplyBodyContent(
+            replyOf: replyOf,
+            isOwnMessage: replyOf.message.from == _me.userId.toString(),
+            onClose: () {
+              ref.read(chatModelProvider).clearReplyBox();
+            },
           );
         }
         return const SizedBox.shrink();
@@ -538,7 +466,7 @@ class ChatScreen extends HookConsumerWidget {
         }
         break;
       case AttachType.cameraVideo:
-        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+        XFile? xFile = await picker.pickVideo(source: ImageSource.camera);
         if (xFile != null) {
           final thumb = await VideoThumbnail.thumbnailFile(
             video: xFile.path,
@@ -767,11 +695,9 @@ class ChatScreen extends HookConsumerWidget {
               onRightSwipe: notReply
                   ? null
                   : () {
-                      ref.read(chatModelProvider.notifier).setReplyOn(
-                          message,
-                          isOwnMessage
-                              ? S.current.bmeet_user_you
-                              : model.contact.name);
+                      ref
+                          .read(chatModelProvider.notifier)
+                          .setReplyOn(message, model.contact.name);
                       // print('open replyBox');
                     },
               child: GestureDetector(
@@ -845,7 +771,7 @@ class ChatScreen extends HookConsumerWidget {
         //Reply
         bool isOwnMessage = message.from != model.id;
         ref.read(chatModelProvider.notifier).setReplyOn(message,
-            isOwnMessage ? S.current.bmeet_user_you : model.contact.name);
+            isOwnMessage ? S.current.chat_yourself : model.contact.name);
       } else if (action == 3) {
         //Delete
         ref
@@ -1137,11 +1063,9 @@ class ChatScreen extends HookConsumerWidget {
                   onPressed: () async {
                     ChatMessage message = selectedItems.first;
                     bool isOwnMessage = message.from != model.id;
-                    ref.read(chatModelProvider.notifier).setReplyOn(
-                        message,
-                        isOwnMessage
-                            ? S.current.bmeet_user_you
-                            : model.contact.name);
+                    ref
+                        .read(chatModelProvider.notifier)
+                        .setReplyOn(message, model.contact.name);
                     // ref
                     //     .read(bhatMessagesProvider(model).notifier)
                     //     .deleteMessages(selectedItems);

@@ -570,7 +570,7 @@ class BLearnHomeScreen extends StatelessWidget {
     }
     return Container(
       margin: EdgeInsets.only(top: 1.h),
-      height: 50.w,
+      height: 55.w,
       color: Colors.white,
       child: ListView.builder(
           padding: EdgeInsets.all(0.5.h),
@@ -580,6 +580,7 @@ class BLearnHomeScreen extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             Instructor instructor = instructors[index]!;
             return Container(
+              width: 34.w,
               margin: EdgeInsets.only(left: 4.w),
               child: GestureDetector(
                 onTap: () {

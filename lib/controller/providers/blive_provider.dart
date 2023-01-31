@@ -223,7 +223,7 @@ class BLiveProvider extends ChangeNotifier {
         onLeaveChannel: (connection, stats) {
           int userId = connection.localUid ?? 0;
 
-          print('User Id:$userid');
+          // print('User Id:$userid');
           // if (_userRemoteIds.contains(userId)) {
           //   _userRemoteIds.remove(userId);
           // }
@@ -362,26 +362,26 @@ class BLiveProvider extends ChangeNotifier {
       _rtmChannel = await _rtmClient.createChannel(_token.rtmChannel);
       await _rtmChannel?.join();
       _rtmChannel?.onError = (error) {
-        print('RTM Error:$error');
+        // print('RTM Error:$error');
       };
       _rtmChannel?.onMemberJoined = (member) {
         _memberList.add(member);
-        print('JOINED - ${member.userId}');
+        // print('JOINED - ${member.userId}');
       };
       _rtmChannel?.onMemberLeft = (member) {
         _memberList.remove(member);
-        print('LEFT - ${member.userId}');
+        // print('LEFT - ${member.userId}');
       };
       _rtmChannel?.onMemberCountUpdated = (count) {
-        print('onMemberCountUpdated - $count');
+        // print('onMemberCountUpdated - $count');
       };
       _rtmChannel?.onMessageReceived = (message, fromMember) {
-        print('MESSAGE - ${message.text} : ${fromMember.userId}');
+        // print('MESSAGE - ${message.text} : ${fromMember.userId}');
         _ref
             .read(bLiveMessageListProvider.notifier)
             .addChat((RTMMessageModel(message, fromMember)));
       };
-      print('RTM Join channel success.');
+      // print('RTM Join channel success.');
     } catch (errorCode) {
       print('RTM Join channel error: $errorCode');
     }
@@ -414,34 +414,36 @@ class BLiveProvider extends ChangeNotifier {
     }
     _memberList.clear();
     _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
-    for (var u in userList.keys) {
-      print('user - $u');
-    }
-    for (var e in _memberList) {
-      String user = e.userId;
-      print('member - $user');
-      // if (user.contains(':')) {
-      // int id = int.tryParse(user.split(':')[0]) ?? 0;
-      // String name = user.split(':')[1];
+    // for (var u in userList.keys) {
+    //   // print('user - $u');
+    // }
+    // for (var e in _memberList) {
+    // String user = e.userId;
+    // print('member - $user');
+    // if (user.contains(':')) {
+    // int id = int.tryParse(user.split(':')[0]) ?? 0;
+    // String name = user.split(':')[1];
 
-      // if (_userList.containsKey(id)) {
-      //   _userList.update(
-      //     id,
-      //     (value) {
-      //       value.name = name;
-      //       return value;
-      //     },
-      //   );
-      // } else {
-      //   // _userList.addAll({id: ViewModel(id, name, _remoteView(id), false)});
-      // }
-      // }
-    }
+    // if (_userList.containsKey(id)) {
+    //   _userList.update(
+    //     id,
+    //     (value) {
+    //       value.name = name;
+    //       return value;
+    //     },
+    //   );
+    // } else {
+    //   // _userList.addAll({id: ViewModel(id, name, _remoteView(id), false)});
+    // }
+    // }
+    // }
     // if (_screenShareId == 1000) {
     //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
     // }
     // _viewModels = getRenderViews();
-    notifyListeners();
+    try {
+      notifyListeners();
+    } catch (_) {}
   }
 
   // void sendPeerMessage(String userId, String content) async {

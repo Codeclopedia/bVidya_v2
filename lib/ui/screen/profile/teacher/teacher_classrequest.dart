@@ -1,6 +1,7 @@
 // import 'package:flutter/material.dart';
 import '/controller/bmeet_providers.dart';
 import '/core/state.dart';
+// import '/data/models/response/auth/login_response.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/shimmer_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,19 +36,23 @@ class TeacherClassRequest extends StatelessWidget {
                 child: Consumer(builder: (context, ref, child) {
                   return ref.watch(bmeetClassesProvider).when(
                     data: (data) {
-                      if (data?.personalClasses?.isEmpty ?? true) {
+                      print("data value : $data");
+                      if (data == null) {
+                        return buildEmptyPlaceHolder("No Class Requests.");
+                      }
+                      if (data.personalClasses == []) {
                         return buildEmptyPlaceHolder("No Class Requests.");
                       }
 
                       return ListView.separated(
                         shrinkWrap: true,
-                        itemCount: data?.personalClasses?.length ?? 0,
+                        itemCount: data.personalClasses?.length ?? 0,
                         scrollDirection: Axis.vertical,
                         separatorBuilder: (context, index) =>
                             const Divider(color: AppColors.divider),
                         itemBuilder: (context, index) {
                           return _buildRequestRow(
-                              data?.personalClasses?[index] ?? PersonalClass());
+                              data.personalClasses?[index] ?? PersonalClass());
                         },
                       );
                     },

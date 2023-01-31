@@ -157,6 +157,22 @@ Future logoutApp(WidgetRef ref) async {
   ref.read(callListProvider.notifier).clear();
   ref.read(contactListProvider.notifier).clear();
   ref.read(chatConversationProvider.notifier).clear();
-  ref.read(userLoginStateProvider.notifier).logout();
   BChatSDKController.instance.destroyed();
+  ref.read(userLoginStateProvider.notifier).logout();
+}
+
+Future deleteAccount(WidgetRef ref) async {
+  await ChatClient.getInstance.logout();
+  // final pref = await SharedPreferences.getInstance();
+  // await pref.clear();
+  ref.invalidate(authLoadProvider);
+  ref.read(groupConversationProvider.notifier).clear();
+  ref.read(groupCallListProvider.notifier).clear();
+  ref.read(callListProvider.notifier).clear();
+  ref.read(contactListProvider.notifier).clear();
+  ref.read(chatConversationProvider.notifier).clear();
+
+  final response = await ref.read(apiServiceProvider).deleteAccount();
+  BChatSDKController.instance.destroyed();
+  await ref.read(userLoginStateProvider.notifier).logout();
 }

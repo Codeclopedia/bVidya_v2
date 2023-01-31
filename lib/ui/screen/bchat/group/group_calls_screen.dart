@@ -1,3 +1,6 @@
+import 'package:bvidya/core/helpers/group_call_helper.dart';
+import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+
 import '/ui/screen/blearn/components/common.dart';
 import 'package:intl/intl.dart';
 
@@ -50,7 +53,65 @@ class GroupRecentCallScreen extends StatelessWidget {
               return ListView.separated(
                 itemCount: callList.length,
                 itemBuilder: (context, index) {
-                  return _contactRow(callList[index]);
+                  return SwipeActionCell(
+                    key: ObjectKey(callList[index].msgId),
+                    // onTap: () async {
+                    //   makeCall(callList[index], ref, context);
+                    // },
+                    trailingActions: <SwipeAction>[
+                      SwipeAction(
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                          ),
+                          backgroundRadius: 3.w,
+                          widthSpace: 40.w,
+                          title: S.current.menu_delete,
+                          performsFirstActionWithFullSwipe: true,
+                          onTap: (CompletionHandler handler) async {
+                            /// await handler(true) : will delete this row
+                            /// And after delete animation,setState will called to
+                            /// sync your data source with your UI
+                            await handler(true);
+                            ref
+                                .read(groupCallListProvider.notifier)
+                                .delete(callList[index]);
+                            // list.removeAt(index);
+                            // setState(() {});
+                          },
+                          color: AppColors.redBColor),
+                      // SwipeAction(
+                      //     style: TextStyle(
+                      //       fontFamily: kFontFamily,
+                      //       color: Colors.white,
+                      //       fontSize: 12.sp,
+                      //     ),
+                      //     backgroundRadius: 3.w,
+                      //     widthSpace: 20.w,
+                      //     title: S.current.menu_call,
+                      //     onTap: (CompletionHandler handler) async {
+                      //       /// false means that you just do nothing,it will close
+                      //       /// action buttons by default
+                      //       handler(false);
+                      //       await makeCall(callList[index], ref, context);
+                      //     },
+                      //     color: AppColors.primaryColor),
+                    ],
+                    child: _contactRow(callList[index], () async {
+                      final item = await makeGroupCallFromHistory(
+                          callList[index], ref, context);
+                      setScreen(RouteList.groupCalls);
+                      if (item != null) {
+                        ref
+                            .read(groupCallListProvider.notifier)
+                            .addMessage(item);
+                      }
+                      // await makeGroupCall(callList[index], ref, context);
+                    }),
+                  );
+
+                  // _contactRow(callList[index]);
                 },
                 separatorBuilder: (context, index) {
                   return Row(
@@ -73,7 +134,7 @@ class GroupRecentCallScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(GroupCallListModel model) {
+  Widget _contactRow(GroupCallListModel model, Function() onCall) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
@@ -111,9 +172,12 @@ class GroupRecentCallScreen extends StatelessWidget {
               ],
             ),
           ),
-          getSvgIcon(model.body.callType == CallType.audio
-              ? 'icon_acall.svg'
-              : 'icon_vcall.svg'),
+          GestureDetector(
+            onTap: () => onCall(),
+            child: getSvgIcon(model.body.callType == CallType.audio
+                ? 'icon_acall.svg'
+                : 'icon_vcall.svg'),
+          ),
           SizedBox(width: 2.w),
         ],
       ),

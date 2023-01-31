@@ -61,8 +61,6 @@ class RequestedClass {
     this.instructorId,
     this.topic,
     this.description,
-    this.date,
-    this.time,
     this.type,
     this.status,
     this.reason,
@@ -77,8 +75,6 @@ class RequestedClass {
   int? instructorId;
   String? topic;
   String? description;
-  DateTime? date;
-  String? time;
   String? type;
   String? status;
   String? reason;
@@ -98,8 +94,6 @@ class RequestedClass {
         instructorId: json["instructor_id"],
         topic: json["topic"],
         description: json["description"],
-        date: DateTime.parse(json["date"]),
-        time: json["time"],
         type: json["type"],
         status: json["status"],
         reason: json["reason"],
@@ -115,9 +109,6 @@ class RequestedClass {
         "instructor_id": instructorId,
         "topic": topic,
         "description": description,
-        "date":
-            "${date?.year.toString().padLeft(4, '0')}-${date?.month.toString().padLeft(2, '0')}-${date?.day.toString().padLeft(2, '0')}",
-        "time": time,
         "type": type,
         "status": status,
         "reason": reason,

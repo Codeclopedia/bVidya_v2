@@ -203,15 +203,15 @@ class BMeetApiService {
     }
   }
 
-
-  Future<BaseResponse> requestPersonalClass(
-      {required String authToken,
-      required String topic,
-      required String description,
-      required String classType,
-      required int instructorid,
-      required DateTime datetime,
-      required String time}) async {
+  Future<BaseResponse> requestPersonalClass({
+    required String authToken,
+    required String topic,
+    required String description,
+    required String classType,
+    required int instructorid,
+    // required DateTime datetime,
+    // required String time
+  }) async {
     try {
       _dio.options.headers['X-Auth-Token'] = authToken;
 
@@ -220,8 +220,8 @@ class BMeetApiService {
         'description': description,
         'classtype': classType,
         'instructor_id': instructorid,
-        'date': DateFormat('y-MM-dd').format(datetime).toString(),
-        'time': time.toString(),
+        // 'date': DateFormat('y-MM-dd').format(datetime).toString(),
+        // 'time': time.toString(),
       };
 
       final response =
@@ -247,7 +247,6 @@ class BMeetApiService {
           await _dio.get(baseUrlApi + ApiList.personalClassRequests);
 
       if (response.statusCode == 200) {
-        print('Loading meeting list ');
         return ClassRequestResponse.fromJson(response.data);
       } else {
         return ClassRequestResponse(
@@ -255,6 +254,7 @@ class BMeetApiService {
         );
       }
     } catch (e) {
+      print(e);
       return ClassRequestResponse(
         status: 'error',
       );

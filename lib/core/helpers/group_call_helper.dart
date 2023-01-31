@@ -82,6 +82,16 @@ Future<bool> receiveGroupCall(BuildContext context,
   // }
 }
 
+Future<ChatMessage?> makeGroupCallFromHistory(
+    GroupCallListModel model, WidgetRef ref, BuildContext context) async {
+  final grp = await BchatGroupManager.getGroupById(model.groupId);
+  if (grp != null) {
+    return makeGroupCall(ref, context, grp, model.body.callType);
+  } else {
+    return null;
+  }
+}
+
 Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
     ChatGroup group, CallType callType) async {
   User? me = await getMeAsUser();
@@ -218,7 +228,7 @@ Future<ChatMessage?> _logGroupCallEvent(
     return msg;
 // ref.read(chatConversationProvider).updateConversation(convId)
   } catch (e) {
-    print('Error in logging call Event');
+    // print('Error in logging call Event');
   }
   return null;
 }

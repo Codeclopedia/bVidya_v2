@@ -172,4 +172,20 @@ class ApiAuthService {
       return ForgotResponse(status: 'error', message: '$e');
     }
   }
+
+  Future<BaseResponse> deleteAccount() async {
+    try {
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.deleteUserAccount}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: '$e');
+    }
+  }
 }

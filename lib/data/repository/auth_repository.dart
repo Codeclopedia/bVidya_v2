@@ -166,6 +166,14 @@ class AuthRepository {
     return result.message ?? 'Unknown error occurred!!';
   }
 
+  Future deleteAccount() async {
+    final result = await api.deleteAccount();
+    if (result.status != null && result.status == successfull) {
+      return result.message;
+    }
+    return 'Unknown error occurred!';
+  }
+
   void loggedOut() {
     _user = null;
   }

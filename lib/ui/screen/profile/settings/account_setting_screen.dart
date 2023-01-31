@@ -1,3 +1,5 @@
+import '/core/constants/api_list.dart';
+import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../../dialog/basic_dialog.dart';
 import '../base_settings.dart';
@@ -31,10 +33,20 @@ class AccountSettingScreen extends StatelessWidget {
             }),
             getTwoRowSettingItem(S.current.accnt_security,
                 S.current.secrityDesc, "accnt_security.svg", () {}),
-            getTwoRowSettingItem(
-                S.current.deleteAcc, S.current.deleteDesc, "accnt_dlt.svg", () {
-              showBasicDialog(context, S.current.deleteAcc,
-                  S.current.dltConfirmation, S.current.sureDlt, () async {});
+            Consumer(builder: (context, ref, child) {
+              return getTwoRowSettingItem(
+                  S.current.deleteAcc, S.current.deleteDesc, "accnt_dlt.svg",
+                  () {
+                showAccountDeleteDialog(
+                  context,
+                  ref,
+                  callback: () async {
+                    EasyLoading.showToast("Account deleted");
+                    Navigator.popUntil(
+                        context, ModalRoute.withName(ApiList.login));
+                  },
+                );
+              });
             }),
           ]),
     );

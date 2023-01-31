@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 // import '/controller/providers/p2p_call_provider.dart';
+import 'package:bvidya/core/utils/callkit_utils.dart';
+
 import '/ui/screen/blearn/components/common.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -221,6 +223,7 @@ class GroupCallScreen extends StatelessWidget {
           fontSize: 8.sp);
       // AppSnackbar.instance.error(context, error);
     } else {}
+    setOnGoing(null);
     if (prevScreen.isNotEmpty) {
       try {
         if (_controller != null) {
@@ -232,6 +235,7 @@ class GroupCallScreen extends StatelessWidget {
       setScreen(prevScreen);
     } else {
       setScreen(RouteList.homeDirect);
+
       Navigator.pushNamedAndRemoveUntil(
         context,
         RouteList.homeDirect,
@@ -304,7 +308,7 @@ class GroupCallScreen extends StatelessWidget {
 
   Widget _toolbar(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
-      final provider = ref.read(bGroupCallChangeProvider);
+      final provider = ref.watch(bGroupCallChangeProvider);
       return Container(
           // margin: EdgeInsets.symmetric(horizontal: 6.w),
           // alignment: Alignment.center,
@@ -350,8 +354,8 @@ class GroupCallScreen extends StatelessWidget {
                   },
                   child: Icon(
                     provider.disableLocalCamera
-                        ? Icons.videocam_rounded
-                        : Icons.videocam_off_rounded,
+                        ? Icons.videocam_off_rounded
+                        : Icons.videocam_rounded,
                     color: Colors.white,
                     size: 10.w,
                   ),
@@ -411,7 +415,7 @@ class GroupCallScreen extends StatelessWidget {
           child: view.widget,
         ),
         Positioned(
-          bottom: 2.h,
+          top: 2.h,
           left: 4.w,
           child: Text(
             view.contact.name,
@@ -566,7 +570,7 @@ class GroupCallScreen extends StatelessWidget {
                         },
                       ),
                       Container(
-                        alignment: Alignment.bottomCenter,
+                        alignment: Alignment.topLeft,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 5),
                         child: Row(
@@ -680,13 +684,18 @@ class MemberListDialog extends StatelessWidget {
                                       SizedBox(width: 1.w),
                                       Row(
                                         children: [
-                                          Icon(u.muteAudio
-                                              ? Icons.mic_off_rounded
-                                              : Icons.mic_outlined),
+                                          Icon(
+                                              u.muteAudio
+                                                  ? Icons.mic_off_rounded
+                                                  : Icons.mic_outlined,
+                                              color: AppColors.iconGreyColor),
                                           if (showVideo)
-                                            Icon(u.enabledVideo
-                                                ? Icons.videocam_rounded
-                                                : Icons.videocam_off_rounded),
+                                            Icon(
+                                                u.enabledVideo
+                                                    ? Icons.videocam_rounded
+                                                    : Icons
+                                                        .videocam_off_rounded,
+                                                color: AppColors.iconGreyColor),
                                         ],
                                       )
                                     ],

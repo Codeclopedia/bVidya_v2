@@ -87,7 +87,7 @@ class ChatConversationChangeNotifier
           lastMessage: lastMessage,
         );
       } catch (e) {
-        print('error $e');
+        // print('error $e');
         continue;
       }
       _chatConversationMap.addAll({model.id: model});
@@ -122,7 +122,7 @@ class ChatConversationChangeNotifier
         );
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
-        print('error $e');
+        // print('error $e');
         return;
       }
       state = _chatConversationMap.values.toList();

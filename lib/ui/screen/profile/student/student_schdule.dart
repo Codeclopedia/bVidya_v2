@@ -4,9 +4,9 @@ import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/sliding_tab.dart';
 import '/ui/widgets.dart';
 
-import '../../../../core/constants/colors.dart';
-import '../../../../core/state.dart';
-import '../../../../data/models/response/bmeet/requested_class_response.dart';
+import '/core/constants/colors.dart';
+import '/core/state.dart';
+import '/data/models/response/bmeet/requested_class_response.dart';
 import '../base_settings_noscroll.dart';
 
 final scheduledClassTabIndexProvider = StateProvider<int>(
@@ -34,113 +34,19 @@ class StudentSchdule extends StatelessWidget {
               ),
             ),
             ref.watch(scheduledClassTabIndexProvider) == 0
-                ? Expanded(
-                    child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 3,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 2.w),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.cardBackground,
-                                borderRadius: BorderRadius.circular(10)),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5.w, vertical: 5.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Jan \n ${DateTime.now().day.toString()} ",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 5.w),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Course name",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 5.w),
-                                    ),
-                                    SizedBox(
-                                      height: 2.w,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.person,
-                                          color: AppColors.iconGreyColor,
-                                          size: 3.w,
-                                        ),
-                                        Text(
-                                          "Instructor name",
-                                          style: TextStyle(
-                                              fontSize: 3.w,
-                                              color: AppColors.iconGreyColor),
-                                        ),
-                                        SizedBox(width: 2.w),
-                                        Icon(
-                                          Icons.notes,
-                                          size: 3.w,
-                                          color: AppColors.iconGreyColor,
-                                        ),
-                                        Text(
-                                          "Instructor name",
-                                          style: TextStyle(
-                                              fontSize: 3.w,
-                                              color: AppColors.iconGreyColor),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 2.w,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.timer,
-                                          size: 3.w,
-                                          color: AppColors.iconGreyColor,
-                                        ),
-                                        SizedBox(
-                                          width: 2.w,
-                                        ),
-                                        Text(
-                                          "11:00 AM - 12:00 PM",
-                                          style: TextStyle(
-                                              fontSize: 3.w,
-                                              color: AppColors.iconGreyColor),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                CircleAvatar(
-                                  backgroundColor: AppColors.yellowAccent,
-                                  radius: 5.w,
-                                  child: Icon(
-                                    Icons.adaptive.arrow_forward,
-                                    size: 5.w,
-                                    color: AppColors.primaryColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ))
+                ? scheduledClasses()
                 : Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 2.w),
                       child: ref.watch(requestedClassesProvider).when(
                             data: (data) {
+                              if (data?.requestedClasses?.isEmpty ?? false) {
+                                return Center(
+                                  child: buildEmptyPlaceHolder(
+                                      "No requested classes"),
+                                );
+                              }
+
                               return ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: data?.requestedClasses?.length,
@@ -171,6 +77,105 @@ class StudentSchdule extends StatelessWidget {
         );
       }),
     );
+  }
+
+  Widget scheduledClasses() {
+    return Expanded(
+        child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.w),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Jan \n ${DateTime.now().day.toString()} ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Course name",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 5.w),
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: AppColors.iconGreyColor,
+                            size: 3.w,
+                          ),
+                          Text(
+                            "Instructor name",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                          SizedBox(width: 2.w),
+                          Icon(
+                            Icons.notes,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          Text(
+                            "Instructor name",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                            "11:00 AM - 12:00 PM",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  CircleAvatar(
+                    backgroundColor: AppColors.yellowAccent,
+                    radius: 5.w,
+                    child: Icon(
+                      Icons.adaptive.arrow_forward,
+                      size: 5.w,
+                      color: AppColors.primaryColor,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ));
   }
 
   Widget _buildRequestRow(RequestedClass data) {

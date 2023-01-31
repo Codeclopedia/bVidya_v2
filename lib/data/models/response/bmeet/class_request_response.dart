@@ -50,7 +50,7 @@ class ClassRequestBody {
 
   Map<String, dynamic> toJson() => {
         "personal_classes":
-            List<dynamic>.from(personalClasses!.map((x) => x.toJson())),
+            List<dynamic>.from(personalClasses?.map((x) => x.toJson()) ?? {}),
       };
 }
 
@@ -61,8 +61,6 @@ class PersonalClass {
     this.instructorId,
     this.topic,
     this.description,
-    this.date,
-    this.time,
     this.type,
     this.status,
     this.reason,
@@ -77,11 +75,9 @@ class PersonalClass {
   int? instructorId;
   String? topic;
   String? description;
-  DateTime? date;
-  String? time;
   String? type;
   String? status;
-  dynamic reason;
+  String? reason;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? studentName;
@@ -98,8 +94,6 @@ class PersonalClass {
         instructorId: json["instructor_id"],
         topic: json["topic"],
         description: json["description"],
-        date: DateTime.parse(json["date"]),
-        time: json["time"],
         type: json["type"],
         status: json["status"],
         reason: json["reason"],
@@ -115,9 +109,6 @@ class PersonalClass {
         "instructor_id": instructorId,
         "topic": topic,
         "description": description,
-        "date":
-            "${date?.year.toString().padLeft(4, '0')}-${date?.month.toString().padLeft(2, '0')}-${date?.day.toString().padLeft(2, '0')}",
-        "time": time,
         "type": type,
         "status": status,
         "reason": reason,

@@ -59,7 +59,9 @@ class ChatCallScreen extends HookConsumerWidget {
     if (_endingCall) {
       return;
     }
+
     _endingCall = true;
+    setOnGoing(null);
     print('is Directly => $prevScreen');
     if (prevScreen.isEmpty) {
       // await FlutterCallkitIncoming.endAllCalls();

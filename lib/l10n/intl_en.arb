@@ -88,6 +88,7 @@
   "grp_caption_participation":"Participants",
   "grp_txt_add_participant":"Add Participants",
 
+  "chat_yourself":"Yourself",
   "chat_input_hint":"Write your message",
 
   "contact_menu_request":"Send Request",
@@ -289,6 +290,10 @@
   "dg_title_logout":"Logout Account",
   "dg_message_logout":"Are you sure want to logout your account?",
   "btn_yes_logout":"Sure, want to logout",
+
+  "dg_title_DeleteAccount": "Delete Account",
+  "dg_message_DeleteAccount":"Do you really want to delete your account? It will result in removing all of your data.",
+  "dg_confirm_deleteAccount":"Yes, Delete my account.",
   
 
   "sp_tab_course":"Courses",

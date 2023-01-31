@@ -110,7 +110,7 @@ Future<bool> receiveCall(BuildContext context, String fromId,
       Routes.getCurrentScreen() == RouteList.bChatVideoCall) {
     // BuildContext ctx = navigatorKey.currentContext ?? context;
 
-    print('Already on call screen');
+    // print('Already on call screen');
     // Navigator.pop(ctx);
     return true;
   }

@@ -94,7 +94,7 @@ class P2PCallProvider extends ChangeNotifier {
     _body = body;
     // FirebaseMessaging.
     FirebaseMessaging.onMessage.listen((message) {
-      print('onMessage Call Screen=> ${message.data}');
+      // print('onMessage Call Screen=> ${message.data}');
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallDecline ||
@@ -147,7 +147,7 @@ class P2PCallProvider extends ChangeNotifier {
     _timer = Timer(const Duration(seconds: 30), () {
       _endCall = true;
       _read.reset();
-      print('Timer ended here');
+      // print('Timer ended here');
       notifyListeners();
     });
     try {
@@ -156,7 +156,7 @@ class P2PCallProvider extends ChangeNotifier {
 
       // await _player?.play(AssetSource('audio/Basic.mp3'));
     } catch (e) {
-      print('$e');
+      // print('$e');
     }
   }
 
@@ -261,7 +261,7 @@ class P2PCallProvider extends ChangeNotifier {
       _engine = engine;
       notifyListeners();
     } catch (e) {
-      print('Error on join channel: $e');
+      // print('Error on join channel: $e');
     }
   }
 
@@ -270,26 +270,6 @@ class P2PCallProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  _switchToVideoCall() async {
-    try {
-      // await _engine?.updateChannelMediaOptions(
-      //   ChannelMediaOptions(
-      //     channelProfile: ChannelProfileType.channelProfileCommunication1v1,
-      //     clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      //     autoSubscribeAudio: true,
-      //     autoSubscribeVideo: true,
-      //     publishCameraTrack: true,
-      //     publishMicrophoneTrack: true,
-      //     publishScreenTrack: false,
-      //     token: _body.callToken,
-      //   ),
-      // );
-      // _currentCallType = CallType.video;
-    } catch (e) {
-      print('error in switching mode');
-      return;
-    }
-  }
 
   toggleVideo(BuildContext context) async {
     try {
@@ -364,7 +344,7 @@ class P2PCallProvider extends ChangeNotifier {
       if (_timer?.isActive == true) {
         _timer?.cancel();
       }
-      setOnGoing(null);
+
       await _player?.stop();
       await _player?.dispose();
       // await _player?.release();
@@ -378,6 +358,7 @@ class P2PCallProvider extends ChangeNotifier {
   void dispose() {
     disconnect();
     _isInitialized = false;
+    setOnGoing(null);
     FlutterCallkitIncoming.endAllCalls();
     print('Dispose call screen');
     super.dispose();

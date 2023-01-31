@@ -820,6 +820,16 @@ class S {
     );
   }
 
+  /// `Yourself`
+  String get chat_yourself {
+    return Intl.message(
+      'Yourself',
+      name: 'chat_yourself',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Write your message`
   String get chat_input_hint {
     return Intl.message(
@@ -2465,6 +2475,36 @@ class S {
     return Intl.message(
       'Sure, want to logout',
       name: 'btn_yes_logout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Account`
+  String get dg_title_DeleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'dg_title_DeleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you really want to delete your account? It will result in removing all of your data.`
+  String get dg_message_DeleteAccount {
+    return Intl.message(
+      'Do you really want to delete your account? It will result in removing all of your data.',
+      name: 'dg_message_DeleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes, Delete my account.`
+  String get dg_confirm_deleteAccount {
+    return Intl.message(
+      'Yes, Delete my account.',
+      name: 'dg_confirm_deleteAccount',
       desc: '',
       args: [],
     );

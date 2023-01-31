@@ -1,13 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/common.dart';
-
-import '/controller/providers/bchat/call_list_provider.dart';
-import '/controller/providers/bchat/chat_conversation_list_provider.dart';
-import '/controller/providers/bchat/contact_list_provider.dart';
-import '/controller/providers/bchat/groups_conversation_provider.dart';
-import '/controller/providers/user_auth_provider.dart';
+import '/core/utils/common.dart';
 import '/core/state.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
@@ -21,11 +14,15 @@ showLogoutDialog(BuildContext context, WidgetRef ref,
   });
 }
 
-showDeleteAccountDialog(BuildContext context, WidgetRef ref,
+showAccountDeleteDialog(BuildContext context, WidgetRef ref,
     {Future Function()? callback}) {
-  return showBasicDialog(context, S.current.dg_title_logout,
-      S.current.dg_message_logout, S.current.btn_yes_logout, () async {
-    await logoutApp(ref);
+  return showBasicDialog(
+      context,
+      S.current.dg_title_DeleteAccount,
+      S.current.dg_message_DeleteAccount,
+      S.current.dg_confirm_deleteAccount, () async {
+    await deleteAccount(ref);
+
     if (callback != null) await callback();
   });
 }

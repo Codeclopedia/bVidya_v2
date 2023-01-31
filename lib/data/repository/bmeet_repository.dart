@@ -104,16 +104,16 @@ class BMeetRepository {
   Future requestPersonalClass(
       {required String topic,
       required String classType,
-      required DateTime date,
-      required String time,
+      // required DateTime date,
+      // required String time,
       required String description,
       required int instructorid}) async {
     final result = await _api.requestPersonalClass(
         authToken: _authToken,
         topic: topic,
         classType: classType,
-        datetime: date,
-        time: time,
+        // datetime: date,
+        // time: time,
         description: description,
         instructorid: instructorid);
     if (result.status == "success") {

@@ -152,7 +152,7 @@ class GroupConversationChangeNotifier
   }
 
   void reset(WidgetRef ref) async {
-    print('Loading groups $_isLoading');
+    // print('Loading groups $_isLoading');
     if (_isLoading) return;
     _isLoading = true;
     // ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
@@ -164,7 +164,7 @@ class GroupConversationChangeNotifier
     }
     _isLoading = false;
     // ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
-    print('Loaded groups : ${list.length}');
+    // print('Loaded groups : ${list.length}');
     state = _groupConversationMap.values.toList();
   }
 

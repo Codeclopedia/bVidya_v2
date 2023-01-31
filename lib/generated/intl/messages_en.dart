@@ -286,6 +286,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_menu_reply": MessageLookupByLibrary.simpleMessage("Reply"),
         "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
         "chat_replying": m2,
+        "chat_yourself": MessageLookupByLibrary.simpleMessage("Yourself"),
         "clearChat": MessageLookupByLibrary.simpleMessage("Clear Chat"),
         "confDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block conference reminder notifications"),
@@ -327,12 +328,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
             MessageLookupByLibrary.simpleMessage("Delete your account"),
+        "dg_confirm_deleteAccount":
+            MessageLookupByLibrary.simpleMessage("Yes, Delete my account."),
+        "dg_message_DeleteAccount": MessageLookupByLibrary.simpleMessage(
+            "Do you really want to delete your account? It will result in removing all of your data."),
         "dg_message_live_scheduled": MessageLookupByLibrary.simpleMessage(
             "Live session has been scheduled. You can see the details in the scheduled list."),
         "dg_message_logout": MessageLookupByLibrary.simpleMessage(
             "Are you sure want to logout your account?"),
         "dg_message_meeting_scheduled": MessageLookupByLibrary.simpleMessage(
             "Meeting has been scheduled. You can see the details in the scheduled meeting list."),
+        "dg_title_DeleteAccount":
+            MessageLookupByLibrary.simpleMessage("Delete Account"),
         "dg_title_live_scheduled":
             MessageLookupByLibrary.simpleMessage("Live Session Scheduled"),
         "dg_title_logout":

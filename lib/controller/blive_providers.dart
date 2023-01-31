@@ -1,3 +1,4 @@
+import '../core/utils/date_utils.dart';
 import '/core/helpers/duration.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
@@ -28,9 +29,9 @@ final bLiveSelectedHistoryProvider =
   if (liveClasses?.liveClasses?.isNotEmpty == true) {
     final date = ref.watch(bLiveSelectedDateProvider);
     print('Filter list of Live Class of ${date.toString()} ');
-    // final list = meetings?.liveClasses ?? [];
-    // return list.where((item) => isSameDate(item.startsAt ?? '', date)).toList();
-    return liveClasses!.liveClasses!;
+    final list = liveClasses?.liveClasses ?? [];
+    return list.where((item) => isSameDate(item.startsAt ?? '', date)).toList();
+    // return liveClasses!.liveClasses!;
   } else {
     print('Empty List of live classes');
   }

@@ -29,7 +29,7 @@ class UserStateNotifier extends StateNotifier<User?> {
     return _user;
   }
 
-  logout() async {
+  Future logout() async {
     final pref = await SharedPreferences.getInstance();
     await pref.clear();
     _user = null;

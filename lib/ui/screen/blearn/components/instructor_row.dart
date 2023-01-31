@@ -1,4 +1,3 @@
-// import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
@@ -27,11 +26,28 @@ class InstructorRowItem extends StatelessWidget {
         ),
         Text(
           instructor.name ?? '',
+          maxLines: 1,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontFamily: kFontFamily,
               fontSize: 9.sp,
               fontWeight: FontWeight.bold,
               color: Colors.black),
+        ),
+        SizedBox(
+          height: 0.5.h,
+        ),
+        Text(
+          instructor.occupation ?? '',
+          maxLines: 1,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 6.sp,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey),
         ),
         // Text(
         //   '2k Followers',

@@ -31,21 +31,38 @@ bool shouldShowDateSeparator(
   return previousDate.difference(messageDate).inDays.abs() > 0;
 }
 
+// String formatDateSeparator(DateTime date) {
+//   final DateTime today = DateTime.now();
+//   // print('Date: ${date.day}');
+//   if (date.year != today.year) {
+//     return DateFormat('dd MMM yyyy, hh:mm a').format(date);
+//   } else if (date.month != today.month ||
+//       _getWeekOfYear(date) != _getWeekOfYear(today)) {
+//     return DateFormat('dd MMM hh:mm a').format(date);
+//   } else if (date.day != today.day) {
+//     if (isYesterday(date, today)) {
+//       return 'Yesterday ${DateFormat(' hh:mm a').format(date)}';
+//     }
+//     return DateFormat('E hh:mm a').format(date);
+//   }
+//   return 'Today ${DateFormat('hh:mm a').format(date)}';
+// }
+
 String formatDateSeparator(DateTime date) {
   final DateTime today = DateTime.now();
   // print('Date: ${date.day}');
   if (date.year != today.year) {
-    return DateFormat('dd MMM yyyy, hh:mm a').format(date);
+    return DateFormat('dd MMM yyyy').format(date);
   } else if (date.month != today.month ||
       _getWeekOfYear(date) != _getWeekOfYear(today)) {
-    return DateFormat('dd MMM hh:mm a').format(date);
+    return DateFormat('dd MMMM').format(date);
   } else if (date.day != today.day) {
     if (isYesterday(date, today)) {
-      return 'Yesterday ${DateFormat(' hh:mm a').format(date)}';
+      return 'Yesterday';
     }
-    return DateFormat('E hh:mm a').format(date);
+    return DateFormat('E').format(date);
   }
-  return 'Today ${DateFormat('hh:mm a').format(date)}';
+  return 'Today';
 }
 
 String formatDateCall(DateTime date) {

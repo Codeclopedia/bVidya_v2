@@ -24,20 +24,36 @@ class SlidingTab extends StatelessWidget {
       height: 9.w,
       // innerPadding: EdgeInsets.all(3.w),
       children: {
-        0: Text(
-          label1,
-          style: TextStyle(
-              fontFamily: kFontFamily,
-              fontSize: 12.sp,
-              color: selectedIndex == 0 ? Colors.white : Colors.black),
+        0: FittedBox(
+          fit: BoxFit.contain,
+          child: Text(
+            label1,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 12.sp,
+                color: selectedIndex == 0 ? Colors.white : Colors.black),
+          ),
         ),
-        1: Text(
-          label2,
-          style: TextStyle(
-              fontFamily: kFontFamily,
-              fontSize: 12.sp,
-              color: selectedIndex == 1 ? Colors.white : Colors.black),
-        ),
+
+        //  Text(
+        //   label1,
+        //   style: TextStyle(
+        //       fontFamily: kFontFamily,
+        //       fontSize: 12.sp,
+        //       color: selectedIndex == 0 ? Colors.white : Colors.black),
+        // ),
+        1: FittedBox(
+          fit: BoxFit.contain,
+          child: Text(
+            label2,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: 12.sp,
+                color: selectedIndex == 1 ? Colors.white : Colors.black),
+          ),
+        )
       },
       decoration: BoxDecoration(
         color: AppColors.cardWhite,

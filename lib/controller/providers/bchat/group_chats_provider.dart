@@ -95,7 +95,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
         // notifyListeners();
         ref.read(loadingMoreStateProvider.notifier).state = true;
         final message = state[0];
-        print('next_chat_id ${message.msgId}');
+        // print('next_chat_id ${message.msgId}');
         // await Future.delayed(const Duration(seconds: 2));
         final chats = await grpModel.conversation
             ?.loadMessages(loadCount: 20, startMsgId: message.msgId);

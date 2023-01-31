@@ -26,6 +26,12 @@ class ChatMessageBodyWidget extends StatelessWidget {
       case MessageType.IMAGE:
         {
           ChatImageMessageBody body = message.body as ChatImageMessageBody;
+          // return _buildMediaMessage(
+          //     body.displayName ?? 'Photo',
+          //     Image(
+          //       image: getImageProviderChatImage(body),
+          //       fit: BoxFit.cover,
+          //     ));
           return ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
@@ -128,6 +134,8 @@ class ChatMessageBodyWidget extends StatelessWidget {
     return const SizedBox.shrink();
     // return message.body.type == MessageType.TXT ? _onlyText() : _imageOnly(me);
   }
+
+  
 
   Widget _buildTextMessage(ChatTextMessageBody body) {
     return Row(

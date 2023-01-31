@@ -1,18 +1,18 @@
-import '/controller/bmeet_providers.dart';
-import '/ui/screens.dart';
+import 'package:bvidya/controller/bmeet_providers.dart';
+import 'package:bvidya/ui/screens.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-import '../../../dialog/ok_dialog.dart';
+// import '../../../dialog/ok_dialog.dart';
 import '/data/models/response/blearn/instructors_response.dart';
 
-import '/controller/blearn_providers.dart';
+// import '/controller/blearn_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-import 'common.dart';
+// import 'common.dart';
 
 class RequestClassForm extends HookWidget {
   final Instructor instructor;
@@ -147,7 +147,11 @@ class RequestClassForm extends HookWidget {
                                   ),
                                   DropdownMenuItem(
                                     value: 1,
-                                    child: Text("Personal"),
+                                    child: Text("Individual (1 to 1)"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 2,
+                                    child: Text("Any"),
                                   )
                                 ],
                                 validator: (value) {
@@ -166,11 +170,19 @@ class RequestClassForm extends HookWidget {
                                           .state = 0;
                                       break;
                                     case 1:
-                                      classTypeController.text = "Personal";
+                                      classTypeController.text = "individual";
                                       ref
                                           .watch(
                                               currentClassTypeProvider.notifier)
                                           .state = 1;
+                                      break;
+
+                                    case 2:
+                                      classTypeController.text = "any";
+                                      ref
+                                          .watch(
+                                              currentClassTypeProvider.notifier)
+                                          .state = 2;
                                       break;
                                   }
                                 },
@@ -262,38 +274,36 @@ class RequestClassForm extends HookWidget {
                               Text(S.current.bmeet_caption_date,
                                   style: textStyleCaption),
                               SizedBox(height: 3.h),
-                              Consumer(builder: (context, ref, child) {
-                                return TextFormField(
-                                  controller: _dateController,
-                                  autofocus: false,
-                                  showCursor: false,
-                                  validator: (value) {
-                                    if (value == null ||
-                                        value.isEmpty == true ||
-                                        _selectedDate == null) {
-                                      return S.current.bmeet_empty_date;
-                                    }
-                                    return null;
-                                  },
-                                  onTap: () async {
-                                    _selectedDate = await _pickDate(context);
-                                    ref
-                                            .read(selectedDateProvider.notifier)
-                                            .state =
-                                        _selectedDate ?? DateTime.now();
-                                    if (_selectedDate != null) {
-                                      _dateController.text =
-                                          DateFormat('dd-MM-yyyy')
-                                              .format(_selectedDate!);
-                                    }
-                                  },
-                                  // focusNode: _dateFocus,
-                                  decoration: inputMeetStyle.copyWith(
-                                      hintText: S.current.bmeet_hint_date,
-                                      suffixIcon:
-                                          const Icon(Icons.edit_calendar)),
-                                );
-                              }),
+                              TextFormField(
+                                controller: _dateController,
+                                autofocus: false,
+                                showCursor: false,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty == true ||
+                                      _selectedDate == null) {
+                                    return S.current.bmeet_empty_date;
+                                  }
+                                  return null;
+                                },
+                                onTap: () async {
+                                  _selectedDate = await _pickDate(context);
+                                  ref
+                                      .read(selectedDateProvider.notifier)
+                                      .state = _selectedDate ?? DateTime.now();
+                                  print(ref.read(selectedDateProvider));
+                                  if (_selectedDate != null) {
+                                    _dateController.text =
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(_selectedDate!);
+                                  }
+                                },
+                                // focusNode: _dateFocus,
+                                decoration: inputMeetStyle.copyWith(
+                                    hintText: S.current.bmeet_hint_date,
+                                    suffixIcon:
+                                        const Icon(Icons.edit_calendar)),
+                              ),
                               SizedBox(height: 3.h),
                               Text(S.current.bmeet_caption_starttime,
                                   style: textStyleCaption),
@@ -318,15 +328,13 @@ class RequestClassForm extends HookWidget {
                                 },
                                 onTap: () {
                                   _pickTime(context, (time) {
-                                    print(time);
                                     _startTime = time;
                                     final dt = DateFormat.jm().format(time);
-                                    print('dt: $dt');
+                                    // print('dt: $dt');
                                     _timeController.text = dt;
                                   }, ref);
                                 },
                                 onFieldSubmitted: (value) {},
-                                // focusNode: _startFocus,
                                 decoration: inputMeetStyle.copyWith(
                                     hintText: S.current.bmeet_hint_start,
                                     suffixIcon: const Icon(
@@ -354,9 +362,9 @@ class RequestClassForm extends HookWidget {
                                             classType: classTypeController.text,
                                             description:
                                                 descriptionController.text,
-                                            date:
-                                                _selectedDate ?? DateTime.now(),
-                                            time: _timeController.text,
+                                            // date:
+                                            //     _selectedDate ?? DateTime.now(),
+                                            // time: _timeController.text,
                                             instructorid: instructor.id ?? 0);
                                     response == "error"
                                         ? showTopSnackBar(
@@ -477,12 +485,12 @@ class RequestClassForm extends HookWidget {
           },
         ) ??
         TimeOfDay.now();
-
+    print(ref.read(selectedDateProvider));
     if (pickedTime != null) {
       onPick(DateTime(
-          ref.watch(selectedDateProvider).year,
-          ref.watch(selectedDateProvider).month,
-          ref.watch(selectedDateProvider).day,
+          ref.read(selectedDateProvider).year,
+          ref.read(selectedDateProvider).month,
+          ref.read(selectedDateProvider).day,
           pickedTime.hour,
           pickedTime.minute));
       //output 10:51 PM

@@ -64,7 +64,7 @@ class RecentCallScreen extends StatelessWidget {
                             fontSize: 12.sp,
                           ),
                           backgroundRadius: 3.w,
-                          widthSpace: 30.w,
+                          widthSpace: 40.w,
                           title: S.current.menu_delete,
                           performsFirstActionWithFullSwipe: true,
                           onTap: (CompletionHandler handler) async {
@@ -79,24 +79,31 @@ class RecentCallScreen extends StatelessWidget {
                             // setState(() {});
                           },
                           color: AppColors.redBColor),
-                      SwipeAction(
-                          style: TextStyle(
-                            fontFamily: kFontFamily,
-                            color: Colors.white,
-                            fontSize: 12.sp,
-                          ),
-                          backgroundRadius: 3.w,
-                          widthSpace: 20.w,
-                          title: S.current.menu_call,
-                          onTap: (CompletionHandler handler) async {
-                            /// false means that you just do nothing,it will close
-                            /// action buttons by default
-                            handler(false);
-                            await makeCall(callList[index], ref, context);
-                          },
-                          color: AppColors.primaryColor),
+                      // SwipeAction(
+                      //     style: TextStyle(
+                      //       fontFamily: kFontFamily,
+                      //       color: Colors.white,
+                      //       fontSize: 12.sp,
+                      //     ),
+                      //     backgroundRadius: 3.w,
+                      //     widthSpace: 20.w,
+                      //     title: S.current.menu_call,
+                      //     onTap: (CompletionHandler handler) async {
+                      //       /// false means that you just do nothing,it will close
+                      //       /// action buttons by default
+                      //       handler(false);
+                      //       await makeCall(callList[index], ref, context);
+                      //     },
+                      //     color: AppColors.primaryColor),
                     ],
-                    child: _contactRow(callList[index]),
+                    child: _contactRow(callList[index], () async {
+                      final item =
+                          await makeCall(callList[index], ref, context);
+                      if (item != null) {
+                        setScreen(RouteList.recentCalls);
+                        ref.read(callListProvider.notifier).addMessage(item);
+                      }
+                    }),
                   );
                 },
                 separatorBuilder: (context, index) {
@@ -120,7 +127,7 @@ class RecentCallScreen extends StatelessWidget {
     );
   }
 
-  Widget _contactRow(CallListModel model) {
+  Widget _contactRow(CallListModel model, Function() onCall) {
     final date = DateTime.fromMillisecondsSinceEpoch(model.time);
     String time = formatDateCall(date);
     // if (!DateUtils.isSameDay(date, DateTime.now())) {
@@ -164,9 +171,12 @@ class RecentCallScreen extends StatelessWidget {
               ],
             ),
           ),
-          getSvgIcon(model.body.callType == CallType.audio
-              ? 'icon_acall.svg'
-              : 'icon_vcall.svg'),
+          GestureDetector(
+            onTap: () => onCall(),
+            child: getSvgIcon(model.body.callType == CallType.audio
+                ? 'icon_acall.svg'
+                : 'icon_vcall.svg'),
+          ),
           SizedBox(width: 2.w),
         ],
       ),

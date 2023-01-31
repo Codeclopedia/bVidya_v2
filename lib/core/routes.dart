@@ -56,7 +56,7 @@ class Routes {
     bool hasDrawer = false;
     _currentScreen = settings.name ?? '';
 
-    print('opening screen $_currentScreen ');
+    // print('opening screen $_currentScreen ');
     switch (settings.name) {
       // case RouteList.splash:
       //   screen = const SplashScreen();

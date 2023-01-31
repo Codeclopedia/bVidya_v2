@@ -6,7 +6,7 @@ import 'dart:collection';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,8 +30,8 @@ import '/data/models/models.dart';
 final raisedHandMeetingProvider = StateProvider<String>((ref) => '');
 
 class GroupCallProvider extends ChangeNotifier {
-  final MethodChannel _iosScreenShareChannel =
-      const MethodChannel('example_screensharing_ios');
+  // final MethodChannel _iosScreenShareChannel =
+  //     const MethodChannel('example_screensharing_ios');
 //
   int _localUid = 0;
   int? get localUid => _localUid;
@@ -231,7 +231,7 @@ class GroupCallProvider extends ChangeNotifier {
     _callRequestId = callRequestId;
     _groupId = groupId;
     _callDirectionType = CallDirectionType.outgoing;
-    print('outgoing callId:=> $_callId');
+    // print('outgoing callId:=> $_callId');
     // _memberContacts.addAll(memberContacts);
     // print('my_fcm ${_me.fcmToken}');
     // _callDirectiontype = callDirectiontype;
@@ -309,7 +309,7 @@ class GroupCallProvider extends ChangeNotifier {
 
   setError(String message) async {
     _error = message;
-    print('Error =>$message ');
+    // print('Error =>$message ');
     try {
       notifyListeners();
     } catch (e) {
@@ -496,14 +496,12 @@ class GroupCallProvider extends ChangeNotifier {
             }
             _updateMemberList();
           },
-          onUserEnableVideo: (connection, remoteUid, enabled) {
+          onUserMuteVideo: (connection, remoteUid, muted) {
             if (_groupCallingMembers.containsKey(remoteUid)) {
               _groupCallingMembers.update(remoteUid, (value) {
-                value.enabledVideo = enabled;
-                if (enabled) {
-                  value.widget = _localUid == remoteUid
-                      ? _localView()
-                      : _remoteView(remoteUid);
+                value.enabledVideo = !muted;
+                if (!muted) {
+                  value.widget = _remoteView(remoteUid);
                 } else {
                   value.widget = getRectFAvatar(
                       value.contact.name, value.contact.profileImage);
@@ -596,34 +594,39 @@ class GroupCallProvider extends ChangeNotifier {
     if (_disconnected || _userRemoteIds.length > 2) {
       return null;
     }
-    // if (_callDirectionType == CallDirectionType.outgoing) {
-    //   if (status == CallConnectionStatus.Connecting ||
-    //       status == CallConnectionStatus.Ringing) {
-    List<String> fcmIds = [];
-    for (var user in _groupCallingMembers.values) {
-      if (user.status != JoinStatus.decline &&
-          user.status != JoinStatus.ended &&
-          _me.id != user.contact.userId &&
-          user.contact.fcmToken?.isNotEmpty == true) {
-        fcmIds.add(user.contact.fcmToken!);
+    if (_callDirectionType == CallDirectionType.outgoing) {
+      // if (_callDirectionType == CallDirectionType.outgoing) {
+      //   if (status == CallConnectionStatus.Connecting ||
+      //       status == CallConnectionStatus.Ringing) {
+      List<String> fcmIds = [];
+      for (var user in _groupCallingMembers.values) {
+        if (user.status == JoinStatus.ringing &&
+            _me.id != user.contact.userId &&
+            user.contact.fcmToken?.isNotEmpty == true) {
+          fcmIds.add(user.contact.fcmToken!);
+        }
       }
-    }
 
-    if (fcmIds.isNotEmpty) {
-      // print('fcm =>${fcmIds}');
-      await FCMApiService.instance.sendGroupCallEndPush(
-          fcmIds,
-          NotiConstants.actionCallEnd,
-          _me.id,
-          _groupId,
-          _callId,
-          grpName,
-          _me.image,
-          _callType == CallType.video);
+      if (fcmIds.isNotEmpty) {
+        // print('fcm =>${fcmIds}');
+        await FCMApiService.instance.sendGroupCallEndPush(
+            fcmIds,
+            NotiConstants.actionCallEnd,
+            _me.id,
+            _groupId,
+            _callId,
+            grpName,
+            _me.image,
+            _callType == CallType.video);
+      }
+      // }
+      // }
+      return await _ref
+          ?.read(bMeetRepositoryProvider)
+          .leaveMeet(_callRequestId);
+    } else {
+      return null;
     }
-    // }
-    // }
-    return await _ref?.read(bMeetRepositoryProvider).leaveMeet(_callRequestId);
   }
 
   void toggleVolume() async {
@@ -634,65 +637,94 @@ class GroupCallProvider extends ChangeNotifier {
 
   void toggleCamera() async {
     _disableLocalCamera = !_disableLocalCamera;
-    await _engine.muteLocalVideoStream(_disableLocalCamera);
+
+    try {
+      await _engine.muteLocalVideoStream(_disableLocalCamera);
+    } catch (e) {
+      return;
+    }
+
+    if (_groupCallingMembers.containsKey(_localUid)) {
+      _groupCallingMembers.update(_localUid, (value) {
+        value.enabledVideo = !_disableLocalCamera;
+        if (!_disableLocalCamera) {
+          value.widget = _localView();
+        } else {
+          value.widget =
+              getRectFAvatar(value.contact.name, value.contact.profileImage);
+        }
+        return value;
+      });
+    }
     notifyListeners();
   }
 
   void onToggleMute() async {
     _muted = !_muted;
-    await _engine.muteLocalAudioStream(_muted);
-    notifyListeners();
-  }
-
-  void toggleShareScreen() async {
-    if (_initializingScreenShare) return;
-
-    _initializingScreenShare = true;
-    if (!_shareScreen) {
-      await startScreenShare();
-    } else {
-      await stopScreenShare();
-    }
-    // _shareScreen = _screenShareId == 1000;
-    // _engine.muteLocalAudioStream(_muted);
-    notifyListeners();
-  }
-
-  Future startScreenShare() async {
-    // if (_shareScreen) return;
     try {
-      await _engine.startScreenCapture(const ScreenCaptureParameters2(
-          captureAudio: true, captureVideo: true));
-      await _engine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
-      _showRPSystemBroadcastPickerViewIfNeed();
-      if (!_shareScreen) {
-        await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
-          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-          autoSubscribeVideo: true,
-          autoSubscribeAudio: true,
-          publishScreenTrack: true,
-          publishSecondaryScreenTrack: true,
-          publishCameraTrack: false,
-          publishMicrophoneTrack: false,
-          publishScreenCaptureAudio: true,
-          publishScreenCaptureVideo: true,
-        ));
-        _shareScreen = true;
-        _initializingScreenShare = false;
+      await _engine.muteLocalAudioStream(_muted);
+    } catch (e) {
+      return;
+    }
 
-        _groupCallingMembers.update(
-          _localUid,
-          (value) {
-            value.widget = _localScreenView();
-            return value;
-          },
-        );
-        notifyListeners();
-      } else {}
-    } catch (e) {}
-    // onStartScreenShared();
+    if (_groupCallingMembers.containsKey(_localUid)) {
+      _groupCallingMembers.update(_localUid, (value) {
+        value.muteAudio = muted;
+        return value;
+      });
+    }
+    notifyListeners();
   }
+
+  // void toggleShareScreen() async {
+  //   if (_initializingScreenShare) return;
+
+  //   _initializingScreenShare = true;
+  //   if (!_shareScreen) {
+  //     await startScreenShare();
+  //   } else {
+  //     await stopScreenShare();
+  //   }
+  //   // _shareScreen = _screenShareId == 1000;
+  //   // _engine.muteLocalAudioStream(_muted);
+  //   notifyListeners();
+  // }
+
+  // Future startScreenShare() async {
+  //   // if (_shareScreen) return;
+  //   try {
+  //     await _engine.startScreenCapture(const ScreenCaptureParameters2(
+  //         captureAudio: true, captureVideo: true));
+  //     await _engine.startPreview(sourceType: VideoSourceType.videoSourceScreen);
+  //     _showRPSystemBroadcastPickerViewIfNeed();
+  //     if (!_shareScreen) {
+  //       await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
+  //         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+  //         clientRoleType: ClientRoleType.clientRoleBroadcaster,
+  //         autoSubscribeVideo: true,
+  //         autoSubscribeAudio: true,
+  //         publishScreenTrack: true,
+  //         publishSecondaryScreenTrack: true,
+  //         publishCameraTrack: false,
+  //         publishMicrophoneTrack: false,
+  //         publishScreenCaptureAudio: true,
+  //         publishScreenCaptureVideo: true,
+  //       ));
+  //       _shareScreen = true;
+  //       _initializingScreenShare = false;
+
+  //       _groupCallingMembers.update(
+  //         _localUid,
+  //         (value) {
+  //           value.widget = _localScreenView();
+  //           return value;
+  //         },
+  //       );
+  //       notifyListeners();
+  //     } else {}
+  //   } catch (e) {}
+  //   // onStartScreenShared();
+  // }
 
   // Future<void> _updateScreenShareChannelMediaOptions() async {
   //   // final shareShareUid = int.tryParse(_screenShareId);
@@ -713,44 +745,44 @@ class GroupCallProvider extends ChangeNotifier {
   // }
 
   // @override
-  Future stopScreenShare() async {
-    if (!_shareScreen) return;
-    try {
-      await _engine.stopScreenCapture();
-      // await _engine.leaveChannelEx(
-      //     RtcConnection(channelId: _meeting.channel, localUid: 1000));
-      await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
-        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        autoSubscribeVideo: true,
-        autoSubscribeAudio: true,
-        publishScreenTrack: false,
-        publishSecondaryScreenTrack: false,
-        publishCameraTrack: true,
-        publishMicrophoneTrack: true,
-        publishScreenCaptureAudio: false,
-        publishScreenCaptureVideo: false,
-      ));
+  // Future stopScreenShare() async {
+  //   if (!_shareScreen) return;
+  //   try {
+  //     await _engine.stopScreenCapture();
+  //     // await _engine.leaveChannelEx(
+  //     //     RtcConnection(channelId: _meeting.channel, localUid: 1000));
+  //     await _engine.updateChannelMediaOptions(const ChannelMediaOptions(
+  //       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+  //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
+  //       autoSubscribeVideo: true,
+  //       autoSubscribeAudio: true,
+  //       publishScreenTrack: false,
+  //       publishSecondaryScreenTrack: false,
+  //       publishCameraTrack: true,
+  //       publishMicrophoneTrack: true,
+  //       publishScreenCaptureAudio: false,
+  //       publishScreenCaptureVideo: false,
+  //     ));
 
-      _groupCallingMembers.update(
-        _localUid,
-        (value) {
-          value.widget = _localView();
-          return value;
-        },
-      );
-      _shareScreen = false;
-      _initializingScreenShare = false;
-      notifyListeners();
-    } catch (e) {}
-  }
+  //     _groupCallingMembers.update(
+  //       _localUid,
+  //       (value) {
+  //         value.widget = _localView();
+  //         return value;
+  //       },
+  //     );
+  //     _shareScreen = false;
+  //     _initializingScreenShare = false;
+  //     notifyListeners();
+  //   } catch (e) {}
+  // }
 
-  Future<void> _showRPSystemBroadcastPickerViewIfNeed() async {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      await _iosScreenShareChannel
-          .invokeMethod('showRPSystemBroadcastPickerView');
-    }
-  }
+  // Future<void> _showRPSystemBroadcastPickerViewIfNeed() async {
+  //   if (defaultTargetPlatform == TargetPlatform.iOS) {
+  //     await _iosScreenShareChannel
+  //         .invokeMethod('showRPSystemBroadcastPickerView');
+  //   }
+  // }
 
   void onSwitchCamera() async {
     await _engine.switchCamera();
@@ -768,7 +800,7 @@ class GroupCallProvider extends ChangeNotifier {
           break;
         }
       }
-      print('$isAllRejected');
+      // print('$isAllRejected');
       if (isAllRejected && _callDirectionType == CallDirectionType.outgoing) {
         if (_userRemoteIds.isEmpty) {
           _timer?.cancel();
