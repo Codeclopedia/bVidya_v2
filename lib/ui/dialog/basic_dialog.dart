@@ -128,8 +128,9 @@ class BasicDialogContent extends StatelessWidget {
                 child: ElevatedButton(
                   style: dialogElevatedButtonStyle,
                   onPressed: () async {
-                    await positiveAction();
                     Navigator.pop(context);
+
+                    await positiveAction();
                   },
                   child: Text(positiveButton
                       // S.current.sureDlt,

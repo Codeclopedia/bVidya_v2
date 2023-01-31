@@ -331,7 +331,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dg_confirm_deleteAccount":
             MessageLookupByLibrary.simpleMessage("Yes, Delete my account."),
         "dg_message_DeleteAccount": MessageLookupByLibrary.simpleMessage(
-            "Do you really want to delete your account? It will result in removing all of your data."),
+            "If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind."),
         "dg_message_live_scheduled": MessageLookupByLibrary.simpleMessage(
             "Live session has been scheduled. You can see the details in the scheduled list."),
         "dg_message_logout": MessageLookupByLibrary.simpleMessage(

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../models/response/auth/signup_reponse.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -122,7 +123,7 @@ class ApiAuthService {
   }
 
 //Sign Up -2
-  Future<LoginResponse> createUserWithOTP({
+  Future<SignupResponse> createUserWithOTP({
     required String name,
     required String phoneNo,
     required String email,
@@ -143,14 +144,14 @@ class ApiAuthService {
           await _dio.post('$baseUrlApi${ApiList.signUp}', data: data);
 
       if (response.statusCode == 200) {
-        return LoginResponse.fromJson(response.data);
+        return SignupResponse.fromJson(response.data);
       } else {
-        return LoginResponse(
+        return SignupResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return LoginResponse(status: 'error', message: '$e');
+      return SignupResponse(status: 'error', message: '$e');
     }
   }
 

@@ -60,12 +60,13 @@ class TeacherProfile extends StatelessWidget {
                 Navigator.pushNamed(context, RouteList.teacherDashboard);
               }
             }),
-            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () async {
-              final user = await getMeAsUser();
-              if (user != null) {
-                Navigator.pushNamed(context, RouteList.teacherSchedule);
-              }
-            }),
+            //todo uncomment phase3
+            // _buildContent(S.current.tp_schedule, 'noti_calender.svg', () async {
+            //   final user = await getMeAsUser();
+            //   if (user != null) {
+            //     Navigator.pushNamed(context, RouteList.teacherSchedule);
+            //   }
+            // }),
             _buildClassRequest(S.current.tp_classes, 'profile_instru.svg',
                 () async {
               final user = await getMeAsUser();

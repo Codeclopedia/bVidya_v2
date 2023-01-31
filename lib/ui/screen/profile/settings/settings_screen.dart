@@ -26,6 +26,7 @@ class SettingsScreen extends StatelessWidget {
                 () {
               Navigator.pushNamed(context, RouteList.accountSetting);
             }),
+            //todo uncomment phase3
             // getTwoRowSettingItem(
             //     S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
             //     () {

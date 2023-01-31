@@ -1,3 +1,5 @@
+import 'package:shimmer/shimmer.dart';
+
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -26,7 +28,19 @@ class CategoriesScreen extends StatelessWidget {
             return buildEmptyPlaceHolder(error.toString());
           },
           loading: () {
-            return buildLoading;
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return Shimmer.fromColors(
+                  baseColor: AppColors.cardWhite,
+                  highlightColor: AppColors.cardBackground,
+                  child: Container(
+                    height: 20.w,
+                  ),
+                );
+              },
+            );
           },
         );
       }),
@@ -57,7 +71,11 @@ class CategoriesScreen extends StatelessWidget {
                 SizedBox(
                   width: 18.w,
                   child: Image(
-                    image: getImageProvider(category.image ?? ''),
+                     image: getImageProvider(
+                        category.icon == "" || category.icon == null
+                            ? category.image ?? ""
+                            : category.icon ?? ""),
+                    // image: getImageProvider(category.image ?? ''),
                   ),
                 ),
                 SizedBox(width: 4.w),

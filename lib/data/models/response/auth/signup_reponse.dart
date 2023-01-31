@@ -1,11 +1,11 @@
-class LoginResponse {
-  User? body;
+class SignupResponse {
+  SignupUser? body;
   String? status;
   String? message;
-  LoginResponse({body, status, message});
+  SignupResponse({body, status, message});
 
-  LoginResponse.fromJson(Map<String, dynamic> json) {
-    body = json['body'] != null ? User.fromJson(json['body']) : null;
+  SignupResponse.fromJson(Map<String, dynamic> json) {
+    body = json['body'] != null ? SignupUser.fromJson(json['body']) : null;
     status = json['status'];
     message = json['message'];
   }
@@ -21,35 +21,41 @@ class LoginResponse {
   }
 }
 
-class User {
+class SignupUser {
   int id;
   String authToken;
   String name;
   String email;
   String phone;
   String role;
-  String fcmToken;
-  String image;
+  String? status;
+  String? referralCode;
+  String? referredBy;
+  String? uuid;
 
-  User(
+  SignupUser(
       {required this.id,
       required this.authToken,
       required this.name,
       required this.email,
       required this.phone,
       required this.role,
-      required this.fcmToken,
-      required this.image});
+      this.referralCode,
+      this.referredBy,
+      this.uuid,
+      this.status});
 
-  User.fromJson(Map<String, dynamic> json)
+  SignupUser.fromJson(Map<String, dynamic> json)
       : name = json['name'] ?? '',
-        authToken = json['auth_token'] ?? '',
+        authToken = json['access_token'] ?? '',
         phone = json['phone'] ?? '',
         email = json['email'] ?? '',
         role = json['role'] ?? '',
         id = json['id'] ?? '',
-        fcmToken = json['fcm_token'] ?? '',
-        image = json['image'] ?? '';
+        referralCode = json['referral_code'],
+        status = json['status'],
+        referredBy = json['referred_by'],
+        uuid = json['uuid'];
 
   // User.fromJson(Map<String, dynamic> json) {
   //   authToken = json['auth_token'];
@@ -64,14 +70,16 @@ class User {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['auth_token'] = authToken;
+    data['access_token'] = authToken;
     data['name'] = name;
     data['email'] = email;
     data['phone'] = phone;
     data['role'] = role;
     data['id'] = id;
-    data['fcm_token'] = fcmToken;
-    data['image'] = image;
+    data['status'] = status;
+    data['referred_by'] = referredBy;
+    data['referral_code'] = referralCode;
+    data['uuid'] = uuid;
     return data;
   }
 }

@@ -1,9 +1,14 @@
-import 'dart:io';
+// import 'dart:io';
+
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/app.dart';
+import 'package:bvidya/core/ui_core.dart';
+import 'package:bvidya/ui/base_back_screen.dart';
 
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '/controller/providers/bchat/contact_list_provider.dart';
@@ -165,19 +170,31 @@ Future logoutApp(WidgetRef ref) async {
 }
 
 Future deleteAccount(WidgetRef ref) async {
-  await ChatClient.getInstance.logout();
-  // final pref = await SharedPreferences.getInstance();
-  // await pref.clear();
-  ref.invalidate(authLoadProvider);
-  ref.read(groupConversationProvider.notifier).clear();
-  ref.read(groupCallListProvider.notifier).clear();
-  ref.read(callListProvider.notifier).clear();
-  ref.read(contactListProvider.notifier).clear();
-  ref.read(chatConversationProvider.notifier).clear();
-
+  showLoading(ref);
   final response = await ref.read(apiServiceProvider).deleteAccount();
-  BChatSDKController.instance.destroyed();
-  await ref.read(userLoginStateProvider.notifier).logout();
+  if (response.status == 'successfull') {
+    await ChatClient.getInstance.logout();
+    // final pref = await SharedPreferences.getInstance();
+    // await pref.clear();
+    ref.invalidate(authLoadProvider);
+    ref.read(groupConversationProvider.notifier).clear();
+    ref.read(groupCallListProvider.notifier).clear();
+    ref.read(callListProvider.notifier).clear();
+    ref.read(contactListProvider.notifier).clear();
+    ref.read(chatConversationProvider.notifier).clear();
+
+    BChatSDKController.instance.destroyed();
+    hideLoading(ref);
+    EasyLoading.showToast("Account dismissed");
+    await ref.read(userLoginStateProvider.notifier).logout();
+  } else {
+    hideLoading(ref);
+    BuildContext? cntx = navigatorKey.currentContext;
+    if (cntx != null) {
+      AppSnackbar.instance
+          .error(cntx, response.message ?? 'Error while deleting account');
+    }
+  }
 }
 
 showOnLock(bool show) async {

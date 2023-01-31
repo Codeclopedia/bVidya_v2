@@ -2490,10 +2490,10 @@ class S {
     );
   }
 
-  /// `Do you really want to delete your account? It will result in removing all of your data.`
+  /// `If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind.`
   String get dg_message_DeleteAccount {
     return Intl.message(
-      'Do you really want to delete your account? It will result in removing all of your data.',
+      'If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind.',
       name: 'dg_message_DeleteAccount',
       desc: '',
       args: [],

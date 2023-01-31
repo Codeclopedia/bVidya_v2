@@ -10,7 +10,7 @@ class CategoriesResponse {
   });
 
   CategoriesResponse.fromJson(Map<String, dynamic> json)
-      : body = json['body']!=null?Categories.fromJson(json['body']):null,
+      : body = json['body'] != null ? Categories.fromJson(json['body']) : null,
         status = json['status'],
         message = json['message'];
 
@@ -46,6 +46,7 @@ class Category {
   final String? name;
   final String? slug;
   final String? image;
+  final String? icon;
   final String? createdAt;
   final String? updatedAt;
 
@@ -54,6 +55,7 @@ class Category {
     this.name,
     this.slug,
     this.image,
+    this.icon,
     this.createdAt,
     this.updatedAt,
   });
@@ -63,6 +65,7 @@ class Category {
         name = json['name'],
         slug = json['slug'],
         image = json['image'],
+        icon = json['icon'],
         createdAt = json['created_at'],
         updatedAt = json['updated_at'];
 
@@ -72,6 +75,7 @@ class Category {
     data['name'] = name;
     data['slug'] = slug;
     data['image'] = image;
+    data['icon'] = icon;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     return data;

@@ -104,13 +104,15 @@ class AuthRepository {
         email: email,
         name: name,
         otp: otp);
-    if (result.status != null && result.status == successfull) {
-      _user = result.body;
-      userToken = _user?.authToken ?? '';
-
-      final pref = await SharedPreferences.getInstance();
-      await pref.setString('user', jsonEncode(_user!.toJson()));
-      return null;
+    if (result.body != null && result.status == successfull) {
+      final signupBody = result.body;
+      if (signupBody?.status == 'active') {
+        // _user = result.body;
+        // userToken = _user?.authToken ?? '';
+        // final pref = await SharedPreferences.getInstance();
+        // await pref.setString('user', jsonEncode(_user!.toJson()));
+        return await login(email, password);
+      }
     }
     return result.message ?? 'Unknown error occurred!!';
   }

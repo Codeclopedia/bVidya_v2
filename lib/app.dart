@@ -118,15 +118,17 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     });
 
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
-      if (Platform.isIOS) {
-        await ChatClient.getInstance.pushManager.updateAPNsDeviceToken(
-          token,
-        );
-      } else if (Platform.isAndroid) {
-        await ChatClient.getInstance.pushManager.updateFCMPushToken(
-          token,
-        );
-      }
+      try {
+        if (Platform.isIOS) {
+          await ChatClient.getInstance.pushManager.updateAPNsDeviceToken(
+            token,
+          );
+        } else if (Platform.isAndroid) {
+          await ChatClient.getInstance.pushManager.updateFCMPushToken(
+            token,
+          );
+        }
+      } catch (e) {}
       debugPrint('onTokenRefresh: $token');
     }, onDone: () {
       debugPrint('onTokenRefresh DONE');
@@ -195,7 +197,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
       }
     });
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeLight,

@@ -292,7 +292,7 @@
   "btn_yes_logout":"Sure, want to logout",
 
   "dg_title_DeleteAccount": "Delete Account",
-  "dg_message_DeleteAccount":"Do you really want to delete your account? It will result in removing all of your data.",
+  "dg_message_DeleteAccount":"If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind.",
   "dg_confirm_deleteAccount":"Yes, Delete my account.",
   
 
