@@ -3,8 +3,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/agora_config.dart';
@@ -31,8 +31,7 @@ class BChatSDKController {
         requireDeliveryAck: true,
       );
       if (Platform.isIOS) {
-        options.enableAPNs(
-            DefaultFirebaseOptions.currentPlatform.messagingSenderId);
+        options.enableAPNs('bVidyaDemoKey');
       }
       options
           .enableFCM(DefaultFirebaseOptions.currentPlatform.messagingSenderId);
@@ -228,17 +227,21 @@ class BChatSDKController {
         agoraToken,
       );
 
+      // final token = await FirebaseMessaging.instance.getToken();
       await ChatClient.getInstance.pushManager
           .updateFCMPushToken(currentUser.fcmToken);
 
       if (Platform.isIOS) {
         String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
         if (aPNStoken != null) {
+          print('apnsToke=$aPNStoken');
           await ChatClient.getInstance.pushManager
-              .updateAPNsDeviceToken(agoraToken);
+              .updateAPNsDeviceToken(aPNStoken);
           // options.enableAPNs(aPNStoken);
+        } else {
+          print('apnsToke is null');
         }
-        // options.enableAPNs(certName)
+        //   // options.enableAPNs(certName)
       }
       // final info = ChatClient.getInstance.userInfoManager.fetchOwnInfo();
       await ChatClient.getInstance.userInfoManager.updateUserInfo(

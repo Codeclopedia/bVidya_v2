@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:flutter_apns_only/flutter_apns_only.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
+// import 'package:flutter_apns/flutter_apns.dart';
 
 import 'core/helpers/background_helper.dart';
 import 'core/sdk_helpers/bchat_sdk_controller.dart';
@@ -22,8 +24,32 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
   } else {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+    try {
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
+    } catch (e) {
+      print('Error init firebase $e');
+
+      // await Firebase.initializeApp();
+    }
+
+//     final connector = ApnsPushConnectorOnly();
+//     // final connector = createPushConnector();
+// // connector.requestNotificationPermissions()
+//     connector.configureApns(
+//       onLaunch: (message) async {
+//         print('Notification launched app');
+//       },
+//       onResume: (message) async {
+//         print('Notification tapped when in the background');
+//       },
+//       onMessage: (message) async {
+//         print('New notification received=> ${message}');
+//       },
+//     );
+    // if (connector is ApnsPushConnector) {
+    //   connector.shouldPresent = (x) => Future.value(false);
+    // }
   }
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
@@ -37,7 +63,7 @@ Future<void> main() async {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  // debugPrint('firebase: onBackgroundMessage -> ${message.toMap()}');
+  print('firebase: onBackgroundMessage -> ${message.toMap()}');
   await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();

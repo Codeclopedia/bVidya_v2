@@ -59,6 +59,8 @@ class NotificationController {
         ],
         debug: true);
 
+        // await instance.setForegroundNotificationPresentationOptions(alert: false, badge: true, sound: true);
+
     initialAction = await AwesomeNotifications()
         .getInitialNotificationAction(removeFromActionEvents: true);
 
@@ -179,9 +181,8 @@ class NotificationController {
         await AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
-  static Future<bool> isAllowedPermission()async{
-      return await AwesomeNotifications().isNotificationAllowed();
-
+  static Future<bool> isAllowedPermission() async {
+    return await AwesomeNotifications().isNotificationAllowed();
   }
 
   static Future showContactActionNotification(

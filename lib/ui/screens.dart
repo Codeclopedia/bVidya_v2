@@ -69,6 +69,7 @@ export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
 export 'screen/profile/teacher/teacher_classrequest.dart';
 export 'screen/profile/teacher/teacher_schedule.dart';
+export 'screen/blearn/components/request_class_form.dart';
 
 export 'screen/profile/settings/webview_screen.dart';
 export 'screen/blearn/teacher_profile_detail_screen.dart';

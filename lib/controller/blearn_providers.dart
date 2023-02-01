@@ -56,10 +56,10 @@ final blearnSubscribeCourseProvider =
   return ref.read(bLearnRepositoryProvider).subscribeCourse(id);
 });
 
-final blearnAddorRemoveinWishlistProvider =
-    FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
-  return ref.read(bLearnRepositoryProvider).changeinWishlist(id);
-});
+// final blearnAddorRemoveinWishlistProvider =
+//     FutureProvider.autoDispose.family<BaseResponse?, int>((ref, id) {
+//   return ref.read(bLearnRepositoryProvider).changeinWishlist(id);
+// });
 
 final blearnWishlistCoursesProvider =
     FutureProvider.autoDispose<WishlistCoursesBody?>((ref) {

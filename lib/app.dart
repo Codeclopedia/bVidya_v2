@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
@@ -99,7 +99,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
     FirebaseMessaging.onMessage.listen((message) async {
+      print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
+
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
@@ -119,15 +121,16 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
 
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
       try {
-        if (Platform.isIOS) {
-          await ChatClient.getInstance.pushManager.updateAPNsDeviceToken(
-            token,
-          );
-        } else if (Platform.isAndroid) {
-          await ChatClient.getInstance.pushManager.updateFCMPushToken(
-            token,
-          );
-        }
+        // if (Platform.isIOS) {
+        //   // String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
+        //   // if (aPNStoken != null) {
+        //   //   await ChatClient.getInstance.pushManager
+        //   //       .updateAPNsDeviceToken(aPNStoken);
+        //   // }
+        // } else if (Platform.isAndroid) {
+          
+        // }
+        await ChatClient.getInstance.pushManager.updateFCMPushToken(token);
       } catch (e) {}
       debugPrint('onTokenRefresh: $token');
     }, onDone: () {
@@ -233,3 +236,43 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     super.dispose();
   }
 }
+
+
+
+
+
+
+// pushRegistry TOKEN
+// 303f075379c3c5631fb64e0ab75b17b84e8fc7bfd9da6812b02a51f683324e41
+
+
+// Registered for Apple Remote Notifications:
+// f3bd1993772e27fc1c124481e6771303325df1ea0d0cd5e55c7c0df51e0e3de9
+
+
+// FCM registration token: 
+// dGzegKDL3U2mrvAb-e3Fmg:APA91bEx11ahZYg-m9qitWfjLQF4C6cFG9RplZBXwjSBoKFtgkT5j2KwQGtBGKFfOQm-_mKVe8eM0Gny6fBxaI5E552VgDS9mAUp2S5p6BqeonN21iFiqbtXN5BiTfRy6dvqTFYmPeEn
+
+
+
+// token : 
+// dGzegKDL3U2mrvAb-e3Fmg:APA91bEx11ahZYg-m9qitWfjLQF4C6cFG9RplZBXwjSBoKFtgkT5j2KwQGtBGKFfOQm-_mKVe8eM0Gny6fBxaI5E552VgDS9mAUp2S5p6BqeonN21iFiqbtXN5BiTfRy6dvqTFYmPeEn
+
+// apnsToke=
+// F3BD1993772E27FC1C124481E6771303325DF1EA0D0CD5E55C7C0DF51E0E3DE9
+
+// flutter: token : 
+// da5_VUeOpU1zupkrrqB91a:APA91bG2TOj8liizfoBJPPhKMyM1S5qhm1JWtt6fnQ5nbiUCLg49W7VN2USAl1L1ZtgI4KkkZ4GPqo3HXu8fSW47dUbAPvSB7JGd7UtsOOxZLm1UEZkVyzVxz1jG8Q0Pld2EervJQeU6
+
+
+//2023-02-01 16:00:42.967288+0530 Runner[2590:129856] flutter: apnsToke=
+//4A91D63BFF0DFA9125279537462BEE0D27345E211D1A3DB223733AF951E4D346
+
+
+// Registered for Apple Remote Notifications:
+// A724F58B3DF0136F70668DFFE186F4B00DCEB32EAEF789A65EB6F86859C92BE8
+
+// pushRegistry TOKEN
+// 303f075379c3c5631fb64e0ab75b17b84e8fc7bfd9da6812b02a51f683324e41
+// eecLyWlUS09QmImoE-FuzE:APA91bEzA-oZ-fNkchuHmoiJ9xhRJWwn_9heHXXM-wL52VW7KIk4IwUEiGAlLY9YYmmzM0NMKz220HxbgxPhczaCcMv-02_H6grhjduP5adOZtYwAXBLPzBATGdabWR_bN3aZujG2ukH
+// 2023-02-01 17:19:54.6

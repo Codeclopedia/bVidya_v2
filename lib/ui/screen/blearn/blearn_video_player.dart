@@ -1,5 +1,6 @@
 // import 'package:chewie/chewie.dart';
 // import 'dart:async';
+import 'package:bvidya/ui/base_back_screen.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -128,11 +129,18 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                                   SizedBox(width: 12.w),
                                   InkWell(
                                     onTap: () async {
-                                      ref.watch(
-                                          blearnAddorRemoveinWishlistProvider(
-                                              data?.courses?[0].id ?? 0));
+                                      showLoading(ref);
+                                      await ref
+                                          .read(bLearnRepositoryProvider)
+                                          .changeinWishlist(
+                                              data?.courses?[0].id ?? 0);
+
+                                      // ref.watch(
+                                      //     blearnAddorRemoveinWishlistProvider(
+                                      //         data?.courses?[0].id ?? 0));
                                       ref.refresh(bLearnCourseDetailProvider(
                                           course.id ?? 0));
+                                      hideLoading(ref);
                                     },
                                     child: Container(
                                       width: 12.w,

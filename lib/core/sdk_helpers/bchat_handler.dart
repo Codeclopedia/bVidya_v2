@@ -16,6 +16,11 @@ String? lastAction;
 registerForContact(String key, WidgetRef? ref) {
   try {
     print('Registering $key');
+
+    // ChatClient.getInstance.groupManager
+    //     .addEventHandler('identifier', ChatGroupEventHandler(
+    //     ));
+
     // ignore: deprecated_member_use
     // ChatClient.getInstance.contactManager.addContactManagerListener(Listern());
     ChatClient.getInstance.contactManager.addEventHandler(

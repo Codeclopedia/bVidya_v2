@@ -110,6 +110,7 @@ class RouteList {
   static const String teacherProfilePublic = '/teacher-profile-public';
   static const String teacherSchedule = '/teacher_schedule';
   static const String teacherClassRequest = '/teacher_classrequest';
+  static const String teacherRequestClassForm = '/teacher_class-request-form';
 
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 

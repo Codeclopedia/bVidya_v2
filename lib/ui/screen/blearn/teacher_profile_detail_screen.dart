@@ -1,6 +1,6 @@
 import 'package:bvidya/ui/screens.dart';
 
-import '/ui/screen/blearn/components/request_class_form.dart';
+// import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';
 import '/data/models/models.dart';
 import '/core/constants/route_list.dart';
@@ -43,7 +43,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 height: double.infinity,
                 margin: EdgeInsets.only(top: 9.h),
-                padding: EdgeInsets.only(top: 15.h),
+                padding: EdgeInsets.only(top: 20.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -100,6 +100,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                       Text(
                         instructor.name.toString(),
                         style: TextStyle(
+                            fontFamily: kFontFamily,
                             color: AppColors.primaryColor,
                             fontSize: 4.w,
                             fontWeight: FontWeight.bold),
@@ -112,6 +113,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                   return Text(
                                     ref.watch(teacherOccupation),
                                     style: TextStyle(
+                                        fontFamily: kFontFamily,
                                         color: AppColors.black,
                                         fontSize: 2.5.w,
                                         fontWeight: FontWeight.w500),
@@ -122,6 +124,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                                 instructor.occupation ?? '',
                                 style: TextStyle(
                                     color: AppColors.black,
+                                    fontFamily: kFontFamily,
                                     fontSize: 2.5.w,
                                     fontWeight: FontWeight.w500),
                               ),
@@ -171,15 +174,17 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     body.followersCount.toString(),
                     style: TextStyle(
                         color: AppColors.primaryColor,
+                        fontFamily: kFontFamily,
                         fontWeight: FontWeight.w600,
-                        fontSize: 5.w),
+                        fontSize: 14.sp),
                   ),
                   Text(
                     S.current.teacher_followers,
                     style: TextStyle(
                         color: AppColors.black,
                         fontWeight: FontWeight.w400,
-                        fontSize: 3.w),
+                        fontFamily: kFontFamily,
+                        fontSize: 10.sp),
                   )
                 ],
               ),
@@ -189,15 +194,17 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     body.totalWatchtime ?? "",
                     style: TextStyle(
                         color: AppColors.primaryColor,
+                        fontFamily: kFontFamily,
                         fontWeight: FontWeight.w600,
-                        fontSize: 4.5.w),
+                        fontSize: 14.sp),
                   ),
                   Text(
                     S.current.teacher_watch,
                     style: TextStyle(
                         color: AppColors.black,
+                        fontFamily: kFontFamily,
                         fontWeight: FontWeight.w400,
-                        fontSize: 3.w),
+                        fontSize: 10.sp),
                   )
                 ],
               ),
@@ -214,7 +221,16 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                     //     instructor.id.toString()));
                   },
                   style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero,
+                      fixedSize: Size(20.w, 5.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(1.w),
+                      ),
+                      textStyle: TextStyle(
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10.sp),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
                       backgroundColor: body.isFollowed ?? false
                           ? AppColors.iconGreyColor
                           : AppColors.primaryColor),
@@ -277,13 +293,15 @@ class TeacherProfileDetailScreen extends StatelessWidget {
         SizedBox(height: 2.h),
         InkWell(
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RequestClassForm(
-                    instructor: instructor,
-                  ),
-                ));
+            Navigator.pushNamed(context, RouteList.teacherRequestClassForm,
+                arguments: instructor);
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => RequestClassForm(
+            //         instructor: instructor,
+            //       ),
+            //     ));
           },
           child: Container(
             padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
@@ -498,7 +516,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
       return buildEmptyPlaceHolder('No Courses');
     }
     return SizedBox(
-      height: 28.h,
+      height: 30.h,
       child: ListView.builder(
           itemCount: courses.length,
           shrinkWrap: true,

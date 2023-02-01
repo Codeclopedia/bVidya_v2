@@ -537,10 +537,13 @@ class CourseDetailScreen extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   showLoading(ref);
-                  ref.watch(blearnAddorRemoveinWishlistProvider(
-                      coursedata?.courses?[0].id ?? 0));
+                  await ref
+                      .read(bLearnRepositoryProvider)
+                      .changeinWishlist(coursedata?.courses?[0].id ?? 0);
+                  // await ref.read(blearnAddorRemoveinWishlistProvider(
+                  //     coursedata?.courses?[0].id ?? 0));
                   ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
                   hideLoading(ref);
                 },

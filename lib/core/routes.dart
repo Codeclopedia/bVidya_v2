@@ -133,6 +133,7 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+
       case RouteList.pdfFileViewer:
         if (settings.arguments is PDFDocument) {
           final document = settings.arguments as PDFDocument;
@@ -589,6 +590,14 @@ class Routes {
 
       case RouteList.studentLearnings:
         screen = const MyLearningScreen();
+        break;
+      case RouteList.teacherRequestClassForm:
+        if (settings.arguments is Instructor) {
+          Instructor instructor = settings.arguments as Instructor;
+          screen = RequestClassForm(instructor: instructor);
+        } else {
+          screen = _parameterMissing();
+        }
         break;
 
       case RouteList.teacherSchedule:

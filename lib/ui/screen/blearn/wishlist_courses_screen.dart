@@ -146,10 +146,15 @@ class WishlistCourses extends StatelessWidget {
                           ),
                         ),
                         ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               showLoading(ref);
-                              ref.watch(blearnAddorRemoveinWishlistProvider(
-                                  wishlistedCourses?[index]?.id ?? 0));
+                              // ref.watch(blearnAddorRemoveinWishlistProvider(
+                              //     wishlistedCourses?[index]?.id ?? 0));
+                              await ref
+                                  .read(bLearnRepositoryProvider)
+                                  .changeinWishlist(
+                                      wishlistedCourses?[index]?.id ?? 0);
+
                               ref.refresh(blearnWishlistCoursesProvider);
                               hideLoading(ref);
                             },

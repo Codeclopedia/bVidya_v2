@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import '/core/constants.dart';
 
 const String webPushKey =
-    'AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR';
-// 'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT';
+    'AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR'; //Demo
+// 'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT';//Release todo
 
 class FCMApiService {
   static final FCMApiService instance = FCMApiService._private();
