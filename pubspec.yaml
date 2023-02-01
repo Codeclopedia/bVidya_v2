@@ -41,7 +41,7 @@ dependencies:
   flutter:
     sdk: flutter
   # flutter_apns: ^1.6.0
-  # flutter_apns_only: ^1.6.0
+  flutter_apns_only: ^1.6.0
   flutter_callkit_incoming: ^1.0.3+3
   flutter_easyloading: ^3.0.5
   flutter_hooks: ^0.18.5+1
