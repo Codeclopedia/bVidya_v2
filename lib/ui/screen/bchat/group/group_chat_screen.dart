@@ -5,7 +5,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/ui/widget/chat_reply_body.dart';
+
 import 'package:file_picker/file_picker.dart';
 // import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -13,6 +13,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '/ui/widget/chat_reply_body.dart';
 import '../models/media.dart';
 import '/app.dart';
 import '/core/helpers/call_helper.dart';
@@ -304,15 +305,15 @@ class GroupChatScreen extends HookConsumerWidget {
 
         msg.attributes = {
           "em_apns_ext": {
-            // "em_push_title":
-            //     "${model.groupInfo.name}: ${_me.name} sent you a message",
-            // "em_push_content": input,
-            'content': input,
+            "em_push_title":
+                "${_me.name} sent you a message in ${model.groupInfo.name}",
+            "em_push_content": input,
+            // 'content': input,
             'type': 'group_chat',
-            'name': _me.name,
-            'image': model.image,
-            'group_name': model.groupInfo.name,
-            'content_type': msg.body.type.name,
+            // 'name': _me.name,
+            // 'image': model.image,
+            // 'group_name': model.groupInfo.name,
+            // 'content_type': msg.body.type.name,
           },
           // Adds the push template to the message.
           // "em_push_template": {
@@ -447,7 +448,7 @@ class GroupChatScreen extends HookConsumerWidget {
     // showLoading(ref);
     final ChatMessage msg;
     String displayName = attFile.file.path.split('/').last;
-
+    String content = '';
     if (attFile.messageType == MessageType.IMAGE) {
       msg = ChatMessage.createImageSendMessage(
           targetId: model.id.toString(),
@@ -455,7 +456,7 @@ class GroupChatScreen extends HookConsumerWidget {
           displayName: displayName,
           fileSize: attFile.file.size.toInt(),
           chatType: ChatType.GroupChat);
-      // content = 'Image file';
+      content = 'Photo';
     } else if (attFile.messageType == MessageType.VIDEO) {
       msg = ChatMessage.createVideoSendMessage(
           targetId: model.id.toString(),
@@ -464,7 +465,7 @@ class GroupChatScreen extends HookConsumerWidget {
           displayName: displayName,
           thumbnailLocalPath: attFile.file.thumbPath,
           chatType: ChatType.GroupChat);
-      // content = 'Video file';
+      content = 'Video';
     } else {
       msg = ChatMessage.createFileSendMessage(
           targetId: model.id.toString(),
@@ -472,18 +473,18 @@ class GroupChatScreen extends HookConsumerWidget {
           displayName: displayName,
           fileSize: attFile.file.size.toInt(),
           chatType: ChatType.GroupChat);
-      // content = 'File';
+      content = 'File';
     }
     msg.attributes = {
       "em_apns_ext": {
-        // "em_push_title":
-        //     "${model.groupInfo.name}: ${_me.name} sent you a message",
-        // "em_push_content": content,
+        "em_push_title":
+            "${_me.name} sent you a message in ${model.groupInfo.name}",
+        "em_push_content": "A new $content ",
         'type': 'group_chat',
-        'name': _me.name,
-        'image': model.image,
-        'group_name': model.groupInfo.name,
-        'content_type': msg.body.type.name,
+        // 'name': _me.name,
+        // 'image': model.image,
+        // 'group_name': model.groupInfo.name,
+        // 'content_type': msg.body.type.name,
       },
     };
 
@@ -526,8 +527,8 @@ class GroupChatScreen extends HookConsumerWidget {
         break;
       case AttachType.media:
         ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
-        ipp.SelectedImagesDetails? details =
-            await pickerPlus.pickBoth(source: ipp.ImageSource.gallery);
+        ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
+            source: ipp.ImageSource.gallery); //todo change both
         if (details != null && details.selectedFiles.isNotEmpty) {
           File file = details.selectedFiles.first.selectedFile;
           bool isImage = file.path.toLowerCase().endsWith('png') ||
@@ -1117,10 +1118,12 @@ class GroupChatScreen extends HookConsumerWidget {
                 children: [
                   Text(
                     model.groupInfo.name ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         color: Colors.white,
-                        fontSize: 14.sp,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 0.3.h),

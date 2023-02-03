@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/data/services/fcm_api_service.dart';
 // import '/core/utils/connectycubekit.dart';
 
 import 'package:flutter/foundation.dart';
@@ -79,6 +80,8 @@ Future<ChatMessage?> makeAudioCall(
         CallDirectionType.outgoing,
         user.fcmToken,
         contact.profileImage,
+        contact.fcmToken ?? '',
+        user.id.toString(),
         callBody: callBody
         // fromFCM: user.fcmToken,
         // toFCM: contact.fcmToken ?? '',
@@ -180,6 +183,8 @@ Future<ChatMessage?> makeVideoCall(
         CallDirectionType.outgoing,
         user.fcmToken,
         contact.profileImage,
+        contact.fcmToken ?? '',
+        user.id.toString(),
         callBody: callBody);
 
     await Navigator.pushNamed(context, RouteList.bChatVideoCall,
@@ -229,6 +234,8 @@ Future<ChatMessage?> logCallEvent(
     CallDirectionType callDirectionType,
     String fcm,
     String image,
+    String toFcm,
+    String fromId,
     {int duration = 0,
     CallStatus status = CallStatus.ongoing,
     required CallBody callBody}) async {
@@ -249,16 +256,16 @@ Future<ChatMessage?> logCallEvent(
     final message = ChatMessage.createCustomSendMessage(
         targetId: toId, event: jsonEncode(callMessageBody.toJson()));
 
-    message.attributes = {
-      "em_apns_ext": {
-        'type': NotiConstants.typeCall,
-        'name': fromName,
-        'content': jsonEncode(callMessageBody.toJson()),
-        'content_type': message.body.type.name,
-      },
-      // "em_force_notification": true
-    };
-    message.attributes?.addAll({"em_force_notification": true});
+    // message.attributes = {
+    //   "em_apns_ext": {
+    //     'type': NotiConstants.typeCall,
+    //     'name': fromName,
+    //     'content': jsonEncode(callMessageBody.toJson()),
+    //     'content_type': message.body.type.name,
+    //   },
+    //   // "em_force_notification": true
+    // };
+    // message.attributes?.addAll({"em_force_notification": true});
 
     final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
     CallListModel model = CallListModel(
@@ -270,6 +277,8 @@ Future<ChatMessage?> logCallEvent(
         msg.msgId,
         callMessageBody);
     ref.read(callListProvider.notifier).addCall(model);
+    FCMApiService.instance
+        .sendCallStartPush(toFcm, fromId, callId, callMessageBody);
     return msg;
 // ref.read(chatConversationProvider).updateConversation(convId)
   } catch (e) {

@@ -14,6 +14,7 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/response/blearn/lessons_response.dart';
 import 'components/common.dart';
+import 'components/custom_orientation_controler.dart';
 import 'components/lesson_list_tile.dart';
 
 final videoStateProvider = StateProvider.autoDispose<bool>((ref) => true);
@@ -99,6 +100,9 @@ class BlearnVideoPlayer extends HookConsumerWidget {
                         ),
                       )
                     : FlickVideoPlayer(
+                        flickVideoWithControls: const FlickVideoWithControls(
+                          controls: CustomOrientationControls(),
+                        ),
                         flickManager: flickManager!,
                       ),
                 SizedBox(

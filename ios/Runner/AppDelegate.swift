@@ -6,6 +6,8 @@ import FirebaseMessaging
 import flutter_callkit_incoming
 import awesome_notifications
 import shared_preferences_ios
+import UserNotifications
+
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, PKPushRegistryDelegate {
@@ -35,6 +37,17 @@ import shared_preferences_ios
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
     
+    
+    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+        print("Recived: \(userInfo)")
+       
+        
+        completionHandler(.noData)
+        return true
+    }
+    override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+       NSLog("PUSH registration failed: \(error)")
+    }
     
     override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: UIKit.Data) {
         print("Registered for Apple Remote Notifications:")

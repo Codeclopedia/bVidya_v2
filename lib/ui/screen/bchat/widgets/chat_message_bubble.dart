@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/core/utils/file_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
-import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
+// import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
 
 import 'package:flutter/gestures.dart';
@@ -272,7 +272,20 @@ class ChatMessageBubble extends StatelessWidget {
             child: _buildTime(),
           ),
           if (progress > 0)
-            Center(child: CircularProgressIndicator(value: progress.toDouble()))
+            Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              top: 0,
+              child: Center(
+                  child: CircularProgressIndicator(
+                value: progress.toDouble(),
+                backgroundColor: Colors.transparent,
+                color: AppColors.primaryColor,
+              )),
+            )
+
+          // Center(child: CircularProgressIndicator(value: progress.toDouble()))
         ],
       ),
     );
@@ -310,7 +323,20 @@ class ChatMessageBubble extends StatelessWidget {
             ),
           ),
           if (progress > 0)
-            Center(child: CircularProgressIndicator(value: progress.toDouble()))
+            Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              top: 0,
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: progress.toDouble(),
+                  backgroundColor: Colors.transparent,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            )
+          // Center(child: CircularProgressIndicator(value: progress.toDouble()))
         ],
       ),
     );

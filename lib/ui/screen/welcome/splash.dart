@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/helpers/group_call_helper.dart';
-import '/core/sdk_helpers/bchat_handler.dart';
+// import '/core/sdk_helpers/bchat_handler.dart';
 import '/data/models/call_message_body.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,7 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 // import '../../../core/utils/connectycubekit.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/foreground_message_helper.dart';
-import '/core/routes.dart';
+// import '/core/routes.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
@@ -131,22 +131,22 @@ class SplashScreen extends ConsumerWidget {
       // print('active callId => $activeCallId $lastUserId');
     }
     await BChatSDKController.instance.initChatSDK(user);
-    final initialAction = NotificationController.clickAction;
-    if (initialAction != null &&
-        initialAction.payload != null &&
-        initialAction.channelKey == 'chat_channel') {
-      debugPrint(
-          'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
-      if (await ForegroundMessageHelper.handleChatNotificationAction(
-          initialAction.payload!, context, true)) {
-        NotificationController.clickAction = null;
-        debugPrint('  initialAction is not null');
-        return true;
-      }
-      NotificationController.clickAction = null;
-    } else {
-      debugPrint('  initialAction is null ${initialAction == null}');
-    }
+    // final initialAction = NotificationController.clickAction;
+    // if (initialAction != null &&
+    //     initialAction.payload != null &&
+    //     initialAction.channelKey == 'chat_channel') {
+    //   debugPrint(
+    //       'welcome screen payload: ${initialAction.payload} --> ${initialAction.channelKey}');
+    //   if (await ForegroundMessageHelper.handleChatNotificationAction(
+    //       initialAction.payload!, context, true)) {
+    //     NotificationController.clickAction = null;
+    //     debugPrint('  initialAction is not null');
+    //     return true;
+    //   }
+    //   NotificationController.clickAction = null;
+    // } else {
+    //   debugPrint('  initialAction is null ${initialAction == null}');
+    // }
 
     return false;
   }

@@ -12,7 +12,7 @@ import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
-import 'core/utils/notification_controller.dart';
+// import 'core/utils/notification_controller.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 
@@ -33,33 +33,39 @@ Future<void> main() async {
       // await Firebase.initializeApp();
     }
 
-//     final connector = ApnsPushConnectorOnly();
-//     // final connector = createPushConnector();
-// // connector.requestNotificationPermissions()
-//     connector.configureApns(
-//       onLaunch: (message) async {
-//         print('Notification launched app');
-//       },
-//       onResume: (message) async {
-//         print('Notification tapped when in the background');
-//       },
-//       onMessage: (message) async {
-//         print('New notification received=> ${message}');
-//       },
-//     );
-    // if (connector is ApnsPushConnector) {
-    //   connector.shouldPresent = (x) => Future.value(false);
-    // }
+    // final connector = ApnsPushConnectorOnly();
+    // // final connector = createPushConnector();
+    // connector.configureApns(
+    //   onLaunch: (message) async {
+    //     print(
+    //         'Notification launched app=> ${message.actionIdentifier}:${message.payload}');
+    //   },
+    //   onResume: (message) async {
+    //     print(
+    //         'Notification tapped when in the background=> ${message.actionIdentifier}:${message.payload}');
+    //   },
+    //   onMessage: apnsRemoteMessage,
+    // );
+    // connector.requestNotificationPermissions();
+    // //// if (connector is ApnsPushConnector) {
+    // connector.shouldPresent = (x) => Future.value(true);
+    //// }
   }
+
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
-  await NotificationController.initializeLocalNotifications();
+  // await NotificationController.initializeLocalNotifications();
   runApp(
     const ProviderScope(
       child: ResponsiveApp(),
     ),
   );
 }
+
+// @pragma('vm:entry-point')
+// Future<void> apnsRemoteMessage(ApnsRemoteMessage message) async {
+//   print('onMessage => ${message.actionIdentifier}:${message.payload}');
+// }
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
@@ -76,16 +82,20 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   // setupCallKeep();
 
   setupCallKit();
-  await NotificationController.initializeLocalNotifications();
+  // await NotificationController.initializeLocalNotifications();
   try {
     if (message.data['type'] == NotiConstants.typeCall) {
       final String? action = message.data['action'];
-      if (action == NotiConstants.actionCallEnd) {
+      if (action == NotiConstants.actionCallStart) {
+        BackgroundHelper.showCallingNotification(message, true);
+      } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
       }
     } else if (message.data['type'] == NotiConstants.typeGroupCall) {
       final String? action = message.data['action'];
-      if (action == NotiConstants.actionCallEnd) {
+      if (action == NotiConstants.actionCallStart) {
+        BackgroundHelper.showGroupCallingNotification(message, true);
+      } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingGroupCall(message);
       }
     } else {

@@ -143,7 +143,7 @@ class ScheduleMeetScreen extends HookWidget {
             SizedBox(height: 0.5.h),
             TextFormField(
               controller: _controller,
-              showCursor: false,
+              showCursor: true,
               focusNode: _titleFocus,
               onTap: () {},
               validator: (value) {
@@ -168,7 +168,7 @@ class ScheduleMeetScreen extends HookWidget {
             SizedBox(height: 0.5.h),
             TextFormField(
               controller: _subjectController,
-              showCursor: false,
+              showCursor: true,
               focusNode: _subjectFocus,
               onTap: () {},
               validator: (value) {

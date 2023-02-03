@@ -6,12 +6,12 @@ import '../../../base_back_screen.dart';
 import '../base_settings.dart';
 
 // String? options = S.current.bmeet;
+final problemTypeProvider = StateProvider.autoDispose<String>(
+  (ref) => "",
+);
 
 class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({Key? key}) : super(key: key);
-
-
-  static String options = S.current.bmeet;
 
   @override
   Widget build(BuildContext context) {
@@ -22,41 +22,63 @@ class ReportProblemScreen extends StatelessWidget {
       child: BaseSettings(
         bodyContent: Padding(
           padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-          child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(height: 4.h),
-                Text(S.current.reportTitle, style: textStyleSettingHeading),
-                SizedBox(height: 1.5.h),
-                Text(S.current.reportDesc, style: textStyleSettingDesc),
-                _buildRadioOption(S.current.bmeet, () {}),
-                _buildRadioOption(S.current.blive, () {}),
-                _buildRadioOption(S.current.bchat, () {}),
-                _buildRadioOption(S.current.blearn, () {}),
-                SizedBox(height: 1.5.h),
-                Consumer(
-                  builder: (context, ref, child) {
-                    return _buildIssues((content) async {
-                      showLoading(ref);
-                      final result = await ref
-                          .read(profileRepositoryProvider)
-                          .reportProblem(options, content);
-                      hideLoading(ref);
-                      if (result == null) {
-                        // ignore: use_build_context_synchronously
-                        AppSnackbar.instance
-                            .message(context, 'Report Submitted Successfully');
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        AppSnackbar.instance.error(context, result);
-                      }
-                    });
-                  },
-                ),
-                SizedBox(height: 2.h),
-              ]),
+          child: Consumer(builder: (context, ref, child) {
+            return Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 4.h),
+                  Text(S.current.reportTitle, style: textStyleSettingHeading),
+                  SizedBox(height: 1.5.h),
+                  Text(S.current.reportDesc, style: textStyleSettingDesc),
+                  _buildRadioOption(S.current.bmeet, () {}, ref),
+                  _buildRadioOption(S.current.blive, () {}, ref),
+                  _buildRadioOption(S.current.bchat, () {}, ref),
+                  _buildRadioOption(S.current.blearn, () {}, ref),
+                  SizedBox(height: 1.5.h),
+                  _buildIssues((message) async {
+                    showLoading(ref);
+                    final result;
+                    message == ""
+                        ? {
+                            hideLoading(ref),
+                            EasyLoading.showError(
+                                S.current.issueDescriptionError),
+                          }
+                        : {
+                            ref.watch(problemTypeProvider) == ""
+                                ? {
+                                    hideLoading(ref),
+                                    EasyLoading.showError(
+                                        S.current.ProblemTypeError),
+                                  }
+                                : {
+                                    result = await ref
+                                        .read(profileRepositoryProvider)
+                                        .reportProblem(
+                                            ref.watch(problemTypeProvider),
+                                            message),
+                                    hideLoading(ref),
+                                    if (result == null)
+                                      {
+                                        // ignore: use_build_context_synchronously
+                                        AppSnackbar.instance.message(context,
+                                            'Report Submitted Successfully'),
+                                        Navigator.pop(context),
+                                      }
+                                    else
+                                      {
+                                        // ignore: use_build_context_synchronously
+                                        AppSnackbar.instance
+                                            .error(context, result),
+                                      }
+                                  }
+                          };
+                  }),
+                  SizedBox(height: 2.h),
+                ]);
+          }),
         ),
       ),
     );
@@ -95,7 +117,7 @@ class ReportProblemScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRadioOption(String title, Function() onClick) {
+  Widget _buildRadioOption(String title, Function() onClick, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.only(top: 1.h),
       child: Column(
@@ -107,9 +129,12 @@ class ReportProblemScreen extends StatelessWidget {
             children: [
               Radio(
                 value: title,
-                groupValue: 'options',
+                fillColor: MaterialStateColor.resolveWith(
+                    (states) => AppColors.primaryColor),
+                groupValue: ref.watch(problemTypeProvider),
                 onChanged: (value) {
-                  options = value.toString();
+                  ref.read(problemTypeProvider.notifier).state =
+                      value.toString();
                 },
               ),
               Container(

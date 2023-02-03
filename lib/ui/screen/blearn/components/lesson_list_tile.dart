@@ -71,26 +71,14 @@ class LessonListTile extends StatelessWidget {
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Module ${index + 1}',
-                        style: TextStyle(
-                          color: isSubscribed
-                              ? Colors.black
-                              : index == 0
-                                  ? Colors.black
-                                  : Colors.grey,
-                          fontSize: 8.sp,
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      Text(
-                        lesson.name ?? '',
+                        "${index + 1}. ",
                         style: TextStyle(
                           color: isSubscribed
                               ? Colors.black
@@ -102,21 +90,33 @@ class LessonListTile extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      Expanded(
+                        child: Text(
+                          lesson.name ?? '',
+                          style: TextStyle(
+                            color: isSubscribed
+                                ? Colors.black
+                                : index == 0
+                                    ? Colors.black
+                                    : Colors.grey,
+                            fontSize: 11.sp,
+                            fontFamily: kFontFamily,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 2.h),
-                  child: Icon(
-                    openIndex == index
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: isSubscribed
-                        ? Colors.black
-                        : index == 0
-                            ? Colors.black
-                            : Colors.grey,
-                  ),
+                Icon(
+                  openIndex == index
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: isSubscribed
+                      ? Colors.black
+                      : index == 0
+                          ? Colors.black
+                          : Colors.grey,
                 ),
               ],
             ),
@@ -151,6 +151,7 @@ class LessonListTile extends StatelessWidget {
                       hideLoading(ref);
                     },
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(

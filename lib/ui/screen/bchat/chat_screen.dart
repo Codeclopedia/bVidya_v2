@@ -326,7 +326,7 @@ class ChatScreen extends HookConsumerWidget {
   _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
     final ChatMessage msg;
     String displayName = attFile.file.path.split('/').last;
-    // final String content;
+    final String content;
     if (attFile.messageType == MessageType.IMAGE) {
       msg = ChatMessage.createImageSendMessage(
         targetId: model.contact.userId.toString(),
@@ -334,7 +334,7 @@ class ChatScreen extends HookConsumerWidget {
         displayName: displayName,
         fileSize: attFile.file.size.toInt(),
       );
-      // content = 'Image file';
+      content = 'Photo';
     } else if (attFile.messageType == MessageType.VIDEO) {
       msg = ChatMessage.createVideoSendMessage(
         targetId: model.contact.userId.toString(),
@@ -343,7 +343,7 @@ class ChatScreen extends HookConsumerWidget {
         displayName: displayName,
         fileSize: attFile.file.size.toInt(),
       );
-      // content = 'Video file';
+      content = 'Video';
     } else {
       msg = ChatMessage.createFileSendMessage(
         targetId: model.contact.userId.toString(),
@@ -351,17 +351,17 @@ class ChatScreen extends HookConsumerWidget {
         displayName: displayName,
         fileSize: attFile.file.size.toInt(),
       );
-      // content = 'File';
+      content = 'File';
     }
     msg.attributes = {
       "em_apns_ext": {
-        // "em_push_title":
-        //     "${_me.name} sent you a ${attFile.messageType.name.toLowerCase()}",
-        // "em_push_content": content,
+        "em_push_title":
+            "${_me.name} sent you a message",
+        "em_push_content": 'A New $content',
         'type': 'chat',
-        'name': _me.name,
-        'image': _me.profileImage,
-        'content_type': msg.body.type.name,
+        // 'name': _me.name,
+        // 'image': _me.profileImage,
+        // 'content_type': msg.body.type.name,
       },
     };
     showLoading(ref);
@@ -403,13 +403,13 @@ class ChatScreen extends HookConsumerWidget {
             // ..from = _myChatPeerUserId;
             msg.attributes = {
               "em_apns_ext": {
-                // "em_push_title": "${_me.name} sent you a message",
-                // "em_push_content": input,
+                "em_push_title": "${_me.name} sent you a message",
+                "em_push_content": input,
                 'type': 'chat',
-                'name': _me.name,
-                'content': input,
-                'image': _me.profileImage,
-                'content_type': msg.body.type.name,
+                // 'name': _me.name,
+                // 'content': input,
+                // 'image': _me.profileImage,
+                // 'content_type': msg.body.type.name,
               },
               //   // Adds the push template to the message.
               //   // "em_push_template": {
@@ -469,7 +469,7 @@ class ChatScreen extends HookConsumerWidget {
       case AttachType.media:
         ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
         ipp.SelectedImagesDetails? details =
-            await pickerPlus.pickBoth(source: ipp.ImageSource.gallery);
+            await pickerPlus.pickImage(source: ipp.ImageSource.gallery);//todo change to both
         if (details != null && details.selectedFiles.isNotEmpty) {
           File file = details.selectedFiles.first.selectedFile;
           bool isImage = file.path.toLowerCase().endsWith('png') ||
@@ -1154,10 +1154,12 @@ class ChatScreen extends HookConsumerWidget {
                           children: [
                             Text(
                               model.contact.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                   fontFamily: kFontFamily,
                                   color: Colors.white,
-                                  fontSize: 14.sp,
+                                  fontSize: 11.sp,
                                   fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 0.3.h),

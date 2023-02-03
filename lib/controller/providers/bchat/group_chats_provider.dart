@@ -40,7 +40,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
   init(WidgetRef ref) async {
     // grpModel = model;
     if (grpModel.conversation != null) {
-      BackgroundHelper.clearPool(grpModel.id.hashCode);
+      // BackgroundHelper.clearPool(grpModel.id.hashCode);
       try {
         try {
           await grpModel.conversation?.markAllMessagesAsRead();

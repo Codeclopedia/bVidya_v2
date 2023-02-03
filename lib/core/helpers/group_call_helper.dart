@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
 // import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,10 +18,10 @@ import '/core/helpers/call_helper.dart';
 import '/core/utils.dart';
 import '/data/models/call_message_body.dart';
 import '/data/models/models.dart';
-
+import '/data/services/fcm_api_service.dart';
 import '/controller/bmeet_providers.dart';
 import '/ui/screens.dart';
-import '../constants/notification_const.dart';
+// import '../constants/notification_const.dart';
 import '../sdk_helpers/bchat_call_manager.dart';
 import '../sdk_helpers/bchat_group_manager.dart';
 import '../state.dart';
@@ -165,9 +166,20 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
         duration: 0,
         // ext: {},
       );
+      List<String> fcmIds = [];
+
+      for (Contacts c in contacts) {
+        String? fcm = c.fcmToken;
+        if (fcm?.isNotEmpty == true) {
+          fcmIds.add(fcm!);
+        }
+      }
 
       final msg = await _logGroupCallEvent(
           ref, me.name, me.image, group.groupId, callMessageBody);
+
+      FCMApiService.instance.sendGroupCallStartPush(fcmIds, me.id,
+          group.groupId, callMessageBody.callId, callMessageBody);
 
       Map<String, dynamic> args = {
         'group_id': group.groupId,
@@ -207,20 +219,23 @@ Future<ChatMessage?> _logGroupCallEvent(
       event: jsonEncode(callMessageBody.toJson()),
       chatType: ChatType.GroupChat,
     );
-
     message.attributes = {
-      "em_apns_ext": {
-        'type': NotiConstants.typeGroupCall,
-        'from_name': fromName,
-        'from_image': fromImage,
-        'content': jsonEncode(callMessageBody.toJson()),
-        'content_type': message.body.type.name,
-      },
+      'from_name': fromName,
+      'from_image': fromImage,
     };
-    message.attributes?.addAll({'from_name': fromName});
-    message.attributes?.addAll({'from_image': fromImage});
+    // message.attributes = {
+    //   "em_apns_ext": {
+    //     'type': NotiConstants.typeGroupCall,
+    //     'from_name': fromName,
+    //     'from_image': fromImage,
+    //     'content': jsonEncode(callMessageBody.toJson()),
+    //     // 'content_type': message.body.type.name,
+    //   },
+    // };
+    // message.attributes?.addAll({'from_name': fromName});
+    // message.attributes?.addAll({'from_image': fromImage});
 
-    message.attributes?.addAll({"em_force_notification": true});
+    // message.attributes?.addAll({"em_force_notification": true});
 
     final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
     GroupCallListModel model = GroupCallListModel(

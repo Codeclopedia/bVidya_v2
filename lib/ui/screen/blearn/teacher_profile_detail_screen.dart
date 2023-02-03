@@ -209,34 +209,36 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                 ],
               ),
               ElevatedButton(
-                  onPressed: () async {
-                    showLoading(ref);
-                    await ref
-                        .read(bLearnRepositoryProvider)
-                        .followInstructor(instructor.id.toString());
-                    hideLoading(ref);
-                    ref.refresh(
-                        bLearnProfileProvider(instructor.id.toString()));
-                    // ref.refresh(isFollowedInstructor(
-                    //     instructor.id.toString()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: Size(20.w, 5.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(1.w),
-                      ),
-                      textStyle: TextStyle(
-                          fontFamily: kFontFamily,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 10.sp),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-                      backgroundColor: body.isFollowed ?? false
-                          ? AppColors.iconGreyColor
-                          : AppColors.primaryColor),
-                  child: body.isFollowed ?? false
-                      ? Text(S.current.teacher_followed)
-                      : Text(S.current.teacher_follow))
+                onPressed: () async {
+                  showLoading(ref);
+                  await ref
+                      .read(bLearnRepositoryProvider)
+                      .followInstructor(instructor.id.toString());
+                  hideLoading(ref);
+                  ref.refresh(bLearnProfileProvider(instructor.id.toString()));
+                  // ref.refresh(isFollowedInstructor(
+                  //     instructor.id.toString()));
+                },
+                style: ElevatedButton.styleFrom(
+                    fixedSize: Size(20.w, 5.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(1.w),
+                    ),
+                    textStyle: TextStyle(
+                        fontFamily: kFontFamily,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 10.sp),
+                    // padding:
+                    //     EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                    backgroundColor: body.isFollowed ?? false
+                        ? AppColors.iconGreyColor
+                        : AppColors.primaryColor),
+                child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: body.isFollowed ?? false
+                        ? Text(S.current.teacher_followed)
+                        : Text(S.current.teacher_follow)),
+              )
               // Consumer(builder: (context, ref, child) {
               //   return ref
               //       .watch(isFollowedInstructor(instructor.id.toString()))

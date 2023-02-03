@@ -283,7 +283,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
 showIncomingCallScreen(
     CallMessegeBody body, String fromId, bool background) async {
   print(
-      'showIncomingCallScreen Call Called => active: $_activeCallId last:$_lastCallId');
+      'showIncomingCallScreen Call Called => active: $_activeCallId  c:${body.callId} last:$_lastCallId');
 
   if (_activeCallId != null) {
     if (_activeCallId == body.callId) {

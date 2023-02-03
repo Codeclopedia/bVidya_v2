@@ -1,16 +1,17 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
-import '/core/utils/notification_controller.dart';
+// import '/core/utils/notification_controller.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/utils.dart';
@@ -75,48 +76,34 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       //     .reset(ref.read(bChatProvider));
     }
 
-    if (await NotificationController.isAllowedPermission()) {
-      return;
-    }
+    // if (await NotificationController.isAllowedPermission()) {
+    //   return;
+    // }
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
-      if (Platform.isAndroid) {
-        await AwesomeNotifications().requestPermissionToSendNotifications();
-      } else {
-        List<NotificationPermission> permissions = const [
-          NotificationPermission.Badge,
-          // NotificationPermission.Alert,
-          NotificationPermission.Sound,
-          NotificationPermission.Vibration,
-          NotificationPermission.Light
-        ];
-        await AwesomeNotifications()
-            .requestPermissionToSendNotifications(permissions: permissions);
-      }
-
-      // _firebaseNotification();
+      _firebaseNotification();
       // NotificationController.displayNotificationRationale();
     }
   }
 
-  // _firebaseNotification() async {
-  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  //   NotificationSettings pre = await messaging.getNotificationSettings();
-  //   if (pre.authorizationStatus != AuthorizationStatus.authorized) {
-  //     NotificationSettings settings = await messaging.requestPermission(
-  //       alert: false,
-  //       announcement: false,
-  //       badge: true,
-  //       carPlay: false,
-  //       criticalAlert: false,
-  //       provisional: false,
-  //       sound: true,
-  //     );
-  //     print('User granted permission: ${settings.authorizationStatus}');
-  //   } else {
-  //     print('User granted permission: ${pre.authorizationStatus}');
-  //   }
-  // }
+  _firebaseNotification() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings pre = await messaging.getNotificationSettings();
+    if (pre.authorizationStatus != AuthorizationStatus.authorized) {
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      print('User granted permission: ${settings.authorizationStatus}');
+    } else {
+      print('User granted permission: ${pre.authorizationStatus}');
+    }
+  }
 
   @override
   void dispose() {

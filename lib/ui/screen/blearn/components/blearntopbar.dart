@@ -14,7 +14,17 @@ class BlearnUserTopBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             // SizedBox(width: 7.w),
-            getRectFAvatar(user.name, user.image),
+            InkWell(
+                onTap: () {
+                  if (user.role == 'teacher' ||
+                      user.role == 'instructor' ||
+                      user.role == 'admin') {
+                    Navigator.pushNamed(context, RouteList.teacherProfile);
+                  } else {
+                    Navigator.pushNamed(context, RouteList.studentProfile);
+                  }
+                },
+                child: getRectFAvatar(user.name, user.image)),
             SizedBox(width: 3.w),
             Column(
               mainAxisSize: MainAxisSize.min,

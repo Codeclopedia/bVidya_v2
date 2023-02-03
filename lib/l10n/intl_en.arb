@@ -343,7 +343,8 @@
 
   "menu_call":"Call",
   "menu_delete":"Delete",
-  
+    
+
 
 "Account": "Account",
 "settingsNoti": "Notifications",
@@ -362,7 +363,10 @@
 "passReset": "Reset password, delete account",
 "chatHistory": "Chat history,themes,wallpapers",
 "notiHistory": "Sound ,notifications & others",
-"helpCenter": "Help center,contact us ,privacy policy",
+"helpCenter": "Help center,report problem ,privacy policy",
+"issueDescriptionError":"Issue description can't be empty",
+"ProblemTypeError":"Select a problem type",
+
 "setting_title": "Settings",
 "contact_title": "Contact Us",
 "contactDesc": "Questions? need help?",

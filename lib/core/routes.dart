@@ -133,6 +133,14 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+      case RouteList.chatMediaGallery:
+        if (settings.arguments is Contacts) {
+          final contact = settings.arguments as Contacts;
+          screen = ChatMediaGalleryScreen(contact: contact);
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
 
       case RouteList.pdfFileViewer:
         if (settings.arguments is PDFDocument) {

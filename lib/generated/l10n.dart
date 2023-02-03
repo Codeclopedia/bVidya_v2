@@ -3050,11 +3050,31 @@ class S {
     );
   }
 
-  /// `Help center,contact us ,privacy policy`
+  /// `Help center,report problem ,privacy policy`
   String get helpCenter {
     return Intl.message(
-      'Help center,contact us ,privacy policy',
+      'Help center,report problem ,privacy policy',
       name: 'helpCenter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Issue description can't be empty`
+  String get issueDescriptionError {
+    return Intl.message(
+      'Issue description can\'t be empty',
+      name: 'issueDescriptionError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a problem type`
+  String get ProblemTypeError {
+    return Intl.message(
+      'Select a problem type',
+      name: 'ProblemTypeError',
       desc: '',
       args: [],
     );

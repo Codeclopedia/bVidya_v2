@@ -29,6 +29,8 @@ class RouteList {
   static const String profile = '/profile';
   static const String chatScreen = '/chat-screen';
   static const String chatScreenDirect = '/chat-screen-direct';
+  static const String chatMediaGallery = '/chat-media-gallery';
+
   static const String recentCalls = '/recent-calls';
   static const String contactList = '/contact-list';
   static const String contactProfile = '/contact-profile';

@@ -45,6 +45,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "ClearChatMessage": MessageLookupByLibrary.simpleMessage(
             "Do you really want to clear the chats?"),
         "ExportChat": MessageLookupByLibrary.simpleMessage("Export Chat"),
+        "ProblemTypeError":
+            MessageLookupByLibrary.simpleMessage("Select a problem type"),
         "accnt_security": MessageLookupByLibrary.simpleMessage("Security"),
         "atc_audio": MessageLookupByLibrary.simpleMessage("Audio"),
         "atc_audio_desc": MessageLookupByLibrary.simpleMessage("Share audios"),
@@ -411,7 +413,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "grp_txt_add_participant":
             MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
-            "Help center,contact us ,privacy policy"),
+            "Help center,report problem ,privacy policy"),
         "home_btx_groups": MessageLookupByLibrary.simpleMessage("Groups"),
         "home_btx_new_group": MessageLookupByLibrary.simpleMessage("New Group"),
         "home_btx_new_message":
@@ -423,6 +425,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Take a picture from Camera"),
         "im_picker_gallery_desc":
             MessageLookupByLibrary.simpleMessage("Pick an image from Gallery"),
+        "issueDescriptionError": MessageLookupByLibrary.simpleMessage(
+            "Issue description can\'t be empty"),
         "issues": MessageLookupByLibrary.simpleMessage("Issues Description"),
         "issuesDesc": MessageLookupByLibrary.simpleMessage(
             "Describe your issues in detail."),

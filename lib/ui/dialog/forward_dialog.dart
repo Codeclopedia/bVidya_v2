@@ -230,27 +230,32 @@ class ForwardContactListDialog extends StatelessWidget {
           body: message.body, to: model.id, chatType: model.chatType);
 
       if (model.chatType == ChatType.GroupChat) {
+        final gName = message.attributes?['from_name']??'Group';
         if (msg.body.type == MessageType.TXT) {
           msg.attributes = {
             "em_apns_ext": {
-              // "em_push_title": "${_me.name} sent you a message",
-              // "em_push_content": input,
               'type': 'group_chat',
-              'name': user.name,
-              'content': ((message.body as ChatTextMessageBody).content),
-              'image': user.image,
-              'group_name': model.name,
-              'content_type': msg.body.type.name,
+              "em_push_title": "${user.name} sent you a message in $gName",
+              "em_push_content":
+                  ((message.body as ChatTextMessageBody).content),
+              
+              // 'name': user.name,
+              // 'content': ((message.body as ChatTextMessageBody).content),
+              // 'image': user.image,
+              // 'group_name': model.name,
+              // 'content_type': msg.body.type.name,
             },
           };
         } else {
           msg.attributes = {
             "em_apns_ext": {
               'type': 'group_chat',
-              'name': user.name,
-              'image': model.image,
-              'group_name': model.name,
-              'content_type': msg.body.type.name,
+              "em_push_title": "${user.name} sent you a message in $gName",
+              "em_push_content": 'A New ${msg.body.type.name}',
+              // 'name': user.name,
+              // 'image': model.image,
+              // 'group_name': model.name,
+              // 'content_type': msg.body.type.name,
             },
           };
         }
@@ -261,19 +266,24 @@ class ForwardContactListDialog extends StatelessWidget {
           msg.attributes = {
             "em_apns_ext": {
               'type': 'chat',
-              'name': user.name,
-              'content': ((message.body as ChatTextMessageBody).content),
-              'image': user.image,
-              'content_type': msg.body.type.name,
+              "em_push_title": "${user.name} sent you a message",
+              "em_push_content":
+                  ((message.body as ChatTextMessageBody).content),
+              // 'name': user.name,
+              // 'content': ((message.body as ChatTextMessageBody).content),
+              // 'image': user.image,
+              // 'content_type': msg.body.type.name,
             },
           };
         } else {
           msg.attributes = {
             "em_apns_ext": {
               'type': 'chat',
-              'name': user.name,
-              'image': user.image,
-              'content_type': msg.body.type.name,
+              // 'name': user.name,
+              "em_push_title": "${user.name} sent you a message",
+              "em_push_content": 'A New ${msg.body.type.name}',
+              // 'image': user.image,
+              // 'content_type': msg.body.type.name,
             },
           };
         }

@@ -49,9 +49,7 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
   // String get onlineStatus => parseChatPresenceToReadable(_chatPresence);
 
   init(WidgetRef ref) async {
-    
-    
-    BackgroundHelper.clearPool(convModel.id.hashCode);
+    // BackgroundHelper.clearPool(convModel.id.hashCode);
     _registerPresence(ref);
     await readAll();
     try {
@@ -71,7 +69,7 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
     notifyListeners();
   }
 
-  void _registerPresence(WidgetRef ref) async{
+  void _registerPresence(WidgetRef ref) async {
     try {
       final status = await fetchOnlineStatus(convModel.id);
       ref.read(onlineStatusProvider.notifier).state = status;
@@ -213,6 +211,7 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
   void updateMessageDelivered(List<ChatMessage> message) {
     state = _messagesMap.values.toList();
   }
+
   void updateMessageRead(List<ChatMessage> message) {
     state = _messagesMap.values.toList();
   }

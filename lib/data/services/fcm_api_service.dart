@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:bvidya/data/models/call_message_body.dart';
 import 'package:dio/dio.dart';
 import '/core/constants.dart';
 
@@ -156,7 +159,7 @@ class FCMApiService {
     _dio.options.headers['Authorization'] = 'key=  $webPushKey';
 
     final data = {
-      'registration_ids': [toTokens.first],
+      'registration_ids': toTokens,
       'type': NotiConstants.typeGroupCall,
       'notification': {},
       'data': {
@@ -174,6 +177,70 @@ class FCMApiService {
       'priority': 10
     };
     print('fcm request.callId: $callId , grpId:$grpId');
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+
+  Future sendCallStartPush(String toToken, String fromId, String callId,
+      CallMessegeBody body) async {
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': [toToken],
+      'type': NotiConstants.typeCall,
+      'notification': {},
+      'data': {
+        'call_id': callId,
+        'type': NotiConstants.typeCall,
+        'action': NotiConstants.actionCallStart,
+        'f': fromId,
+        'e': jsonEncode(body)
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
+    print('fcm request.callId: $callId ');
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+
+  Future sendGroupCallStartPush(List<String> toTokens, int fromId, String grpId,
+      String callId, GroupCallMessegeBody body) async {
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': toTokens,
+      'type': NotiConstants.typeGroupCall,
+      'notification': {},
+      'data': {
+        'call_id': callId,
+        'type': NotiConstants.typeGroupCall,
+        'action': NotiConstants.actionCallStart,
+        'f': fromId,
+        'g': grpId,
+        'e': jsonEncode(body)
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
     var response =
         await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
     if (response.statusCode == 200) {

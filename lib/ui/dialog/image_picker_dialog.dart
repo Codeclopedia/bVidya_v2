@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '/core/ui_core.dart';
@@ -22,6 +23,7 @@ Future<File?> showImageFilePicker(BuildContext context) {
 
 class ImagePickerDialog extends StatelessWidget {
   final ImagePicker _picker = ImagePicker();
+  final ImageCropper _imageCropper = ImageCropper();
   ImagePickerDialog({Key? key}) : super(key: key);
 
   @override
@@ -136,14 +138,24 @@ class ImagePickerDialog extends StatelessWidget {
     );
   }
 
-  
-}
-
   Future<File?> imgFromGallery(final ImagePicker picker) async {
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    XFile? image = await picker.pickImage(
+        source: ImageSource.gallery, requestFullMetadata: true);
     if (image != null) {
       final file = File(image.path);
-      return file;
+
+      final croppedFile = await _imageCropper
+          .cropImage(sourcePath: file.path, aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ]);
+      if (croppedFile != null) {
+        return File(croppedFile.path);
+      }
+
       // ref.read(selectedImageFileStateProvider.notifier).state = file;
     }
     return null;
@@ -152,12 +164,26 @@ class ImagePickerDialog extends StatelessWidget {
     // });
   }
 
- Future<File?> imgFromCamera(final ImagePicker picker) async {
-    XFile? image =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+  Future<File?> imgFromCamera(final ImagePicker picker) async {
+    XFile? image = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50,
+    );
     if (image != null) {
       final file = File(image.path);
-      return file;
+      final croppedFile = await _imageCropper
+          .cropImage(sourcePath: file.path, aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ]);
+      if (croppedFile != null) {
+        return File(croppedFile.path);
+      }
+      // return file;
     }
     return null;
   }
+}

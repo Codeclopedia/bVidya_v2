@@ -1,3 +1,5 @@
+import 'package:easy_image_viewer/easy_image_viewer.dart';
+
 import '/core/constants.dart';
 
 import '/data/models/response/auth/login_response.dart';
@@ -69,7 +71,7 @@ class BaseDrawerSettingScreen extends StatelessWidget {
             ),
             UserConsumer(
               builder: (context, user, ref) {
-                return _buildUser(user);
+                return _buildUser(user, context, ref);
               },
             ),
           ],
@@ -78,7 +80,7 @@ class BaseDrawerSettingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUser(User user) {
+  Widget _buildUser(User user, BuildContext context, WidgetRef ref) {
     return Container(
       alignment: Alignment.topCenter,
       margin: EdgeInsets.only(top: 4.h),
@@ -86,7 +88,14 @@ class BaseDrawerSettingScreen extends StatelessWidget {
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.max,
         children: [
-          getRectFAvatar(size: 22.w, user.name, user.image),
+          InkWell(
+              onTap: () async {
+                await showImageViewer(context, getImageProvider(user.image),
+                    doubleTapZoomable: true, onViewerDismissed: () {
+                  // print("dismissed");
+                });
+              },
+              child: getRectFAvatar(size: 22.w, user.name, user.image)),
           Text(
             user.name,
             style: TextStyle(

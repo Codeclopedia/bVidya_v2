@@ -181,7 +181,7 @@ class CourseDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
+              '${course.numberOfLesson} Lectures | ${course.duration!} Hours',
               style: TextStyle(
                 fontFamily: kFontFamily,
                 fontSize: 8.sp,
@@ -207,7 +207,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   height: 10.w,
                                 ),
                                 getSvgIcon("no-data-icon.svg"),
-                                buildEmptyPlaceHolder("No Lessons"),
+                                buildEmptyPlaceHolder("No Lectures"),
                               ],
                             ));
                             // return _buildLessons();
@@ -270,12 +270,12 @@ class CourseDetailScreen extends StatelessWidget {
                           coursedetail?.courses?[0].views ?? "",
                           Icons.remove_red_eye_outlined),
                       _buildDetailItem(
-                          'Duration:', ' ${course.duration}', Icons.history),
+                          'Duration : ', ' ${course.duration} hours', Icons.history),
                       const Divider(
                         height: 0.5,
                         color: Color(0xFFDBDBDB),
                       ),
-                      _buildDetailItem('Lectures:', ' ${course.numberOfLesson}',
+                      _buildDetailItem('Lectures : ', ' ${course.numberOfLesson}',
                           Icons.description),
                     ],
                   ),
@@ -675,11 +675,12 @@ class CourseDetailScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
           child: SizedBox(
             width: 100.w,
+            height: 60.w,
             child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(2.w)),
                 child: Image(
                   image: getImageProvider(course.image ?? ''),
-                  fit: BoxFit.fitWidth,
+                  fit: BoxFit.cover,
                 )),
           ),
         ),

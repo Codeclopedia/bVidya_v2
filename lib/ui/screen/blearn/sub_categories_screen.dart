@@ -46,65 +46,71 @@ class SubCategoriesScreen extends StatelessWidget {
         itemCount: subCategories.length,
         scrollDirection: Axis.vertical,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 5.0,
-            mainAxisSpacing: 1.w,
-            childAspectRatio: 1),
+          crossAxisCount: 2,
+          crossAxisSpacing: 5.0,
+          mainAxisSpacing: 1.w,
+        ),
         itemBuilder: (context, index) {
           SubCategory item = subCategories[index];
 
-          return InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, RouteList.bLearnCoursesList,
-                  arguments: item);
-            },
-            child: Center(
-              child: Container(
-                height: 45.w,
-                width: 45.w,
-                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
-                alignment: Alignment.topCenter,
-                decoration: BoxDecoration(
-                    color: AppColors.chatInputBackground,
-                    borderRadius: BorderRadius.circular(15)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // SizedBox(width: 18.w),
-                    ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.w)),
-                      child: SizedBox(
-                        height: 30.w,
-                        width: 40.w,
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: Image(
-                              image: getImageProvider(item.image ??
-                                  'assets/images/dummy_profile.png')),
-                        ),
-                      ),
-                    ),
+          return subCategoriesTile(context, item);
+        },
+      ),
+    );
+  }
 
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 1.w),
-                      child: Text(
-                        item.name ?? '',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontFamily: kFontFamily,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                    ),
-                  ],
+  Widget subCategoriesTile(BuildContext context, SubCategory item) {
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context, RouteList.bLearnCoursesList,
+            arguments: item);
+      },
+      child: Center(
+        child: Container(
+          width: 45.w,
+          padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+          alignment: Alignment.topCenter,
+          decoration: BoxDecoration(
+              color: AppColors.chatInputBackground,
+              borderRadius: BorderRadius.circular(15)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // SizedBox(width: 18.w),
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                child: SizedBox(
+                  height: 32.5.w,
+                  width: 40.w,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: Image(
+                        image: getImageProvider(
+                            item.image ?? 'assets/images/dummy_profile.png')),
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 1.w),
+                  child: Text(
+                    item.name ?? '',
+                    textAlign: TextAlign.start,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: kFontFamily,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 9.sp,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -338,20 +338,22 @@ class ContactProfileScreen extends HookConsumerWidget {
                   visible: medias.valueOrNull?.isNotEmpty == true,
                   child: TextButton(
                     onPressed: (() {
-                      final data = medias.valueOrNull;
-                      if (data == null) return;
-                      final list = data
-                          .map((e) => getImageProviderChatImage(e.body,
-                              loadThumbFirst: false))
-                          .toList();
-                      MultiImageProvider multiImageProvider =
-                          MultiImageProvider(list);
-                      showImageViewerPager(context, multiImageProvider,
-                          onPageChanged: (page) {
-                        print("page changed to $page");
-                      }, onViewerDismissed: (page) {
-                        print("dismissed while on page $page");
-                      });
+                      Navigator.pushNamed(context, RouteList.chatMediaGallery,
+                          arguments: contact);
+                      // final data = medias.valueOrNull;
+                      // if (data == null) return;
+                      // final list = data
+                      //     .map((e) => getImageProviderChatImage(e.body,
+                      //         loadThumbFirst: false))
+                      //     .toList();
+                      // MultiImageProvider multiImageProvider =
+                      //     MultiImageProvider(list);
+                      // showImageViewerPager(context, multiImageProvider,
+                      //     onPageChanged: (page) {
+                      //   print("page changed to $page");
+                      // }, onViewerDismissed: (page) {
+                      //   print("dismissed while on page $page");
+                      // });
                     }),
                     child: Text(
                       S.current.pr_btx_all,

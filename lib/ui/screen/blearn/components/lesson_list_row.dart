@@ -67,23 +67,14 @@ class LessonListRow extends StatelessWidget {
             },
             child: isSubscribed
                 ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: Column(
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Module ${index + 1}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 8.sp,
-                                fontFamily: kFontFamily,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                            Text(
-                              lesson.name ?? '',
+                              "${index + 1}. ",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 11.sp,
@@ -91,38 +82,37 @@ class LessonListRow extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            Expanded(
+                              child: Text(
+                                lesson.name ?? '',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 11.sp,
+                                  fontFamily: kFontFamily,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.h),
-                        child: Icon(
-                          ref.watch(selectedLessonIndexProvider) == index
-                              ? Icons.keyboard_arrow_up
-                              : Icons.keyboard_arrow_down,
-                        ),
+                      Icon(
+                        ref.watch(selectedLessonIndexProvider) == index
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
                       ),
                     ],
                   )
                 : index == 0
                     ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Module ${index + 1}',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 8.sp,
-                                    fontFamily: kFontFamily,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                                Text(
-                                  lesson.name ?? '',
+                                  "${index + 1}. ",
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 11.sp,
@@ -130,37 +120,36 @@ class LessonListRow extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                Expanded(
+                                  child: Text(
+                                    lesson.name ?? '',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 11.sp,
+                                      fontFamily: kFontFamily,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 2.h),
-                            child: Icon(
-                              ref.watch(selectedLessonIndexProvider) == index
-                                  ? Icons.keyboard_arrow_up
-                                  : Icons.keyboard_arrow_down,
-                            ),
+                          Icon(
+                            ref.watch(selectedLessonIndexProvider) == index
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
                           ),
                         ],
                       )
                     : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Module ${index + 1}',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 8.sp,
-                                    fontFamily: kFontFamily,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                                Text(
-                                  lesson.name ?? '',
+                                  "${index + 1}. ",
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 11.sp,
@@ -168,15 +157,23 @@ class LessonListRow extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                Expanded(
+                                  child: Text(
+                                    lesson.name ?? '',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 11.sp,
+                                      fontFamily: kFontFamily,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 2.h),
-                            child: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Colors.grey,
-                            ),
+                          const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.grey,
                           ),
                         ],
                       ),
@@ -188,7 +185,7 @@ class LessonListRow extends StatelessWidget {
               itemCount: lesson.playlist?.length,
               itemBuilder: (context, playlistindex) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 2.h),
+                  padding: EdgeInsets.only(top: 4.w, bottom: 1.w),
                   child: InkWell(
                     onTap: () async {
                       showLoading(ref);
@@ -208,8 +205,7 @@ class LessonListRow extends StatelessWidget {
                           index;
                       ref.read(currentLessonIdProvider.notifier).state =
                           lesson.id ?? 0;
-                      print(
-                          "current lesson id : ${ref.read(currentLessonIdProvider)}");
+
                       hideLoading(ref);
                     },
                     child: Row(

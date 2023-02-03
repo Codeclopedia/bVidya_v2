@@ -54,8 +54,8 @@ registerForContact(String key, WidgetRef? ref) {
           lastAction = 'Invite';
 
           // EasyLoading.showInfo('Invited: $userId - $reason');
-          NotificationController.showContactInviteNotification(
-              userId, reason ?? 'New Invitation');
+          // NotificationController.showContactInviteNotification(
+          //     userId, reason ?? 'New Invitation');
         },
         onContactAdded: (userId) async {
           //
