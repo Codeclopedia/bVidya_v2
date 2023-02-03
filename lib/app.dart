@@ -9,7 +9,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import '/ui/base_back_screen.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
@@ -25,7 +25,7 @@ import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
-import 'core/utils/notification_controller.dart';
+// import 'core/utils/notification_controller.dart';
 import 'ui/screen/welcome/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -101,10 +101,21 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   void _firebase() async {
     final token = await FirebaseMessaging.instance.getToken();
     debugPrint('token : $token');
-    FirebaseMessaging.onMessage.listen((message) async {
-      print('onMessage => ${message.data} : ${message.notification}');
-      if ((await getMeAsUser()) == null) return;
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+      print('onMessage => ${message.from} : ${message.data}');
+      BuildContext? contx = navigatorKey.currentContext;
+      if (contx != null) {
+        showLoading(ref);
+        ForegroundMessageHelper.onMessageOpen(message, contx);
+        hideLoading(ref);
+      } else {
+        print('Null Context =>');
+      }
+    });
 
+    FirebaseMessaging.onMessage.listen((message) async {
+      // print('onMessage => ${message.data} : ${message.notification}');
+      if ((await getMeAsUser()) == null) return;
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {
         final String? action = message.data['action'];
@@ -117,7 +128,8 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         final String? action = message.data['action'];
         if (action == NotiConstants.actionCallStart) {
           BackgroundHelper.showGroupCallingNotification(message, false);
-        }if (action == NotiConstants.actionCallEnd) {
+        }
+        if (action == NotiConstants.actionCallEnd) {
           closeIncomingGroupCall(message);
         }
       } else {

@@ -32,6 +32,7 @@ class BChatSDKController {
       );
       if (Platform.isIOS) {
         options.enableAPNs('bVidyaDemoKey');
+        //bVidyaAPNKey
       }
       options
           .enableFCM(DefaultFirebaseOptions.currentPlatform.messagingSenderId);

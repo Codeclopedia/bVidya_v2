@@ -22,6 +22,42 @@ import '../utils/chat_utils.dart';
 import 'background_helper.dart';
 
 class ForegroundMessageHelper {
+  static Future<bool> onMessageOpen(
+      RemoteMessage message, BuildContext context) async {
+    if (message.data.isNotEmpty &&
+        message.data['alert'] != null &&
+        message.data['e'] != null) {
+      final extra = jsonDecode(message.data['e']);
+      // BuildContext? context = navigatorKey.currentContext;
+      // if (context == null) return fa;
+      String? type = extra['type'];
+      if (type == 'chat') {
+        String? fromId = message.data['f']?.toString();
+        if (fromId != null) {
+          final model = await getConversationModel(fromId);
+          if (model != null) {
+            await Navigator.pushReplacementNamed(
+                context, RouteList.chatScreenDirect,
+                arguments: model);
+            return true;
+          }
+        }
+      } else if (type == 'group_chat') {
+        String? groupId = message.data['g']?.toString();
+        if (groupId != null) {
+          final model = await getGroupConversationModel(groupId);
+          if (model != null) {
+            await Navigator.pushReplacementNamed(
+                context, RouteList.chatScreenDirect,
+                arguments: model);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   static void handleChatNotification(
       ConversationModel model, ChatMessage msg) async {
     String name = model.contact.name;
