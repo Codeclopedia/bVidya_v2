@@ -138,7 +138,8 @@ class ChatCallScreen extends HookConsumerWidget {
                   ? _buildAudioBackground()
                   : _buildVideoBackground(provider),
               Visibility(
-                visible: provider.updateCallType == CallType.audio,
+                visible: provider.updateCallType == CallType.audio ||
+                    provider.remoteVideoMute,
                 child: Padding(
                   padding: EdgeInsets.only(top: 15.h),
                   child: Align(
@@ -172,7 +173,7 @@ class ChatCallScreen extends HookConsumerWidget {
                 right: 4.w,
                 // padding: EdgeInsets.only(bottom: 15.h, right: 4.w),
                 child: Visibility(
-                  visible: provider.updateCallType == CallType.video,
+                  visible: provider.updateCallType == CallType.video ,
                   child: SizedBox(
                     height: 45.w,
                     width: 30.w,
@@ -266,7 +267,9 @@ class ChatCallScreen extends HookConsumerWidget {
     return SizedBox(
       height: double.infinity,
       width: double.infinity,
-      child: provider.remoteId < 0 || provider.engine == null
+      child: provider.remoteId < 0 ||
+              provider.engine == null ||
+              provider.remoteVideoMute
           ? _buildAudioBackground()
           : _buildVideoRemote(provider.remoteId, provider.engine!),
     );

@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-// import 'dart:io';
-
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
@@ -9,6 +7,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import '/ui/base_back_screen.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';

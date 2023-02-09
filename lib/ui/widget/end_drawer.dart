@@ -270,6 +270,7 @@ class EndDrawer extends StatelessWidget {
     ];
   }
 
+
   Future<int> getUnreadCount() async {
     try {
       return await ChatClient.getInstance.chatManager.getUnreadMessageCount();

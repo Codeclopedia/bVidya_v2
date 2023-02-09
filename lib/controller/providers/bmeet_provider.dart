@@ -238,11 +238,11 @@ class BMeetProvider extends ChangeNotifier {
           // notifyListeners();
           _updateMemberList();
         },
-        onRemoteVideoStateChanged:
-            (connection, remoteUid, state, reason, elapsed) {
-          print(
-              'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
-        },
+        // onRemoteVideoStateChanged:
+        //     (connection, remoteUid, state, reason, elapsed) {
+        //   print(
+        //       'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
+        // },
         onLeaveChannel: (connection, stats) {
           // int userId = connection.localUid ?? 0;
           // if (userId < 1000000) {

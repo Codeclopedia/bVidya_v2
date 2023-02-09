@@ -150,6 +150,8 @@
 
   "blearn_complementry":"Complementary",
   "blearn_courses":"Courses",
+  "blearn_instructors":"Instructors",
+
   "blearn_recently":"Recently",
   "blearn_added":"Added",
   "blearn_testimonial":"Testimonials",
@@ -205,9 +207,9 @@
   "bmeet_empty_date":"Enter meeting date",
   "bmeet_invalid_date":"Meeting date can't be in past",
   "bmeet_empty_start":"Enter start time",
-  "bmeet_invalid_start":"Meeting start time can't be in past",
+  "bmeet_invalid_start":"Invalid Start time",
   "bmeet_empty_end":"Enter end time",
-  "bmeet_invalid_end":"Meeting end time can't be before start time",
+  "bmeet_invalid_end":"Invalid End time",
 
 
   "blive_schedule_heading":"Schedule a Broadcast",

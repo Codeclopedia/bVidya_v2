@@ -1,25 +1,20 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:bvidya/app.dart';
 
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:audioplayers/audioplayers.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
-// import '../../core/utils/connectycubekit.dart';
 import '/core/helpers/bmeet_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '/core/utils/callkit_utils.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import '/core/constants/notification_const.dart';
-// import '/app.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-// import 'package:permission_handler/permission_handler.dart';
 import '/core/utils/common.dart';
-// import '/core/helpers/bmeet_helper.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/duration.dart';
 import '/core/ui_core.dart';
@@ -54,6 +49,9 @@ class P2PCallProvider extends ChangeNotifier {
   bool _videoOn = false;
   bool get videoOn => _videoOn;
 
+  bool _remoteVideoMute = true;
+  bool get remoteVideoMute => _remoteVideoMute;
+
   bool _disconnected = false;
 
   bool get disconnected => _disconnected;
@@ -83,7 +81,7 @@ class P2PCallProvider extends ChangeNotifier {
   // AudioPlayer? _player;
   AssetsAudioPlayer? _player;
 
-  init(CallBody body, CallDirectionType type, CallType callType) async {
+  void init(CallBody body, CallDirectionType type, CallType callType) async {
     // if (_isInitialized) {
     //   return;
     // }
@@ -115,7 +113,7 @@ class P2PCallProvider extends ChangeNotifier {
             _read.reset();
             clearCall();
             // activeCallId = null;
-            notifyListeners();
+            updateUI();
           }
         }
       }
@@ -141,7 +139,7 @@ class P2PCallProvider extends ChangeNotifier {
     await _initEngine();
   }
 
-  _outgoingTimer() async {
+  void _outgoingTimer() async {
     // _player = AudioPlayer();
     _player = AssetsAudioPlayer.newPlayer();
     //  String audioasset = "assets/audio/Basic.mp3";
@@ -153,7 +151,7 @@ class P2PCallProvider extends ChangeNotifier {
       _endCall = true;
       _read.reset();
       // print('Timer ended here');
-      notifyListeners();
+      updateUI();
     });
     try {
       await _player?.open(Audio('assets/audio/Basic.mp3'));
@@ -186,32 +184,44 @@ class P2PCallProvider extends ChangeNotifier {
         //     print('remote video state: $enabled ');
         //   }
         // },
-        onUserMuteAudio: (connection, remoteUid, muted) {},
-        onUserMuteVideo: (connection, remoteUid, muted) {},
+        onUserMuteAudio: (connection, remoteUid, muted) {
+          if (_remoteId == remoteUid) {
+            _remoteMute = muted;
+            updateUI();
+          }
+        },
+        onUserMuteVideo: (connection, remoteUid, muted) {
+          if (_remoteId == remoteUid) {
+            _remoteVideoMute = muted;
+            updateUI();
+          }
+        },
         onJoinChannelSuccess: (connection, elapsed) {
           _localId = connection.localUid ?? 0;
+
           if (_callDirection == CallDirectionType.outgoing) {
             // _status = 'Ringing';
             _status = CallConnectionStatus.Ringing;
             _outgoingTimer();
           }
-          notifyListeners();
+          updateUI();
         },
         onUserJoined: (connection, remoteUid, elapsed) {
           _remoteId = remoteUid;
+          _remoteVideoMute = _callType != CallType.video;
           if (_callDirection == CallDirectionType.outgoing) {
             _timer?.cancel();
             _player?.stop();
           }
           _status = CallConnectionStatus.Connected;
           // _status = 'Connected';
-          notifyListeners();
+          updateUI();
           _read.start();
         },
         onUserOffline: (connection, remoteUid, reason) {
           _endCall = true;
           _status = CallConnectionStatus.Ended;
-          notifyListeners();
+          updateUI();
         },
         // onRemoteAudioStateChanged:
         //     (connection, remoteUid, state, reason, elapsed) {
@@ -264,7 +274,7 @@ class P2PCallProvider extends ChangeNotifier {
         ),
       );
       _engine = engine;
-      notifyListeners();
+      updateUI();
     } catch (e) {
       // print('Error on join channel: $e');
     }
@@ -272,10 +282,10 @@ class P2PCallProvider extends ChangeNotifier {
 
   void setCallEnded() {
     _endCall = true;
-    notifyListeners();
+   updateUI();
   }
 
-  toggleVideo(BuildContext context) async {
+  void toggleVideo(BuildContext context) async {
     try {
       // if (_currentCallType == CallType.audio) {
       //   if (!await handleCameraAndMic(Permission.camera)) {
@@ -312,34 +322,40 @@ class P2PCallProvider extends ChangeNotifier {
 
       await _engine?.enableLocalVideo(!_videoOn);
       _videoOn = !_videoOn;
-      notifyListeners();
+      updateUI();
     } catch (_) {}
   }
 
-  toggleSpeaker() async {
+  void toggleSpeaker() async {
     try {
       await _engine?.setEnableSpeakerphone(!_speakerOn);
       _speakerOn = !_speakerOn;
-      notifyListeners();
+      updateUI();
     } catch (_) {}
   }
 
-  toggleMute() async {
+  void updateUI() {
+    try {
+      notifyListeners();
+    } catch (e) {}
+  }
+
+  void toggleMute() async {
     try {
       await _engine?.muteLocalAudioStream(!_mute);
       _mute = !_mute;
-      notifyListeners();
+      updateUI();
     } catch (_) {}
   }
 
   void switchCamera() async {
     try {
       await _engine?.switchCamera();
-      notifyListeners();
+      updateUI();
     } catch (_) {}
   }
 
-  disconnect() async {
+  void disconnect() async {
     if (_disconnected) {
       return;
     }

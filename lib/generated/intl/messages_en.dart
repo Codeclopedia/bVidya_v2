@@ -80,6 +80,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Complementary"),
         "blearn_courses": MessageLookupByLibrary.simpleMessage("Courses"),
         "blearn_explore": MessageLookupByLibrary.simpleMessage("Explore"),
+        "blearn_instructors":
+            MessageLookupByLibrary.simpleMessage("Instructors"),
         "blearn_learnfrom": MessageLookupByLibrary.simpleMessage("Learn From"),
         "blearn_recently": MessageLookupByLibrary.simpleMessage("Recently"),
         "blearn_recommended":
@@ -209,10 +211,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter Your Meeting Title"),
         "bmeet_invalid_date": MessageLookupByLibrary.simpleMessage(
             "Meeting date can\'t be in past"),
-        "bmeet_invalid_end": MessageLookupByLibrary.simpleMessage(
-            "Meeting end time can\'t be before start time"),
-        "bmeet_invalid_start": MessageLookupByLibrary.simpleMessage(
-            "Meeting start time can\'t be in past"),
+        "bmeet_invalid_end":
+            MessageLookupByLibrary.simpleMessage("Invalid End time"),
+        "bmeet_invalid_start":
+            MessageLookupByLibrary.simpleMessage("Invalid Start time"),
         "bmeet_invalid_subject": MessageLookupByLibrary.simpleMessage(
             "Meeting subject must contains at least 5 characters"),
         "bmeet_invalid_title": MessageLookupByLibrary.simpleMessage(

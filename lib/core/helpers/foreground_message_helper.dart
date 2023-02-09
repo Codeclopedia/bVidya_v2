@@ -48,7 +48,7 @@ class ForegroundMessageHelper {
           final model = await getGroupConversationModel(groupId);
           if (model != null) {
             await Navigator.pushReplacementNamed(
-                context, RouteList.chatScreenDirect,
+                context, RouteList.groupChatScreenDirect,
                 arguments: model);
             return true;
           }

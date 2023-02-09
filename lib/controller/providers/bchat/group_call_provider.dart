@@ -313,7 +313,7 @@ class GroupCallProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       await Future.delayed(const Duration(seconds: 2));
-      notifyListeners();
+      updateUi();
     }
   }
 
@@ -331,7 +331,7 @@ class GroupCallProvider extends ChangeNotifier {
       _callTimerProvider.reset();
 
       print('Timer ended here');
-      notifyListeners();
+      updateUi();
     });
     try {
       await _player?.open(Audio('assets/audio/Basic.mp3'));
@@ -429,17 +429,21 @@ class GroupCallProvider extends ChangeNotifier {
             if (_localUserJoined) {
               _localUserJoined = false;
               // print('User Id:$userid');
-              notifyListeners();
+              updateUi();
             }
           },
           onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
-            _userRemoteIds.remove(remoteUid);
-            _groupCallingMembers.update(remoteUid, ((value) {
-              value.status = JoinStatus.ended;
-              value.widget = null;
-              return value;
-            }));
-            maybeDropCall();
+            try {
+              _userRemoteIds.remove(remoteUid);
+              if (_groupCallingMembers.containsKey(remoteUid)) {
+                _groupCallingMembers.update(remoteUid, ((value) {
+                  value.status = JoinStatus.ended;
+                  value.widget = null;
+                  return value;
+                }));
+                maybeDropCall();
+              }
+            } catch (e) {}
             // _userList.removeWhere((key, value) => key == remoteUid);
 
             // if (remoteUid < 1000000) {
@@ -562,12 +566,17 @@ class GroupCallProvider extends ChangeNotifier {
     _isPreviewReady = true;
     _callTimerProvider.start();
 
-    notifyListeners();
+    updateUi();
   }
 
   void updateIndex(int index) {
     _indexValue = index;
-    notifyListeners();
+  }
+
+  updateUi() {
+    try {
+      notifyListeners();
+    } catch (e) {}
   }
 
   // bool checkNoSignleDigit(int no) {
@@ -579,7 +588,7 @@ class GroupCallProvider extends ChangeNotifier {
   // }
 
   void _updateMemberList() async {
-    if (_localUserJoined) notifyListeners();
+    if (_localUserJoined) updateUi();
   }
 
   // void sendPeerMessage(String userId, String content) async {
@@ -631,7 +640,7 @@ class GroupCallProvider extends ChangeNotifier {
   void toggleVolume() async {
     _speakerOn = !_speakerOn;
     await _engine.setEnableSpeakerphone(_speakerOn);
-    notifyListeners();
+    updateUi();
   }
 
   void toggleCamera() async {
@@ -646,7 +655,7 @@ class GroupCallProvider extends ChangeNotifier {
     if (_groupCallingMembers.containsKey(_localUid)) {
       _groupCallingMembers.update(_localUid, (value) {
         value.enabledVideo = !_disableLocalCamera;
-        if (!_disableLocalCamera) {
+        if (value.enabledVideo) {
           value.widget = _localView();
         } else {
           value.widget =
@@ -655,7 +664,7 @@ class GroupCallProvider extends ChangeNotifier {
         return value;
       });
     }
-    notifyListeners();
+    updateUi();
   }
 
   void onToggleMute() async {
@@ -672,7 +681,7 @@ class GroupCallProvider extends ChangeNotifier {
         return value;
       });
     }
-    notifyListeners();
+    updateUi();
   }
 
   // void toggleShareScreen() async {
@@ -817,7 +826,8 @@ class GroupCallProvider extends ChangeNotifier {
       // clearCall();
       // activeCallId = null;
       // _updateMemberList();
-      notifyListeners();
+      // notifyListeners();
+      updateUi();
     }
   }
 

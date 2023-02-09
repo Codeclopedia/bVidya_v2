@@ -121,7 +121,10 @@ class AllCoursesPage extends StatelessWidget {
   Widget _buildCourseView() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(left: 5.w, right: 5.w, bottom: 2.h),
+        padding: EdgeInsets.only(
+          left: 5.w,
+          right: 5.w,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,14 +187,14 @@ class AllCoursesPage extends StatelessWidget {
   Widget _buildInstructorView() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(left: 5.w, right: 5.w, bottom: 2.h),
+        padding: EdgeInsets.only(left: 5.w, right: 5.w),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 2.h),
               Text(
-                S.current.blearn_courses,
+                S.current.blearn_instructors,
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: Colors.black,

@@ -1340,6 +1340,16 @@ class S {
     );
   }
 
+  /// `Instructors`
+  String get blearn_instructors {
+    return Intl.message(
+      'Instructors',
+      name: 'blearn_instructors',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Recently`
   String get blearn_recently {
     return Intl.message(
@@ -1790,10 +1800,10 @@ class S {
     );
   }
 
-  /// `Meeting start time can't be in past`
+  /// `Invalid Start time`
   String get bmeet_invalid_start {
     return Intl.message(
-      'Meeting start time can\'t be in past',
+      'Invalid Start time',
       name: 'bmeet_invalid_start',
       desc: '',
       args: [],
@@ -1810,10 +1820,10 @@ class S {
     );
   }
 
-  /// `Meeting end time can't be before start time`
+  /// `Invalid End time`
   String get bmeet_invalid_end {
     return Intl.message(
-      'Meeting end time can\'t be before start time',
+      'Invalid End time',
       name: 'bmeet_invalid_end',
       desc: '',
       args: [],
