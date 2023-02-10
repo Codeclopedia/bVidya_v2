@@ -8,7 +8,8 @@ import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 
-handleChatFileOption(BuildContext context, ChatFileMessageBody body) async {
+handleChatFileOption(
+    BuildContext context, ChatFileMessageBody body, bool isOwnMessage) async {
   String fileName = body.displayName ?? '';
   if (fileName.isEmpty) return;
 
@@ -21,7 +22,7 @@ handleChatFileOption(BuildContext context, ChatFileMessageBody body) async {
           try {
             // print('File local ${body.localPath}');
             File file = File(body.localPath);
-            if (file.existsSync()) {
+            if (await file.exists()) {
               PDFDocument doc = await PDFDocument.fromFile(file);
               Navigator.pushNamed(context, RouteList.pdfFileViewer,
                   arguments: doc);
@@ -31,6 +32,15 @@ handleChatFileOption(BuildContext context, ChatFileMessageBody body) async {
           }
         } else {
           // File file = File();
+          if (isOwnMessage) {
+            File file = File(body.localPath);
+            if (await file.exists()) {
+              PDFDocument doc = await PDFDocument.fromFile(file);
+              Navigator.pushNamed(context, RouteList.pdfFileViewer,
+                  arguments: doc);
+            }
+            return;
+          }
           if (body.remotePath?.isNotEmpty == true) {
             PDFDocument doc = await PDFDocument.fromURL(body.remotePath!);
             Navigator.pushNamed(context, RouteList.pdfFileViewer,

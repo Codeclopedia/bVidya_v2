@@ -32,24 +32,6 @@ Future<void> main() async {
 
       // await Firebase.initializeApp();
     }
-
-    // final connector = ApnsPushConnectorOnly();
-    // // final connector = createPushConnector();
-    // connector.configureApns(
-    //   onLaunch: (message) async {
-    //     print(
-    //         'Notification launched app=> ${message.actionIdentifier}:${message.payload}');
-    //   },
-    //   onResume: (message) async {
-    //     print(
-    //         'Notification tapped when in the background=> ${message.actionIdentifier}:${message.payload}');
-    //   },
-    //   onMessage: apnsRemoteMessage,
-    // );
-    // connector.requestNotificationPermissions();
-    // //// if (connector is ApnsPushConnector) {
-    // connector.shouldPresent = (x) => Future.value(true);
-    //// }
   }
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
@@ -61,11 +43,6 @@ Future<void> main() async {
     ),
   );
 }
-
-// @pragma('vm:entry-point')
-// Future<void> apnsRemoteMessage(ApnsRemoteMessage message) async {
-//   print('onMessage => ${message.actionIdentifier}:${message.payload}');
-// }
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
@@ -101,7 +78,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
     } else {
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');
       // await BChatSDKController.instance.loginOnlyInBackground();
-      BackgroundHelper.handleRemoteMessageBackground(message);
+      // BackgroundHelper.handleRemoteMessageBackground(message);
     }
   } catch (e) {
     // print('error $e');

@@ -177,7 +177,7 @@ class ChatMessageBubble extends StatelessWidget {
         ChatFileMessageBody body = message.body as ChatFileMessageBody;
         return GestureDetector(
             onTap: () async {
-              handleChatFileOption(context, body);
+              handleChatFileOption(context, body, isOwnMessage);
             },
             child: _fileTypeBody(body));
       case MessageType.VOICE:

@@ -20,6 +20,7 @@ import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'controller/providers/user_auth_provider.dart';
 import 'core/constants.dart';
 import 'core/helpers/background_helper.dart';
+import 'core/helpers/apns_handler.dart';
 import 'core/routes.dart';
 import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
@@ -98,22 +99,39 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   }
 
   void _firebase() async {
-    final token = await FirebaseMessaging.instance.getToken();
-    debugPrint('token : $token');
-    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
-      print('onMessage => ${message.from} : ${message.data}');
-      BuildContext? contx = navigatorKey.currentContext;
-      if (contx != null) {
-        showLoading(ref);
-        ForegroundMessageHelper.onMessageOpen(message, contx);
-        hideLoading(ref);
-      } else {
-        print('Null Context =>');
-      }
-    });
+    if (Platform.isAndroid) {
+      FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+        debugPrint('onMessageOpenedApp => ${message.from} : ${message.data}');
+        BuildContext? contx = navigatorKey.currentContext;
+        if (contx != null) {
+          showLoading(ref);
+          ForegroundMessageHelper.onMessageOpen(message, contx);
+          hideLoading(ref);
+        } else {
+          debugPrint('Null Context =>');
+        }
+      });
+    } else if (Platform.isIOS) {
+      ApnsPushConnectorOnly.instance.configureApns(
+        onMessageTap: (message) async {
+          debugPrint('foreground=>:${message.data}');
+          BuildContext? contx = navigatorKey.currentContext;
+          if (contx != null) {
+            showLoading(ref);
+            ApnsPushConnectorOnly.onMessageOpen(message, contx);
+            hideLoading(ref);
+          } else {
+            debugPrint('Null Context =>');
+          }
+        },
+        onMessage: (message) async {
+          // print('onMessage:${message.payload}');
+        },
+      );
+    }
 
     FirebaseMessaging.onMessage.listen((message) async {
-      // print('onMessage => ${message.data} : ${message.notification}');
+      print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {
@@ -132,10 +150,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           closeIncomingGroupCall(message);
         }
       } else {
-        ForegroundMessageHelper.handleCallingNotificationForeground(message);
+        // ForegroundMessageHelper.handleCallingNotificationForeground(message);
       }
     });
-
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
       try {
         if (Platform.isIOS) {
@@ -144,9 +161,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
             await ChatClient.getInstance.pushManager
                 .updateAPNsDeviceToken(aPNStoken);
           }
-        } else if (Platform.isAndroid) {}
+        }
         await ChatClient.getInstance.pushManager.updateFCMPushToken(token);
-      } catch (e) {}
+      } catch (_) {}
       debugPrint('onTokenRefresh: $token');
     }, onDone: () {
       debugPrint('onTokenRefresh DONE');
@@ -178,12 +195,12 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
               // if (activeCallId != null) return;
               ForegroundMessageHelper.handleCallNotification(lastMessage, ref);
             } else if (value != null) {
-              ForegroundMessageHelper.handleChatNotification(
+              ForegroundMessageHelper.showForegroundChatNotification(
                   value, lastMessage);
             }
           } else if (lastMessage.chatType == ChatType.GroupChat) {
             // print('on GroupChat Message=> ${lastMessage.body.toJson()} ');
-            ref
+            await ref
                 .read(groupConversationProvider.notifier)
                 .updateConversationMessage(
                     lastMessage, lastMessage.conversationId!,
@@ -192,7 +209,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
             final value = ref.read(groupConversationProvider).firstWhereOrNull(
                 (element) => element.id == lastMessage.conversationId);
             if (value != null) {
-              ForegroundMessageHelper.handleGroupChatNotification(
+              ForegroundMessageHelper.showForegroundGroupChatNotification(
                   value, lastMessage);
             }
             // if(values.l.contains(lastMessage.conversationId)){
@@ -251,3 +268,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     super.dispose();
   }
 }
+
+
+//fPxs8N8570Rztkg73fBPve:APA91bE97WF_-tMluAyR0I77zVvha4Y1yYl5T4ceWF2xDAnP-WHJ33Tj0hHZeOLoc9owKoob3dJ2H2Hbv0_9QtGqsL6Op85cum-5vRgh_bUuLgpokoGS1twc1b0V-eB07ECMCCy2neYw
+
+
+//ePJ24RCsRrSNSFfMmzr6f6:APA91bFC_SaLTKYfc0iCG2EVRau4HYzgFVz6ZO-xUzxDJ1JZ9rDdANI4t_PuJu_fJbQiK0SupXjj_vBo9erRpNaLbiH1O-BQTb4uQbkvkeFoHBP_xjGurO5tACFJdpr8UWldjGgRRzZ0

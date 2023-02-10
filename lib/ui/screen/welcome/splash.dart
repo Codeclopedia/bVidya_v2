@@ -1,36 +1,26 @@
 // ignore_for_file: use_build_context_synchronously
 
-// import 'package:awesome_notifications/awesome_notifications.dart';
-
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:bvidya/core/helpers/foreground_message_helper.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/helpers/group_call_helper.dart';
-// import '/core/sdk_helpers/bchat_handler.dart';
 import '/data/models/call_message_body.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-//import '/app.dart';
-// import '../../../core/utils/connectycubekit.dart';
+import '/core/helpers/apns_handler.dart';
 import '/core/helpers/call_helper.dart';
-// import '/core/helpers/foreground_message_helper.dart';
-// import '/core/routes.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
-// import '/core/utils/notification_controller.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-
+import '/core/helpers/foreground_message_helper.dart';
 import '/controller/providers/user_auth_provider.dart';
-// import '/controller/bchat_providers.dart';
-// import '/controller/providers/bchat/chat_conversation_provider.dart';
 
 final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
       "assets/icons/svgs/splash_logo_full.svg",
@@ -48,7 +38,6 @@ class SplashScreen extends ConsumerWidget {
         if (next.value != null) {
           final startTime = DateTime.now().millisecondsSinceEpoch;
           await ref.read(userLoginStateProvider.notifier).loadUser();
-
           // ref.read(userAuthChangeProvider).setUserSigned(true);
           print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
@@ -115,12 +104,12 @@ class SplashScreen extends ConsumerWidget {
         GroupCallMessegeBody body =
             GroupCallMessegeBody.fromJson(jsonDecode(activeCallMap!['body']));
         return await receiveGroupCall(context,
-            requestId: body.requestId,
-            membersIds: body.memberIds,
-            callId: body.callId,
             groupId: grpId,
             grpName: body.groupName,
             grpImage: body.groupImage,
+            requestId: body.requestId,
+            membersIds: body.memberIds,
+            callId: body.callId,
             callType: body.callType,
             direct: true);
       } else if (type == NotiConstants.typeCall) {
@@ -129,15 +118,20 @@ class SplashScreen extends ConsumerWidget {
             CallMessegeBody.fromJson(jsonDecode(activeCallMap!['body']));
         return await receiveCall(context, fromId, callMessegeBody, true);
       }
-      // return false;
-    } else {
-      // print('active callId => $activeCallId $lastUserId');
     }
     await BChatSDKController.instance.initChatSDK(user);
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      return await ForegroundMessageHelper.onMessageOpen(message, context);
+    if (Platform.isAndroid) {
+      final message = await FirebaseMessaging.instance.getInitialMessage();
+      if (message != null) {
+        return await ForegroundMessageHelper.onMessageOpen(message, context);
+      }
+    } else if (Platform.isIOS) {
+      final msg = await ApnsPushConnectorOnly.instance.loadLaunchMessage();
+      if (msg != null) {
+        return await ApnsPushConnectorOnly.onMessageOpen(msg, context);
+      }
     }
+
     //ForegroundMessageHelper
     // final initialAction = NotificationController.clickAction;
     // if (initialAction != null &&
@@ -156,19 +150,6 @@ class SplashScreen extends ConsumerWidget {
     //   debugPrint('  initialAction is null ${initialAction == null}');
     // }
 
-    return false;
-  }
-
-  Future<bool> _onInitialMessage(BuildContext context) async {
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      if (message.data.isNotEmpty &&
-          message.data['alert'] != null &&
-          message.data['e'] != null) {
-        debugPrint(
-            'welcome screen payload: ${message.from} --> ${message.data}');
-      }
-    }
     return false;
   }
 

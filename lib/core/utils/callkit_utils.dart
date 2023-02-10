@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/common.dart';
-import '/core/helpers/group_call_helper.dart';
-import '/data/models/call_message_body.dart';
+
+import 'package:uuid/uuid.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -13,6 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '/data/models/response/auth/login_response.dart';
 import '/data/services/fcm_api_service.dart';
+import '/core/utils/common.dart';
+import '/core/helpers/group_call_helper.dart';
+import '/data/models/call_message_body.dart';
 
 import '../routes.dart';
 import '/app.dart';
@@ -33,6 +36,8 @@ Map? get activeCallMap => _activeCallMap;
 String? get activeCallId => _activeCallId;
 String? get lastCallId => _lastCallId;
 String? get onGoingCallId => _onGoingCallId;
+
+String? _uuid;
 
 DateTime? get lastCallTime => _lastCallTime;
 
@@ -67,26 +72,27 @@ _futureClearPref() async {
 Future loadCallOnInit() async {
   final pref = await SharedPreferences.getInstance();
 
-  final callId = pref.getString('call_id');
+  final uuid = pref.getString('call_id');
   final callTime = pref.getString('call_accept_time');
   final callExra = pref.getString('call_extra');
 
-  if (callExra?.isNotEmpty == true && callId?.isNotEmpty == true) {
-    print('Loaded calls=> $callId');
-
+  if (callExra?.isNotEmpty == true && uuid?.isNotEmpty == true) {
+    print('Loaded calls=> $uuid');
     try {
       int diff =
           DateTime.now().millisecondsSinceEpoch - int.parse(callTime ?? '0');
       if (diff > 10000) {
         print('Very old call=> $diff ms');
         _activeCallId = null;
+        _uuid = null;
         _activeCallMap = null;
         return;
       }
       print('Loaded calls=> $_activeCallId');
 
       _activeCallMap = jsonDecode(callExra!);
-      _activeCallId = callId;
+      _uuid = uuid;
+      _activeCallId = _activeCallMap!['call_id'];
       _lastCallId = _activeCallId;
       return;
     } catch (e) {
@@ -182,11 +188,13 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
     avImage = null;
   }
   // print('from ID $fromId');
-  await FlutterCallkitIncoming.endCall(callId);
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callId);
+
+  await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
-    id: callId,
+    id: uid,
     nameCaller: name,
     textAccept: 'Accept',
     textDecline: 'Decline',
@@ -194,6 +202,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
     extra: {
       'from_id': fromId.toString(),
       'grp_id': groupId,
+      'call_id': callId,
       'type': NotiConstants.typeGroupCall,
     },
     android: const AndroidParams(
@@ -220,10 +229,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
 Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   // CallMessegeBody? callBody = remoteMessage.payload();
   final callId = remoteMessage.data['call_id'];
-  final fromId = remoteMessage.data['from_id'];
-  final name = remoteMessage.data['name'];
-  final image = remoteMessage.data['image'];
-  final hasVideo = remoteMessage.data['has_video'] == 'true';
+
   if (callId == null) {
     clearCall();
     await FlutterCallkitIncoming.endAllCalls();
@@ -238,6 +244,10 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   _lastCallId = callId;
   _lastCallTime = remoteMessage.sentTime;
 
+  final fromId = remoteMessage.data['from_id'];
+  final name = remoteMessage.data['name'];
+  final image = remoteMessage.data['image'];
+  final hasVideo = remoteMessage.data['has_video'] == 'true';
   String? avImage;
   if (image.isNotEmpty) {
     avImage = '$baseImageApi$image';
@@ -245,16 +255,19 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     avImage = null;
   }
   // print('from ID $fromId');
-  await FlutterCallkitIncoming.endCall(callId);
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callId);
+
+  await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
-    id: callId,
+    id: uid,
     nameCaller: name,
     textAccept: 'Accept',
     textDecline: 'Decline',
     textCallback: 'Call back',
     extra: {
+      'call_id': callId,
       'from_id': fromId,
       'type': NotiConstants.typeCall,
     },
@@ -304,17 +317,20 @@ showIncomingCallScreen(
   } else {
     avImage = null;
   }
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
+
   print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
   bool hasVideo = body.callType == CallType.video;
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
-    id: body.callId,
+    id: uid,
     nameCaller: body.fromName,
     textAccept: 'Accept',
     textDecline: 'Decline',
     textCallback: 'Call back',
     extra: {
+      'call_id': body.callId,
       'from_id': fromId,
       'type': NotiConstants.typeCall,
       'body': jsonEncode(body..toJson())
@@ -354,7 +370,8 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
     if (_activeCallId == callBody.callId) {
       return;
     }
-    FlutterCallkitIncoming.endCall(_activeCallId!);
+    final uid = const Uuid().v5(Uuid.NAMESPACE_OID, _activeCallId);
+    FlutterCallkitIncoming.endCall(uid);
   }
   if (callBody.callId == lastCallId) {
     return;
@@ -372,12 +389,13 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
     avImage = null;
   }
   bool hasVideo = callBody.callType == CallType.video;
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callBody.callId);
 
   // print('valid group Call Called => active: $_activeCallId last:$_lastCallId');
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
-    id: callBody.callId,
+    id: uid,
     nameCaller: callBody.fromName,
     textAccept: 'Accept',
     textDecline: 'Decline',
@@ -387,6 +405,7 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
       'type': NotiConstants.typeGroupCall,
       'from_id': fromId,
       'grp_id': grpId,
+      'call_id': callBody.callId,
       'body': jsonEncode(callBody.toJson())
     },
     android: const AndroidParams(
@@ -504,7 +523,9 @@ onDeclineGroupCall(
       body.groupName,
       body.groupImage,
       body.callType == CallType.video);
-  await FlutterCallkitIncoming.endCall(body.callId);
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
+
+  await FlutterCallkitIncoming.endCall(uid);
   clearCall();
 }
 
@@ -528,7 +549,8 @@ onDeclineGrpCallBusy(
       body.groupName,
       body.groupImage,
       body.callType == CallType.video);
-  await FlutterCallkitIncoming.endCall(body.callId);
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
+  await FlutterCallkitIncoming.endCall(uid);
   clearCall();
 }
 
@@ -594,18 +616,20 @@ onDeclineCallBusy(
   } else {
     avImage = null;
   }
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callMessegeBody.callId);
 
-  await FlutterCallkitIncoming.endCall(callMessegeBody.callId);
+  await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
-    id: callMessegeBody.callId,
+    id: uid,
     nameCaller: callMessegeBody.fromName,
     textAccept: 'Accept',
     textDecline: 'Decline',
     textCallback: 'Call back',
     extra: {
       'from_id': callerIdFrom,
+      'call_id': callMessegeBody.callId,
       'type': NotiConstants.typeCall,
       'body': jsonEncode(callMessegeBody.toJson())
     },

@@ -7,6 +7,7 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:uuid/uuid.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
@@ -74,6 +75,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     // if (await NotificationController.isAllowedPermission()) {
     //   return;
     // }
+    // print('object')
+    final uid = const Uuid().v5(Uuid.NAMESPACE_OID, 'mGf3ee4gcOlj2hsnyhcH');
+
+    print('UUID=> $uid   : ${Uuid.isValidUUID(fromString: uid)}');
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       _firebaseNotification();

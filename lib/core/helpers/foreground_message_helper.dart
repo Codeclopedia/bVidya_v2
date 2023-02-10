@@ -22,6 +22,7 @@ import '../utils/chat_utils.dart';
 import 'background_helper.dart';
 
 class ForegroundMessageHelper {
+  
   static Future<bool> onMessageOpen(
       RemoteMessage message, BuildContext context) async {
     if (message.data.isNotEmpty &&
@@ -58,7 +59,7 @@ class ForegroundMessageHelper {
     return false;
   }
 
-  static void handleChatNotification(
+  static void showForegroundChatNotification(
       ConversationModel model, ChatMessage msg) async {
     String name = model.contact.name;
     // String image = model.contact.profileImage;
@@ -100,10 +101,8 @@ class ForegroundMessageHelper {
     }
   }
 
-  static void handleGroupChatNotification(
+  static void showForegroundGroupChatNotification(
       GroupConversationModel model, ChatMessage msg) async {
-    String name = model.groupInfo.name ?? 'Group';
-    // String image = model.contact.profileImage;
     String from = model.id;
     BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
@@ -121,9 +120,11 @@ class ForegroundMessageHelper {
       bool showForegroudNotification = false;
 
       showForegroudNotification = !Routes.isGroupChatScreen(from.toString());
-      String content = '$name sent you \n$contentText';
 
       if (showForegroudNotification) {
+        String grpName = model.groupInfo.name ?? 'Group';
+        String frmName = msg.attributes?['from_name'] ?? '';
+        String content = '$frmName sent you \n$contentText in $grpName';
         showTopSnackBar(
           Overlay.of(context)!,
           CustomSnackBar.info(

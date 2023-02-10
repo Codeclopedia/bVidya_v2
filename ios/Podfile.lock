@@ -17,9 +17,6 @@ PODS:
     - Flutter
   - assets_audio_player_web (0.0.1):
     - Flutter
-  - awesome_notifications (0.0.5):
-    - Flutter
-    - IosAwnCore (= 0.7.1)
   - camera_avfoundation (0.0.1):
     - Flutter
   - CryptoSwift (1.6.0)
@@ -94,8 +91,6 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.8)
     - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
-  - flutter_apns_only (0.0.1):
-    - Flutter
   - flutter_callkit_incoming (0.0.1):
     - CryptoSwift
     - Flutter
@@ -133,9 +128,11 @@ PODS:
   - HyphenateChat (3.9.9)
   - image_crop (0.0.1):
     - Flutter
+  - image_cropper (0.0.4):
+    - Flutter
+    - TOCropViewController (~> 2.6.1)
   - image_picker_ios (0.0.1):
     - Flutter
-  - IosAwnCore (0.7.1)
   - iris_event (0.0.1):
     - AgoraIrisEventFlutter_iOS (= 1.4.0)
     - Flutter
@@ -173,6 +170,7 @@ PODS:
     - FMDB (>= 2.7.5)
   - SwiftyGif (5.4.4)
   - Toast (4.0.0)
+  - TOCropViewController (2.6.1)
   - url_launcher_ios (0.0.1):
     - Flutter
   - video_player_avfoundation (0.0.1):
@@ -191,7 +189,6 @@ DEPENDENCIES:
   - agora_rtm (from `.symlinks/plugins/agora_rtm/ios`)
   - assets_audio_player (from `.symlinks/plugins/assets_audio_player/ios`)
   - assets_audio_player_web (from `.symlinks/plugins/assets_audio_player_web/ios`)
-  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - easy_pdf_viewer (from `.symlinks/plugins/easy_pdf_viewer/ios`)
   - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
@@ -199,12 +196,12 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
-  - flutter_apns_only (from `.symlinks/plugins/flutter_apns_only/ios`)
   - flutter_callkit_incoming (from `.symlinks/plugins/flutter_callkit_incoming/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_share (from `.symlinks/plugins/flutter_share/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_crop (from `.symlinks/plugins/image_crop/ios`)
+  - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - iris_event (from `.symlinks/plugins/iris_event/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -237,13 +234,13 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - HyphenateChat
-    - IosAwnCore
     - libwebp
     - nanopb
     - PromisesObjC
     - SDWebImage
     - SwiftyGif
     - Toast
+    - TOCropViewController
 
 EXTERNAL SOURCES:
   agora_chat_sdk:
@@ -256,8 +253,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/assets_audio_player/ios"
   assets_audio_player_web:
     :path: ".symlinks/plugins/assets_audio_player_web/ios"
-  awesome_notifications:
-    :path: ".symlinks/plugins/awesome_notifications/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   easy_pdf_viewer:
@@ -272,8 +267,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
-  flutter_apns_only:
-    :path: ".symlinks/plugins/flutter_apns_only/ios"
   flutter_callkit_incoming:
     :path: ".symlinks/plugins/flutter_callkit_incoming/ios"
   flutter_keyboard_visibility:
@@ -284,6 +277,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluttertoast/ios"
   image_crop:
     :path: ".symlinks/plugins/image_crop/ios"
+  image_cropper:
+    :path: ".symlinks/plugins/image_cropper/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   iris_event:
@@ -321,7 +316,6 @@ SPEC CHECKSUMS:
   AgoraRtm_iOS: 595a9fa33a409831e6183396ea8f8bc563918403
   assets_audio_player: edee322b9cb625571b830b35872ead1a295fd917
   assets_audio_player_web: 19826380c44375761aa0b9053665c1e3fbc3b86b
-  awesome_notifications: 5e8d47907a4b29c182e5732b5ee224ca838f6802
   camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
   CryptoSwift: 562f8eceb40e80796fffc668b0cad9313284cfa6
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
@@ -337,7 +331,6 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 36b38c733fd37e50857e5e8d74138648f466f18c
   FirebaseMessaging: e345b219fd15d325f0cf2fef28cb8ce00d851b3f
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_apns_only: 3d91c0ca9dbef4439874858590909a19f8ed06a4
   flutter_callkit_incoming: 417dd1b46541cdd5d855ad795ccbe97d1c18155e
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_share: 4be0208963c60b537e6255ed2ce1faae61cd9ac2
@@ -347,8 +340,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: c2bdc4cf2ce786c4d2e6b3bcfd599a25ca78f06f
   HyphenateChat: 2237c9ece3f1bb54645dea0a9918f08e03e1516d
   image_crop: e0a67085d3ebf3cf46ca46d61c53a082507b0bc3
+  image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
-  IosAwnCore: fd348a51573643e26a194fe20fc78e4190dcadf6
   iris_event: bc3ca64765be2fca08816b7231beee12e344a2b9
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
@@ -362,6 +355,7 @@ SPEC CHECKSUMS:
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
   video_player_avfoundation: e489aac24ef5cf7af82702979ed16f2a5ef84cff
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1

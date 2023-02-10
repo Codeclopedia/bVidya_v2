@@ -6,7 +6,7 @@ import '/core/constants.dart';
 
 const String webPushKey =
     'AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR'; //Demo
-    // 'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT'; //Release todo
+// 'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT'; //Release todo
 
 class FCMApiService {
   static final FCMApiService instance = FCMApiService._private();
@@ -39,6 +39,7 @@ class FCMApiService {
     final data = {
       'registration_ids': [toToken],
       'type': NotiConstants.typeCall,
+      'content_available': true,
       'notification': {},
       'data': {
         'type': NotiConstants.typeCall,
@@ -84,6 +85,7 @@ class FCMApiService {
     final data = {
       'registration_ids': toTokens,
       'type': NotiConstants.typeGroupCall,
+      'content_available': true,
       'notification': {},
       'data': {
         'call_id': callId,
@@ -116,8 +118,10 @@ class FCMApiService {
       CallMessegeBody body) async {
     _dio.options.headers['Authorization'] = 'key=  $webPushKey';
 
+    print('token:=> $toToken');
     final data = {
       'registration_ids': [toToken],
+      'content_available': true,
       'type': NotiConstants.typeCall,
       'notification': {},
       'data': {
@@ -151,6 +155,7 @@ class FCMApiService {
     final data = {
       'registration_ids': toTokens,
       'type': NotiConstants.typeGroupCall,
+      'content_available': true,
       'notification': {},
       'data': {
         'call_id': callId,
