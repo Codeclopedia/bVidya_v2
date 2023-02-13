@@ -31,7 +31,7 @@ class SlidingTab extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontFamily: kFontFamily,
-                fontSize: 12.sp,
+                fontSize: 10.sp,
                 color: selectedIndex == 0 ? Colors.white : Colors.black),
           ),
         ),
@@ -50,7 +50,7 @@ class SlidingTab extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontFamily: kFontFamily,
-                fontSize: 12.sp,
+                fontSize: 10.sp,
                 color: selectedIndex == 1 ? Colors.white : Colors.black),
           ),
         )

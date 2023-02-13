@@ -59,6 +59,7 @@ dependencies:
   image_picker: ^0.8.6
   image_picker_plus: ^0.5.5+2
   intl: ^0.17.0
+  lottie: ^2.2.0
   path: ^1.8.2
   pausable_timer: ^1.0.0+6
   permission_handler: ^10.2.0
@@ -76,6 +77,7 @@ dependencies:
   uuid: ^3.0.7
   video_player: ^2.4.10
   video_thumbnail: ^0.5.3
+  voice_message_package: ^0.0.74
   webview_flutter: ^4.0.1
 
 dev_dependencies:
@@ -123,6 +125,7 @@ flutter:
     - assets/audio/
     # - assets/images/bottombar/
     - assets/icons/
+    - assets/icons/lottie/
     - assets/icons/png/
     - assets/icons/svgs/
     - assets/icons/svg/

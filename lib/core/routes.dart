@@ -595,6 +595,14 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+      case RouteList.requestedClassDetail:
+        if (settings.arguments is RequestedClass) {
+          RequestedClass requestdata = settings.arguments as RequestedClass;
+          screen = RequestDetailScreen(requestdata: requestdata);
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
 
       case RouteList.studentLearnings:
         screen = const MyLearningScreen();
@@ -603,6 +611,17 @@ class Routes {
         if (settings.arguments is Instructor) {
           Instructor instructor = settings.arguments as Instructor;
           screen = RequestClassForm(instructor: instructor);
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
+
+      case RouteList.teacherRequestedClassDetail:
+        if (settings.arguments is PersonalClass) {
+          PersonalClass personalClassDetail =
+              settings.arguments as PersonalClass;
+          screen =
+              RequestedClassDetailScreen(requestedClass: personalClassDetail);
         } else {
           screen = _parameterMissing();
         }

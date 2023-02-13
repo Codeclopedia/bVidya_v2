@@ -1,3 +1,5 @@
+import 'package:bvidya/core/constants/route_list.dart';
+
 import '/core/constants/api_list.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -25,10 +27,11 @@ class AccountSettingScreen extends StatelessWidget {
             // S.current.hello;
             getTwoRowSettingItem(S.current.resetTitle, S.current.resetPassDesc,
                 "accnt_reset.svg", () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const ResetPasswordScreen()),
+                RouteList.resetPassword
+                // MaterialPageRoute(
+                //     builder: (context) => const ResetPasswordScreen()),
               );
             }),
             getTwoRowSettingItem(S.current.accnt_security,

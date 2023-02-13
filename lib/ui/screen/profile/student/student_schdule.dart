@@ -1,3 +1,7 @@
+// import 'package:bvidya/core/constants/route_list.dart';
+
+import 'package:bvidya/core/constants.dart';
+
 import '/controller/profile_providers.dart';
 import '/core/ui_core.dart';
 import '/ui/screen/blearn/components/common.dart';
@@ -38,6 +42,7 @@ class StudentSchdule extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 2.w),
                       child: ref.watch(requestedClassesProvider).when(
                             data: (data) {
+                              print(data);
                               if (data == null) {
                                 return Center(
                                   child: buildEmptyPlaceHolder(
@@ -57,7 +62,8 @@ class StudentSchdule extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   return _buildRequestRow(
                                       data.requestedClasses?[index] ??
-                                          RequestedClass());
+                                          RequestedClass(),
+                                      context);
                                 },
                               );
                             },
@@ -182,47 +188,57 @@ class StudentSchdule extends StatelessWidget {
     ));
   }
 
-  Widget _buildRequestRow(RequestedClass data) {
+  Widget _buildRequestRow(RequestedClass data, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
-      child: Row(
-        children: [
-          getCicleAvatar('A', data.instructorImage ?? '', radius: 3.h),
-          SizedBox(width: 5.w),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.instructorName ?? "",
-                  style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: kFontFamily,
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w400),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 0.3.h),
-                  child: Text(
-                    data.type ?? "",
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, RouteList.requestedClassDetail,
+              arguments: data);
+        },
+        child: Row(
+          children: [
+            getCicleAvatar('A', data.instructorImage ?? '', radius: 3.h),
+            SizedBox(width: 5.w),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.instructorName ?? "",
                     style: TextStyle(
-                        fontSize: 8.sp,
-                        color: AppColors.descTextColor,
+                        fontSize: 12.sp,
                         fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w300),
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w400),
                   ),
-                )
-              ],
+                  Row(
+                    children: [
+                      getSvgIcon("class_type.svg",
+                          width: 3.w, fit: BoxFit.contain),
+                      SizedBox(
+                        width: 1.w,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 0.3.h),
+                        child: Text(
+                          data.type ?? "",
+                          style: TextStyle(
+                              fontSize: 8.sp,
+                              color: AppColors.descTextColor,
+                              fontFamily: kFontFamily,
+                              fontWeight: FontWeight.w300),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-          IconButton(
-              onPressed: () {
-                // chatwithstudent(data.studentName ?? "", data.userId ?? 0,
-                //     data.instructorId ?? 0);
-              },
-              icon: getSvgIcon('icon_req_chat.svg'))
-        ],
+            getSvgIcon("request_sent.svg")
+          ],
+        ),
       ),
     );
   }

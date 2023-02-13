@@ -56,7 +56,7 @@ class LessonListRow extends StatelessWidget {
                           showTopSnackBar(
                             Overlay.of(context)!,
                             const CustomSnackBar.error(
-                              message: 'Please Subscribe to Course first.',
+                              message: 'Subscribe to the Course first.',
                             ),
                           )
                         };
@@ -189,34 +189,60 @@ class LessonListRow extends StatelessWidget {
                   child: InkWell(
                     onTap: () async {
                       showLoading(ref);
-                      ref.read(currentVideoUrlProvider.notifier).state =
-                          lesson.playlist?[playlistindex]?.media?.location ??
-                              "";
-                      ref.read(currentVideoIDProvider.notifier).state =
-                          lesson.playlist?[playlistindex]?.videoId ?? 0;
-                      Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
-                          arguments: {
-                            "lesson": lesson,
-                            "course": course,
-                            'instructor_id': instructorId,
-                            'isSubscribed': isSubscribed,
-                          });
-                      ref.read(selectedLessonIndexProvider.notifier).state =
-                          index;
-                      ref.read(currentLessonIdProvider.notifier).state =
-                          lesson.id ?? 0;
+                      index == 0 && playlistindex < 2 || isSubscribed
+                          ? {
+                              ref.read(currentVideoUrlProvider.notifier).state =
+                                  lesson.playlist?[playlistindex]?.media
+                                          ?.location ??
+                                      "",
+                              ref.read(currentVideoIDProvider.notifier).state =
+                                  lesson.playlist?[playlistindex]?.videoId ?? 0,
+                              Navigator.pushNamed(
+                                  context, RouteList.bLearnLessionVideo,
+                                  arguments: {
+                                    "lesson": lesson,
+                                    "course": course,
+                                    'instructor_id': instructorId,
+                                    'isSubscribed': isSubscribed,
+                                  }),
+                              ref
+                                  .read(selectedLessonIndexProvider.notifier)
+                                  .state = index,
+                              ref.read(currentLessonIdProvider.notifier).state =
+                                  lesson.id ?? 0,
+                            }
+                          : {
+                              showTopSnackBar(
+                                Overlay.of(context)!,
+                                const CustomSnackBar.error(
+                                  message: 'Subscribe to the Course first.',
+                                ),
+                              )
+                            };
 
                       hideLoading(ref);
                     },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.play_circle_outline_sharp),
+                        Icon(
+                          Icons.play_circle_outline_sharp,
+                          color: index == 0 && playlistindex < 2 || isSubscribed
+                              ? Colors.black
+                              : Colors.grey,
+                        ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 1.h),
+                            padding: EdgeInsets.only(
+                                left: 1.w, right: 1.w, top: 1.w),
                             child: Text(
-                                lesson.playlist?[playlistindex]?.title ?? ''),
+                              lesson.playlist?[playlistindex]?.title ?? '',
+                              style: TextStyle(
+                                  color: index == 0 && playlistindex < 2 ||
+                                          isSubscribed
+                                      ? Colors.black
+                                      : Colors.grey),
+                            ),
                           ),
                         ),
                       ],

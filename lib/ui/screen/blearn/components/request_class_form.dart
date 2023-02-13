@@ -1,28 +1,25 @@
-import 'package:bvidya/controller/bmeet_providers.dart';
-import 'package:bvidya/ui/screens.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import '/controller/bmeet_providers.dart';
+import '/ui/screens.dart';
 
-// import '../../../dialog/ok_dialog.dart';
 import '/data/models/response/blearn/instructors_response.dart';
 
-// import '/controller/blearn_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-// import 'common.dart';
 
 class RequestClassForm extends HookWidget {
   final Instructor instructor;
   RequestClassForm({super.key, required this.instructor});
 
-  final topicController = TextEditingController();
-  final classTypeController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final _dateController = TextEditingController();
-  final _timeController = TextEditingController();
+  TextEditingController topicController = TextEditingController();
+  TextEditingController classTypeController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
 
   final currentClassTypeProvider = StateProvider<int?>(
     (ref) {
@@ -43,8 +40,8 @@ class RequestClassForm extends HookWidget {
           topicController.dispose();
           classTypeController.dispose();
           descriptionController.dispose();
-          _dateController.dispose();
-          _timeController.dispose();
+          dateController.dispose();
+          timeController.dispose();
         };
       },
     );
@@ -275,7 +272,7 @@ class RequestClassForm extends HookWidget {
                                   style: textStyleCaption),
                               SizedBox(height: 3.h),
                               TextFormField(
-                                controller: _dateController,
+                                controller: dateController,
                                 autofocus: false,
                                 showCursor: false,
                                 validator: (value) {
@@ -293,7 +290,7 @@ class RequestClassForm extends HookWidget {
                                       .state = _selectedDate ?? DateTime.now();
                                   print(ref.read(selectedDateProvider));
                                   if (_selectedDate != null) {
-                                    _dateController.text =
+                                    dateController.text =
                                         DateFormat('dd-MM-yyyy')
                                             .format(_selectedDate!);
                                   }
@@ -309,7 +306,7 @@ class RequestClassForm extends HookWidget {
                                   style: textStyleCaption),
                               SizedBox(height: 3.h),
                               TextFormField(
-                                controller: _timeController,
+                                controller: timeController,
                                 autofocus: false,
                                 readOnly: true,
                                 showCursor: false,
@@ -330,8 +327,8 @@ class RequestClassForm extends HookWidget {
                                   _pickTime(context, (time) {
                                     _startTime = time;
                                     final dt = DateFormat.jm().format(time);
-                                    // print('dt: $dt');
-                                    _timeController.text = dt;
+                                    print('dt: $dt');
+                                    timeController.text = dt;
                                   }, ref);
                                 },
                                 onFieldSubmitted: (value) {},
@@ -340,6 +337,11 @@ class RequestClassForm extends HookWidget {
                                     suffixIcon: const Icon(
                                       Icons.keyboard_arrow_down,
                                     )),
+                              ),
+                              Text(
+                                S.current.Requested_time_Note,
+                                style: TextStyle(
+                                    fontSize: 8.sp, color: Colors.red),
                               ),
                               SizedBox(height: 6.h),
                             ],
@@ -362,9 +364,9 @@ class RequestClassForm extends HookWidget {
                                             classType: classTypeController.text,
                                             description:
                                                 descriptionController.text,
-                                            // date:
-                                            //     _selectedDate ?? DateTime.now(),
-                                            // time: _timeController.text,
+                                            date:
+                                                _selectedDate ?? DateTime.now(),
+                                            time: _startTime ?? DateTime.now(),
                                             instructorid: instructor.id ?? 0);
                                     response == "error"
                                         ? showTopSnackBar(
@@ -498,7 +500,7 @@ class RequestClassForm extends HookWidget {
       //     DateFormat.jm().parse(pickedTime.format(context).toString());
       // //converting to DateTime so that we can further format on different pattern.
       // print(parsedTime); //output 1970-01-01 22:53:00.000
-      // String formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
+
       // print(formattedTime); //output 14:59:00
       // //DateFormat() is from intl package, you can format the time on any pattern you need.
     } else {

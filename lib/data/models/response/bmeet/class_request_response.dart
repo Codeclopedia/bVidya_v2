@@ -68,6 +68,7 @@ class PersonalClass {
     this.updatedAt,
     this.studentName,
     this.studentImage,
+    this.preferred_date_time,
   });
 
   int? id;
@@ -82,6 +83,7 @@ class PersonalClass {
   DateTime? updatedAt;
   String? studentName;
   String? studentImage;
+  String? preferred_date_time;
 
   factory PersonalClass.fromRawJson(String str) =>
       PersonalClass.fromJson(json.decode(str));
@@ -101,6 +103,7 @@ class PersonalClass {
         updatedAt: DateTime.parse(json["updated_at"]),
         studentName: json["student_name"],
         studentImage: json["student_image"],
+        preferred_date_time: json["preferred_date_time"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -116,5 +119,6 @@ class PersonalClass {
         "updated_at": updatedAt?.toIso8601String(),
         "student_name": studentName,
         "student_image": studentImage,
+        "preferred_date_time": preferred_date_time,
       };
 }

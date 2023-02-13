@@ -132,16 +132,29 @@ class LessonListTile extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () async {
                       showLoading(ref);
-                      ref.read(currentVideoIDProvider.notifier).state =
-                          lesson.playlist?[playlistIndex]?.videoId ?? 0;
-                      ref.read(currentVideoUrlProvider.notifier).state =
-                          lesson.playlist?[playlistIndex]?.media?.location ??
-                              "";
-                      ref.read(currentLessonIdProvider.notifier).state =
-                          lesson.id ?? 0;
-                      ref.read(selectedLessonIndexProvider.notifier).state =
-                          index;
-                      onplay();
+                      index == 0 && playlistIndex < 2 || isSubscribed
+                          ? {
+                              ref.read(currentVideoIDProvider.notifier).state =
+                                  lesson.playlist?[playlistIndex]?.videoId ?? 0,
+                              ref.read(currentVideoUrlProvider.notifier).state =
+                                  lesson.playlist?[playlistIndex]?.media
+                                          ?.location ??
+                                      "",
+                              ref.read(currentLessonIdProvider.notifier).state =
+                                  lesson.id ?? 0,
+                              ref
+                                  .read(selectedLessonIndexProvider.notifier)
+                                  .state = index,
+                              onplay(),
+                            }
+                          : {
+                              showTopSnackBar(
+                                Overlay.of(context)!,
+                                const CustomSnackBar.error(
+                                  message: 'Subscribe to the Course first.',
+                                ),
+                              )
+                            };
                       // Navigator.pushNamed(context, RouteList.bLearnLessionVideo,
                       //     arguments: {
                       //       "lesson": lesson,
@@ -154,30 +167,42 @@ class LessonListTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.play_circle_outline_sharp,
-                          color: ref.watch(currentVideoIDProvider) ==
-                                  lesson.playlist?[playlistIndex]?.videoId
-                              ? AppColors.primaryColor
-                              : Colors.black,
-                        ),
+                        index == 0 && playlistIndex < 2 || isSubscribed
+                            ? Icon(
+                                Icons.play_circle_outline_sharp,
+                                color: ref.watch(currentVideoIDProvider) ==
+                                        lesson.playlist?[playlistIndex]?.videoId
+                                    ? AppColors.primaryColor
+                                    : Colors.black,
+                              )
+                            : const Icon(
+                                Icons.play_circle_outline_sharp,
+                                color: Colors.grey,
+                              ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 1.h),
+                            padding: EdgeInsets.only(
+                                left: 1.w, right: 1.w, top: 1.w),
                             child: Text(
                               lesson.playlist?[playlistIndex]?.title ?? '',
-                              style: TextStyle(
-                                  color: ref.watch(currentVideoIDProvider) ==
-                                          lesson
-                                              .playlist?[playlistIndex]?.videoId
-                                      ? AppColors.primaryColor
-                                      : Colors.black,
-                                  fontWeight:
-                                      ref.watch(currentVideoIDProvider) ==
+                              style: index == 0 && playlistIndex < 2 ||
+                                      isSubscribed
+                                  ? TextStyle(
+                                      color: ref.watch(
+                                                  currentVideoIDProvider) ==
+                                              lesson.playlist?[playlistIndex]
+                                                  ?.videoId
+                                          ? AppColors.primaryColor
+                                          : Colors.black,
+                                      fontWeight: ref.watch(
+                                                  currentVideoIDProvider) ==
                                               lesson.playlist?[playlistIndex]
                                                   ?.videoId
                                           ? FontWeight.w500
-                                          : FontWeight.w400),
+                                          : FontWeight.w400)
+                                  : const TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w400),
                             ),
                           ),
                         ),

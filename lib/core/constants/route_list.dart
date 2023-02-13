@@ -104,6 +104,7 @@ class RouteList {
   static const String studentProfileDetail = '/student_profile_detail';
 
   static const String studentProfileSchdule = '/student_schdule';
+  static const String requestedClassDetail = '/requested_class_detail';
 
   //*teacher
   static const String teacherProfile = '/teacher-profile';
@@ -113,6 +114,8 @@ class RouteList {
   static const String teacherSchedule = '/teacher_schedule';
   static const String teacherClassRequest = '/teacher_classrequest';
   static const String teacherRequestClassForm = '/teacher_class-request-form';
+  static const String teacherRequestedClassDetail =
+      '/teacher_class-requested-detail';
 
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 

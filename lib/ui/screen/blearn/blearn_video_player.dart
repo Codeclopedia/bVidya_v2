@@ -302,11 +302,40 @@ class BlearnVideoPlayer extends HookConsumerWidget {
           ref.read(currentVideoUrlProvider) ?? ""),
     );
     flickManager?.flickVideoManager?.addListener(() {
+      flickManager?.flickVideoManager?.isVideoInitialized ?? false
+          ? print("blearn player video initialized")
+          : print("blearn player video not initialized");
+
+      flickManager?.flickVideoManager?.isBuffering ?? false
+          ? print("blearn player video buffering")
+          : print("blearn player video not buffering");
+      flickManager?.flickVideoManager?.errorInVideo ?? false
+          ? print("blearn player video error")
+          : print("blearn player video not error");
       flickManager?.flickVideoManager?.isPlaying ?? false
+          ? print("blearn player video playing")
+          : print("blearn player video stopped");
+      flickManager?.flickVideoManager?.isVideoInitialized ?? false
+          ? print("blearn player video initialized")
+          : print("blearn player video not initialized");
+      // flickManager?.flickVideoManager?.errorInVideo ?? false
+      //     ? timer?.pause()
+      //     : null;
+
+      flickManager!.flickVideoManager!.isPlaying
           ? timer?.start()
           : timer?.pause();
-
-      timer?.isActive == true ? print("timer started") : print("timer stopped");
+      flickManager!.flickVideoManager!.isBuffering ||
+              flickManager!.flickVideoManager!.errorInVideo
+          ? timer?.pause()
+          : timer?.start();
+      timer?.isActive == true
+          ? print("blearn player timer active")
+          : print("blearn player timer not active");
+      timer?.isPaused ?? false
+          ? print("blearn player timer paused")
+          : print("blearn player timer not paused");
+      print("blearn player timer ${timer?.elapsed}");
     });
   }
 

@@ -1,7 +1,8 @@
 // import 'package:flutter/material.dart';
+import 'package:bvidya/core/constants/route_list.dart';
+
 import '/controller/bmeet_providers.dart';
 import '/core/state.dart';
-// import '/data/models/response/auth/login_response.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/shimmer_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,8 +26,9 @@ class TeacherClassRequest extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Class Request",
-                style: GoogleFonts.poppins(
+                S.current.tp_classes,
+                style: TextStyle(
+                    fontFamily: kFontFamily,
                     color: AppColors.primaryColor,
                     fontSize: 5.5.w,
                     fontWeight: FontWeight.w500),
@@ -36,12 +38,13 @@ class TeacherClassRequest extends StatelessWidget {
                 child: Consumer(builder: (context, ref, child) {
                   return ref.watch(bmeetClassesProvider).when(
                     data: (data) {
-                      print("data value : $data");
                       if (data == null) {
-                        return buildEmptyPlaceHolder("No Class Requests.");
+                        return buildEmptyPlaceHolder(
+                            S.current.empty_class_request);
                       }
-                      if (data.personalClasses == []) {
-                        return buildEmptyPlaceHolder("No Class Requests.");
+                      if (data.personalClasses?.isEmpty ?? false) {
+                        return buildEmptyPlaceHolder(
+                            S.current.empty_class_request);
                       }
 
                       return ListView.separated(
@@ -51,8 +54,17 @@ class TeacherClassRequest extends StatelessWidget {
                         separatorBuilder: (context, index) =>
                             const Divider(color: AppColors.divider),
                         itemBuilder: (context, index) {
-                          return _buildRequestRow(
-                              data.personalClasses?[index] ?? PersonalClass());
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context,
+                                  RouteList.teacherRequestedClassDetail,
+                                  arguments: data.personalClasses?[index] ??
+                                      PersonalClass());
+                            },
+                            child: _buildRequestRow(
+                                data.personalClasses?[index] ??
+                                    PersonalClass()),
+                          );
                         },
                       );
                     },

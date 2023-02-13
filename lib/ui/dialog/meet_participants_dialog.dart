@@ -8,6 +8,7 @@ import '/core/ui_core.dart';
 
 class MeetParticipantsDialog extends StatelessWidget {
   final bool isHost;
+
   const MeetParticipantsDialog({Key? key, required this.isHost})
       : super(key: key);
 
@@ -71,6 +72,7 @@ class MeetParticipantsDialog extends StatelessWidget {
   Widget _buildMember(
       BuildContext context, BMeetProvider provider, AgoraRtmMember member) {
     final split = member.userId.split(':');
+
     String name = split[1];
     String id = split[0];
     final ConnectedUserInfo? info = provider.userList[id];
@@ -84,14 +86,32 @@ class MeetParticipantsDialog extends StatelessWidget {
         children: [
           getCicleAvatar(info?.name ?? name, ''),
           SizedBox(width: 3.w),
-          Text(
-            isMe ? S.current.bmeet_user_you : name,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: Colors.white,
-              fontSize: 9.sp,
-              fontWeight: FontWeight.w600,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isMe ? S.current.bmeet_user_you : name,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  color: Colors.white,
+                  fontSize: 9.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              // if (isHost)
+              //   Container(
+              //     decoration: BoxDecoration(
+              //         color: AppColors.yellowAccent,
+              //         borderRadius: BorderRadius.circular(1.w)),
+              //     padding: EdgeInsets.all(1.w),
+              //     child: Text(
+              //       "Host",
+              //       style:
+              //           TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w500),
+              //     ),
+              //   )
+            ],
           ),
           const Spacer(),
           Visibility(

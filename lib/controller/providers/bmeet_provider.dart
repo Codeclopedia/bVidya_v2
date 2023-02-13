@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
+import 'package:bvidya/ui/screens.dart';
 import '/core/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,12 @@ import 'package:flutter/services.dart';
 import '/core/helpers/duration.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
+
+final canRaiseHandProvider = StateProvider.autoDispose<bool>(
+  (ref) {
+    return true;
+  },
+);
 
 final raisedHandMeetingProvider = StateProvider<String>((ref) => '');
 
@@ -227,6 +234,13 @@ class BMeetProvider extends ChangeNotifier {
           _localUserJoined = true;
           _localUid = connection.localUid ?? 0;
           _userRemoteIds.add(_localUid);
+
+          //           value.enabledVideo = !_disableLocalCamera;
+          // if (value.enabledVideo) {
+          //   value.widget = _localView();
+          // } else {
+          //   value.widget = getRectFAvatar(value.name, '');
+          // }
           _userList.addAll(
               {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
           _updateMemberList();
@@ -238,11 +252,11 @@ class BMeetProvider extends ChangeNotifier {
           // notifyListeners();
           _updateMemberList();
         },
-        // onRemoteVideoStateChanged:
-        //     (connection, remoteUid, state, reason, elapsed) {
-        //   print(
-        //       'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
-        // },
+        onRemoteVideoStateChanged:
+            (connection, remoteUid, state, reason, elapsed) {
+          print(
+              'remote user video $remoteUid  status changed to ${state.name}, since $elapsed seconds  ,reason ${reason.name}');
+        },
         onLeaveChannel: (connection, stats) {
           // int userId = connection.localUid ?? 0;
           // if (userId < 1000000) {
@@ -458,6 +472,16 @@ class BMeetProvider extends ChangeNotifier {
           _userList.update(
             id,
             (value) {
+              if (value.enabledVideo) {
+                if (id == _localUid) {
+                  value.widget = _localView();
+                } else {
+                  value.widget = _remoteView(id);
+                }
+              } else {
+                value.widget = getRectFAvatar(name, '');
+              }
+              value.muteAudio = _ref?.read(muteStartMeetingProvider) ?? false;
               value.name = name;
               return value;
             },
@@ -498,7 +522,7 @@ class BMeetProvider extends ChangeNotifier {
     await _engine.muteLocalVideoStream(_disableLocalCamera);
     if (_userList.containsKey(_localUid)) {
       _userList.update(_localUid, (value) {
-        value.enabledVideo = _disableLocalCamera;
+        value.enabledVideo = !_disableLocalCamera;
         if (value.enabledVideo) {
           value.widget = _localView();
         } else {
@@ -636,6 +660,15 @@ class BMeetProvider extends ChangeNotifier {
     _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('raise_hand'));
 
     _timer?.cancel();
+//to stop one user spam raise hand
+    _ref?.read(canRaiseHandProvider.notifier).state = false;
+    Timer(
+      const Duration(seconds: 30),
+      () {
+        _ref?.read(canRaiseHandProvider.notifier).state = true;
+      },
+    );
+
 //Show to sender too
     _ref?.read(raisedHandMeetingProvider.notifier).state =
         S.current.bmeet_user_you;
@@ -717,7 +750,7 @@ class BMeetProvider extends ChangeNotifier {
         rtcEngine: engine,
         canvas: VideoCanvas(
           uid: uid,
-          renderMode: RenderModeType.renderModeFit,
+          renderMode: RenderModeType.renderModeHidden,
           isScreenView: false,
           sourceType: VideoSourceType.videoSourceRemote,
         ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/call_list_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -43,6 +44,7 @@ class GroupsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
       ref.read(groupConversationProvider.notifier).reset(ref);
+      ref.read(groupCallListProvider.notifier).setup();
       registerForNewMessage('group_screens', (msgs) {
         for (var lastMessage in msgs) {
           if (lastMessage.conversationId != null &&

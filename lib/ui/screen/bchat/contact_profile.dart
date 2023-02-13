@@ -626,8 +626,19 @@ class ContactProfileScreen extends HookConsumerWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  getRectFAvatar(contact.name, contact.profileImage,
-                      size: 20.w),
+                  // getRectFAvatar(contact.name, contact.profileImage,
+                  //     size: 20.w),
+                  InkWell(
+                    onTap: () async {
+                      await showImageViewer(
+                          context, getImageProvider(contact.profileImage),
+                          doubleTapZoomable: true, onViewerDismissed: () {
+                        // print("dismissed");
+                      });
+                    },
+                    child: getRectFAvatar(contact.name, contact.profileImage,
+                        size: 20.w),
+                  ),
                   SizedBox(
                     height: 0.7.h,
                   ),

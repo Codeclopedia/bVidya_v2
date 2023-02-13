@@ -51,7 +51,7 @@ class SplashScreen extends ConsumerWidget {
           await loadChats(ref);
 
           await ref.read(groupConversationProvider.notifier).setup();
-          await ref.read(callListProvider.notifier).setup();
+          // await ref.read(callListProvider.notifier).setup();
 
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
           print('Time taken: $diff ms');

@@ -1,4 +1,5 @@
 import 'package:bvidya/core/helpers/group_call_helper.dart';
+import 'package:bvidya/core/utils/date_utils.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 
 import '/ui/screen/blearn/components/common.dart';
@@ -135,6 +136,8 @@ class GroupRecentCallScreen extends StatelessWidget {
   }
 
   Widget _contactRow(GroupCallListModel model, Function() onCall) {
+    final date = DateTime.fromMillisecondsSinceEpoch(model.time);
+    String time = formatDateCall(date);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
@@ -159,16 +162,40 @@ class GroupRecentCallScreen extends StatelessWidget {
                 SizedBox(
                   height: 0.5.h,
                 ),
-                Text(
-                  DateFormat('h:mm a')
-                      .format(DateTime.fromMillisecondsSinceEpoch(model.time))
-                      .toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    color: AppColors.contactNameTextColor,
-                    fontSize: 12.sp,
-                  ),
-                ),
+                Row(
+                  children: [
+                    model.outgoing
+                        ? Icon(
+                            Icons.call_made,
+                            color: Colors.green,
+                            size: 5.w,
+                          )
+                        : Icon(
+                            Icons.call_received,
+                            color: Colors.black,
+                            size: 5.w,
+                          ),
+                    SizedBox(width: 0.5.w),
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: AppColors.contactNameTextColor,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
+                )
+                // Text(
+                //   DateFormat('h:mm a')
+                //       .format(DateTime.fromMillisecondsSinceEpoch(model.time))
+                //       .toUpperCase(),
+                //   style: TextStyle(
+                //     fontFamily: kFontFamily,
+                //     color: AppColors.contactNameTextColor,
+                //     fontSize: 12.sp,
+                //   ),
+                // ),
               ],
             ),
           ),

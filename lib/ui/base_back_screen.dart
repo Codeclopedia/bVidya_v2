@@ -1,3 +1,5 @@
+import 'package:lottie/lottie.dart';
+
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
@@ -6,7 +8,16 @@ showLoading(WidgetRef ref) {
     ref.watch(loadingStateProvider.notifier).state = true;
   } catch (_) {}
 
-  EasyLoading.show();
+  // EasyLoading.show();
+
+  EasyLoading.show(
+    indicator: SizedBox(
+        height: 10.w,
+        child: LottieBuilder.asset(
+          "assets/icons/lottie/99109-loading.json",
+          fit: BoxFit.cover,
+        )),
+  );
 }
 
 hideLoading(WidgetRef ref) {

@@ -41,10 +41,16 @@ class AttachedFileView extends StatelessWidget {
                           image: FileImage(File(
                               attFile.file.thumbPath ?? attFile.file.path))),
                     ))
-              : getSvgIcon('icon_chat_doc.svg',
-                  color: AppColors.primaryColor,
-                  width: 10.h - 4.w,
-                  fit: BoxFit.contain)),
+              : attFile.messageType == MessageType.VOICE
+                  ? Icon(
+                      Icons.music_note,
+                      size: 15.w,
+                      color: AppColors.primaryColor,
+                    )
+                  : getSvgIcon('icon_chat_doc.svg',
+                      color: AppColors.primaryColor,
+                      width: 10.h - 4.w,
+                      fit: BoxFit.contain)),
     );
   }
 }

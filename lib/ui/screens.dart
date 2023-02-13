@@ -62,6 +62,7 @@ export 'screen/profile/student/profile_screen.dart';
 export 'screen/profile/student/my_learning_screen.dart';
 export 'screen/profile/student/student_profile_detail.dart';
 export 'screen/profile/student/student_schdule.dart';
+export 'screen/profile/student/request_detail_screen.dart';
 
 export 'screen/profile/teacher/teacher_dashboard_screen.dart';
 export 'screen/profile/teacher/teacher_profile.dart';
@@ -69,6 +70,7 @@ export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
 export 'screen/profile/teacher/teacher_classrequest.dart';
 export 'screen/profile/teacher/teacher_schedule.dart';
+export 'screen/profile/teacher/requested_class_detail.dart';
 export 'screen/blearn/components/request_class_form.dart';
 
 export 'screen/profile/settings/webview_screen.dart';

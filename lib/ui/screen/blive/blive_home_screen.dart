@@ -288,12 +288,18 @@ class BLiveHomeScreen extends HookWidget {
         final broadcast = broadcastList[index];
         return liveClassRow(broadcast, () {
           joinBroadcast(context, ref, broadcast.streamId ?? '');
-        });
+        }, ref);
       },
     );
   }
 
-  Widget liveClassRow(LMSLiveClass broadcast, Function() onJoin) {
+  Widget liveClassRow(
+      LMSLiveClass broadcast, Function() onJoin, WidgetRef ref) {
+    bool pastDate = false;
+    int compare = DateTime.now()
+        .subtract(const Duration(days: 1))
+        .compareTo(ref.watch(bLiveSelectedDateProvider));
+    pastDate = compare == 1 ? true : false;
     return Container(
       margin: EdgeInsets.only(right: 2.w),
       padding: EdgeInsets.all(3.w),
@@ -301,7 +307,9 @@ class BLiveHomeScreen extends HookWidget {
       width: 35.w,
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFA),
-        border: Border.all(color: const Color(0xFF707070), width: 0.5),
+        border: Border.all(
+            color: pastDate ? AppColors.iconGreyColor : const Color(0xFF707070),
+            width: 0.5),
         borderRadius: BorderRadius.all(Radius.circular(4.w)),
       ),
       child: Column(
@@ -312,7 +320,7 @@ class BLiveHomeScreen extends HookWidget {
                 fontWeight: FontWeight.w500,
                 fontSize: 8.sp,
                 fontFamily: kFontFamily,
-                color: AppColors.black,
+                color: pastDate ? AppColors.iconGreyColor : AppColors.black,
               )),
           SizedBox(height: 1.w),
           Text(
@@ -322,7 +330,8 @@ class BLiveHomeScreen extends HookWidget {
               fontWeight: FontWeight.bold,
               fontSize: 10.sp,
               fontFamily: kFontFamily,
-              color: AppColors.primaryColor,
+              color:
+                  pastDate ? AppColors.iconGreyColor : AppColors.primaryColor,
             ),
           ),
           SizedBox(height: 1.h),
@@ -333,7 +342,7 @@ class BLiveHomeScreen extends HookWidget {
               fontWeight: FontWeight.w400,
               fontSize: 8.sp,
               fontFamily: kFontFamily,
-              color: AppColors.black,
+              color: pastDate ? AppColors.iconGreyColor : AppColors.black,
             ),
           ),
           const Spacer(),
@@ -347,22 +356,21 @@ class BLiveHomeScreen extends HookWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 8.sp,
                     fontFamily: kFontFamily,
-                    color: AppColors.black),
+                    color:
+                        pastDate ? AppColors.iconGreyColor : AppColors.black),
               ),
-              Consumer(
-                builder: (context, ref, child) {
-                  return GestureDetector(
-                    onTap: () {
-                      onJoin();
-                      // startMeeting(context, ref, meeting, true, false);
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: AppColors.yellowAccent,
-                      radius: 1.5.h,
-                      child: getSvgIcon('icon_next.svg', width: 1.4.h),
-                    ),
-                  );
+              GestureDetector(
+                onTap: () {
+                  pastDate ? null : onJoin();
+                  // startMeeting(context, ref, meeting, true, false);
                 },
+                child: CircleAvatar(
+                  backgroundColor: pastDate
+                      ? AppColors.iconGreyColor
+                      : AppColors.yellowAccent,
+                  radius: 1.5.h,
+                  child: getSvgIcon('icon_next.svg', width: 1.4.h),
+                ),
               ),
             ],
           )

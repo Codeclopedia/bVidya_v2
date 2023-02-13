@@ -430,79 +430,79 @@ class TeacherProfileEdit extends HookWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      alignment: Alignment.topCenter,
-      margin: EdgeInsets.only(top: 3.h),
-      child: Column(
-        children: [
-          Stack(
-            children: <Widget>[
-              SizedBox(
-                width: 30.w,
-                height: 14.h,
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 13.h,
-                        width: 28.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(2.3.h),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.asset(
-                                  'assets/screen_1.jpg',
-                                  height: 12.h,
-                                  width: 24.w,
-                                  fit: BoxFit.fill,
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        height: 4.5.h,
-                        width: 10.w,
-                        padding: EdgeInsets.all(1.h),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(3.h)),
-                          color: Colors.yellow,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2,
-                          ),
-                        ),
-                        child: const Icon(Icons.edit),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildHeader() {
+  //   return Container(
+  //     alignment: Alignment.topCenter,
+  //     margin: EdgeInsets.only(top: 3.h),
+  //     child: Column(
+  //       children: [
+  //         Stack(
+  //           children: <Widget>[
+  //             SizedBox(
+  //               width: 30.w,
+  //               height: 14.h,
+  //               child: Stack(
+  //                 children: <Widget>[
+  //                   Positioned(
+  //                     left: 0,
+  //                     right: 0,
+  //                     child: Container(
+  //                       height: 13.h,
+  //                       width: 28.w,
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white.withOpacity(0),
+  //                         borderRadius: BorderRadius.all(
+  //                           Radius.circular(2.3.h),
+  //                         ),
+  //                       ),
+  //                       child: Row(
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         mainAxisSize: MainAxisSize.max,
+  //                         crossAxisAlignment: CrossAxisAlignment.center,
+  //                         children: [
+  //                           ClipRRect(
+  //                               borderRadius: BorderRadius.circular(20),
+  //                               child: Image.asset(
+  //                                 'assets/screen_1.jpg',
+  //                                 height: 12.h,
+  //                                 width: 24.w,
+  //                                 fit: BoxFit.fill,
+  //                               )),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   Positioned(
+  //                     right: 0,
+  //                     bottom: 0,
+  //                     child: Container(
+  //                       height: 4.5.h,
+  //                       width: 10.w,
+  //                       padding: EdgeInsets.all(1.h),
+  //                       decoration: BoxDecoration(
+  //                         borderRadius: BorderRadius.all(Radius.circular(3.h)),
+  //                         color: Colors.yellow,
+  //                         border: Border.all(
+  //                           color: Colors.white,
+  //                           width: 2,
+  //                         ),
+  //                       ),
+  //                       child: const Icon(Icons.edit),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildTitle() {
     return Text(
-      S.current.prof_edit_title,
+      S.current.profile_details,
       style: textStyleSettingHeading,
     );
   }

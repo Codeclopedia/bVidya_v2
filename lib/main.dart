@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter_apns_only/flutter_apns_only.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
-// import 'package:flutter_apns/flutter_apns.dart';
 
 import 'core/helpers/background_helper.dart';
 import 'core/sdk_helpers/bchat_sdk_controller.dart';

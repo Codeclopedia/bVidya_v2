@@ -12,6 +12,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
@@ -117,12 +118,15 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   Widget _buildMessageBody(BuildContext context) {
+    // print("inside build message body ${message.body.type}");
+
     switch (message.body.type) {
       case MessageType.TXT:
         {
           ChatTextMessageBody body = message.body as ChatTextMessageBody;
           return _buildTextMessage(body);
         }
+
       case MessageType.IMAGE:
         {
           ChatImageMessageBody body = message.body as ChatImageMessageBody;
@@ -225,7 +229,7 @@ class ChatMessageBubble extends StatelessWidget {
                 // color: Colors.white,
               ),
               SizedBox(width: 2.w),
-              _textMessage(content)
+              _textMessage(content, false)
             ],
           ),
           Container(
@@ -407,7 +411,7 @@ class ChatMessageBubble extends StatelessWidget {
 
   Widget _buildTextMessage(ChatTextMessageBody body) {
     bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
-
+    bool isSingleEmojiText = isLessEmojisThan(body.content, 2);
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
@@ -421,11 +425,12 @@ class ChatMessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (hasReply) _replyText(),
+          // if(body.content)
           Row(
             mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Flexible(child: _textMessage(body.content)),
+              Flexible(child: _textMessage(body.content, isSingleEmojiText)),
               // Flexible(
               //     child: Wrap(
               //   alignment: WrapAlignment.start,
@@ -594,7 +599,7 @@ class ChatMessageBubble extends StatelessWidget {
             mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Flexible(child: _textMessage(fileName)),
+              Flexible(child: _textMessage(fileName, false)),
               // Flexible(
               //     child: Wrap(
               //   alignment: WrapAlignment.start,
@@ -650,77 +655,79 @@ class ChatMessageBubble extends StatelessWidget {
     if (fileName.contains('.')) {
       size = getFileSize(body.fileSize, 1);
     }
-    return Container(
-      constraints: BoxConstraints(
-        minWidth: 20.w,
-        maxWidth: 50.w,
-      ),
-      margin: EdgeInsets.only(
-          left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
-      decoration: _buildDecoration(),
-      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (hasReply) _replyText(),
-          Container(
-            // width: 33.w,
-            // height: 33.w,
-            padding: EdgeInsets.all(4.w),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: !isOwnMessage
-                  ? const Color(0xFF6F3253)
-                  : const Color.fromARGB(255, 248, 213, 131),
-              borderRadius: BorderRadius.circular(2.w),
-            ),
-            child: Center(child: fileWidget),
-          ),
-          Row(
-            mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Flexible(child: _textMessage(fileName)),
-              // Flexible(
-              //     child: Wrap(
-              //   alignment: WrapAlignment.start,
-              //   children: getMessage(body.content),
-              // )),
-              // const Spacer(),
-              SizedBox(width: 3.w)
-            ],
-          ),
-          SizedBox(height: 1.w),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Size $size',
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    fontSize: 8.sp,
-                    color: isOwnMessage
-                        ? AppColors.chatBoxMessageMine
-                        : AppColors.chatBoxMessageOthers,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              _buildTime(),
-            ],
-          )
-        ],
-      ),
+    return VoiceMessage(
+      audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
+      me: isOwnMessage,
     );
+    // Container(
+    //   constraints: BoxConstraints(minWidth: 20.w, maxWidth: 60.w),
+    //   margin: EdgeInsets.only(
+    //       left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
+    //   decoration: _buildDecoration(),
+    //   padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       if (hasReply) _replyText(),
+
+    //       // Container(
+    //       //   // width: 33.w,
+    //       //   // height: 33.w,
+    //       //   padding: EdgeInsets.all(4.w),
+    //       //   alignment: Alignment.center,
+    //       //   decoration: BoxDecoration(
+    //       //     color: !isOwnMessage
+    //       //         ? const Color(0xFF6F3253)
+    //       //         : const Color.fromARGB(255, 248, 213, 131),
+    //       //     borderRadius: BorderRadius.circular(2.w),
+    //       //   ),
+    //       //   child: Center(child: fileWidget),
+    //       // ),
+    //       Row(
+    //         mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         children: [
+    //           Flexible(child: _textMessage(fileName, false)),
+    //           // Flexible(
+    //           //     child: Wrap(
+    //           //   alignment: WrapAlignment.start,
+    //           //   children: getMessage(body.content),
+    //           // )),
+    //           // const Spacer(),
+    //           SizedBox(width: 3.w)
+    //         ],
+    //       ),
+    //       SizedBox(height: 1.w),
+    //       Row(
+    //         children: [
+    //           Expanded(
+    //             child: Text(
+    //               'Size $size',
+    //               style: TextStyle(
+    //                 fontFamily: kFontFamily,
+    //                 fontSize: 8.sp,
+    //                 color: isOwnMessage
+    //                     ? AppColors.chatBoxMessageMine
+    //                     : AppColors.chatBoxMessageOthers,
+    //                 fontWeight: FontWeight.w600,
+    //               ),
+    //             ),
+    //           ),
+    //           _buildTime(),
+    //         ],
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
-  Widget _textMessage(String content) {
+  Widget _textMessage(String content, bool isOnlyEmoji) {
     // final bool isOwnMessage = message.from == currentUser.id;
     return Text(
       content,
       style: TextStyle(
         fontFamily: kFontFamily,
-        fontSize: 10.sp,
+        fontSize: isOnlyEmoji ? 30.sp : 10.sp,
         color: isOwnMessage
             ? AppColors.chatBoxMessageMine
             : AppColors.chatBoxMessageOthers,
@@ -768,6 +775,37 @@ class ChatMessageBubble extends StatelessWidget {
                   : AppColors.chatBoxTimeOthers,
             ),
           );
+  }
+
+  bool isOnlyEmojis(String text) {
+    // find all emojis
+    final emojis = emojisRegExp.allMatches(text);
+
+    // return if none found
+    if (emojis.isEmpty) return false;
+
+    // remove all emojis from the this
+    for (final emoji in emojis) {
+      text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), "");
+    }
+
+    // remove all whitespace (optional)
+    text = text.replaceAll(" ", "");
+
+    // return true if nothing else left
+    return text.isEmpty;
+  }
+
+  /// True if the string is only emojis and the number of emojis is less than [maxEmojis]
+  bool isLessEmojisThan(String text, int maxEmojis) {
+    final allEmojis = emojisRegExp.allMatches(text);
+    final numEmojis = allEmojis.length;
+
+    if (numEmojis < maxEmojis && isOnlyEmojis(text)) {
+      return true;
+    }
+
+    return false;
   }
 
   List<Widget> getMessage(String content) {
@@ -857,3 +895,5 @@ final List<MatchText> defaultPersePatterns = <MatchText>[
     },
   ),
 ];
+final emojisRegExp = RegExp(
+    r"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])");

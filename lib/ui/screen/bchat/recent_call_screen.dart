@@ -153,13 +153,29 @@ class RecentCallScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 0.5.h),
-                Text(
-                  time,
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    color: AppColors.contactNameTextColor,
-                    fontSize: 12.sp,
-                  ),
+                Row(
+                  children: [
+                    model.outgoing
+                        ? Icon(
+                            Icons.call_made,
+                            color: Colors.green,
+                            size: 5.w,
+                          )
+                        : Icon(
+                            Icons.call_received,
+                            color: Colors.black,
+                            size: 5.w,
+                          ),
+                    SizedBox(width: 0.5.w),
+                    Text(
+                      time,
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: AppColors.contactNameTextColor,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

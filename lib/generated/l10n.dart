@@ -1800,10 +1800,10 @@ class S {
     );
   }
 
-  /// `Invalid Start time`
+  /// `Meeting start time can't be in past`
   String get bmeet_invalid_start {
     return Intl.message(
-      'Invalid Start time',
+      'Meeting start time can\'t be in past',
       name: 'bmeet_invalid_start',
       desc: '',
       args: [],
@@ -1820,10 +1820,10 @@ class S {
     );
   }
 
-  /// `Invalid End time`
+  /// `Meeting end time can't be before start time`
   String get bmeet_invalid_end {
     return Intl.message(
-      'Invalid End time',
+      'Meeting end time can\'t be before start time',
       name: 'bmeet_invalid_end',
       desc: '',
       args: [],
@@ -1900,10 +1900,10 @@ class S {
     );
   }
 
-  /// `You currently have no live broadcast\n scheduled on the selected date. \n Select a different date.`
+  /// `No scheduled Broadcast.`
   String get blive_no_meetings {
     return Intl.message(
-      'You currently have no live broadcast\n scheduled on the selected date. \n Select a different date.',
+      'No scheduled Broadcast.',
       name: 'blive_no_meetings',
       desc: '',
       args: [],
@@ -2870,6 +2870,16 @@ class S {
     );
   }
 
+  /// `No Class Requests.`
+  String get empty_class_request {
+    return Intl.message(
+      'No Class Requests.',
+      name: 'empty_class_request',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Call`
   String get menu_call {
     return Intl.message(
@@ -2910,20 +2920,20 @@ class S {
     );
   }
 
-  /// `Share bVidya app`
+  /// `Share bVidya App`
   String get settingShare {
     return Intl.message(
-      'Share bVidya app',
+      'Share bVidya App',
       name: 'settingShare',
       desc: '',
       args: [],
     );
   }
 
-  /// `Rate app`
+  /// `Rate App`
   String get settingRate {
     return Intl.message(
-      'Rate app',
+      'Rate App',
       name: 'settingRate',
       desc: '',
       args: [],
@@ -3030,10 +3040,10 @@ class S {
     );
   }
 
-  /// `Reset password, delete account`
+  /// `Reset Password, Delete Account`
   String get passReset {
     return Intl.message(
-      'Reset password, delete account',
+      'Reset Password, Delete Account',
       name: 'passReset',
       desc: '',
       args: [],
@@ -3060,10 +3070,10 @@ class S {
     );
   }
 
-  /// `Help center,report problem ,privacy policy`
+  /// `Help Center, Report Problem, Privacy Policy`
   String get helpCenter {
     return Intl.message(
-      'Help center,report problem ,privacy policy',
+      'Help Center, Report Problem, Privacy Policy',
       name: 'helpCenter',
       desc: '',
       args: [],
@@ -3085,6 +3095,46 @@ class S {
     return Intl.message(
       'Select a problem type',
       name: 'ProblemTypeError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Courses Uploaded yet`
+  String get NoCourses {
+    return Intl.message(
+      'No Courses Uploaded yet',
+      name: 'NoCourses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preferred Date`
+  String get preferredDate {
+    return Intl.message(
+      'Preferred Date',
+      name: 'preferredDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preferred Time`
+  String get preferredTime {
+    return Intl.message(
+      'Preferred Time',
+      name: 'preferredTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence.`
+  String get Requested_time_Note {
+    return Intl.message(
+      'Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence.',
+      name: 'Requested_time_Note',
       desc: '',
       args: [],
     );
@@ -3130,6 +3180,16 @@ class S {
     );
   }
 
+  /// `Coming Soon...`
+  String get coming_soon {
+    return Intl.message(
+      'Coming Soon...',
+      name: 'coming_soon',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Find your answers here`
   String get faqDesc {
     return Intl.message(
@@ -3140,20 +3200,20 @@ class S {
     );
   }
 
-  /// `Report an issue`
+  /// `Report an Issue`
   String get report_title {
     return Intl.message(
-      'Report an issue',
+      'Report an Issue',
       name: 'report_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Report an issue you are facing in app`
+  /// `Report an Issue you are facing in app`
   String get reposrtDesc {
     return Intl.message(
-      'Report an issue you are facing in app',
+      'Report an Issue you are facing in app',
       name: 'reposrtDesc',
       desc: '',
       args: [],
@@ -3460,6 +3520,26 @@ class S {
     );
   }
 
+  /// `Class Requested by`
+  String get class_requested_title {
+    return Intl.message(
+      'Class Requested by',
+      name: 'class_requested_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Requested to`
+  String get class_request_title {
+    return Intl.message(
+      'Class Requested to',
+      name: 'class_request_title',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Private Class Requests`
   String get privateClassTitle {
     return Intl.message(
@@ -3500,10 +3580,10 @@ class S {
     );
   }
 
-  /// `Reset your password`
+  /// `Reset your Password`
   String get resetPassDesc {
     return Intl.message(
-      'Reset your password',
+      'Reset your Password',
       name: 'resetPassDesc',
       desc: '',
       args: [],
@@ -3530,20 +3610,20 @@ class S {
     );
   }
 
-  /// `End to End encrypted`
+  /// `End-to-End encrypted`
   String get secrityDesc {
     return Intl.message(
-      'End to End encrypted',
+      'End-to-End encrypted',
       name: 'secrityDesc',
       desc: '',
       args: [],
     );
   }
 
-  /// `Delete your account`
+  /// `Delete your Account`
   String get deleteDesc {
     return Intl.message(
-      'Delete your account',
+      'Delete your Account',
       name: 'deleteDesc',
       desc: '',
       args: [],
@@ -3560,10 +3640,10 @@ class S {
     );
   }
 
-  /// `Select a freature you're experiencing a\nproblem with:`
+  /// `Select a feature you're experiencing a\nproblem with:`
   String get reportDesc {
     return Intl.message(
-      'Select a freature you\'re experiencing a\nproblem with:',
+      'Select a feature you\'re experiencing a\nproblem with:',
       name: 'reportDesc',
       desc: '',
       args: [],
@@ -3660,10 +3740,10 @@ class S {
     );
   }
 
-  /// `Invite a friend`
+  /// `Invite a Friend`
   String get profile_invite {
     return Intl.message(
-      'Invite a friend',
+      'Invite a Friend',
       name: 'profile_invite',
       desc: '',
       args: [],
@@ -4200,10 +4280,10 @@ class S {
     );
   }
 
-  /// `Total Subscriber`
+  /// `Total Subscribers`
   String get td_subs {
     return Intl.message(
-      'Total Subscriber',
+      'Total Subscribers',
       name: 'td_subs',
       desc: '',
       args: [],

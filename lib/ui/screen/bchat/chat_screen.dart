@@ -344,6 +344,14 @@ class ChatScreen extends HookConsumerWidget {
         fileSize: attFile.file.size.toInt(),
       );
       content = 'Video';
+    } else if (attFile.messageType == MessageType.VOICE) {
+      msg = ChatMessage.createVoiceSendMessage(
+        targetId: model.contact.userId.toString(),
+        filePath: attFile.file.path,
+        displayName: displayName,
+        fileSize: attFile.file.size.toInt(),
+      );
+      content = 'Audio';
     } else {
       msg = ChatMessage.createFileSendMessage(
         targetId: model.contact.userId.toString(),
@@ -355,8 +363,7 @@ class ChatScreen extends HookConsumerWidget {
     }
     msg.attributes = {
       "em_apns_ext": {
-        "em_push_title":
-            "${_me.name} sent you a message",
+        "em_push_title": "${_me.name} sent you a message",
         "em_push_content": 'A New $content',
         'type': 'chat',
         // 'name': _me.name,
@@ -468,8 +475,8 @@ class ChatScreen extends HookConsumerWidget {
         break;
       case AttachType.media:
         ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
-        ipp.SelectedImagesDetails? details =
-            await pickerPlus.pickImage(source: ipp.ImageSource.gallery);//todo change to both
+        ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
+            source: ipp.ImageSource.gallery); //todo change to both
         if (details != null && details.selectedFiles.isNotEmpty) {
           File file = details.selectedFiles.first.selectedFile;
           bool isImage = file.path.toLowerCase().endsWith('png') ||

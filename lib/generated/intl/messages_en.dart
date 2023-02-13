@@ -45,8 +45,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "ClearChatMessage": MessageLookupByLibrary.simpleMessage(
             "Do you really want to clear the chats?"),
         "ExportChat": MessageLookupByLibrary.simpleMessage("Export Chat"),
+        "NoCourses":
+            MessageLookupByLibrary.simpleMessage("No Courses Uploaded yet"),
         "ProblemTypeError":
             MessageLookupByLibrary.simpleMessage("Select a problem type"),
+        "Requested_time_Note": MessageLookupByLibrary.simpleMessage(
+            "Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence."),
         "accnt_security": MessageLookupByLibrary.simpleMessage("Security"),
         "atc_audio": MessageLookupByLibrary.simpleMessage("Audio"),
         "atc_audio_desc": MessageLookupByLibrary.simpleMessage("Share audios"),
@@ -127,8 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Broadcast time can\'t be in past"),
         "blive_invalid_title": MessageLookupByLibrary.simpleMessage(
             "Broadcast title must contains at least 5 characters"),
-        "blive_no_meetings": MessageLookupByLibrary.simpleMessage(
-            "You currently have no live broadcast\n scheduled on the selected date. \n Select a different date."),
+        "blive_no_meetings":
+            MessageLookupByLibrary.simpleMessage("No scheduled Broadcast."),
         "blive_schedule_heading":
             MessageLookupByLibrary.simpleMessage("Schedule a Broadcast"),
         "blive_today_meeting":
@@ -211,10 +215,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter Your Meeting Title"),
         "bmeet_invalid_date": MessageLookupByLibrary.simpleMessage(
             "Meeting date can\'t be in past"),
-        "bmeet_invalid_end":
-            MessageLookupByLibrary.simpleMessage("Invalid End time"),
-        "bmeet_invalid_start":
-            MessageLookupByLibrary.simpleMessage("Invalid Start time"),
+        "bmeet_invalid_end": MessageLookupByLibrary.simpleMessage(
+            "Meeting end time can\'t be before start time"),
+        "bmeet_invalid_start": MessageLookupByLibrary.simpleMessage(
+            "Meeting start time can\'t be in past"),
         "bmeet_invalid_subject": MessageLookupByLibrary.simpleMessage(
             "Meeting subject must contains at least 5 characters"),
         "bmeet_invalid_title": MessageLookupByLibrary.simpleMessage(
@@ -291,7 +295,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
         "chat_replying": m2,
         "chat_yourself": MessageLookupByLibrary.simpleMessage("Yourself"),
+        "class_request_title":
+            MessageLookupByLibrary.simpleMessage("Class Requested to"),
+        "class_requested_title":
+            MessageLookupByLibrary.simpleMessage("Class Requested by"),
         "clearChat": MessageLookupByLibrary.simpleMessage("Clear Chat"),
+        "coming_soon": MessageLookupByLibrary.simpleMessage("Coming Soon..."),
         "confDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block conference reminder notifications"),
         "confRem": MessageLookupByLibrary.simpleMessage("Conference Reminder"),
@@ -331,7 +340,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Worked at BHARAT CHEMISTRY\nCLASSES"),
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
-            MessageLookupByLibrary.simpleMessage("Delete your account"),
+            MessageLookupByLibrary.simpleMessage("Delete your Account"),
         "dg_confirm_deleteAccount":
             MessageLookupByLibrary.simpleMessage("Yes, Delete my account."),
         "dg_message_DeleteAccount": MessageLookupByLibrary.simpleMessage(
@@ -366,6 +375,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "drawer_setting": MessageLookupByLibrary.simpleMessage("Setting"),
         "emailHint":
             MessageLookupByLibrary.simpleMessage("Enter Your Email Address"),
+        "empty_class_request":
+            MessageLookupByLibrary.simpleMessage("No Class Requests."),
         "error": MessageLookupByLibrary.simpleMessage(
             "Something went wrong! Try again."),
         "faqDesc":
@@ -415,7 +426,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "grp_txt_add_participant":
             MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
-            "Help center,report problem ,privacy policy"),
+            "Help Center, Report Problem, Privacy Policy"),
         "home_btx_groups": MessageLookupByLibrary.simpleMessage("Groups"),
         "home_btx_new_group": MessageLookupByLibrary.simpleMessage("New Group"),
         "home_btx_new_message":
@@ -496,7 +507,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Resend OTP in 59 seconds"),
         "otp_login_txt_in_seconds": m4,
         "passReset": MessageLookupByLibrary.simpleMessage(
-            "Reset password, delete account"),
+            "Reset Password, Delete Account"),
         "pr_btx_all": MessageLookupByLibrary.simpleMessage("View All"),
         "pr_btx_block": MessageLookupByLibrary.simpleMessage("Block"),
         "pr_btx_report": MessageLookupByLibrary.simpleMessage("Report Contact"),
@@ -509,6 +520,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Mute Notification"),
         "pr_name": MessageLookupByLibrary.simpleMessage("Display Name"),
         "pr_phone": MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "preferredDate": MessageLookupByLibrary.simpleMessage("Preferred Date"),
+        "preferredTime": MessageLookupByLibrary.simpleMessage("Preferred Time"),
         "privacyDesc": MessageLookupByLibrary.simpleMessage("Our policies"),
         "privacy_title": MessageLookupByLibrary.simpleMessage("Privacy Policy"),
         "privateClassTitle":
@@ -540,16 +553,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "profile_instr":
             MessageLookupByLibrary.simpleMessage("Become An Instructor"),
         "profile_invite":
-            MessageLookupByLibrary.simpleMessage("Invite a friend"),
+            MessageLookupByLibrary.simpleMessage("Invite a Friend"),
         "profile_learning": MessageLookupByLibrary.simpleMessage("My Learning"),
         "profile_logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "profile_title": MessageLookupByLibrary.simpleMessage("Profile"),
         "reportDesc": MessageLookupByLibrary.simpleMessage(
-            "Select a freature you\'re experiencing a\nproblem with:"),
+            "Select a feature you\'re experiencing a\nproblem with:"),
         "reportTitle": MessageLookupByLibrary.simpleMessage("Report a Problem"),
-        "report_title": MessageLookupByLibrary.simpleMessage("Report an issue"),
+        "report_title": MessageLookupByLibrary.simpleMessage("Report an Issue"),
         "reposrtDesc": MessageLookupByLibrary.simpleMessage(
-            "Report an issue you are facing in app"),
+            "Report an Issue you are facing in app"),
         "request_class":
             MessageLookupByLibrary.simpleMessage("Request a class"),
         "request_class_description":
@@ -576,16 +589,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetNoty":
             MessageLookupByLibrary.simpleMessage("Reset Notification Setting"),
         "resetPassDesc":
-            MessageLookupByLibrary.simpleMessage("Reset your password"),
+            MessageLookupByLibrary.simpleMessage("Reset your Password"),
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "search_contact_ppl": MessageLookupByLibrary.simpleMessage("People"),
         "secrityDesc":
-            MessageLookupByLibrary.simpleMessage("End to End encrypted"),
+            MessageLookupByLibrary.simpleMessage("End-to-End encrypted"),
         "settingChat": MessageLookupByLibrary.simpleMessage("Chats"),
         "settingHelp": MessageLookupByLibrary.simpleMessage("Help"),
-        "settingRate": MessageLookupByLibrary.simpleMessage("Rate app"),
+        "settingRate": MessageLookupByLibrary.simpleMessage("Rate App"),
         "settingShare":
-            MessageLookupByLibrary.simpleMessage("Share bVidya app"),
+            MessageLookupByLibrary.simpleMessage("Share bVidya App"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsNoti": MessageLookupByLibrary.simpleMessage("Notifications"),
         "showNoty": MessageLookupByLibrary.simpleMessage("Show Notifications"),
@@ -680,7 +693,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Total Revnue Generated"),
         "td_running":
             MessageLookupByLibrary.simpleMessage("Top Running Courses"),
-        "td_subs": MessageLookupByLibrary.simpleMessage("Total Subscriber"),
+        "td_subs": MessageLookupByLibrary.simpleMessage("Total Subscribers"),
         "td_total_subs": MessageLookupByLibrary.simpleMessage("2.6 K"),
         "td_watch_time": MessageLookupByLibrary.simpleMessage("60+ hrs"),
         "teacher_about": MessageLookupByLibrary.simpleMessage("About"),

@@ -42,14 +42,15 @@ Future joinBroadcast(
   if (liveClassResponse.status != 'successfull' ||
       liveClassResponse.body == null) {
     hideLoading(ref);
-    liveClassResponse.message == "Incorrect Broadcast ID"
+    liveClassResponse.message == "Incorrect Broadcast ID" ||
+            liveClassResponse.message?.trim() ==
+                "Unknown error -type 'Null' is not a subtype of type 'String'"
         ? AppSnackbar.instance.error(context,
             'Webinar has not started yet. You can join once the webinar is started.')
         : AppSnackbar.instance.error(
             context,
             liveClassResponse.message ??
                 'Error joing webinar, Please try after some time');
-
     return;
   }
   if (liveClassResponse.body?.liveClass?.id != null) {

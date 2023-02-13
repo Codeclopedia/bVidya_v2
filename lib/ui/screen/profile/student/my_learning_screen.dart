@@ -64,7 +64,7 @@ class MyLearningScreen extends ConsumerWidget {
               ),
           Expanded(
               child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+            padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 1.h),
             child: selectedIndex == 0
                 ? _buildCourses(ref)
                 : _buildFollowed(ref: ref),
@@ -80,7 +80,7 @@ class MyLearningScreen extends ConsumerWidget {
             if (data == null) {
               return const SizedBox.shrink();
             }
-            if (data.subscribedCourses?.length == 0) {
+            if (data.subscribedCourses?.isEmpty ?? false) {
               return const Center(
                 child: Text("No Subscribed Courses"),
               );
@@ -225,7 +225,7 @@ class MyLearningScreen extends ConsumerWidget {
             if (data == null) {
               return const SizedBox.shrink();
             }
-            if (data.length == 0) {
+            if (data.isEmpty) {
               return const Center(
                 child: Text("No Followed Teacher"),
               );

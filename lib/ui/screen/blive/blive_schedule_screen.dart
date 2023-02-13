@@ -89,7 +89,7 @@ class ScheduleBLiveScreen extends HookWidget {
             SizedBox(height: 0.5.h),
             TextFormField(
               controller: _controller,
-              showCursor: false,
+              showCursor: true,
               focusNode: _titleFocus,
               onTap: () {},
               validator: (value) {
@@ -259,7 +259,7 @@ class ScheduleBLiveScreen extends HookWidget {
             SizedBox(height: 0.5.h),
             TextFormField(
               controller: _subjectController,
-              showCursor: false,
+              showCursor: true,
               focusNode: _descFocus,
               keyboardType: TextInputType.multiline,
               onTap: () {},

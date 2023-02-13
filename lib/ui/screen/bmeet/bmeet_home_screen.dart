@@ -1,10 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:intl/intl.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '/controller/bmeet_providers.dart';
 import '/core/constants.dart';
-import '/core/helpers/bmeet_helper.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
@@ -128,24 +129,31 @@ class BMeetHomeScreen extends StatelessWidget {
 
   Widget _buildList(List<ScheduledMeeting> meetings, WidgetRef ref) {
     return ListView.builder(
-      itemCount: meetings.length,
-      shrinkWrap: true,
-      padding: EdgeInsets.symmetric(horizontal: 6.w),
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index) {
-        final meeting = meetings[index];
-        return _buildCardRow(meeting, () {
-          Navigator.pushNamed(context, RouteList.bMeetStart,
-              arguments: meeting);
+        itemCount: meetings.length,
+        shrinkWrap: true,
+        padding: EdgeInsets.symmetric(horizontal: 6.w),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          final meeting = meetings[index];
+          return _buildCardRow(meeting, () {
+            final condition = DateTime.now()
+                .subtract(const Duration(days: 1))
+                .compareTo(ref.watch(selectedDateProvider));
+            condition == 1 //condition for checking old date meetings
+                ? null
+                : Navigator.pushNamed(context, RouteList.bMeetStart,
+                    arguments: meeting);
 
-          // startMeeting(context, ref, meeting, true, false);
-        }, ref);
-      },
-    );
+            // startMeeting(context, ref, meeting, true, false);
+          }, ref, context);
+        });
   }
 
-  Widget _buildCardRow(
-      ScheduledMeeting meeting, Function() onJoin, WidgetRef ref) {
+  Widget _buildCardRow(ScheduledMeeting meeting, Function() onJoin,
+      WidgetRef ref, BuildContext context) {
+    final condition = DateTime.now()
+        .subtract(const Duration(days: 1))
+        .compareTo(ref.watch(selectedDateProvider));
     return Container(
       margin: EdgeInsets.only(right: 2.w),
       padding: EdgeInsets.all(3.w),
@@ -153,7 +161,10 @@ class BMeetHomeScreen extends StatelessWidget {
       height: 20.h,
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        border: Border.all(color: AppColors.cardBorder, width: 0.5),
+        border: Border.all(
+            color:
+                condition == 1 ? AppColors.iconGreyColor : AppColors.cardBorder,
+            width: 0.5),
         borderRadius: BorderRadius.all(Radius.circular(4.w)),
       ),
       child: Column(
@@ -167,14 +178,25 @@ class BMeetHomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 7.sp,
                     fontFamily: kFontFamily,
-                    color: AppColors.black,
+                    color: condition == 1
+                        ? AppColors.iconGreyColor
+                        : AppColors.black,
                   )),
               PopupMenuButton(
                 padding: EdgeInsets.zero,
+
+                // color: condition == 1 ? AppColors.iconGreyColor : Colors.black,
+                icon: Icon(
+                  Icons.more_vert,
+                  color:
+                      condition == 1 ? AppColors.iconGreyColor : Colors.black,
+                ),
                 onSelected: (item) async {
                   switch (item) {
                     case 'Edit':
                       // return null;
+                      showTopSnackBar(Overlay.of(context)!,
+                          CustomSnackBar.info(message: S.current.coming_soon));
                       break;
                     case 'Delete':
                       // print(meeting.id);
@@ -204,7 +226,9 @@ class BMeetHomeScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 9.sp,
               fontFamily: kFontFamily,
-              color: AppColors.primaryColor,
+              color: condition == 1
+                  ? AppColors.iconGreyColor
+                  : AppColors.primaryColor,
             ),
           ),
           SizedBox(height: 1.h),
@@ -214,7 +238,7 @@ class BMeetHomeScreen extends StatelessWidget {
               fontWeight: FontWeight.w400,
               fontSize: 7.sp,
               fontFamily: kFontFamily,
-              color: AppColors.black,
+              color: condition == 1 ? AppColors.iconGreyColor : AppColors.black,
             ),
           ),
           const Spacer(),
@@ -228,14 +252,18 @@ class BMeetHomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     fontSize: 7.sp,
                     fontFamily: kFontFamily,
-                    color: AppColors.black),
+                    color: condition == 1
+                        ? AppColors.iconGreyColor
+                        : AppColors.black),
               ),
               GestureDetector(
                 onTap: () {
                   onJoin();
                 },
                 child: CircleAvatar(
-                  backgroundColor: AppColors.yellowAccent,
+                  backgroundColor: condition == 1
+                      ? AppColors.iconGreyColor
+                      : AppColors.yellowAccent,
                   radius: 1.5.h,
                   child: getSvgIcon('icon_next.svg', width: 1.4.h),
                 ),

@@ -466,6 +466,15 @@ class GroupChatScreen extends HookConsumerWidget {
           thumbnailLocalPath: attFile.file.thumbPath,
           chatType: ChatType.GroupChat);
       content = 'Video';
+    } else if (attFile.messageType == MessageType.VOICE) {
+      msg = ChatMessage.createVoiceSendMessage(
+        targetId: model.id.toString(),
+        filePath: attFile.file.path,
+        displayName: displayName,
+        fileSize: attFile.file.size.toInt(),
+        chatType: ChatType.GroupChat
+      );
+      content = 'Audio';
     } else {
       msg = ChatMessage.createFileSendMessage(
           targetId: model.id.toString(),
