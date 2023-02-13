@@ -4,8 +4,8 @@ import '/core/utils/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
 
-import '/controller/providers/user_auth_provider.dart';
-import '/core/sdk_helpers/bchat_sdk_controller.dart';
+// import '/controller/providers/user_auth_provider.dart';
+// import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';

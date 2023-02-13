@@ -26,8 +26,8 @@ class GroupCallListModel {
   final String msgId;
   final GroupCallMessegeBody body;
 
-  GroupCallListModel(this.groupId, this.groupName, this.groupImage, this.outgoing,
-      this.time, this.msgId, this.body);
+  GroupCallListModel(this.groupId, this.groupName, this.groupImage,
+      this.outgoing, this.time, this.msgId, this.body);
 }
 
 Future<Map<String, CallListModel>> getCallList() async {
@@ -41,7 +41,7 @@ Future<Map<String, CallListModel>> getCallList() async {
         continue;
       }
       List<ChatMessage> messages = await conv.loadMessagesWithMsgType(
-          type: MessageType.CUSTOM, count: 5);
+          type: MessageType.CUSTOM, count: 50);
       for (var m in messages) {
         try {
           ChatCustomMessageBody body = m.body as ChatCustomMessageBody;
@@ -63,7 +63,7 @@ Future<Map<String, CallListModel>> getCallList() async {
       }
     }
     return maps;
-  } catch (e) {}
+  } catch (_) {}
   return {};
 }
 
@@ -78,7 +78,7 @@ Future<Map<String, GroupCallListModel>> getGroupCallList() async {
         continue;
       }
       List<ChatMessage> messages = await conv.loadMessagesWithMsgType(
-          type: MessageType.CUSTOM, count: 5);
+          type: MessageType.CUSTOM, count: 50);
       for (var m in messages) {
         try {
           ChatCustomMessageBody body = m.body as ChatCustomMessageBody;

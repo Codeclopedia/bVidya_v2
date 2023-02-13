@@ -65,7 +65,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       print('reseting chat only');
       try {
         await loadChats(ref);
-      } catch (e) {}
+      } catch (_) {}
 
       // ref
       //     .read(chatConversationProvider.notifier)
@@ -76,9 +76,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     //   return;
     // }
     // print('object')
-    final uid = const Uuid().v5(Uuid.NAMESPACE_OID, 'mGf3ee4gcOlj2hsnyhcH');
-
-    print('UUID=> $uid   : ${Uuid.isValidUUID(fromString: uid)}');
+    // final uid = const Uuid().v5(Uuid.NAMESPACE_OID, 'mGf3ee4gcOlj2hsnyhcH');
+    // print('UUID=> $uid   : ${Uuid.isValidUUID(fromString: uid)}');
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       _firebaseNotification();

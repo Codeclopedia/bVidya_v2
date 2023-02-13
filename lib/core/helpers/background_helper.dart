@@ -140,12 +140,7 @@ class BackgroundHelper {
           'messege time $diff ms    ${message.sentTime?.millisecondsSinceEpoch}  ${DateTime.now().millisecondsSinceEpoch}');
 
       final data = jsonDecode(message.data['e']);
-      // String? type = data['type'];
-      // if (type != NotiConstants.typeGroupCall) {
-      //   return;
-      // }
       final body = GroupCallMessegeBody.fromJson(data);
-      // final body = GroupCallMessegeBody.fromJson(jsonDecode(data['content']));
       if (body.callId == lastCallId || body.callId == activeCallId) {
         return;
       }

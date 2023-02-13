@@ -125,7 +125,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           }
         },
         onMessage: (message) async {
-          // print('onMessage:${message.payload}');
+          print('onMessage:${message.data}');
         },
       );
     }
@@ -149,8 +149,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         if (action == NotiConstants.actionCallEnd) {
           closeIncomingGroupCall(message);
         }
-      } else {
-        // ForegroundMessageHelper.handleCallingNotificationForeground(message);
       }
     });
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {

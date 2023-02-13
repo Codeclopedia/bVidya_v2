@@ -505,7 +505,7 @@ onCallAccept(
 
 onDeclineGroupCall(
     String fromId, String grpId, GroupCallMessegeBody body) async {
-  print('declining call');
+  print('declining group call');
   User? user = await getMeAsUser();
   String userId;
 
@@ -550,15 +550,59 @@ onDeclineGrpCallBusy(
       body.groupImage,
       body.callType == CallType.video);
   final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
-  await FlutterCallkitIncoming.endCall(uid);
-  clearCall();
+  // await FlutterCallkitIncoming.endCall(uid);
+  // clearCall();
+
+  String? avImage = body.fromImage;
+  if (avImage.isNotEmpty) {
+    avImage = '$baseImageApi$avImage';
+  } else {
+    avImage = null;
+  }
+  bool hasVideo = body.callType == CallType.video;
+  // await FlutterCallkitIncoming.endCall(uid);
+  final kitParam = CallKitParams(
+    appName: 'bVidya',
+    avatar: avImage,
+    id: uid,
+    nameCaller: body.fromName,
+    textAccept: 'Accept',
+    textDecline: 'Decline',
+
+    // textCallback: 'Call back',
+    extra: {
+      'type': NotiConstants.typeGroupCall,
+      'from_id': fromId,
+      'grp_id': grpId,
+      'call_id': body.callId,
+      'body': jsonEncode(body.toJson())
+    },
+    android: const AndroidParams(
+      // backgroundUrl: '$baseImageApi$callerImage',
+      isShowLogo: true,
+      incomingCallNotificationChannelName: 'call_channel',
+      missedCallNotificationChannelName: 'call_channel',
+      ringtonePath: 'system_ringtone_default',
+      isShowCallback: false,
+      isCustomNotification: false,
+      isShowMissedCallNotification: true,
+      // actionColor: AppColors.primaryColor,
+    ),
+    ios: IOSParams(
+      ringtonePath: 'system_ringtone_default',
+      supportsVideo: hasVideo,
+    ),
+    type: hasVideo ? 1 : 0,
+    handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${body.groupName}',
+  );
+  FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }
 
 onDeclineCall(
   CallMessegeBody callMessegeBody,
   String callerIdFrom,
 ) async {
-  print('declining call');
+  // print('declining call');
   User? user = await getMeAsUser();
   String userId;
   String name = '';
@@ -618,7 +662,7 @@ onDeclineCallBusy(
   }
   final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callMessegeBody.callId);
 
-  await FlutterCallkitIncoming.endCall(uid);
+  // await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,
