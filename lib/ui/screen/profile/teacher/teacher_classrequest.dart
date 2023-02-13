@@ -1,11 +1,14 @@
 // import 'package:flutter/material.dart';
-import 'package:bvidya/core/constants/route_list.dart';
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/core/utils/chat_utils.dart';
+import 'package:path/path.dart';
+
+import '/core/constants/route_list.dart';
 import '/controller/bmeet_providers.dart';
 import '/core/state.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/shimmer_tile.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '/data/models/response/bmeet/class_request_response.dart';
 import '../base_settings_noscroll.dart';
@@ -62,6 +65,7 @@ class TeacherClassRequest extends StatelessWidget {
                                       PersonalClass());
                             },
                             child: _buildRequestRow(
+                                context,
                                 data.personalClasses?[index] ??
                                     PersonalClass()),
                           );
@@ -92,12 +96,13 @@ class TeacherClassRequest extends StatelessWidget {
         ));
   }
 
-  Widget _buildRequestRow(PersonalClass data) {
+  Widget _buildRequestRow(BuildContext context, PersonalClass data) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
       child: Row(
         children: [
-          getCicleAvatar('A', data.studentImage ?? '', radius: 3.h),
+          getCicleAvatar(data.studentName ?? 'A', data.studentImage ?? '',
+              radius: 3.h),
           SizedBox(width: 5.w),
           Expanded(
             child: Column(
@@ -128,8 +133,10 @@ class TeacherClassRequest extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                chatwithstudent(data.studentName ?? "", data.userId ?? 0,
-                    data.instructorId ?? 0);
+                chatwithstudent(
+                  context,
+                  data.userId ?? 0,
+                );
               },
               icon: getSvgIcon('icon_req_chat.svg'))
         ],
@@ -137,5 +144,12 @@ class TeacherClassRequest extends StatelessWidget {
     );
   }
 
-  chatwithstudent(String studentname, int studentId, int instructorId) {}
+  chatwithstudent(BuildContext context, int studentId) async {
+    final model = await getConversationModel(studentId.toString());
+    if (model != null) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, RouteList.chatScreenDirect, (route) => false,
+          arguments: model);
+    }
+  }
 }

@@ -1,6 +1,5 @@
 import '/core/state.dart';
-import '/data/models/response/bmeet/class_request_response.dart';
-
+import '/data/models/models.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 
@@ -56,7 +55,7 @@ class RequestedClassDetailScreen extends StatelessWidget {
                                 requestedClass.studentName ?? "",
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 8.w,
+                                    fontSize: 18.sp,
                                     fontWeight: FontWeight.bold),
                               ),
                               ListView(
@@ -106,8 +105,8 @@ class RequestedClassDetailScreen extends StatelessWidget {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {},
+                                    style: elevatedButtonPrimaryStyle,
                                     child: const Text("Reject"),
-                                    style: elevatedButtonEndStyle,
                                   ),
                                 ),
                               ],
@@ -157,6 +156,7 @@ class RequestedClassDetailScreen extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
+              fontFamily: kFontFamily,
               color: AppColors.primaryColor,
               fontSize: 5.w,
               fontWeight: FontWeight.w500),
@@ -167,7 +167,10 @@ class RequestedClassDetailScreen extends StatelessWidget {
         Text(
           data,
           style: TextStyle(
-              color: Colors.grey, fontSize: 4.w, fontWeight: FontWeight.w500),
+              fontFamily: kFontFamily,
+              color: Colors.grey,
+              fontSize: 4.w,
+              fontWeight: FontWeight.w500),
         ),
       ],
     );

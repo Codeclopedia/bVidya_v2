@@ -55,7 +55,7 @@ class RequestDetailScreen extends StatelessWidget {
                             requestdata.instructorName ?? "",
                             style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 8.w,
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.bold),
                           ),
                           ListView(

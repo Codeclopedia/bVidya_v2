@@ -4,6 +4,7 @@ import '../ui_core.dart';
 class AppTheme {
   static final _themeLight = ThemeData(
     brightness: Brightness.light,
+    fontFamily: kFontFamily,
   );
 
   static final themeLight = _themeLight.copyWith(
@@ -15,6 +16,7 @@ class AppTheme {
 
   static final _themeDark = ThemeData(
     brightness: Brightness.dark,
+    fontFamily: kFontFamily,
   );
 
   static final themeDark = _themeDark.copyWith(

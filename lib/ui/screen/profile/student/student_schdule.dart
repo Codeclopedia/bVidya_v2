@@ -198,7 +198,9 @@ class StudentSchdule extends StatelessWidget {
         },
         child: Row(
           children: [
-            getCicleAvatar('A', data.instructorImage ?? '', radius: 3.h),
+            getCicleAvatar(
+                data.instructorName ?? 'U', data.instructorImage ?? '',
+                radius: 3.h),
             SizedBox(width: 5.w),
             Expanded(
               child: Column(

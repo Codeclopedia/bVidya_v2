@@ -133,6 +133,7 @@ final elevatedButtonTextStyle = ElevatedButton.styleFrom(
 final elevatedButtonStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
+    fontFamily: kFontFamily,
     fontSize: 11.sp,
     color: Colors.white,
   ),
@@ -146,6 +147,7 @@ final elevatedButtonStyle = ElevatedButton.styleFrom(
 final elevatedButtonEndStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
+    fontFamily: kFontFamily,
     fontSize: 8.sp,
     color: Colors.white,
   ),
@@ -160,6 +162,7 @@ final elevatedButtonEndStyle = ElevatedButton.styleFrom(
 final elevatedButtonYellowStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
+    fontFamily: kFontFamily,
     fontSize: 11.sp,
   ),
   foregroundColor: AppColors.primaryColor,
@@ -174,6 +177,7 @@ final elevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 11.sp,
+    fontFamily: kFontFamily,
     color: Colors.black,
   ),
   foregroundColor: Colors.black,
@@ -184,10 +188,27 @@ final elevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
   ),
 );
 
+final elevatedButtonPrimaryStyle = ElevatedButton.styleFrom(
+  textStyle: TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 11.sp,
+    fontFamily: kFontFamily,
+    color: Colors.black,
+  ),
+  backgroundColor: AppColors.redBColor,
+  foregroundColor: Colors.white,
+  
+  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(2.w),
+  ),
+);
+
 final dialogElevatedButtonSecondaryStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 8.sp,
+    fontFamily: kFontFamily,
     color: Colors.black,
   ),
   padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
@@ -202,6 +223,7 @@ final dialogElevatedButtonStyle = ElevatedButton.styleFrom(
   textStyle: TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 8.sp,
+    fontFamily: kFontFamily,
     color: Colors.white,
   ),
   backgroundColor: AppColors.primaryColor,
