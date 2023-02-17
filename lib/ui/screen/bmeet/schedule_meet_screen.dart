@@ -258,7 +258,7 @@ class ScheduleMeetScreen extends HookWidget {
                         _pickTime(context, (time) {
                           _startTime = time;
                           final dt = DateFormat.jm().format(time);
-                          print('dt: $dt');
+                          // print('dt: $dt');
                           _startController.text = dt;
                         }, ref);
                       },
@@ -297,7 +297,7 @@ class ScheduleMeetScreen extends HookWidget {
                           final dt = DateFormat.jm().format(time);
                           _endTime = time;
                           _endController.text = dt;
-                          print('dt: $dt');
+                          // print('dt: $dt');
                         }, ref);
                       },
                       focusNode: _endFocus,

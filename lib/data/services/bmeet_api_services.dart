@@ -121,7 +121,7 @@ class BMeetApiService {
       final response = await _dio.get(baseUrlApi + ApiList.joinMeet + id);
 
       if (response.statusCode == 200) {
-        print('Join meeting ${jsonEncode(response.data)}');
+        // print('Join meeting ${jsonEncode(response.data)}');
         return JoinMeetingResponse.fromJson(response.data);
       } else {
         return JoinMeetingResponse(
@@ -135,13 +135,13 @@ class BMeetApiService {
 
   Future<BaseResponse> leaveMeet(String authToken, int meetingId) async {
     try {
-      print('Leaving Meet $authToken ---- $meetingId');
+      // print('Leaving Meet $authToken ---- $meetingId');
       _dio.options.headers['X-Auth-Token'] = authToken;
       final response =
           await _dio.get(baseUrlApi + ApiList.leaveMeet + meetingId.toString());
 
       if (response.statusCode == 200) {
-        print('Leave Meet ${jsonEncode(response.data)}');
+        // print('Leave Meet ${jsonEncode(response.data)}');
         return BaseResponse.fromJson(response.data);
       } else {
         return BaseResponse(
@@ -191,7 +191,7 @@ class BMeetApiService {
       final response = await _dio.get(baseUrlApi + ApiList.meetingList);
 
       if (response.statusCode == 200) {
-        print('Loading meeting list ');
+        // print('Loading meeting list ');
         return MeetingListResponse.fromJson(response.data);
       } else {
         return MeetingListResponse(
@@ -227,7 +227,7 @@ class BMeetApiService {
           await _dio.post(baseUrlApi + ApiList.requestClass, data: data);
 
       if (response.statusCode == 200) {
-        print('request class ${jsonEncode(response.data)}');
+        // print('request class ${jsonEncode(response.data)}');
         return BaseResponse.fromJson(response.data);
       } else {
         return BaseResponse(

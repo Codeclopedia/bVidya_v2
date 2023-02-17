@@ -85,6 +85,10 @@ class GroupsScreen extends HookConsumerWidget {
 
   Widget _buildList(
       List<GroupConversationModel> conversationList, WidgetRef ref) {
+    if (conversationList.length > 1) {
+      conversationList.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
+          .compareTo((a.lastMessage?.serverTime ?? 1)));
+    }
     return conversationList.isEmpty
         ? buildEmptyPlaceHolder('No Groups')
         : ListView.separated(

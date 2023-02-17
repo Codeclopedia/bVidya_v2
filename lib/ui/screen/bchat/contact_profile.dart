@@ -243,7 +243,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                                   (route) => route.isFirst,
                                   arguments: model);
                             } else {
-                              print('Model is null');
+                              // print('Model is null');
                             }
                           },
                           child: _contactRow(data[index]));

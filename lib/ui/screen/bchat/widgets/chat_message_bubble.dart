@@ -646,18 +646,36 @@ class ChatMessageBubble extends StatelessWidget {
   }
 
   Widget _fileTypeBodyVoice(ChatVoiceMessageBody body) {
-    bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
-    String fileName = body.displayName ?? '';
-    String size = '';
-    Widget fileWidget =
-        getSvgIcon('icon_chat_audio.svg', width: 25.w, color: Colors.white);
+    // bool hasReply = message.attributes?.keys.contains('reply_of') ?? false;
+    // String fileName = body.displayName ?? '';
+    // String size = '';
+    // Widget fileWidget =
+    //     getSvgIcon('icon_chat_audio.svg', width: 25.w, color: Colors.white);
 
-    if (fileName.contains('.')) {
-      size = getFileSize(body.fileSize, 1);
-    }
-    return VoiceMessage(
-      audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
-      me: isOwnMessage,
+    // if (fileName.contains('.')) {
+    //   size = getFileSize(body.fileSize, 1);
+    // }
+    return Container(
+      decoration: _buildDecoration(),
+      margin: EdgeInsets.only(
+          left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
+      padding: EdgeInsets.only(right: 2.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          VoiceMessage(
+            contactBgColor: AppColors.chatBoxBackgroundOthers,
+            meBgColor: AppColors.chatBoxBackgroundMine,
+            contactFgColor: AppColors.chatBoxMessageOthers,
+            contactPlayIconColor: Colors.white,
+            meFgColor: AppColors.chatBoxMessageMine,
+            audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
+            me: isOwnMessage,
+          ),
+          _buildTime(),
+          SizedBox(height: 2.w)
+        ],
+      ),
     );
     // Container(
     //   constraints: BoxConstraints(minWidth: 20.w, maxWidth: 60.w),

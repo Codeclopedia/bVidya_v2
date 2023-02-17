@@ -28,12 +28,12 @@ final bLiveSelectedHistoryProvider =
   final liveClasses = ref.watch(bLiveClassesListProvider).valueOrNull;
   if (liveClasses?.liveClasses?.isNotEmpty == true) {
     final date = ref.watch(bLiveSelectedDateProvider);
-    print('Filter list of Live Class of ${date.toString()} ');
+    // print('Filter list of Live Class of ${date.toString()} ');
     final list = liveClasses?.liveClasses ?? [];
     return list.where((item) => isSameDate(item.startsAt ?? '', date)).toList();
     // return liveClasses!.liveClasses!;
   } else {
-    print('Empty List of live classes');
+    // print('Empty List of live classes');
   }
   return [];
 });

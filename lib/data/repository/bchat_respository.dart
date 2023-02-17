@@ -58,7 +58,7 @@ class BChatRepository {
         }
         // adminIds = group.adminList ?? [];
       } catch (e) {
-        print('error in loading members of ${group.name}');
+        // print('error in loading members of ${group.name}');
       }
     }
     return await getContactsByIds(membersIds.join(','));
@@ -75,11 +75,11 @@ class BChatRepository {
       try {
         ChatGroup grp = await ChatClient.getInstance.groupManager
             .fetchGroupInfoFromServer(groupId, fetchMembers: true);
-        print('loading members: ${membersIds.join(',')} - $ownerId');
+        // print('loading members: ${membersIds.join(',')} - $ownerId');
         membersIds = grp.memberList ?? [];
         adminIds = grp.adminList ?? [];
 
-        print(' list of size  m:${membersIds.length} - a:${adminIds.length} ');
+        // print(' list of size  m:${membersIds.length} - a:${adminIds.length} ');
       } catch (e) {
         print('error in loading members of ${group.name}');
       }

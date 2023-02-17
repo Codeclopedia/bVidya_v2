@@ -148,7 +148,7 @@ class ForegroundMessageHelper {
         message.data['e'] != null) {
       final extra = jsonDecode(message.data['e']);
       String? type = extra['type'];
-      print('Type $type =>$extra');
+      // print('Type $type =>$extra');
       if (type == NotiConstants.typeCall) {
         debugPrint('InComing call=>  ');
         BackgroundHelper.showCallingNotification(message, false);

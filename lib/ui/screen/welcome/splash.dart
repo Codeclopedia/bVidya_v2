@@ -14,7 +14,7 @@ import '/core/helpers/call_helper.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
-import '/controller/providers/bchat/call_list_provider.dart';
+// import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -39,11 +39,11 @@ class SplashScreen extends ConsumerWidget {
           final startTime = DateTime.now().millisecondsSinceEpoch;
           await ref.read(userLoginStateProvider.notifier).loadUser();
           // ref.read(userAuthChangeProvider).setUserSigned(true);
-          print('init from splash');
+          // print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
           if (await _handleNotificationClickScreen(context, next.value!)) {
             final diff = DateTime.now().millisecondsSinceEpoch - startTime;
-            print('Time taken: $diff ms Notification');
+            // print('Time taken: $diff ms Notification');
             appLoaded = true;
             return;
           }
@@ -53,8 +53,8 @@ class SplashScreen extends ConsumerWidget {
           await ref.read(groupConversationProvider.notifier).setup();
           // await ref.read(callListProvider.notifier).setup();
 
-          final diff = DateTime.now().millisecondsSinceEpoch - startTime;
-          print('Time taken: $diff ms');
+          // final diff = DateTime.now().millisecondsSinceEpoch - startTime;
+          // print('Time taken: $diff ms');
           appLoaded = true;
           Navigator.pushReplacementNamed(context, RouteList.home);
         } else {
@@ -62,7 +62,7 @@ class SplashScreen extends ConsumerWidget {
             'assets/images/loader.gif',
             fit: BoxFit.fitWidth,
           );
-          Future.delayed(const Duration(seconds: 6), () {
+          Future.delayed(const Duration(seconds: 4), () {
             Navigator.pushReplacementNamed(context, RouteList.login);
             appLoaded = true;
           });

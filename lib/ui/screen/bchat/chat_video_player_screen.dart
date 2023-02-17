@@ -22,7 +22,7 @@ class ChatVideoPlayerScreen extends HookWidget {
             : VideoPlayerController.file(File(body.localPath)),
       );
       return () {
-        print('Disponse called');
+        // print('Disponse called');
         flickManager?.dispose();
         flickManager = null;
       };

@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>556221488660-435c59kakcdddhmo8c20aqofjoio3tgc.apps.googleusercontent.com</string>
+	<string>119301962380-fuqlmp6si5ft3874ld5shsq1mi1je61f.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.556221488660-435c59kakcdddhmo8c20aqofjoio3tgc</string>
+	<string>com.googleusercontent.apps.119301962380-fuqlmp6si5ft3874ld5shsq1mi1je61f</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>119301962380-c6jhveh63blmv4426p5u0fedp409rail.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyB8sVMXhK5uvXnkMI0Ng1rq3CoAgr0-3sE</string>
+	<string>AIzaSyCS3q8CKbTno8Cwun1cu-RueS1LSCQIDxY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>556221488660</string>
+	<string>119301962380</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.bvidyademo</string>
+	<string>com.bvidya</string>
 	<key>PROJECT_ID</key>
-	<string>bvidyademo-a8de4</string>
+	<string>bvidya-36b76</string>
 	<key>STORAGE_BUCKET</key>
-	<string>bvidyademo-a8de4.appspot.com</string>
+	<string>bvidya-36b76.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:556221488660:ios:68066b9e56a6eaf3925101</string>
+	<string>1:119301962380:ios:7b69ceadf7ea356a1299a9</string>
+	<key>DATABASE_URL</key>
+	<string>https://bvidya-36b76-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

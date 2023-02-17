@@ -24,7 +24,9 @@ Future<void> main() async {
   } else {
     try {
       await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
+          options: isReleaseBuild
+              ? DefaultFirebaseOptions.currentPlatformRelease
+              : DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
       print('Error init firebase $e');
 
@@ -44,14 +46,16 @@ Future<void> main() async {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  print('firebase: onBackgroundMessage -> ${message.toMap()}');
+  // print('firebase: onBackgroundMessage -> ${message.toMap()}');
   await BChatSDKController.instance.setup();
   if (Platform.isAndroid) {
     await Firebase.initializeApp();
     SharedPreferencesAndroid.registerWith();
   } else {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: isReleaseBuild
+          ? DefaultFirebaseOptions.currentPlatformRelease
+          : DefaultFirebaseOptions.currentPlatform,
     );
   }
   // setupCallKeep();

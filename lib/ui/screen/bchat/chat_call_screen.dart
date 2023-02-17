@@ -62,7 +62,7 @@ class ChatCallScreen extends HookConsumerWidget {
 
     _endingCall = true;
     setOnGoing(null);
-    print('is Directly => $prevScreen');
+    // print('is Directly => $prevScreen');
     if (prevScreen.isEmpty) {
       // await FlutterCallkitIncoming.endAllCalls();
       // clearCall();
@@ -80,7 +80,7 @@ class ChatCallScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      print('Init Directly => $prevScreen');
+      // print('Init Directly => $prevScreen');
       ref
           .read(audioCallChangeProvider.notifier)
           .init(callInfo, callDirection, callType);
@@ -173,7 +173,7 @@ class ChatCallScreen extends HookConsumerWidget {
                 right: 4.w,
                 // padding: EdgeInsets.only(bottom: 15.h, right: 4.w),
                 child: Visibility(
-                  visible: provider.updateCallType == CallType.video ,
+                  visible: provider.updateCallType == CallType.video,
                   child: SizedBox(
                     height: 45.w,
                     width: 30.w,

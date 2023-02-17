@@ -125,13 +125,13 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           }
         },
         onMessage: (message) async {
-          print('onMessage:${message.data}');
+          // print('onMessage:${message.data}');
         },
       );
     }
 
     FirebaseMessaging.onMessage.listen((message) async {
-      print('onMessage => ${message.data} : ${message.notification}');
+      // print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {

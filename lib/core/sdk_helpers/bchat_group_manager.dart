@@ -229,7 +229,7 @@ try {
           .fetchConversationSilentMode(
               conversationId: userId, type: ChatConversationType.GroupChat);
       ChatPushRemindType? remindType = result.remindType;
-      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      // print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
       return remindType ?? ChatPushRemindType.ALL;
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');

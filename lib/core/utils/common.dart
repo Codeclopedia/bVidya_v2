@@ -38,7 +38,7 @@ Future<String?> postLoginSetup(WidgetRef ref) async {
   ref.refresh(bLiveRepositoryProvider);
   ref.refresh(profileRepositoryProvider);
   ref.refresh(bChatProvider);
-  print('Post login initialization');
+  // print('Post login initialization');
   // await BChatSDKController.instance.initChatSDK(next.value!);
   await BChatSDKController.instance.initChatSDK(user);
   await BChatSDKController.instance.loadAllContactsGroup();

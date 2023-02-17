@@ -53,7 +53,7 @@ class BLiveApiService {
       _dio.options.headers['X-Auth-Token'] = authToken;
       var response =
           await _dio.get(baseUrlApi + ApiList.liveClass + broadcastStreamId);
-      print('result: ${jsonEncode(response.data)}');
+      // print('result: ${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return LiveClassResponse.fromJson(response.data);
       } else {
@@ -102,12 +102,12 @@ class BLiveApiService {
 
   Future<LiveRTMResponse> fetchLiveRTMToken(String authToken, int id) async {
     try {
-      print('$authToken');
+      // print('$authToken');
       _dio.options.headers['X-Auth-Token'] = authToken;
       var response =
           await _dio.get(baseUrlApi + ApiList.fetchLiveRtm + id.toString());
       if (response.statusCode == 200) {
-        print('${jsonEncode(response.data)}');
+        // print('${jsonEncode(response.data)}');
         return LiveRTMResponse.fromJson(response.data);
       } else {
         return LiveRTMResponse(

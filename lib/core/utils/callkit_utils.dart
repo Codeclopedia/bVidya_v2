@@ -49,7 +49,7 @@ setOnGoing(String? callId) {
 }
 
 clearCall() async {
-  print('clear Call Called => active: $_activeCallId last:$_lastCallId');
+  // print('clear Call Called => active: $_activeCallId last:$_lastCallId');
   if (_activeCallId != null) {
     _lastCallId = _activeCallId;
   }
@@ -77,18 +77,18 @@ Future loadCallOnInit() async {
   final callExra = pref.getString('call_extra');
 
   if (callExra?.isNotEmpty == true && uuid?.isNotEmpty == true) {
-    print('Loaded calls=> $uuid');
+    // print('Loaded calls=> $uuid');
     try {
       int diff =
           DateTime.now().millisecondsSinceEpoch - int.parse(callTime ?? '0');
       if (diff > 10000) {
-        print('Very old call=> $diff ms');
+        // print('Very old call=> $diff ms');
         _activeCallId = null;
         _uuid = null;
         _activeCallMap = null;
         return;
       }
-      print('Loaded calls=> $_activeCallId');
+      // print('Loaded calls=> $_activeCallId');
 
       _activeCallMap = jsonDecode(callExra!);
       _uuid = uuid;
@@ -319,7 +319,7 @@ showIncomingCallScreen(
   }
   final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
 
-  print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
+  // print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
   bool hasVideo = body.callType == CallType.video;
   final kitParam = CallKitParams(
     appName: 'bVidya',
@@ -441,12 +441,12 @@ onGroupCallAccept(
   _lastCallId = body.callId;
   BuildContext? context = navigatorKey.currentContext;
   if (context == null) {
-    print(' Context is NULL for grp ${DateTime.now().millisecondsSinceEpoch} ');
+    // print(' Context is NULL for grp ${DateTime.now().millisecondsSinceEpoch} ');
     return;
   }
   if (Routes.getCurrentScreen() == RouteList.groupCallScreen ||
       Routes.getCurrentScreen() == RouteList.groupCallScreenReceive) {
-    print(' Already on group call screen');
+    // print(' Already on group call screen');
     return;
   }
   _futureClearPref();
@@ -466,7 +466,7 @@ onCallAccept(
   String fromId,
 ) async {
   _lastCallId = callMessegeBody.callId;
-  print('onCallAccept Call Called => active: $_activeCallId last:$_lastCallId');
+  // print('onCallAccept Call Called => active: $_activeCallId last:$_lastCallId');
   BuildContext? context = navigatorKey.currentContext;
   if (context == null) {
     print(' Context is NULL ${DateTime.now().millisecondsSinceEpoch} ');

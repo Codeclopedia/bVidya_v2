@@ -31,11 +31,12 @@ class BChatSDKController {
         requireDeliveryAck: true,
       );
       if (Platform.isIOS) {
-        options.enableAPNs('bVidyaDemoKey');
+        options.enableAPNs(isReleaseBuild ? 'bVidyaPushKey' : 'bVidyaDemoKey');
         //bVidyaAPNKey
       }
-      options
-          .enableFCM(DefaultFirebaseOptions.currentPlatform.messagingSenderId);
+      options.enableFCM(isReleaseBuild
+          ? DefaultFirebaseOptions.currentPlatformRelease.messagingSenderId
+          : DefaultFirebaseOptions.currentPlatform.messagingSenderId);
       await ChatClient.getInstance.init(options);
       print('Chat Client initialized');
     } catch (e) {
@@ -73,7 +74,7 @@ class BChatSDKController {
       for (var c in conversations) {
         await client.chatManager.fetchHistoryMessages(conversationId: c.id);
       }
-      print('Loaded conversation  => - ${conversations.join(',')}');
+      // print('Loaded conversation  => - ${conversations.join(',')}');
     } catch (e) {
       print('error loading conversation  = $e');
     }
@@ -235,7 +236,7 @@ class BChatSDKController {
       if (Platform.isIOS) {
         String? aPNStoken = await FirebaseMessaging.instance.getAPNSToken();
         if (aPNStoken != null) {
-          print('apnsToke=$aPNStoken');
+          // print('apnsToke=$aPNStoken');
           await ChatClient.getInstance.pushManager
               .updateAPNsDeviceToken(aPNStoken);
           // options.enableAPNs(aPNStoken);

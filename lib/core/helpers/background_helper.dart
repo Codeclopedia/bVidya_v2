@@ -125,7 +125,7 @@ class BackgroundHelper {
       }
       await showIncomingCallScreen(body, fromId, background);
     } catch (e) {
-      print('Error in call notification $e');
+      // print('Error in call notification $e');
     }
   }
 
@@ -155,7 +155,7 @@ class BackgroundHelper {
       }
       await showIncomingGroupCallScreen(body, fromId, grpId, background);
     } catch (e) {
-      print('Error in call notification $e');
+      // print('Error in call notification $e');
     }
   }
 

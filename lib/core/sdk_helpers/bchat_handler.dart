@@ -15,7 +15,7 @@ String? lastAction;
 
 registerForContact(String key, WidgetRef? ref) {
   try {
-    print('Registering $key');
+    // print('Registering $key');
 
     // ChatClient.getInstance.groupManager
     //     .addEventHandler('identifier', ChatGroupEventHandler(
@@ -34,7 +34,7 @@ registerForContact(String key, WidgetRef? ref) {
             }
             lastUserId = userId;
             lastAction = 'Add';
-            print('Added: $userId ');
+            // print('Added: $userId ');
             if (ref != null) {
               await addNewContactById(int.parse(userId), ref);
             }
@@ -49,7 +49,7 @@ registerForContact(String key, WidgetRef? ref) {
           if (lastUserId == userId && lastAction == 'Invite') {
             return;
           }
-          print('Invited: $userId - $reason');
+          // print('Invited: $userId - $reason');
           lastUserId = userId;
           lastAction = 'Invite';
 
@@ -64,7 +64,7 @@ registerForContact(String key, WidgetRef? ref) {
           }
           lastUserId = userId;
           lastAction = 'Add';
-          print('Added: $userId ');
+          // print('Added: $userId ');
           Contacts? result;
           if (ref != null) {
             result = await addNewContactById(int.parse(userId), ref);
@@ -91,7 +91,7 @@ registerForContact(String key, WidgetRef? ref) {
           }
           lastUserId = userId;
           lastAction = 'Deleted';
-          print('Deleted: $userId ');
+          // print('Deleted: $userId ');
           Contacts? result;
           if (ref != null) {
             deleteContact(int.parse(userId), ref);
@@ -119,7 +119,7 @@ registerForContact(String key, WidgetRef? ref) {
           }
           lastUserId = userId;
           lastAction = 'Acceped';
-          print('Acceped: $userId ');
+          // print('Acceped: $userId ');
           // EasyLoading.showInfo('Acceped: $userId ');
           NotificationController.showContactActionNotification(
               userId, 'bVidya', 'Connection request accepted');
@@ -149,7 +149,7 @@ registerForContact(String key, WidgetRef? ref) {
 
 unregisterForContact(String key) {
   try {
-    print('unregistering $key');
+    // print('unregistering $key');
     ChatClient.getInstance.contactManager.removeEventHandler(key);
   } catch (_) {}
 }
@@ -168,7 +168,7 @@ registerGroupForNewMessage(
     Function(List<ChatMessage>) onNewMessages,
     Function() onUpdate,
     Function(List<ChatCmdMessageBody>) onCmdMessage) {
-  print('group registering $key');
+  // print('group registering $key');
   try {
     ChatClient.getInstance.chatManager.addEventHandler(
         key,

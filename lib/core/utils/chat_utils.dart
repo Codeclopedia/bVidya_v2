@@ -213,6 +213,7 @@ openGroupChat() {}
 
 openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
     {bool sendInviateMessage = false, String message = ''}) async {
+  final User? user = await getMeAsUser();
   final conv = await ChatClient.getInstance.chatManager.getConversation(
       contact.userId.toString(),
       type: ChatConversationType.Chat);
@@ -221,6 +222,14 @@ openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
       final inviateMessage = ChatMessage.createTxtSendMessage(
           targetId: contact.userId.toString(),
           content: message.isEmpty ? 'Hi' : message);
+      inviateMessage.attributes = {
+        "em_apns_ext": {
+          "em_push_title": "${user?.name ?? ''} sent you a message",
+          "em_push_content": message.isEmpty ? 'Hi' : message,
+          'type': 'chat',
+        },
+      };
+      inviateMessage.attributes?.addAll({"em_force_notification": true});
       await ChatClient.getInstance.chatManager.sendMessage(inviateMessage);
     }
     final model = await addNewContact(contact, ref);

@@ -177,7 +177,7 @@ class LoginOtpScreen extends HookWidget {
                                   ..onTap = () {
                                     Navigator.pushReplacementNamed(
                                         context, RouteList.signup);
-                                    print('Tap Here onTap');
+                                    // print('Tap Here onTap');
                                   },
                               )
                             ],

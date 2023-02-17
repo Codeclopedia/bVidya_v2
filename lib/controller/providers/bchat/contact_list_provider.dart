@@ -36,6 +36,7 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
       List<Contact> friends = result.body!.contacts!;
       for (Contact contact in friends) {
         if (ids.contains(contact.userId.toString())) {
+          // print('${contact.toJson()}');
           _contactsMap.addAll({
             contact.userId: Contacts.fromContact(contact, ContactStatus.friend)
           });

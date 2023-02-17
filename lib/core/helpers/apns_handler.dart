@@ -60,7 +60,7 @@ class ApnsPushConnectorOnly {
     try {
       final map = await _channel.invokeMethod('getLaunchMessage');
       if (map != null && map is Map) {
-        print('Initial message=> $map');
+        // print('Initial message=> $map');
         return ApnsRemoteMessage.fromMap(map.cast());
       }
     } on PlatformException catch (e) {

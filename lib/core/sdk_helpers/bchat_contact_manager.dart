@@ -64,7 +64,7 @@ class BChatContactManager {
         return '';
       }
       String ids = list.join(',');
-      print('id: $ids');
+      // print('id: $ids');
       return ids;
     } catch (e) {
       print('error: $e');
@@ -96,7 +96,7 @@ class BChatContactManager {
         return '';
       }
       String ids = list.join(',');
-      print('id: $ids');
+      // print('id: $ids');
       return ids;
     } catch (e) {
       print('error: $e');
@@ -107,12 +107,12 @@ class BChatContactManager {
   static Future<String?> sendRequestToAddContact(String contactId) async {
     try {
       List<String> list = await getContactList(fromServer: false);
-      print('before list : ${list.join(',')}');
+      // print('before list : ${list.join(',')}');
       if (list.contains(contactId)) {
         return 'Already exists';
       } else {
         list = await getContactList(fromServer: true);
-        print('before x list : ${list.join(',')}');
+        // print('before x list : ${list.join(',')}');
         if (list.contains(contactId)) {
           return 'Already exists';
         }
@@ -120,7 +120,7 @@ class BChatContactManager {
             // , reason: 'Hi, Please accept my invitation'
             );
         final updatedList = await getContactList(fromServer: true);
-        print('after list : ${updatedList.join(',')}');
+        // print('after list : ${updatedList.join(',')}');
         return null;
       }
     } on ChatError catch (e) {
@@ -155,7 +155,7 @@ class BChatContactManager {
           .fetchConversationSilentMode(
               conversationId: userId, type: ChatConversationType.Chat);
       ChatPushRemindType? remindType = result.remindType;
-      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      // print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
       return remindType ?? ChatPushRemindType.ALL;
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');

@@ -91,7 +91,7 @@ class ProfileApiService {
     try {
       final response =
           await _dio.get('$baseUrlApi${ApiList.instructorFollowed}');
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return FollowInstructorResponse.fromJson(response.data);
       } else {
@@ -114,7 +114,7 @@ class ProfileApiService {
       });
       final response = await _dio
           .post('$baseUrlApi${ApiList.updateProfileImage}', data: formData);
-      print('${jsonEncode(response.data)}');
+      // print('${jsonEncode(response.data)}');
       if (response.statusCode == 200) {
         return ImageUpdateResponse.fromJson(response.data);
       } else {
@@ -157,11 +157,11 @@ class ProfileApiService {
     };
     try {
       _dio.options.headers['X-Auth-Token'] = token;
-      print('request: ${jsonEncode(data)} $token');
+      // print('request: ${jsonEncode(data)} $token');
       final response =
           await _dio.post('$baseUrlApi${ApiList.updateProfile}', data: data);
-      print('${response.statusCode} ${response.statusMessage}');
-      print('${response.data}');
+      // print('${response.statusCode} ${response.statusMessage}');
+      // print('${response.data}');
       if (response.statusCode == 200) {
         return UpdateProfileResponse.fromJson(response.data);
       } else {

@@ -108,7 +108,7 @@ class ApiAuthService {
         '$baseUrlApi${ApiList.generateRegistrationOtp}',
         data: data,
       );
-      print('$response');
+      // print('$response');
       if (response.statusCode == 200) {
         return LoginResponse.fromJson(response.data);
       } else {

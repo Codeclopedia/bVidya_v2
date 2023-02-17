@@ -829,7 +829,7 @@ class ChatScreen extends HookConsumerWidget {
           .sendMessage(msg);
 
       if (chat != null) {
-        print('post:msgId ${chat.msgId}');
+        // print('post:msgId ${chat.msgId}');
         ref.read(chatConversationProvider.notifier).addConversationMessage(msg);
         _scrollController.animateTo(
           0.0,

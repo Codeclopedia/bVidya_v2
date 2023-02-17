@@ -53,7 +53,7 @@ class GroupTypingHelper extends StateNotifier<List<GroupTypingUser>> {
     for (var msg in chats) {
       if (msg.action.isNotEmpty) {
         final map = jsonDecode(msg.action);
-        print('user=> ${map}');
+        // print('user=> ${map}');
         final user = GroupTypingUser(map['d'], map['n'], map['i'],
             DateTime.now().millisecondsSinceEpoch);
         _groupUsersMap.addAll({user.userId: user});

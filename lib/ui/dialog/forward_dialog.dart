@@ -230,7 +230,7 @@ class ForwardContactListDialog extends StatelessWidget {
           body: message.body, to: model.id, chatType: model.chatType);
 
       if (model.chatType == ChatType.GroupChat) {
-        final gName = message.attributes?['from_name']??'Group';
+        final gName = message.attributes?['from_name'] ?? 'Group';
         if (msg.body.type == MessageType.TXT) {
           msg.attributes = {
             "em_apns_ext": {
@@ -238,7 +238,7 @@ class ForwardContactListDialog extends StatelessWidget {
               "em_push_title": "${user.name} sent you a message in $gName",
               "em_push_content":
                   ((message.body as ChatTextMessageBody).content),
-              
+
               // 'name': user.name,
               // 'content': ((message.body as ChatTextMessageBody).content),
               // 'image': user.image,
@@ -291,7 +291,7 @@ class ForwardContactListDialog extends StatelessWidget {
       msg.attributes?.addAll({"frwd_mId": message.msgId});
       msg.attributes?.addAll({"em_force_notification": true});
       final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-      print('Forwarded msg:${message.msgId}=> ${chat.msgId}');
+      // print('Forwarded msg:${message.msgId}=> ${chat.msgId}');
       return chat;
     } on ChatError catch (e) {
       debugPrint('error in sening chat: $e');

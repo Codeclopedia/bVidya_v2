@@ -60,7 +60,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
         }
         // _hasMoreData = chats?.length == 20;
       } catch (e) {
-        print('Error in loading chats');
+        print('Error in loading chats $e');
       }
       // notifyListeners();
       state = _messagesMap.values.toList();
