@@ -372,6 +372,7 @@
 "preferredDate":"Preferred Date",
 "preferredTime":"Preferred Time",
 "Requested_time_Note":"Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence.",
+"instructor_notApproved_note":"NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com",
 
 "setting_title": "Settings",
 "contact_title": "Contact Us",

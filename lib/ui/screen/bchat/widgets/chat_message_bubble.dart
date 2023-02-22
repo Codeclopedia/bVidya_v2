@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
@@ -8,6 +8,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
 
+import 'package:linkable/linkable.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
@@ -229,7 +230,7 @@ class ChatMessageBubble extends StatelessWidget {
                 // color: Colors.white,
               ),
               SizedBox(width: 2.w),
-              _textMessage(content, false)
+              _textCallMessage(content)
             ],
           ),
           Container(
@@ -599,7 +600,7 @@ class ChatMessageBubble extends StatelessWidget {
             mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Flexible(child: _textMessage(fileName, false)),
+              Flexible(child: _textCallMessage(fileName)),
               // Flexible(
               //     child: Wrap(
               //   alignment: WrapAlignment.start,
@@ -739,10 +740,28 @@ class ChatMessageBubble extends StatelessWidget {
     // );
   }
 
-  Widget _textMessage(String content, bool isOnlyEmoji) {
+  Widget _textCallMessage(String content) {
     // final bool isOwnMessage = message.from == currentUser.id;
     return Text(
       content,
+      style: TextStyle(
+        fontFamily: kFontFamily,
+        fontSize: 10.sp,
+        color: isOwnMessage
+            ? AppColors.chatBoxMessageMine
+            : AppColors.chatBoxMessageOthers,
+        fontWeight: FontWeight.w300,
+      ),
+    );
+  }
+
+  Widget _textMessage(String content, bool isOnlyEmoji) {
+    // final bool isOwnMessage = message.from == currentUser.id;
+    return Linkable(
+      text: content,
+      textColor: isOwnMessage
+          ? AppColors.chatBoxMessageMine
+          : AppColors.chatBoxMessageOthers,
       style: TextStyle(
         fontFamily: kFontFamily,
         fontSize: isOnlyEmoji ? 30.sp : 10.sp,

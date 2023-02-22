@@ -3140,6 +3140,16 @@ class S {
     );
   }
 
+  /// `NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com`
+  String get instructor_notApproved_note {
+    return Intl.message(
+      'NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com',
+      name: 'instructor_notApproved_note',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Settings`
   String get setting_title {
     return Intl.message(

@@ -27,6 +27,8 @@ class Profile {
   final String? name;
   final String? phone;
   final String? email;
+  final String? role;
+  final bool? isApproved;
   final String? gender;
   final dynamic age;
   final String? language;
@@ -49,6 +51,8 @@ class Profile {
       {this.name,
       this.phone,
       this.email,
+      this.role,
+      this.isApproved,
       this.gender,
       this.age,
       this.language,
@@ -71,6 +75,8 @@ class Profile {
       : name = json['name'],
         phone = json['phone'],
         email = json['email'],
+        role = json['role'],
+        isApproved = json['approval_status'] == "approved" ? true : false,
         gender = json['gender'],
         age = json['age'],
         language = json['language'],
@@ -94,6 +100,8 @@ class Profile {
     data['name'] = name;
     data['phone'] = phone;
     data['email'] = email;
+    data['role'] = role;
+    data['approval_status'] = isApproved;
     data['gender'] = gender;
     data['age'] = age;
     data['language'] = language;

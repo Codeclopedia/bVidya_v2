@@ -438,6 +438,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Take a picture from Camera"),
         "im_picker_gallery_desc":
             MessageLookupByLibrary.simpleMessage("Pick an image from Gallery"),
+        "instructor_notApproved_note": MessageLookupByLibrary.simpleMessage(
+            "NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com"),
         "issueDescriptionError": MessageLookupByLibrary.simpleMessage(
             "Issue description can\'t be empty"),
         "issues": MessageLookupByLibrary.simpleMessage("Issues Description"),

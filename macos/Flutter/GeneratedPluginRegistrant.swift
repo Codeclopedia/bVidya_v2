@@ -15,7 +15,7 @@ import firebase_core
 import firebase_messaging
 import iris_event
 import just_audio
-import path_provider_macos
+import path_provider_foundation
 import photo_manager
 import shared_preferences_macos
 import smart_auth

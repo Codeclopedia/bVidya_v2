@@ -14,6 +14,22 @@ import '../../../widget/base_drawer_setting_screen.dart';
 class TeacherProfile extends StatelessWidget {
   const TeacherProfile({Key? key}) : super(key: key);
 
+  approvalNote() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: Container(
+        decoration: BoxDecoration(
+            color: AppColors.yellowAccent.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(2.5.w)),
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.w),
+        child: Text(
+          S.current.instructor_notApproved_note,
+          style: textStyleDesc.copyWith(color: AppColors.primaryColor),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseDrawerSettingScreen(
@@ -28,6 +44,25 @@ class TeacherProfile extends StatelessWidget {
             //   mainAxisAlignment: MainAxisAlignment.center,
             //   children: const [],
             // ),
+            SizedBox(
+              height: 3.w,
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                return ref.watch(profileUserProvider).when(
+                  data: (data) {
+                    return data?.isApproved ?? false ? null : approvalNote();
+                  },
+                  error: (error, stackTrace) {
+                    return Container();
+                  },
+                  loading: () {
+                    return Container();
+                  },
+                );
+              },
+            ),
+
             _buildProfile(),
             Consumer(builder: (context, ref, child) {
               return _buildContent(
@@ -96,7 +131,7 @@ class TeacherProfile extends StatelessWidget {
 
   Widget _buildProfile() {
     return Padding(
-      padding: EdgeInsets.only(top: 4.h, left: 6.w),
+      padding: EdgeInsets.only(top: 2.h, left: 6.w),
       child: Text(
         S.current.profile_title,
         style: textStyleHeading,

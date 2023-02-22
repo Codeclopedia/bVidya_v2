@@ -115,14 +115,21 @@ Future updateUserImage(WidgetRef ref, String image) async {
 Future copyToClipboard(List<ChatMessage> messages) async {
   if (messages.isNotEmpty) {
     String content = '';
-    for (var msg in messages) {
-      if (msg.body.type == MessageType.TXT) {
-        content +=
-            '[${DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(msg.serverTime))}]: ';
-        content += (msg.body as ChatTextMessageBody).content;
-        content += '\n';
+    if (messages.length == 1) {
+      if (messages.first.body.type == MessageType.TXT) {
+        content += (messages.first.body as ChatTextMessageBody).content;
+      }
+    } else {
+      for (var msg in messages) {
+        if (msg.body.type == MessageType.TXT) {
+          content +=
+              '[${DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(msg.serverTime))}]: ';
+          content += (msg.body as ChatTextMessageBody).content;
+          content += '\n';
+        }
       }
     }
+
     if (content.isNotEmpty) {
       await FlutterClipboard.copy(
           content); //.then(( value ) => print('copied'));

@@ -749,10 +749,10 @@ class ChatScreen extends HookConsumerWidget {
                     },
               child: GestureDetector(
                 onLongPress: () =>
-                    _onMessageLongPress(message.msg, isSelected, ref),
+                    _onMessageLongPress(message, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTapSelect(message.msg, isSelected, ref)
-                    : notReply
+                    ? _onMessageLongPress(message, isSelected, ref)
+                    : notReply || message.isGroupMedia
                         ? null
                         : _onMessageTap(message.msg, context, ref),
                 child: Container(
@@ -777,12 +777,26 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  _onMessageLongPress(ChatMessage message, bool selected, WidgetRef ref) {
+  _onMessageLongPress(ChatMessageExt message, bool selected, WidgetRef ref) {
     // ChatClient.getInstance.chatManager.a
     if (selected) {
-      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+      if (message.isGroupMedia) {
+        for (ChatMessage m in message.messages) {
+          ref.read(selectedChatMessageListProvider.notifier).remove(m);
+        }
+      } else {
+        ref.read(selectedChatMessageListProvider.notifier).remove(message.msg);
+      }
+      //
     } else {
-      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+      if (message.isGroupMedia) {
+        for (ChatMessage m in message.messages) {
+          ref.read(selectedChatMessageListProvider.notifier).addChat(m);
+        }
+      } else {
+        ref.read(selectedChatMessageListProvider.notifier).addChat(message.msg);
+      }
+      // ref.read(selectedChatMessageListProvider.notifier).addChat(message);
     }
   }
 
@@ -828,13 +842,14 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  _onMessageTapSelect(ChatMessage message, bool selected, WidgetRef ref) {
-    if (selected) {
-      ref.read(selectedChatMessageListProvider.notifier).remove(message);
-    } else {
-      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
-    }
-  }
+  // _onMessageTapSelect(ChatMessageExt message, bool selected, WidgetRef ref) {
+  //   // if (selected) {
+  //   //   ref.read(selectedChatMessageListProvider.notifier).remove(message);
+  //   // } else {
+  //   //   ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+  //   // }
+  //   _onMessageLongPress(message, selected, ref);
+  // }
 
   Future<String?> _sendMessage(ChatMessage msg, WidgetRef ref,
       {bool isFile = false}) async {
