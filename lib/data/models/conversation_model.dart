@@ -9,7 +9,7 @@ class ConversationModel {
   int badgeCount;
   final ChatConversation? conversation;
   final bool mute;
-  // final ChatPresence? isOnline;
+  final ChatPresence? isOnline;
 
   ConversationModel(
       {required this.id,
@@ -17,7 +17,7 @@ class ConversationModel {
       this.badgeCount = 0,
       required this.conversation,
       required this.lastMessage,
-      // required this.isOnline,
+      required this.isOnline,
       this.mute = false});
 }
 

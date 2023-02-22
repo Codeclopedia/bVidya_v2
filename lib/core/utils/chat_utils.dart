@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
@@ -15,6 +14,20 @@ import '/ui/screens.dart';
 import '../constants/route_list.dart';
 import '../state.dart';
 import '../ui_core.dart';
+
+bool isOnline(ChatPresence? presence) {
+  if (presence == null) {
+    return false;
+  }
+  if (presence.statusDetails?.values.isNotEmpty == true) {
+    for (var status in presence.statusDetails!.values) {
+      if (status == 1) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 String parseChatPresenceToReadable(ChatPresence? presence) {
   if (presence == null) {
@@ -176,7 +189,8 @@ Future<ConversationModel?> getConversationModel(String fromId) async {
         contact: Contacts.fromContact(contact, ContactStatus.unknown),
         badgeCount: 0,
         conversation: conv,
-        lastMessage: null);
+        lastMessage: null,
+        isOnline: null);
   } else {
     return null;
   }

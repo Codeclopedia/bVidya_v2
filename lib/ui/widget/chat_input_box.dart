@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/ui/screen/bchat/utils/attach_uihelper.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart' as foundation;
@@ -17,14 +18,18 @@ class ChatInputBox extends ConsumerStatefulWidget {
 
   /// Current user using the chat
   // final User currentUser;
-  final Function(AttachType type)? onAttach;
-  final Function()? onCamera;
+  // final Function(AttachType type)? onAttach;
+  final bool showAttach;
+  final bool showCamera;
+  // final Function()? onCamera;
   final Function()? onTextChange;
   const ChatInputBox(
       {Key? key,
       required this.onSend,
-      this.onAttach,
-      this.onCamera,
+      this.showAttach = false,
+      this.showCamera = false,
+      // this.onAttach,
+      // this.onCamera,
       this.onTextChange})
       : super(key: key);
 
@@ -97,7 +102,6 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                       textDirection: TextDirection.ltr,
                       child: TextField(
                         focusNode: focusNode,
-                        
                         controller: _textController,
                         onChanged: (value) {
                           // WidgetsBinding.instance
@@ -144,7 +148,9 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                 ),
                 SizedBox(width: 1.w),
                 Visibility(
-                  visible: widget.onAttach != null,
+                  visible: widget.showAttach,
+
+                  //  widget.onAttach != null,
                   child: IconButton(
                     onPressed: () async {
                       _showAttachDialog(context);
@@ -152,11 +158,12 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                     icon: getSvgIcon('icon_chat_attach.svg'),
                   ),
                 ),
-                if (isEmptyInput && widget.onCamera != null)
+                if (isEmptyInput && widget.showCamera)
                   IconButton(
                     splashColor: Colors.grey,
                     onPressed: () {
-                      widget.onCamera!();
+                      pickFile(AttachType.cameraPhoto, ref, context);
+                      // widget.onCamera!();
                     },
                     icon: getSvgIcon('icon_chat_camera.svg'),
                   ),
@@ -263,8 +270,11 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
         return const AttachDialog();
       },
     );
-    if (result != null && result is AttachType && widget.onAttach != null) {
-      widget.onAttach!(result);
+    if (result != null && result is AttachType && widget.showAttach
+        // widget.onAttach != null
+        ) {
+      // widget.onAttach!(result);
+      pickFile(result, ref, context);
     }
   }
 

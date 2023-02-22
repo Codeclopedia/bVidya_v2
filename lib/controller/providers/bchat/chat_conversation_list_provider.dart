@@ -1,4 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+
+import '/core/utils/chat_utils.dart';
 import '/data/models/models.dart';
 import '/core/state.dart';
 import 'contact_list_provider.dart';
@@ -9,9 +11,11 @@ final chatConversationProvider = StateNotifierProvider<
     ChatConversationChangeNotifier,
     List<ConversationModel>>((ref) => ChatConversationChangeNotifier());
 
-Future loadChats(WidgetRef ref) async {
+Future loadChats(WidgetRef ref, {bool updateStatus = false}) async {
   final list = await ref.read(contactListProvider.notifier).setup(ref);
-  await ref.read(chatConversationProvider.notifier).setup(ref, list);
+  await ref
+      .read(chatConversationProvider.notifier)
+      .setup(ref, list, updateStatus);
 }
 
 Future<ConversationModel?> addNewContact(
@@ -63,29 +67,98 @@ class ChatConversationChangeNotifier
 
   final Map<String, ConversationModel> _chatConversationMap = {};
 
-  Future setup(WidgetRef ref, List<Contacts> contacts) async {
+  void _registerPresence(WidgetRef ref, List<String> ids) async {
+    try {
+      ChatClient.getInstance.presenceManager
+          .subscribe(members: ids, expiry: 60);
+      print('register for pressence=>${ids}');
+      ChatClient.getInstance.presenceManager.addEventHandler(
+        "user_presence_home_screen",
+        ChatPresenceEventHandler(
+          onPresenceStatusChanged: (list) async {
+            for (ChatPresence s in list) {
+              print('changed pressence=>${s.publisher}');
+              final model = _chatConversationMap[s.publisher];
+
+              if (model != null) {
+                try {
+                  if (model.conversation?.latestMessage() == null) return;
+                  final lastMessage = await model.conversation!.latestMessage();
+                  final newModel = ConversationModel(
+                      id: model.id,
+                      badgeCount: await model.conversation?.unreadCount() ?? 0,
+                      contact: model.contact,
+                      conversation: model.conversation,
+                      lastMessage: lastMessage,
+                      isOnline: s);
+                  _chatConversationMap.addAll({model.id: newModel});
+                  state = _chatConversationMap.values.toList();
+                } catch (e) {
+                  break;
+                }
+              }
+            }
+          },
+        ),
+      );
+    } on ChatError catch (e) {
+      print('error in subscribe presence : $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    unRegisterPresence();
+    super.dispose();
+  }
+
+  bool isDestroyed = false;
+  void unRegisterPresence() {
+    try {
+      if (isDestroyed) return;
+      isDestroyed = true;
+      List<String> ids = _chatConversationMap.keys.toList();
+      ChatClient.getInstance.presenceManager.unsubscribe(members: ids);
+    } on ChatError catch (e) {
+      print('error in unsubscribe presence: $e');
+    }
+  }
+
+  Future setup(
+      WidgetRef ref, List<Contacts> contacts, bool updateStatus) async {
     if (_isLoading) return;
     _isLoading = true;
     // final contacts = ref.read(contactListProvider);
     // ref.read(conversationLoadingStateProvider.notifier).state = _isLoading;
 
+    final List<ChatPresence?> statuses;
+    if (updateStatus) {
+      List<String> ids = contacts.map((e) => e.userId.toString()).toList();
+      statuses = await fetchOnlineStatuses(ids);
+      _registerPresence(ref, ids);
+    } else {
+      statuses = [];
+    }
+    int index = -1;
     for (Contacts contact in contacts) {
+      index++;
       final ConversationModel model;
       try {
         final conv = await ChatClient.getInstance.chatManager.getConversation(
             contact.userId.toString(),
             type: ChatConversationType.Chat,
             createIfNeed: true);
+
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
         if (lastMessage == null) continue;
         model = ConversationModel(
-          id: contact.userId.toString(),
-          badgeCount: await conv.unreadCount(),
-          contact: contact,
-          conversation: conv,
-          lastMessage: lastMessage,
-        );
+            id: contact.userId.toString(),
+            badgeCount: await conv.unreadCount(),
+            contact: contact,
+            conversation: conv,
+            lastMessage: lastMessage,
+            isOnline: updateStatus ? statuses[index] : null);
       } catch (e) {
         // print('error $e');
         continue;
@@ -114,12 +187,12 @@ class ChatConversationChangeNotifier
         if (model.conversation?.latestMessage() == null) return;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
-          id: model.id,
-          badgeCount: await model.conversation?.unreadCount() ?? 0,
-          contact: model.contact,
-          conversation: model.conversation,
-          lastMessage: lastMessage,
-        );
+            id: model.id,
+            badgeCount: await model.conversation?.unreadCount() ?? 0,
+            contact: model.contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: model.isOnline);
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         // print('error $e');
@@ -136,12 +209,12 @@ class ChatConversationChangeNotifier
         // if (model.conversation?.latestMessage() == null) return;
         // final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
-          id: model.id,
-          badgeCount: 0,
-          contact: model.contact,
-          conversation: model.conversation,
-          lastMessage: lastMessage,
-        );
+            id: model.id,
+            badgeCount: 0,
+            contact: model.contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: await fetchOnlineStatus(model.id));
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         print('error $e');
@@ -158,12 +231,12 @@ class ChatConversationChangeNotifier
     if (model != null) {
       try {
         newModel = ConversationModel(
-          id: model.id,
-          badgeCount: await model.conversation?.unreadCount() ?? 0,
-          contact: contact,
-          conversation: model.conversation,
-          lastMessage: lastMessage,
-        );
+            id: model.id,
+            badgeCount: await model.conversation?.unreadCount() ?? 0,
+            contact: contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: model.isOnline);
       } catch (e) {
         print('error $e');
         return model;
@@ -176,12 +249,12 @@ class ChatConversationChangeNotifier
             createIfNeed: true);
         if (conv == null) return null;
         newModel = ConversationModel(
-          id: contact.userId.toString(),
-          badgeCount: await conv.unreadCount(),
-          contact: contact,
-          conversation: conv,
-          lastMessage: lastMessage,
-        );
+            id: contact.userId.toString(),
+            badgeCount: await conv.unreadCount(),
+            contact: contact,
+            conversation: conv,
+            lastMessage: lastMessage,
+            isOnline: await fetchOnlineStatus(contact.userId.toString()));
       } catch (e) {
         print('error $e');
         return null;
@@ -205,12 +278,12 @@ class ChatConversationChangeNotifier
       final lastMessage = await conv.latestMessage();
       // if (lastMessage == null) return null;
       model = ConversationModel(
-        id: contact.userId.toString(),
-        badgeCount: await conv.unreadCount(),
-        contact: contact,
-        conversation: conv,
-        lastMessage: lastMessage,
-      );
+          id: contact.userId.toString(),
+          badgeCount: await conv.unreadCount(),
+          contact: contact,
+          conversation: conv,
+          lastMessage: lastMessage,
+          isOnline: await fetchOnlineStatus(contact.userId.toString()));
     } catch (e) {
       print('error $e');
       return null;
@@ -226,12 +299,12 @@ class ChatConversationChangeNotifier
         if (model.conversation?.latestMessage() == null) continue;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
-          id: model.id,
-          badgeCount: await model.conversation?.unreadCount() ?? 0,
-          contact: model.contact,
-          conversation: model.conversation,
-          lastMessage: lastMessage,
-        );
+            id: model.id,
+            badgeCount: await model.conversation?.unreadCount() ?? 0,
+            contact: model.contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: model.isOnline);
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         print('error $e');

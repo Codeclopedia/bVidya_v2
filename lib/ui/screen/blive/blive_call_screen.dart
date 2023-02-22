@@ -355,7 +355,8 @@ class BLiveClassScreen extends HookConsumerWidget {
         );
         return null;
       },
-      onAttach: null,
+      // showAttach: false
+      // onAttach: null,
     );
   }
 

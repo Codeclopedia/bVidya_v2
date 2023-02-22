@@ -1,23 +1,21 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import '/core/helpers/background_helper.dart';
+import '/core/helpers/extensions.dart';
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
-
-// final groupChatProvider = ChangeNotifierProvider.autoDispose
-//     .family<GroupChatChangeProvider, GroupConversationModel>(
-//         (ref, id) => GroupChatChangeProvider(id));
+import 'chat_messeges_provider.dart';
 
 final loadingMoreStateProvider =
     StateProvider.autoDispose<bool>((ref) => false);
 
 final hasMoreStateProvider = StateProvider.autoDispose<bool>((ref) => true);
 
-final groupChatProvider = StateNotifierProvider.autoDispose
-    .family<GroupChatChangeNotifier, List<ChatMessage>, GroupConversationModel>(
-        (ref, model) => GroupChatChangeNotifier(model));
+final groupChatProvider = StateNotifierProvider.autoDispose.family<
+    GroupChatChangeNotifier,
+    List<ChatMessageExt>,
+    GroupConversationModel>((ref, model) => GroupChatChangeNotifier(model));
 
-class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
+class GroupChatChangeNotifier extends StateNotifier<List<ChatMessageExt>> {
   GroupChatChangeNotifier(this.grpModel) : super([]);
 
 // class GroupChatChangeProvider extends ChangeNotifier {
@@ -34,8 +32,6 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
 
   final GroupConversationModel grpModel;
   // GroupChatChangeProvider(this.grpModel);
-
-  addMessage() {}
 
   init(WidgetRef ref) async {
     // grpModel = model;
@@ -62,8 +58,8 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
       } catch (e) {
         print('Error in loading chats $e');
       }
-      // notifyListeners();
-      state = _messagesMap.values.toList();
+      updateMessageList();
+      // state = _messagesMap.values.toList();
     }
   }
 
@@ -72,18 +68,39 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
       _messagesMap.addAll({e.msgId: e});
       // notifyListeners();
     }
-    state = _messagesMap.values.toList();
+    // state = _messagesMap.values.toList();
+    updateMessageList();
+  }
+
+  void updateMessageList() {
+    final chatList = _messagesMap.values.toList().reversed.toList();
+
+    List<ChatMessageExt> messages = [];
+    int i = 0;
+    while (i < chatList.length) {
+      final item = chatList[i];
+      if (item.body.type == MessageType.IMAGE ||
+          item.body.type == MessageType.VIDEO) {
+        final album = getAlbum(chatList, i);
+        messages.add(album);
+        i += album.messages.length;
+      } else {
+        messages.add(ChatMessageExt([item]));
+        i++;
+      }
+    }
+
+    state = messages;
   }
 
   addChats(List<ChatMessage> chats) {
     for (var e in chats) {
       if (e.conversationId == grpModel.id && e.chatType == ChatType.GroupChat) {
-        print('New Group Message=> ${e.msgId}');
+        // print('New Group Message=> ${e.msgId}');
         _messagesMap.addAll({e.msgId: e});
       }
     }
-    // notifyListeners();
-    state = _messagesMap.values.toList();
+    updateMessageList();
   }
 
   loadMore(WidgetRef ref) async {
@@ -95,7 +112,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
         _isLoadingMore = true;
         // notifyListeners();
         ref.read(loadingMoreStateProvider.notifier).state = true;
-        final message = state[0];
+        final message = _messagesMap.values.toList()[0];
         // print('next_chat_id ${message.msgId}');
         // await Future.delayed(const Duration(seconds: 2));
         final chats = await grpModel.conversation
@@ -124,8 +141,8 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
         // ref.read(chatMessageListProvider.notifier).addChatsOnly(chats ?? []);
         // ref.read(chatHasMoreOldMessageProvider.notifier).state =
         //     chats?.length == 20;
-        // notifyListeners();
-        state = _messagesMap.values.toList();
+        updateMessageList();
+        // state = _messagesMap.values.toList();
       }
     } catch (e) {}
     _isLoadingMore = false;
@@ -144,11 +161,12 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
         debugPrint('other error in deleting chat: $e');
       }
     }
-    state = _messagesMap.values.toList();
-    // notifyListeners();
+    // state = _messagesMap.values.toList();
+    updateMessageList();
   }
 
   void updateUi() {
-    state = _messagesMap.values.toList();
+    // state = _messagesMap.values.toList();
+    updateMessageList();
   }
 }

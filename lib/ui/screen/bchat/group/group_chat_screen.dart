@@ -2,20 +2,14 @@
 
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
-import '../chat_screen.dart';
-import '/ui/widget/chat_reply_body.dart';
-import '../models/media.dart';
+import '../utils/attach_uihelper.dart';
+import '../widgets/chat_message_bubble_ex.dart';
 import '/app.dart';
+import '/ui/widget/chat_reply_body.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/group_call_helper.dart';
 import '/core/sdk_helpers/group_typing_helper.dart';
@@ -24,33 +18,26 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils.dart';
 import '/core/utils/date_utils.dart';
+import '/core/helpers/extensions.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
-
-import '../widgets/typing_indicator.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
-import '../../../dialog/forward_dialog.dart';
-
 import '/core/utils/common.dart';
-
+import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/controller/providers/chat_messagelist_provider.dart';
 import '/ui/base_back_screen.dart';
 import '/ui/dialog/message_menu_popup.dart';
-
-import '../widgets/attached_file.dart';
-import '/controller/providers/bchat/groups_conversation_provider.dart';
+import '../widgets/typing_indicator.dart';
 import '../models/attach_type.dart';
-
-import '../../../widgets.dart';
 import '../models/reply_model.dart';
+import '../../../dialog/forward_dialog.dart';
+import '../../../widgets.dart';
 import '../../../widget/chat_input_box.dart';
-import '../widgets/chat_message_bubble.dart';
-// import '../widgets/typing_indicator.dart';
 
-final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
-final attachedGroupFiles =
-    StateProvider.autoDispose<List<AttachedFile>>((_) => []);
+// final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
+// final attachedGroupFiles =
+//     StateProvider.autoDispose<List<AttachedFile>>((_) => []);
 final sendingGroupFileProgress =
     StateProvider.family.autoDispose<int, String>((_, id) => 0);
 
@@ -230,7 +217,11 @@ class GroupChatScreen extends HookConsumerWidget {
           ),
         ),
         _buildReplyBox(),
-        _buildAttachedFile()
+        buildAttachedFile(_buildChatInputBox(),
+            (AttachedFile attFile, WidgetRef ref) async {
+          return await _sendMediaFile(attFile, ref);
+        })
+        // _buildAttachedFile()
         // _buildChatInputBox(),
       ],
     );
@@ -298,222 +289,81 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildChatInputBox(WidgetRef ref, BuildContext context) {
-    return ChatInputBox(
-      onSend: (input) async {
-        final msg = ChatMessage.createTxtSendMessage(
-            targetId: model.id, content: input, chatType: ChatType.GroupChat);
-        // ..from = _myUserId;
+  Widget _buildChatInputBox() {
+    return Consumer(builder: (context, ref, child) {
+      return ChatInputBox(
+        onSend: (input) async {
+          final msg = ChatMessage.createTxtSendMessage(
+              targetId: model.id, content: input, chatType: ChatType.GroupChat);
+          // ..from = _myUserId;
 
-        msg.attributes = {
-          "em_apns_ext": {
-            "em_push_title":
-                "${_me.name} sent you a message in ${model.groupInfo.name}",
-            "em_push_content": input,
-            // 'content': input,
-            'type': 'group_chat',
-            // 'name': _me.name,
-            // 'image': model.image,
-            // 'group_name': model.groupInfo.name,
-            // 'content_type': msg.body.type.name,
-          },
-          // Adds the push template to the message.
-          // "em_push_template": {
-          //   // Sets the template name.
-          //   "name": "default",
-          //   // Sets the template title by specifying the variable.
-          //   "title_args": ["${model.contact.name} sent you a message"],
-          //   // Sets the template content by specifying the variable.
-          //   "content_args": [input],
-          // }
-        };
+          msg.attributes = {
+            "em_apns_ext": {
+              "em_push_title":
+                  "${_me.name} sent you a message in ${model.groupInfo.name}",
+              "em_push_content": input,
+              // 'content': input,
+              'type': 'group_chat',
+              // 'name': _me.name,
+              // 'image': model.image,
+              // 'group_name': model.groupInfo.name,
+              // 'content_type': msg.body.type.name,
+            },
+            // Adds the push template to the message.
+            // "em_push_template": {
+            //   // Sets the template name.
+            //   "name": "default",
+            //   // Sets the template title by specifying the variable.
+            //   "title_args": ["${model.contact.name} sent you a message"],
+            //   // Sets the template content by specifying the variable.
+            //   "content_args": [input],
+            // }
+          };
 
-        return await _sendMessage(msg, ref);
-      },
-      onCamera: () {
-        _pickFile(AttachType.cameraPhoto, ref, context);
-      },
-      onAttach: (type) => _pickFile(type, ref, context),
-      onTextChange: () {
-        ref
-            .read(groupTypingUsersProvider(model.id).notifier)
-            .textChange(_me.userId.toString(), _me.name, _me.profileImage);
-      },
-    );
+          return await _sendMessage(msg, ref);
+        },
+        // onCamera: () {
+        //   pickFile(AttachType.cameraPhoto, ref, context);
+        // },
+        showCamera: true,
+        showAttach: true,
+        // onAttach: (type) => pickFile(type, ref, context),
+        onTextChange: () {
+          ref
+              .read(groupTypingUsersProvider(model.id).notifier)
+              .textChange(_me.userId.toString(), _me.name, _me.profileImage);
+        },
+      );
+    });
   }
 
-  Widget _buildAttachedFile() {
-    return Consumer(
-      builder: (context, ref, child) {
-        List<AttachedFile> attaches = ref.watch(attachedGroupFiles);
-        if (attaches.isNotEmpty) {
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
-            margin: EdgeInsets.only(bottom: 1.h),
-            alignment: Alignment.center,
-            height: 10.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: const Color(0xFFECECEC),
-              borderRadius: BorderRadius.circular(3.w),
-            ),
-            // constraints: BoxConstraints(
-            //   minHeight: 2.h,
-            //   maxHeight: 10.h,
-            // ),
-            child: Row(
-              children: [
-                Expanded(
-                    child: ListView.separated(
-                  itemCount: attaches.length,
-                  scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 4),
-                  itemBuilder: (context, index) {
-                    final attFile = attaches[index];
-                    return SizedBox(
-                      width: 10.h,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(1.w),
-                        ),
-                        child: Image(
-                          fit: BoxFit.cover,
-                          image: FileImage(File(
-                              attFile.file.thumbPath ?? attFile.file.path)),
-                        ),
-                      ),
-                    );
-                  },
-                )),
-                InkWell(
-                  onTap: () async {
-                    showLoading(ref);
-                    for (var attFile in attaches) {
-                      await _sendMediaFile(attFile, ref);
-                    }
-                    ref.read(attachedGroupFiles.notifier).state = [];
-                    hideLoading(ref);
-                  },
-                  child: CircleAvatar(
-                    radius: 5.w,
-                    backgroundColor: AppColors.primaryColor,
-                    child: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 20.0,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 2.w),
-              ],
-            ),
-          );
-        }
+  // Widget _buildAttachedFile() {
+  //   return Consumer(
+  //     builder: (context, ref, child) {
+  //       List<AttachedFile> attaches = ref.watch(attachedGroupFiles);
+  //       if (attaches.isNotEmpty) {
+  //         return attachFilesView(attaches, () async {
+  //           showLoading(ref);
+  //           for (var attFile in attaches) {
+  //             await _sendMediaFile(attFile, ref);
+  //           }
+  //           ref.read(attachedGroupFiles.notifier).state = [];
+  //           hideLoading(ref);
+  //         });
+  //       }
 
-        AttachedFile? attFile = ref.watch(attachedGroupFile);
-        return attFile == null
-            ? _buildChatInputBox(ref, context)
-            : Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2.w),
-                      alignment: Alignment.center,
-                      constraints: BoxConstraints(
-                        minHeight: 2.h,
-                        maxHeight: 10.h,
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.w),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: AppColors.primaryColor.withOpacity(0.5)),
-                          color: AppColors.cardWhite,
-                          borderRadius: BorderRadius.all(Radius.circular(3.w))),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  S.current.bmeet_user_you,
-                                  style: TextStyle(
-                                      color: AppColors.primaryColor,
-                                      fontSize: 15.sp,
-                                      fontFamily: kFontFamily,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Icon(
-                                      Icons.image,
-                                      size: 4.w,
-                                      color: Colors.grey,
-                                    ),
-                                    SizedBox(width: 1.w),
-                                    Flexible(
-                                      child: Text(
-                                        attFile.file.path.split('/').last,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                            fontFamily: kFontFamily,
-                                            color: Colors.grey,
-                                            fontSize: 10.sp),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10.h,
-                            child: AttachedFileView(
-                              attFile: attFile,
-                            ),
-                          ),
-                          // IconButton(
-                          //   onPressed: () {
-                          //     ref.read(attachedFile.notifier).state = null;
-                          //   },
-                          //   icon: const Icon(Icons.close, color: Colors.red),
-                          // )
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      showLoading(ref);
-                      await _sendMediaFile(attFile, ref);
-                      ref.read(attachedGroupFile.notifier).state = null;
-                      hideLoading(ref);
-                    },
-                    child: CircleAvatar(
-                      radius: 5.w,
-                      backgroundColor: AppColors.primaryColor,
-                      child: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 20.0,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 3.w),
-                ],
-              );
-      },
-    );
-  }
+  //       AttachedFile? attFile = ref.watch(attachedGroupFile);
+  //       return attFile == null
+  //           ? _buildChatInputBox(ref, context)
+  //           : attachFileView(attFile, () async {
+  //               showLoading(ref);
+  //               await _sendMediaFile(attFile, ref);
+  //               ref.read(attachedGroupFile.notifier).state = null;
+  //               hideLoading(ref);
+  //             });
+  //     },
+  //   );
+  // }
 
   Future _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
     // showLoading(ref);
@@ -571,180 +421,8 @@ class GroupChatScreen extends HookConsumerWidget {
     // ref.read(attachedGroupFile.notifier).state = null;
   }
 
-  _pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
-    ImagePicker picker = ImagePicker();
-    switch (type) {
-      case AttachType.cameraPhoto:
-        // SelectedImagesDetails? details =
-        //     await picker.pickImage(source: ImageSource.camera);
-        XFile? xFile = await picker.pickImage(source: ImageSource.camera);
-        if (xFile != null) {
-          // File file = xFile.path;
-          final Media media = Media(
-              path: xFile.path,
-              size: (await xFile.length()),
-              thumbPath: xFile.path);
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.IMAGE);
-        }
-        break;
-      case AttachType.cameraVideo:
-        XFile? xFile = await picker.pickVideo(source: ImageSource.camera);
-        if (xFile != null) {
-          final thumb = await VideoThumbnail.thumbnailFile(
-            video: xFile.path,
-            thumbnailPath: Directory.systemTemp.path,
-            imageFormat: ImageFormat.JPEG,
-            maxWidth: 128,
-            quality: 25,
-          );
-          final Media media = Media(
-              path: xFile.path, size: (await xFile.length()), thumbPath: thumb);
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.VIDEO);
-        }
-        break;
-      case AttachType.media:
-        ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
-        ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
-            multiImages: true,
-            source: ipp.ImageSource.gallery); //todo change both
-        if (details != null && details.selectedFiles.isNotEmpty) {
-          if (details.selectedFiles.length == 1) {
-            ref.read(attachedGroupFile.notifier).state =
-                await getMediaFile(details.selectedFiles.first);
-            return;
-          }
-          List<AttachedFile> files = [];
-          for (var f in details.selectedFiles) {
-            files.add(await getMediaFile(f));
-          }
-          ref.read(attachedGroupFile.notifier).state = null;
-          ref.read(attachedGroupFiles.notifier).state = files;
-
-          // File file = details.selectedFiles.first.selectedFile;
-          // bool isImage = file.path.toLowerCase().endsWith('png') ||
-          //     file.path.toLowerCase().endsWith('jpg') ||
-          //     file.path.toLowerCase().endsWith('jpeg');
-          // if (isImage) {
-          //   final Media media = Media(
-          //       path: file.absolute.path,
-          //       size: (await file.length()),
-          //       thumbPath: file.absolute.path);
-          //   ref.read(attachedGroupFile.notifier).state =
-          //       AttachedFile(media, MessageType.IMAGE);
-          // } else {
-          //   final thumb = await VideoThumbnail.thumbnailFile(
-          //     video: file.path,
-          //     thumbnailPath: Directory.systemTemp.path,
-          //     imageFormat: ImageFormat.JPEG,
-          //     maxWidth: 128,
-          //     quality: 25,
-          //   );
-          //   final Media media = Media(
-          //       path: file.absolute.path,
-          //       size: (await file.length()),
-          //       thumbPath: thumb);
-          //   ref.read(attachedGroupFile.notifier).state =
-          //       AttachedFile(media, MessageType.VIDEO);
-          // }
-        }
-        break;
-      case AttachType.audio:
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['aac', 'mp3', 'wav'],
-        );
-        if (result != null) {
-          PlatformFile file = result.files.first;
-          final Media media =
-              Media(path: file.path!, size: (await File(file.path!).length()));
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.VOICE);
-        }
-        // fileExts = ['aac', 'mp3', 'wav'];
-        break;
-      case AttachType.docs:
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
-        );
-        if (result != null) {
-          PlatformFile file = result.files.first;
-          final Media media =
-              Media(path: file.path!, size: (await File(file.path!).length()));
-          ref.read(attachedGroupFile.notifier).state =
-              AttachedFile(media, MessageType.FILE);
-        }
-        // docPaths = await DocumentsPicker.pickDocuments;
-        // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-        break;
-    }
-  }
-
-  // _pickFiles(AttachType type, WidgetRef ref) async {
-  //   switch (type) {
-  //     case AttachType.cameraPhoto:
-  //       List<Media>? res = await ImagesPicker.openCamera(
-  //         quality: 0.8,
-  //         pickType: PickType.image,
-  //         maxSize: 5000, //5 MB
-  //       );
-  //       // print(res);
-  //       if (res != null) {
-  //         final Media media = res.first;
-  //         ref.read(attachedGroupFile.notifier).state =
-  //             AttachedFile(media, MessageType.IMAGE);
-  //       }
-  //       return;
-  //     case AttachType.cameraVideo:
-  //       List<Media>? res = await ImagesPicker.openCamera(
-  //         quality: 0.8,
-  //         pickType: PickType.video,
-  //         maxSize: 10000, //10 MB
-  //       );
-  //       if (res != null) {
-  //         final Media media = res.first;
-  //         ref.read(attachedGroupFile.notifier).state =
-  //             AttachedFile(media, MessageType.VIDEO);
-  //       }
-  //       return;
-  //     case AttachType.media:
-  //       List<Media>? res = await ImagesPicker.pick(
-  //         count: 1,
-  //         pickType: PickType.all,
-  //         language: Language.System,
-  //         maxSize: 5000,
-  //       );
-  //       if (res != null) {
-  //         final Media media = res.first;
-  //         print('path ${media.path}');
-  //         final f = File(media.path);
-  //         if (await f.exists()) {
-  //           bool isImage = media.path.toLowerCase().endsWith('png') ||
-  //               media.path.toLowerCase().endsWith('jpg') ||
-  //               media.path.toLowerCase().endsWith('jpeg');
-  //           ref.read(attachedGroupFile.notifier).state = AttachedFile(
-  //               media, isImage ? MessageType.IMAGE : MessageType.VIDEO);
-  //         } else {
-  //           print('path ${media.path} is not exist ');
-  //         }
-  //         // File('Fil')
-
-  //       }
-  //       break;
-
-  //     case AttachType.audio:
-  //       // fileExts = ['aac', 'mp3', 'wav'];
-  //       break;
-  //     case AttachType.docs:
-  //       // fileExts = ['txt', 'pdf', 'doc', 'docx', 'ppt', 'xls'];
-  //       break;
-  //   }
-  // }
-
   Widget _buildMessageList(WidgetRef ref) {
-    final chatList = ref.watch(groupChatProvider(model)).reversed.toList();
+    final chatList = ref.watch(groupChatProvider(model)).toList();
     return ListView.builder(
       shrinkWrap: true,
       reverse: true,
@@ -752,43 +430,44 @@ class GroupChatScreen extends HookConsumerWidget {
       itemCount: chatList.length,
       itemBuilder: (context, i) {
         final ChatMessage? previousMessage =
-            i < chatList.length - 1 ? chatList[i + 1] : null;
-        final ChatMessage? nextMessage = i > 0 ? chatList[i - 1] : null;
-        final ChatMessage message = chatList[i];
+            i < chatList.length - 1 ? chatList[i + 1].msg : null;
+        final ChatMessage? nextMessage = i > 0 ? chatList[i - 1].msg : null;
+        final ChatMessageExt message = chatList[i];
         final bool isAfterDateSeparator =
-            shouldShowDateSeparator(previousMessage, message);
+            shouldShowDateSeparator(previousMessage, message.msg);
         bool isBeforeDateSeparator = false;
         if (nextMessage != null) {
-          isBeforeDateSeparator = shouldShowDateSeparator(message, nextMessage);
+          isBeforeDateSeparator =
+              shouldShowDateSeparator(message.msg, nextMessage);
         }
         bool isPreviousSameAuthor = false;
         bool isNextSameAuthor = false;
-        if (previousMessage?.from == message.from) {
+        if (previousMessage?.from == message.msg.from) {
           isPreviousSameAuthor = true;
         }
-        if (nextMessage?.from == message.from) {
+        if (nextMessage?.from == message.msg.from) {
           isNextSameAuthor = true;
         }
         final selectedItems = ref.watch(selectedChatMessageListProvider);
-        bool isSelected = selectedItems.contains(message);
+        bool isSelected = selectedItems.contains(message.msg);
 
-        bool isOwnMessage = message.from == _myUserId;
+        bool isOwnMessage = message.msg.from == _myUserId;
 
-        isOwnMessage ? _markOwnRead(message) : _markRead(message);
+        isOwnMessage ? _markOwnRead(message.msg) : _markRead(message.msg);
         int progress = 0;
         if (isOwnMessage) {
-          progress = ref.watch(sendingGroupFileProgress(message.msgId));
+          progress = ref.watch(sendingGroupFileProgress(message.msg.msgId));
         }
 
-        String name = message.attributes?['from_name'] ?? '';
-        String image = message.attributes?['from_image'] ?? '';
+        String name = message.msg.attributes?['from_name'] ?? '';
+        String image = message.msg.attributes?['from_image'] ?? '';
         Contacts contact = Contacts(
-            userId: int.parse(message.from!),
+            userId: int.parse(message.msg.from!),
             name: name,
             profileImage: image,
             status: ContactStatus.group);
-        bool notReply = message.body.type == MessageType.CMD ||
-            message.body.type == MessageType.CUSTOM;
+        bool notReply = message.msg.body.type == MessageType.CMD ||
+            message.msg.body.type == MessageType.CUSTOM;
         return Column(
           // crossAxisAlignment:
           //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -798,8 +477,8 @@ class GroupChatScreen extends HookConsumerWidget {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  formatDateSeparator(
-                      DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+                  formatDateSeparator(DateTime.fromMillisecondsSinceEpoch(
+                      message.msg.serverTime)),
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       color: AppColors.black,
@@ -818,22 +497,22 @@ class GroupChatScreen extends HookConsumerWidget {
                   : () {
                       ref
                           .read(chatModelProvider.notifier)
-                          .setReplyOn(message, contact.name);
+                          .setReplyOn(message.msg, contact.name);
                       // print('open replyBox');
                     },
               child: GestureDetector(
                 onLongPress: () =>
                     _onMessageLongPress(message, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTapSelect(message, isSelected, ref)
+                    ? _onMessageLongPress(message, isSelected, ref)
                     : notReply
                         ? null
-                        : _onMessageTap(message, context, ref),
+                        : _onMessageTap(message.msg, context, ref),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
                   color: isSelected ? Colors.grey.shade200 : Colors.transparent,
-                  child: ChatMessageBubble(
+                  child: ChatMessageBubbleExt(
                       message: message,
                       isOwnMessage: isOwnMessage,
                       senderUser: isOwnMessage ? _me : contact,
@@ -852,20 +531,26 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  _onMessageLongPress(ChatMessage message, bool selected, WidgetRef ref) {
+  _onMessageLongPress(ChatMessageExt message, bool selected, WidgetRef ref) {
     // ChatClient.getInstance.chatManager.a
     if (selected) {
-      ref.read(selectedChatMessageListProvider.notifier).remove(message);
+      if (message.isGroupMedia) {
+        for (ChatMessage m in message.messages) {
+          ref.read(selectedChatMessageListProvider.notifier).remove(m);
+        }
+      } else {
+        ref.read(selectedChatMessageListProvider.notifier).remove(message.msg);
+      }
+      //
     } else {
-      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
-    }
-  }
-
-  _onMessageTapSelect(ChatMessage message, bool selected, WidgetRef ref) {
-    if (selected) {
-      ref.read(selectedChatMessageListProvider.notifier).remove(message);
-    } else {
-      ref.read(selectedChatMessageListProvider.notifier).addChat(message);
+      if (message.isGroupMedia) {
+        for (ChatMessage m in message.messages) {
+          ref.read(selectedChatMessageListProvider.notifier).addChat(m);
+        }
+      } else {
+        ref.read(selectedChatMessageListProvider.notifier).addChat(message.msg);
+      }
+      // ref.read(selectedChatMessageListProvider.notifier).addChat(message);
     }
   }
 

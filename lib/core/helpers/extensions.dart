@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../data/models/call_message_body.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 extension RemoteMessageExt on RemoteMessage {
   Map<String, dynamic> getContent() {
@@ -21,8 +21,9 @@ extension RemoteMessageExt on RemoteMessage {
 }
 
 class ChatMessageExt {
-  // final ChatMessage message;
+  // CAN'T BE EMPTY LIST
   final List<ChatMessage> messages;
+  //MUST PASS LIST OF AT LEAST ONE MESSAGE.
   const ChatMessageExt(this.messages);
   ChatMessage get msg => messages[0];
   bool get isGroupMedia => messages.length > 1;
@@ -31,10 +32,5 @@ class ChatMessageExt {
 class ChatGroupSharedFileEx {
   final File? filePath;
   final ChatGroupSharedFile fileInfo;
-
   ChatGroupSharedFileEx(this.filePath, this.fileInfo);
-
-  // ChatGroupSharedFileEx.fromJson(super.map)
-  //     : filePath = map!['filepath'],
-  //       super.fromJson();
 }

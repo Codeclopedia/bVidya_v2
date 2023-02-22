@@ -51,13 +51,15 @@ class TeacherProfile extends StatelessWidget {
               builder: (context, ref, child) {
                 return ref.watch(profileUserProvider).when(
                   data: (data) {
-                    return data?.isApproved ?? false ? null : approvalNote();
+                    return data?.isApproved ?? false
+                        ? const SizedBox.shrink()
+                        : approvalNote();
                   },
                   error: (error, stackTrace) {
-                    return Container();
+                    return const SizedBox.shrink();
                   },
                   loading: () {
-                    return Container();
+                    return const SizedBox.shrink();
                   },
                 );
               },

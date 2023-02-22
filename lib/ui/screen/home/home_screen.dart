@@ -4,6 +4,7 @@ import 'dart:convert';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/utils/chat_utils.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -57,15 +58,17 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       }
       //
       await BChatSDKController.instance.initChatSDK(user);
-      await loadChats(ref);
+      await loadChats(ref, updateStatus: true);
 
       await ref.read(groupConversationProvider.notifier).setup();
       // await ref.read(callListProvider.notifier).setup();
     } else {
       print('reseting chat only');
       try {
-        await loadChats(ref);
-      } catch (_) {}
+        await loadChats(ref, updateStatus: true);
+      } catch (e) {
+        print('Error =>$e');
+      }
 
       // ref
       //     .read(chatConversationProvider.notifier)
@@ -98,9 +101,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         provisional: false,
         sound: true,
       );
-      print('User granted permission: ${settings.authorizationStatus}');
+      debugPrint('User granted permission: ${settings.authorizationStatus}');
     } else {
-      print('User granted permission: ${pre.authorizationStatus}');
+      // print('User granted permission: ${pre.authorizationStatus}');
     }
   }
 
@@ -145,7 +148,15 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _disposeAll() {
+    // ref.read(chatConversationProvider.notifier).unRegisterPresence();
     unregisterForContact('home_screen_contact');
+    try {
+      ChatClient.getInstance.presenceManager
+          .removeEventHandler("user_presence_home_screen");
+    } on ChatError catch (e) {
+      print('error in unsubscribe presence: $e');
+    }
+
     // unregisterForNewMessage('home_screen_chat');
   }
 
@@ -273,7 +284,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          getCicleAvatar(model.contact.name, model.contact.profileImage),
+          // getCicleAvatar(model.contact.name, model.contact.profileImage),
+          getOnlineStatusCircle(model),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(
@@ -347,6 +359,25 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
+
+  Widget getOnlineStatusCircle(ConversationModel model) => Stack(
+        children: [
+          getCicleAvatar(model.contact.name, model.contact.profileImage),
+          if (isOnline(model.isOnline))
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 2.25.w,
+                child: CircleAvatar(
+                  backgroundColor: Colors.green,
+                  radius: 1.75.w,
+                ),
+              ),
+            ),
+        ],
+      );
 
   Widget _rowFirst(BuildContext context) {
     return Row(
