@@ -37,7 +37,9 @@ class BChatSDKController {
       options.enableFCM(isReleaseBuild
           ? DefaultFirebaseOptions.currentPlatformRelease.messagingSenderId
           : DefaultFirebaseOptions.currentPlatform.messagingSenderId);
+
       await ChatClient.getInstance.init(options);
+
       print('Chat Client initialized');
     } catch (e) {
       print('Error in Chat Client initialization');

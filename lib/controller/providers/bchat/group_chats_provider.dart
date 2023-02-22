@@ -1,5 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/background_helper.dart';
+// import '/core/helpers/background_helper.dart';
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -78,6 +78,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessage>> {
   addChats(List<ChatMessage> chats) {
     for (var e in chats) {
       if (e.conversationId == grpModel.id && e.chatType == ChatType.GroupChat) {
+        print('New Group Message=> ${e.msgId}');
         _messagesMap.addAll({e.msgId: e});
       }
     }

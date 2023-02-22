@@ -7,12 +7,12 @@ import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import 'package:file_picker/file_picker.dart';
-// import 'package:images_picker/images_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_plus/image_picker_plus.dart' as ipp;
 
+import '../chat_screen.dart';
 import '/ui/widget/chat_reply_body.dart';
 import '../models/media.dart';
 import '/app.dart';
@@ -49,6 +49,8 @@ import '../widgets/chat_message_bubble.dart';
 // import '../widgets/typing_indicator.dart';
 
 final attachedGroupFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
+final attachedGroupFiles =
+    StateProvider.autoDispose<List<AttachedFile>>((_) => []);
 final sendingGroupFileProgress =
     StateProvider.family.autoDispose<int, String>((_, id) => 0);
 
@@ -343,6 +345,72 @@ class GroupChatScreen extends HookConsumerWidget {
   Widget _buildAttachedFile() {
     return Consumer(
       builder: (context, ref, child) {
+        List<AttachedFile> attaches = ref.watch(attachedGroupFiles);
+        if (attaches.isNotEmpty) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
+            margin: EdgeInsets.only(bottom: 1.h),
+            alignment: Alignment.center,
+            height: 10.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: const Color(0xFFECECEC),
+              borderRadius: BorderRadius.circular(3.w),
+            ),
+            // constraints: BoxConstraints(
+            //   minHeight: 2.h,
+            //   maxHeight: 10.h,
+            // ),
+            child: Row(
+              children: [
+                Expanded(
+                    child: ListView.separated(
+                  itemCount: attaches.length,
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 4),
+                  itemBuilder: (context, index) {
+                    final attFile = attaches[index];
+                    return SizedBox(
+                      width: 10.h,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(1.w),
+                        ),
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: FileImage(File(
+                              attFile.file.thumbPath ?? attFile.file.path)),
+                        ),
+                      ),
+                    );
+                  },
+                )),
+                InkWell(
+                  onTap: () async {
+                    showLoading(ref);
+                    for (var attFile in attaches) {
+                      await _sendMediaFile(attFile, ref);
+                    }
+                    ref.read(attachedGroupFiles.notifier).state = [];
+                    hideLoading(ref);
+                  },
+                  child: CircleAvatar(
+                    radius: 5.w,
+                    backgroundColor: AppColors.primaryColor,
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 20.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 2.w),
+              ],
+            ),
+          );
+        }
+
         AttachedFile? attFile = ref.watch(attachedGroupFile);
         return attFile == null
             ? _buildChatInputBox(ref, context)
@@ -425,7 +493,10 @@ class GroupChatScreen extends HookConsumerWidget {
                   ),
                   InkWell(
                     onTap: () async {
-                      _sendMediaFile(attFile, ref);
+                      showLoading(ref);
+                      await _sendMediaFile(attFile, ref);
+                      ref.read(attachedGroupFile.notifier).state = null;
+                      hideLoading(ref);
                     },
                     child: CircleAvatar(
                       radius: 5.w,
@@ -444,7 +515,7 @@ class GroupChatScreen extends HookConsumerWidget {
     );
   }
 
-  _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
+  Future _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
     // showLoading(ref);
     final ChatMessage msg;
     String displayName = attFile.file.path.split('/').last;
@@ -468,12 +539,11 @@ class GroupChatScreen extends HookConsumerWidget {
       content = 'Video';
     } else if (attFile.messageType == MessageType.VOICE) {
       msg = ChatMessage.createVoiceSendMessage(
-        targetId: model.id.toString(),
-        filePath: attFile.file.path,
-        displayName: displayName,
-        fileSize: attFile.file.size.toInt(),
-        chatType: ChatType.GroupChat
-      );
+          targetId: model.id.toString(),
+          filePath: attFile.file.path,
+          displayName: displayName,
+          fileSize: attFile.file.size.toInt(),
+          chatType: ChatType.GroupChat);
       content = 'Audio';
     } else {
       msg = ChatMessage.createFileSendMessage(
@@ -498,7 +568,7 @@ class GroupChatScreen extends HookConsumerWidget {
     };
 
     await _sendMessage(msg, ref, isFile: true);
-    ref.read(attachedGroupFile.notifier).state = null;
+    // ref.read(attachedGroupFile.notifier).state = null;
   }
 
   _pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
@@ -537,34 +607,47 @@ class GroupChatScreen extends HookConsumerWidget {
       case AttachType.media:
         ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
         ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
+            multiImages: true,
             source: ipp.ImageSource.gallery); //todo change both
         if (details != null && details.selectedFiles.isNotEmpty) {
-          File file = details.selectedFiles.first.selectedFile;
-          bool isImage = file.path.toLowerCase().endsWith('png') ||
-              file.path.toLowerCase().endsWith('jpg') ||
-              file.path.toLowerCase().endsWith('jpeg');
-          if (isImage) {
-            final Media media = Media(
-                path: file.absolute.path,
-                size: (await file.length()),
-                thumbPath: file.absolute.path);
+          if (details.selectedFiles.length == 1) {
             ref.read(attachedGroupFile.notifier).state =
-                AttachedFile(media, MessageType.IMAGE);
-          } else {
-            final thumb = await VideoThumbnail.thumbnailFile(
-              video: file.path,
-              thumbnailPath: Directory.systemTemp.path,
-              imageFormat: ImageFormat.JPEG,
-              maxWidth: 128,
-              quality: 25,
-            );
-            final Media media = Media(
-                path: file.absolute.path,
-                size: (await file.length()),
-                thumbPath: thumb);
-            ref.read(attachedGroupFile.notifier).state =
-                AttachedFile(media, MessageType.VIDEO);
+                await getMediaFile(details.selectedFiles.first);
+            return;
           }
+          List<AttachedFile> files = [];
+          for (var f in details.selectedFiles) {
+            files.add(await getMediaFile(f));
+          }
+          ref.read(attachedGroupFile.notifier).state = null;
+          ref.read(attachedGroupFiles.notifier).state = files;
+
+          // File file = details.selectedFiles.first.selectedFile;
+          // bool isImage = file.path.toLowerCase().endsWith('png') ||
+          //     file.path.toLowerCase().endsWith('jpg') ||
+          //     file.path.toLowerCase().endsWith('jpeg');
+          // if (isImage) {
+          //   final Media media = Media(
+          //       path: file.absolute.path,
+          //       size: (await file.length()),
+          //       thumbPath: file.absolute.path);
+          //   ref.read(attachedGroupFile.notifier).state =
+          //       AttachedFile(media, MessageType.IMAGE);
+          // } else {
+          //   final thumb = await VideoThumbnail.thumbnailFile(
+          //     video: file.path,
+          //     thumbnailPath: Directory.systemTemp.path,
+          //     imageFormat: ImageFormat.JPEG,
+          //     maxWidth: 128,
+          //     quality: 25,
+          //   );
+          //   final Media media = Media(
+          //       path: file.absolute.path,
+          //       size: (await file.length()),
+          //       thumbPath: thumb);
+          //   ref.read(attachedGroupFile.notifier).state =
+          //       AttachedFile(media, MessageType.VIDEO);
+          // }
         }
         break;
       case AttachType.audio:
@@ -789,22 +872,23 @@ class GroupChatScreen extends HookConsumerWidget {
   _onMessageTap(
       ChatMessage message, BuildContext context, WidgetRef ref) async {
     final action = await showMessageMenu(context, message);
-    if (action == 0) {
+    if (action == null) return;
+    if (action == messageActionCopy) {
       //Copy
       // AppSnackbar.instance.message(context, 'Need to implement');
       copyToClipboardGroup([message]);
-    } else if (action == 1) {
+    } else if (action == messageActionForward) {
       //Forward
       // AppSnackbar.instance.message(context, 'Need to implement');
       await showForwardList(context, [message], model.id);
-    } else if (action == 2) {
+    } else if (action == messageActionForward) {
       //Reply
       String name = message.attributes?['from_name'] ?? '';
       bool isOwnMessage = message.from != model.id;
       ref
           .read(chatModelProvider.notifier)
           .setReplyOn(message, isOwnMessage ? S.current.bmeet_user_you : name);
-    } else if (action == 3) {
+    } else if (action == messageActionDelete) {
       //Delete
       ref.read(groupChatProvider(model).notifier).deleteMessages([message]);
     }
@@ -849,6 +933,7 @@ class GroupChatScreen extends HookConsumerWidget {
           },
           onError: (error) {
             // hideLoading(ref);
+            print('Error :${error.code} -> ${error.description}');
             if (isFile) {
               ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
             }
@@ -871,6 +956,8 @@ class GroupChatScreen extends HookConsumerWidget {
           },
         ),
       );
+
+      msg.needGroupAck = true; //todo uncomment when pricing
 
       final sentMessage =
           await ChatClient.getInstance.chatManager.sendMessage(msg);
@@ -1248,14 +1335,27 @@ class GroupChatScreen extends HookConsumerWidget {
 
   void _markRead(ChatMessage message) async {
     try {
-      await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
-      await model.conversation?.markMessageAsRead(message.msgId);
-    } catch (_) {}
+      if (message.needGroupAck) {
+        // var i = await message.groupAckCount();
+        // print('mark Read=>${message.msgId} -> ${message.toJson()} ');
+        await ChatClient.getInstance.chatManager
+            .sendGroupMessageReadAck(message.msgId, model.id);
+      }
+
+      // await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+      // await model.conversation?.markMessageAsRead(message.msgId);
+    } catch (e) {
+      print('Error mark read');
+    }
   }
 
   void _markOwnRead(ChatMessage message) async {
     try {
       if (!message.hasRead) {
+        message.hasRead = true;
+
+        print(
+            'mark OWN Read=>${message.msgId} -> ${message.hasDeliverAck}->  ${message.hasReadAck} ${await message.groupAckCount()}');
         await model.conversation?.markMessageAsRead(message.msgId);
       }
     } catch (_) {}

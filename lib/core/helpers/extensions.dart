@@ -20,6 +20,14 @@ extension RemoteMessageExt on RemoteMessage {
   }
 }
 
+class ChatMessageExt {
+  // final ChatMessage message;
+  final List<ChatMessage> messages;
+  const ChatMessageExt(this.messages);
+  ChatMessage get msg => messages[0];
+  bool get isGroupMedia => messages.length > 1;
+}
+
 class ChatGroupSharedFileEx {
   final File? filePath;
   final ChatGroupSharedFile fileInfo;

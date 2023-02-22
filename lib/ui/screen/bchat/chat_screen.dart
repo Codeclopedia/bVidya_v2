@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/ui/widget/chat_reply_body.dart';
+import '/core/helpers/extensions.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/group_chats_provider.dart';
 import '/core/sdk_helpers/typing_helper.dart';
@@ -35,17 +36,18 @@ import 'models/attach_type.dart';
 import 'models/media.dart';
 import 'models/reply_model.dart';
 import 'widgets/attached_file.dart';
-import 'widgets/chat_message_bubble.dart';
 import '/ui/dialog/message_menu_popup.dart';
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../widget/chat_input_box.dart';
+import 'widgets/chat_message_bubble_ex.dart';
 import 'widgets/typing_indicator.dart';
 
 // const String commandTypingBegin = "TypingBegin";
 // const String commandTypingEnd = "TypingEnd";
 
 final attachedFile = StateProvider.autoDispose<AttachedFile?>((_) => null);
+final attachedFiles = StateProvider.autoDispose<List<AttachedFile>>((_) => []);
 final sendingFileProgress =
     StateProvider.autoDispose.family<int, String>((_, id) => 0);
 
@@ -218,6 +220,72 @@ class ChatScreen extends HookConsumerWidget {
   Widget _buildAttachedFile() {
     return Consumer(
       builder: (context, ref, child) {
+        List<AttachedFile> attaches = ref.watch(attachedFiles);
+        if (attaches.isNotEmpty) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
+            margin: EdgeInsets.only(bottom: 1.h),
+            alignment: Alignment.center,
+            height: 10.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: const Color(0xFFECECEC),
+              borderRadius: BorderRadius.circular(3.w),
+            ),
+            // constraints: BoxConstraints(
+            //   minHeight: 2.h,
+            //   maxHeight: 10.h,
+            // ),
+            child: Row(
+              children: [
+                Expanded(
+                    child: ListView.separated(
+                  itemCount: attaches.length,
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 4),
+                  itemBuilder: (context, index) {
+                    final attFile = attaches[index];
+                    return SizedBox(
+                      width: 10.h,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(1.w),
+                        ),
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: FileImage(File(
+                              attFile.file.thumbPath ?? attFile.file.path)),
+                        ),
+                      ),
+                    );
+                  },
+                )),
+                InkWell(
+                  onTap: () async {
+                    showLoading(ref);
+                    for (var attFile in attaches) {
+                      await _sendMediaFile(attFile, ref);
+                    }
+                    ref.read(attachedFiles.notifier).state = [];
+                    hideLoading(ref);
+                  },
+                  child: CircleAvatar(
+                    radius: 5.w,
+                    backgroundColor: AppColors.primaryColor,
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 20.0,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 2.w),
+              ],
+            ),
+          );
+        }
+
         AttachedFile? attFile = ref.watch(attachedFile);
 
         return attFile == null
@@ -303,8 +371,11 @@ class ChatScreen extends HookConsumerWidget {
                   ),
                   // SizedBox(width: 1.w),
                   InkWell(
-                    onTap: () {
-                      _sendMediaFile(attFile, ref);
+                    onTap: () async {
+                      showLoading(ref);
+                      await _sendMediaFile(attFile, ref);
+                      ref.read(attachedFile.notifier).state = null;
+                      hideLoading(ref);
                     },
                     child: CircleAvatar(
                       radius: 5.w,
@@ -323,7 +394,7 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
+  Future _sendMediaFile(AttachedFile attFile, WidgetRef ref) async {
     final ChatMessage msg;
     String displayName = attFile.file.path.split('/').last;
     final String content;
@@ -371,10 +442,8 @@ class ChatScreen extends HookConsumerWidget {
         // 'content_type': msg.body.type.name,
       },
     };
-    showLoading(ref);
+
     await _sendMessage(msg, ref, isFile: true);
-    ref.read(attachedFile.notifier).state = null;
-    hideLoading(ref);
   }
 
   Widget _buildReplyBox() {
@@ -476,34 +545,22 @@ class ChatScreen extends HookConsumerWidget {
       case AttachType.media:
         ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
         ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
-            source: ipp.ImageSource.gallery); //todo change to both
+            source: ipp.ImageSource.gallery,
+            galleryDisplaySettings: ipp.GalleryDisplaySettings(
+// showImagePreview: true
+                ),
+            multiImages: true); //todo change to both
         if (details != null && details.selectedFiles.isNotEmpty) {
-          File file = details.selectedFiles.first.selectedFile;
-          bool isImage = file.path.toLowerCase().endsWith('png') ||
-              file.path.toLowerCase().endsWith('jpg') ||
-              file.path.toLowerCase().endsWith('jpeg');
-          if (isImage) {
-            final Media media = Media(
-                path: file.absolute.path,
-                size: (await file.length()),
-                thumbPath: file.absolute.path);
+          if (details.selectedFiles.length == 1) {
             ref.read(attachedFile.notifier).state =
-                AttachedFile(media, MessageType.IMAGE);
-          } else {
-            final thumb = await VideoThumbnail.thumbnailFile(
-              video: file.path,
-              thumbnailPath: Directory.systemTemp.path,
-              imageFormat: ImageFormat.JPEG,
-              maxWidth: 128,
-              quality: 25,
-            );
-            final Media media = Media(
-                path: file.absolute.path,
-                size: (await file.length()),
-                thumbPath: thumb);
-            ref.read(attachedFile.notifier).state =
-                AttachedFile(media, MessageType.VIDEO);
+                await getMediaFile(details.selectedFiles.first);
+            return;
           }
+          List<AttachedFile> files = [];
+          for (var f in details.selectedFiles) {
+            files.add(await getMediaFile(f));
+          }
+          ref.read(attachedFiles.notifier).state = files;
         }
         break;
       case AttachType.audio:
@@ -619,7 +676,8 @@ class ChatScreen extends HookConsumerWidget {
   // }
 
   Widget _buildMessageList(WidgetRef ref) {
-    final chatList = ref.watch(bChatMessagesProvider(model)).reversed.toList();
+    final chatList =
+        ref.watch(bChatMessagesProvider(model)); //.reversed.toList();
     final selectedItems = ref.watch(selectedChatMessageListProvider);
 
     return ListView.builder(
@@ -628,36 +686,37 @@ class ChatScreen extends HookConsumerWidget {
       controller: _scrollController,
       itemCount: chatList.length,
       itemBuilder: (context, i) {
-        final ChatMessage? previousMessage =
+        final ChatMessageExt? previousMessage =
             i < chatList.length - 1 ? chatList[i + 1] : null;
-        final ChatMessage? nextMessage = i > 0 ? chatList[i - 1] : null;
-        final ChatMessage message = chatList[i];
+        final ChatMessageExt? nextMessage = i > 0 ? chatList[i - 1] : null;
+        final ChatMessageExt message = chatList[i];
         final bool isAfterDateSeparator =
-            shouldShowDateSeparator(previousMessage, message);
+            shouldShowDateSeparator(previousMessage?.msg, message.msg);
         bool isBeforeDateSeparator = false;
         if (nextMessage != null) {
-          isBeforeDateSeparator = shouldShowDateSeparator(message, nextMessage);
+          isBeforeDateSeparator =
+              shouldShowDateSeparator(message.msg, nextMessage.msg);
         }
         bool isPreviousSameAuthor = false;
         bool isNextSameAuthor = false;
-        if (previousMessage?.from == message.from) {
+        if (previousMessage?.msg.from == message.msg.from) {
           isPreviousSameAuthor = true;
         }
-        if (nextMessage?.from == message.from) {
+        if (nextMessage?.msg.from == message.msg.from) {
           isNextSameAuthor = true;
         }
         bool isSelected = selectedItems.contains(message);
 
-        bool isOwnMessage = message.from != model.id;
-        isOwnMessage ? _markOwnRead(message) : _markRead(message);
+        bool isOwnMessage = message.msg.from != model.id;
+        isOwnMessage ? _markOwnRead(message.msg) : _markRead(message.msg);
 
-        bool notReply = message.body.type == MessageType.CMD ||
-            message.body.type == MessageType.CUSTOM;
+        bool notReply = message.msg.body.type == MessageType.CMD ||
+            message.msg.body.type == MessageType.CUSTOM;
         // print('notReply -> $notReply , type=> ${message.chatType} ');
 
         int progress = 0;
         if (isOwnMessage) {
-          progress = ref.watch(sendingFileProgress(message.msgId));
+          progress = ref.watch(sendingFileProgress(message.msg.msgId));
         }
 
         return Column(
@@ -669,8 +728,8 @@ class ChatScreen extends HookConsumerWidget {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  formatDateSeparator(
-                      DateTime.fromMillisecondsSinceEpoch(message.serverTime)),
+                  formatDateSeparator(DateTime.fromMillisecondsSinceEpoch(
+                      message.msg.serverTime)),
                   style: TextStyle(
                       fontFamily: kFontFamily,
                       color: AppColors.black,
@@ -685,22 +744,22 @@ class ChatScreen extends HookConsumerWidget {
                   : () {
                       ref
                           .read(chatModelProvider.notifier)
-                          .setReplyOn(message, model.contact.name);
+                          .setReplyOn(message.msg, model.contact.name);
                       // print('open replyBox');
                     },
               child: GestureDetector(
                 onLongPress: () =>
-                    _onMessageLongPress(message, isSelected, ref),
+                    _onMessageLongPress(message.msg, isSelected, ref),
                 onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageTapSelect(message, isSelected, ref)
+                    ? _onMessageTapSelect(message.msg, isSelected, ref)
                     : notReply
                         ? null
-                        : _onMessageTap(message, context, ref),
+                        : _onMessageTap(message.msg, context, ref),
                 child: Container(
                   margin: const EdgeInsets.only(top: 2, bottom: 4),
                   width: double.infinity,
                   color: isSelected ? Colors.grey.shade200 : Colors.transparent,
-                  child: ChatMessageBubble(
+                  child: ChatMessageBubbleExt(
                       message: message,
                       isOwnMessage: isOwnMessage,
                       senderUser: isOwnMessage ? _me : model.contact,
@@ -1243,5 +1302,36 @@ class ChatScreen extends HookConsumerWidget {
         await model.conversation?.markMessageAsRead(message.msgId);
       }
     } catch (_) {}
+  }
+}
+
+Future<AttachedFile> getMediaFile(ipp.SelectedByte f) async {
+  File file = f.selectedFile;
+  bool isImage = file.path.toLowerCase().endsWith('png') ||
+      file.path.toLowerCase().endsWith('jpg') ||
+      file.path.toLowerCase().endsWith('jpeg');
+  if (isImage) {
+    final Media media = Media(
+        path: file.absolute.path,
+        size: (await file.length()),
+        thumbPath: file.absolute.path);
+    // files.add(AttachedFile(media, MessageType.IMAGE));
+    return AttachedFile(media, MessageType.IMAGE);
+    // ref.read(attachedFile.notifier).state =
+    //     AttachedFile(media, MessageType.IMAGE);
+  } else {
+    final thumb = await VideoThumbnail.thumbnailFile(
+      video: file.path,
+      thumbnailPath: Directory.systemTemp.path,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth: 128,
+      quality: 25,
+    );
+    final Media media = Media(
+        path: file.absolute.path,
+        size: (await file.length()),
+        thumbPath: thumb);
+    // files.add(AttachedFile(media, MessageType.VIDEO));
+    return AttachedFile(media, MessageType.VIDEO);
   }
 }

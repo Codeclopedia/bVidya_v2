@@ -1,5 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/background_helper.dart';
+import '/core/helpers/extensions.dart';
+import '/core/utils/date_utils.dart';
+// import '/core/helpers/background_helper.dart';
 import '/core/utils/chat_utils.dart';
 
 import '/data/models/conversation_model.dart';
@@ -10,15 +12,16 @@ import '/core/ui_core.dart';
 //     .family<ChatMessagesChangeProvider, ConversationModel>(
 //         (ref, id) => ChatMessagesChangeProvider(id));
 
-final bChatMessagesProvider = StateNotifierProvider.autoDispose
-    .family<ChatMessagesChangeProvider, List<ChatMessage>, ConversationModel>(
-        (ref, model) => ChatMessagesChangeProvider(model));
+final bChatMessagesProvider = StateNotifierProvider.autoDispose.family<
+    ChatMessagesChangeProvider,
+    List<ChatMessageExt>,
+    ConversationModel>((ref, model) => ChatMessagesChangeProvider(model));
 
 final onlineStatusProvider = StateProvider.autoDispose<ChatPresence?>(
   (ref) => null,
 );
 
-class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
+class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
   ChatMessagesChangeProvider(this.convModel) : super([]);
 
 // class GroupChatChangeProvider extends ChangeNotifier {
@@ -126,7 +129,8 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
         _isLoadingMore = true;
         notifyListeners();
 
-        final message = state[0];
+        final message = _messagesMap.values.toList()[0];
+        //state[0];
 
         final chats = await convModel.conversation
             ?.loadMessages(loadCount: 20, startMsgId: message.msgId);
@@ -192,6 +196,7 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
   Future readAll() async {
     try {
       await convModel.conversation?.markAllMessagesAsRead();
+
       await ChatClient.getInstance.chatManager
           .sendConversationReadAck(convModel.id);
     } catch (e) {}
@@ -205,14 +210,105 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessage>> {
   }
 
   void notifyListeners() {
-    state = _messagesMap.values.toList();
+    final chatList = _messagesMap.values.toList().reversed.toList();
+
+    List<ChatMessageExt> messages = [];
+    int i = 0;
+    while (i < chatList.length) {
+      final item = chatList[i];
+      if (item.body.type == MessageType.IMAGE ||
+          item.body.type == MessageType.VIDEO) {
+        final album = getAlbum(chatList, i);
+        messages.add(album);
+        i += album.messages.length;
+      } else {
+        messages.add(ChatMessageExt([item]));
+        i++;
+      }
+    }
+
+    // for (int i = 0; i < chatList.length; i++) {
+    //   final ChatMessage? previousMessage =
+    //       i < chatList.length - 1 ? chatList[i + 1] : null;
+    //   final ChatMessage? nextMessage = i > 0 ? chatList[i - 1] : null;
+    //   final ChatMessage message = chatList[i];
+    //   final bool isAfterDateSeparator =
+    //       shouldShowDateSeparator(previousMessage, message);
+    //   final bool isBeforeDateSeparator;
+    //   if (nextMessage != null) {
+    //     isBeforeDateSeparator = shouldShowDateSeparator(message, nextMessage);
+    //   } else {
+    //     isBeforeDateSeparator = false;
+    //   }
+    //   if (isBeforeDateSeparator || isAfterDateSeparator) {
+    //     messages.add(ChatMessageExt(message));
+    //   } else {}
+    //   // bool isPreviousSameAuthor = false;
+    //   // bool isNextSameAuthor = false;
+    //   // if (previousMessage?.from == message.from) {
+    //   //   isPreviousSameAuthor = true;
+    //   // }
+    //   // if (nextMessage?.from == message.from) {
+    //   //   isNextSameAuthor = true;
+    //   // }
+    // }
+    state = messages;
+  }
+
+  ChatMessageExt getAlbum(List<ChatMessage> feedList, int offset) {
+    int i = offset;
+    // final ChatMessage? preMsg =
+    //     i < feedList.length - 1 ? feedList[i + 1] : null;
+    final ChatMessage? nxtMsg = i > 0 ? feedList[i - 1] : null;
+    final ChatMessage message = feedList[i];
+    // final bool isAfterDateSeparator = shouldShowDateSeparator(preMsg, message);
+    final bool isBeforeDateSeparator;
+    if (nxtMsg != null) {
+      isBeforeDateSeparator = shouldShowDateSeparator(message, nxtMsg);
+    } else {
+      isBeforeDateSeparator = false;
+    }
+
+    // bool isPreviousSameAuthor = false;
+    // bool isNextSameAuthor = false;
+    // if (preMsg?.from == message.from) {
+    //   isPreviousSameAuthor = true;
+    // }
+    // if (nxtMsg?.from == message.from) {
+    //   isNextSameAuthor = true;
+    // }
+
+    if (isBeforeDateSeparator
+        // ||
+        // isAfterDateSeparator ||
+        // !isPreviousSameAuthor ||
+        // !isNextSameAuthor
+        ) {
+      return ChatMessageExt([message]);
+    }
+
+    while (i < feedList.length &&
+        (feedList[i].body.type == MessageType.IMAGE ||
+            message.body.type == MessageType.VIDEO) &&
+        feedList[i].from == message.from) {
+      i++;
+    }
+    if (i - offset < 4) {
+      return ChatMessageExt([message]);
+    } else {
+      return ChatMessageExt(feedList.sublist(offset, i));
+    }
+
+    // return (i - offset < 4) ? null : feedList.sublist(offset, i);
   }
 
   void updateMessageDelivered(List<ChatMessage> message) {
-    state = _messagesMap.values.toList();
+    // state = _messagesMap.values.toList();
+    notifyListeners();
   }
 
   void updateMessageRead(List<ChatMessage> message) {
-    state = _messagesMap.values.toList();
+    notifyListeners();
+    // state = _messagesMap.values.toList();
   }
 }

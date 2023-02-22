@@ -1,7 +1,12 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/ui_core.dart';
 
+import '/core/ui_core.dart';
 import '/core/constants.dart';
+
+const int messageActionCopy = 0;
+const int messageActionForward = 1;
+const int messageActionReply = 2;
+const int messageActionDelete = 3;
 
 Future<int?> showMessageMenu(BuildContext context, ChatMessage message) async {
   return await showDialog(
@@ -50,7 +55,7 @@ class MessageMenuDialog extends StatelessWidget {
         if (message.body.type == MessageType.TXT)
           ..._buildOption(S.current.chat_menu_copy,
               getSvgIcon('icon_chat_copy.svg', width: 4.w), () async {
-            Navigator.pop(context, 0);
+            Navigator.pop(context, messageActionCopy);
           }),
         ..._buildOption(
             S.current.chat_menu_forward,
@@ -58,13 +63,13 @@ class MessageMenuDialog extends StatelessWidget {
               'icon_chat_forward.svg',
               width: 4.w,
             ), () async {
-          Navigator.pop(context, 1);
+          Navigator.pop(context, messageActionForward);
         }),
         ..._buildOption(
           S.current.chat_menu_reply,
           getSvgIcon('icon_chat_reply.svg', width: 4.w),
           () async {
-            Navigator.pop(context, 2);
+            Navigator.pop(context, messageActionReply);
           },
         ),
         ..._buildOption(
@@ -73,7 +78,7 @@ class MessageMenuDialog extends StatelessWidget {
               'icon_delete_conv.svg',
               width: 4.w,
             ), () async {
-          Navigator.pop(context, 3);
+          Navigator.pop(context, messageActionDelete);
         }, isLast: true),
         SizedBox(height: 1.h),
       ],
