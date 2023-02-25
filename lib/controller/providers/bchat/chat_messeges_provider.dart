@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../../../data/models/call_message_body.dart';
 import '/core/helpers/extensions.dart';
 import '/core/utils/date_utils.dart';
 import '/core/utils/chat_utils.dart';
@@ -201,11 +204,26 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
         messages.add(album);
         i += album.messages.length;
       } else {
+        if (item.body.type == MessageType.CUSTOM && !isMissedCall(item)) {
+          i++;
+          continue;
+        }
         messages.add(ChatMessageExt([item]));
         i++;
       }
     }
     state = messages;
+  }
+
+  bool isMissedCall(ChatMessage msg) {
+    try {
+      ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
+      final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+      if (callBody.isMissedType() && msg.from == convModel.id) {
+        return true;
+      }
+    } catch (_) {}
+    return false;
   }
 
   void updateMessageDelivered(List<ChatMessage> message) {

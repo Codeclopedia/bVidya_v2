@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '/core/constants/agora_config.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/data/models/models.dart';
 import '/core/constants.dart';
@@ -72,6 +73,7 @@ class ContactMenuDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     // bool muted = model.mute;
     // bool blocked = false;
+    bool isAdmin = userId == AgoraConfig.bViydaAdmitUserId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -88,7 +90,7 @@ class ContactMenuDialog extends StatelessWidget {
             ),
           ),
         ),
-        if (!isInContact)
+        if (!isInContact && !isAdmin)
           ..._buildOption(
               S.current.contact_menu_request,
               // getSvgIcon('icon_mute_conv.svg', width: 4.w),
@@ -114,7 +116,7 @@ class ContactMenuDialog extends StatelessWidget {
           Navigator.pop(context, 1);
         }, isLast: true),
         // Consumer(builder: (context, ref, child) {
-        if (isInContact)
+        if (isInContact && !isAdmin)
           ..._buildOption(
               S.current.contact_menu_delete,
               getSvgIcon(
@@ -130,7 +132,7 @@ class ContactMenuDialog extends StatelessWidget {
         // }),
         // SizedBox(height: 1.h),
         // Container(height: 0.8, color: const Color(0xFFF5F6F6)),
-        if (isInContact)
+        if (isInContact && !isAdmin)
           ..._buildOption(
               blocked
                   ? S.current.contact_menu_unblock

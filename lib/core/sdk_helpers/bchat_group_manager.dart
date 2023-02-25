@@ -20,23 +20,24 @@ class BchatGroupManager {
 
   static Future<List<Contact>> fetchContactsOfGroup(
       WidgetRef ref, String groupId) async {
-try {
-    ChatGroup info =
-        await ChatClient.getInstance.groupManager.getGroupWithId(groupId) ??
-            await ChatClient.getInstance.groupManager
-                .fetchGroupInfoFromServer(groupId, fetchMembers: true);
-    final membersIds = info.memberList ?? [];
-    if (!membersIds.contains(info.owner)) {
-      membersIds.add(info.owner!);
+    try {
+      ChatGroup info =
+          await ChatClient.getInstance.groupManager.getGroupWithId(groupId) ??
+              await ChatClient.getInstance.groupManager
+                  .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+      final membersIds = info.memberList ?? [];
+      if (!membersIds.contains(info.owner)) {
+        membersIds.add(info.owner!);
+      }
+      String userIds = membersIds.join(',');
+      if (userIds.isNotEmpty) {
+        final contacts =
+            await ref.read(bChatProvider).getContactsByIds(userIds);
+        return contacts ?? [];
+      }
+    } catch (e) {
+      print('error in loading members of $groupId');
     }
-    String userIds = membersIds.join(',');
-    if (userIds.isNotEmpty) {
-      final contacts = await ref.read(bChatProvider).getContactsByIds(userIds);
-      return contacts??[];
-    }
-  } catch (e) {
-    print('error in loading members of $groupId');
-  }
     return [];
   }
 
@@ -170,6 +171,7 @@ try {
 
     for (ChatGroup group in groups) {
       GroupConversationModel model;
+
       try {
         final grp = await ChatClient.getInstance.groupManager
             .fetchGroupInfoFromServer(group.groupId, fetchMembers: true);
@@ -242,6 +244,39 @@ try {
   static Future deleteGroup(String groupId) async {
     try {
       await ChatClient.getInstance.groupManager.destroyGroup(groupId);
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+  }
+
+  static Future<bool> isGroupBlocked(String groupId) async {
+    try {
+      return (await ChatClient.getInstance.groupManager.getGroupWithId(groupId))
+              ?.messageBlocked ??
+          false;
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+    return false;
+  }
+
+  static Future blockGroup(String groupId) async {
+    try {
+      await ChatClient.getInstance.groupManager.blockGroup(groupId);
+    } on ChatError catch (e) {
+      print('Error: ${e.code}- ${e.description} ');
+    } catch (e) {
+      print('Error2: ${e} ');
+    }
+  }
+
+  static Future unBlockGroup(String groupId) async {
+    try {
+      await ChatClient.getInstance.groupManager.unblockGroup(groupId);
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');
     } catch (e) {

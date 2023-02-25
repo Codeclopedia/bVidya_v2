@@ -4,12 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/data/services/fcm_api_service.dart';
-// import '/core/utils/connectycubekit.dart';
-
-// import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '/data/services/fcm_api_service.dart';
 import '../routes.dart';
 import '/core/utils/callkit_utils.dart';
 import '../constants.dart';
@@ -30,6 +27,65 @@ enum CallDirectionType {
 }
 
 enum CallType { audio, video }
+
+sendMissedCallMessage(String tId, String msgId, CallMessegeBody callBody,
+    CallStatus status) async {
+  callBody.status = status;
+  try {
+    callBody.ext.addAll({'m': msgId});
+  } catch (e) {
+    debugPrint('Error in updating call record $e');
+  }
+}
+
+markCallMessageToMissed(String tId, String msgId, CallStatus status) async {
+  try {
+    // final msg = await (await ChatClient.getInstance.chatManager
+    //         .getConversation(tId, createIfNeed: true))
+    //     ?.loadMessage(msgId);
+    var msg = await ChatClient.getInstance.chatManager.loadMessage(msgId);
+    if (msg == null) {
+      final messages =
+          await (await ChatClient.getInstance.chatManager.getConversation(tId))
+              ?.loadMessagesWithMsgType(type: MessageType.CUSTOM, count: 1);
+      if (messages?.isNotEmpty == true) {
+        msg = messages!.first;
+      }
+    }
+
+    if (msg != null &&
+        msg.chatType == ChatType.Chat &&
+        msg.body.type == MessageType.CUSTOM &&
+        msg.to != null) {
+      ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
+      final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+      callBody.status = status;
+      callBody.ext.addAll({'m': msg.msgId});
+
+      // await conv?.appendMessage(message)
+      try {
+        final conv = await ChatClient.getInstance.chatManager
+            .getConversation(msg.to!, createIfNeed: false);
+        // await ChatClient.getInstance.chatManager.recallMessage(msgId);
+
+        await conv?.deleteMessage(msg.msgId);
+      } on ChatError catch (e) {
+        debugPrint('Error in deleting message $e');
+      }
+
+      final message = ChatMessage.createCustomSendMessage(
+        targetId: msg.to!,
+        event: jsonEncode(callBody.toJson()),
+      );
+      await ChatClient.getInstance.chatManager.sendMessage(message);
+    } else {
+      debugPrint(
+          'Error in loading message-> $tId, $msgId,  ->${msg?.toJson()}');
+    }
+  } catch (e) {
+    debugPrint('Error in updating call record $e');
+  }
+}
 
 Future<ChatMessage?> makeAudioCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
@@ -55,15 +111,7 @@ Future<ChatMessage?> makeAudioCall(
       .makeCall(user.authToken, contact.userId.toString(), contact.name);
   if (response.status == 'successfull' && response.body != null) {
     final CallBody callBody = response.body!;
-    Map<String, dynamic> map = {
-      'name': contact.name,
-      'image': contact.profileImage,
-      'fcm_token': contact.fcmToken,
-      'call_info': callBody,
-      'call_direction_type': CallDirectionType.outgoing,
-      'prev_screen': Routes.getCurrentScreen(),
-      'user_id': contact.userId.toString()
-    };
+
     hideLoading(ref);
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
@@ -87,7 +135,16 @@ Future<ChatMessage?> makeAudioCall(
         // toFCM: contact.fcmToken ?? '',
         // image: contact.profileImage,
         );
-
+    Map<String, dynamic> map = {
+      'name': contact.name,
+      'image': contact.profileImage,
+      'fcm_token': contact.fcmToken,
+      'call_info': callBody,
+      'call_direction_type': CallDirectionType.outgoing,
+      'prev_screen': Routes.getCurrentScreen(),
+      'user_id': contact.userId.toString(),
+      'msg_id': chat?.msgId,
+    };
     await Navigator.pushNamed(context, RouteList.bChatAudioCall,
         arguments: map);
     return chat;
@@ -158,15 +215,7 @@ Future<ChatMessage?> makeVideoCall(
       .makeCall(user.authToken, contact.userId.toString(), contact.name);
   if (response.status == 'successfull' && response.body != null) {
     final CallBody callBody = response.body!;
-    Map<String, dynamic> map = {
-      'name': contact.name,
-      'fcm_token': contact.fcmToken,
-      'image': contact.profileImage,
-      'call_info': callBody,
-      'call_direction_type': CallDirectionType.outgoing,
-      'prev_screen': Routes.getCurrentScreen(),
-      'user_id': contact.userId.toString()
-    };
+
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
     //       callBody, user.id.toString(), user.name, user.image, true);
@@ -186,7 +235,16 @@ Future<ChatMessage?> makeVideoCall(
         contact.fcmToken ?? '',
         user.id.toString(),
         callBody: callBody);
-
+    Map<String, dynamic> map = {
+      'name': contact.name,
+      'fcm_token': contact.fcmToken,
+      'image': contact.profileImage,
+      'call_info': callBody,
+      'call_direction_type': CallDirectionType.outgoing,
+      'prev_screen': Routes.getCurrentScreen(),
+      'user_id': contact.userId.toString(),
+      'msg_id': chat?.msgId
+    };
     await Navigator.pushNamed(context, RouteList.bChatVideoCall,
         arguments: map);
     return chat;
@@ -267,7 +325,17 @@ Future<ChatMessage?> logCallEvent(
     // };
     // message.attributes?.addAll({"em_force_notification": true});
 
-    final msg = await ChatClient.getInstance.chatManager.sendMessage(message);
+    var msg = await ChatClient.getInstance.chatManager.sendMessage(message);
+
+    final messages =
+        await (await ChatClient.getInstance.chatManager.getConversation(toId))
+            ?.loadMessagesWithMsgType(type: MessageType.CUSTOM, count: 1);
+    if (messages?.isNotEmpty == true) {
+      msg = messages!.first;
+      print('Message ID =>${msg.msgId}, $toId');
+    } else {
+      print('Not found: ${messages?.length}');
+    }
     CallListModel model = CallListModel(
         toId,
         callMessageBody.fromName,
@@ -277,8 +345,11 @@ Future<ChatMessage?> logCallEvent(
         msg.msgId,
         callMessageBody);
     ref.read(callListProvider.notifier).addCall(model);
-    FCMApiService.instance
-        .sendCallStartPush(toFcm, fromId, callId, callMessageBody);
+
+    FCMApiService.instance.sendCallStartPush(
+        toFcm, fromId, callId, message.msgId, callMessageBody);
+    print('Message ID =>${msg.msgId}, $toId');
+
     return msg;
 // ref.read(chatConversationProvider).updateConversation(convId)
   } catch (e) {

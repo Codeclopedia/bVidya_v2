@@ -820,6 +820,26 @@ class S {
     );
   }
 
+  /// `Missed call from {name} at {time}`
+  String chat_missed_call(Object name, Object time) {
+    return Intl.message(
+      'Missed call from $name at $time',
+      name: 'chat_missed_call',
+      desc: '',
+      args: [name, time],
+    );
+  }
+
+  /// `Missed video call from {name} at {time}`
+  String chat_missed_call_video(Object name, Object time) {
+    return Intl.message(
+      'Missed video call from $name at $time',
+      name: 'chat_missed_call_video',
+      desc: '',
+      args: [name, time],
+    );
+  }
+
   /// `Yourself`
   String get chat_yourself {
     return Intl.message(
@@ -2757,6 +2777,26 @@ class S {
       name: 'chat_replying',
       desc: '',
       args: [name],
+    );
+  }
+
+  /// `Recent`
+  String get recent_call_title {
+    return Intl.message(
+      'Recent',
+      name: 'recent_call_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Calls`
+  String get recent_call_no_calls {
+    return Intl.message(
+      'No Calls',
+      name: 'recent_call_no_calls',
+      desc: '',
+      args: [],
     );
   }
 

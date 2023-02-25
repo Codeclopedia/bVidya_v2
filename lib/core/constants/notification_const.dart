@@ -7,4 +7,7 @@ class NotiConstants {
   static const String actionCallDeclineBusy = 'CALL_DECLINE_BUSY';
 
   static const String typeGroupCall = 'group_call';
+
+  static const String typeGroupChat = 'group_chat';
+  static const String typeChat = 'chat';
 }

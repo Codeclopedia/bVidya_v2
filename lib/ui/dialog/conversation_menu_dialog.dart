@@ -9,8 +9,12 @@ import '/data/models/conversation_model.dart';
 
 Future showConversationOptions(
     BuildContext context, ConversationModel model) async {
+  // if (model.id == AgoraConfig.bViydaAdmitUserId.toString()) {
+  //   return;
+  // }
   ChatPushRemindType remindType =
       await BChatContactManager.fetchChatMuteStateFor(model.id);
+
   bool mute = remindType != ChatPushRemindType.NONE;
   return await showDialog(
     context: context,
@@ -37,6 +41,7 @@ class ConversationMenuDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool hasUnread = model.badgeCount > 0;
+    // bool isAdmin = model.id == AgoraConfig.bViydaAdmitUserId.toString();
     // bool muted = model.mute;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,9 +64,9 @@ class ConversationMenuDialog extends StatelessWidget {
           _buildOption(S.current.bchat_conv_read, 'icon_markread_conv.svg',
               () async {
             try {
+              await model.conversation?.markAllMessagesAsRead();
               await ChatClient.getInstance.chatManager
                   .sendConversationReadAck(model.id);
-              await model.conversation?.markAllMessagesAsRead();
             } catch (e) {}
 
             Navigator.pop(context, 1);

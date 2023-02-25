@@ -3,7 +3,7 @@ import 'dart:convert';
 import '/core/helpers/call_helper.dart';
 import 'models.dart';
 
-enum CallStatus { missed, ongoing, end }
+enum CallStatus { missed, ongoing, decline, declineBusy }
 
 class CallMessegeBody {
   final String callId;
@@ -12,7 +12,7 @@ class CallMessegeBody {
   final String toImage;
   final String fromImage;
   final CallBody callBody;
-  final CallStatus status;
+  CallStatus status;
   final int duration;
 
   final Map<String, dynamic> ext;
@@ -56,6 +56,12 @@ class CallMessegeBody {
     data['call_body'] = jsonEncode(callBody.toJson());
     data['ext'] = ext;
     return data;
+  }
+
+  bool isMissedType() {
+    return status == CallStatus.missed ||
+        status == CallStatus.decline ||
+        status == CallStatus.declineBusy;
   }
 }
 

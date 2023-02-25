@@ -52,7 +52,9 @@ class GroupRecentCallScreen extends StatelessWidget {
                 (a, b) => b.time.compareTo(a.time),
               );
               return ListView.separated(
+                physics: const BouncingScrollPhysics(),
                 itemCount: callList.length,
+                clipBehavior: Clip.none,
                 itemBuilder: (context, index) {
                   return SwipeActionCell(
                     key: ObjectKey(callList[index].msgId),
@@ -156,7 +158,7 @@ class GroupRecentCallScreen extends StatelessWidget {
                     fontFamily: kFontFamily,
                     color: AppColors.contactNameTextColor,
                     fontWeight: FontWeight.w500,
-                    fontSize: 13.sp,
+                    fontSize: 12.sp,
                   ),
                 ),
                 SizedBox(
@@ -181,7 +183,7 @@ class GroupRecentCallScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: kFontFamily,
                         color: AppColors.contactNameTextColor,
-                        fontSize: 12.sp,
+                        fontSize: 9.sp,
                       ),
                     ),
                   ],
@@ -198,6 +200,14 @@ class GroupRecentCallScreen extends StatelessWidget {
                 // ),
               ],
             ),
+          ),
+          Container(
+            color: const Color(0x33707070),
+            height: 12.w,
+            width: 1,
+          ),
+          SizedBox(
+            width: 5.w,
           ),
           GestureDetector(
             onTap: () => onCall(),

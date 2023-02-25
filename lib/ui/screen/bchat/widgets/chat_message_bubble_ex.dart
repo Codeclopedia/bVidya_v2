@@ -2,15 +2,19 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:any_link_preview/any_link_preview.dart';
+import 'package:bvidya/core/utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
+import 'package:linkfy_text/linkfy_text.dart';
+import 'package:linkfy_text/src/utils/regex.dart';
 
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:voice_message_package/voice_message_package.dart';
-import 'package:linkable/linkable.dart';
+// import 'package:linkable/linkable.dart';
 
 import '/core/helpers/extensions.dart';
 import '/core/utils/file_utils.dart';
@@ -23,6 +27,9 @@ import '/ui/widgets.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '../dash/models/mention.dart';
+
+const String urlPattern =
+    r"(https?|http)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:‌​,.;]*)?";
 
 class ChatMessageBubbleExt extends StatelessWidget {
   final ChatMessageExt message;
@@ -482,9 +489,52 @@ class ChatMessageBubbleExt extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(3.w)),
       );
 
+  Widget _linkPreview(Uri previewLink) {
+    return AnyLinkPreview(
+      // link: 'https://vardaan.app/',
+      link: previewLink.toString(),
+      displayDirection: UIDirection.uiDirectionVertical,
+      showMultimedia: true,
+      bodyMaxLines: 2,
+      bodyTextOverflow: TextOverflow.ellipsis,
+      previewHeight: 15.h,
+      placeholderWidget: const SizedBox.shrink(),
+
+      urlLaunchMode: LaunchMode.externalApplication,
+      titleStyle: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 10.sp,
+          fontFamily: kFontFamily),
+      bodyStyle: TextStyle(
+        color: Colors.black54,
+        fontFamily: kFontFamily,
+        fontSize: 7.sp,
+      ),
+      // errorBody: 'Show my custom error body',
+      // errorTitle: 'Show my custom error title',
+      errorWidget: const SizedBox.shrink(),
+      // errorWidget: Container(
+      //   color: Colors.grey[300],
+      //   child: Text('Oops!'),
+      // ),
+      // errorImage: "https://google.com/",
+      cache: const Duration(days: 7),
+      backgroundColor: Colors.white,
+      borderRadius: 3.w,
+      removeElevation: false,
+      // boxShadow: const [BoxShadow(blurRadius: 3, color: Colors.grey)],
+      // onTap: () {
+      //   launchUrl(previewLink);
+      // }, // This disables tap event
+    );
+  }
+
   Widget _buildTextMessage(ChatTextMessageBody body) {
     bool hasReply = message.msg.attributes?.keys.contains('reply_of') ?? false;
     bool isSingleEmojiText = isLessEmojisThan(body.content, 2);
+    // Uri? previewLink = _preview(body.content);
+
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
@@ -498,6 +548,8 @@ class ChatMessageBubbleExt extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (hasReply) _replyText(),
+          // if (previewLink != null && !hasReply) _linkPreview(previewLink),
+
           // if(body.content)
           Row(
             mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
@@ -813,14 +865,92 @@ class ChatMessageBubbleExt extends StatelessWidget {
     // );
   }
 
+  Uri? _preview(String content) {
+    final regx = constructRegExpFromLinkType([LinkType.url, LinkType.email]);
+    Uri? url;
+    if (regx.hasMatch(content)) {
+      for (var match in regx.allMatches(content)) {
+        String link = match.input.substring(match.start, match.end);
+
+        if (isValidEmail(link)) {
+          continue;
+        }
+        url = Uri.tryParse(link);
+        print('matches->$url');
+      }
+      // final match = regx.firstMatch(content);
+      // if (match != null) {
+      //   url = Uri.tryParse(match.input.substring(match.start, match.end));
+      //   if (isValidEmail(url.toString())) {
+      //     return null;
+      //   }
+      //   print('matches->$content - - ${url}');
+      // }
+      //   }
+      //   return '${e.input} ${e.start} -${e.end}';
+      // })}');
+    }
+    return url;
+  }
+
   Widget _textMessage(String content, bool isOnlyEmoji) {
     // final bool isOwnMessage = message.from == currentUser.id;
-    return Linkable(
-      text: content,
-      textColor: isOwnMessage
-          ? AppColors.chatBoxMessageMine
-          : AppColors.chatBoxMessageOthers,
-      style: TextStyle(
+    // return Linkable(
+    //   text: content,
+    //   textColor: isOwnMessage
+    //       ? AppColors.chatBoxMessageMine
+    //       : AppColors.chatBoxMessageOthers,
+    //   style: TextStyle(
+    //     fontFamily: kFontFamily,
+    //     fontSize: isOnlyEmoji ? 30.sp : 10.sp,
+    //     color: isOwnMessage
+    //         ? AppColors.chatBoxMessageMine
+    //         : AppColors.chatBoxMessageOthers,
+    //     fontWeight: FontWeight.w300,
+    //   ),
+    // );
+    if (isOnlyEmoji) {
+      return Text(
+        content,
+        style: TextStyle(
+          // fontFamily: kFontFamily,
+          fontSize: 50.sp,
+          // color: isOwnMessage
+          //     ? AppColors.chatBoxMessageMine
+          //     : AppColors.chatBoxMessageOthers,
+          // fontWeight: FontWeight.w300,
+        ),
+      );
+    }
+
+    return LinkifyText(
+      content,
+      linkStyle: TextStyle(
+          fontFamily: kFontFamily,
+          fontSize: 10.sp,
+          color: Colors.blue,
+          fontWeight: FontWeight.w300,
+          fontStyle: FontStyle.italic),
+      linkTypes: const [
+        LinkType.email,
+        LinkType.url,
+      ],
+      onTap: (link) {
+        print('Tap ${link.type} -> ${link.value}');
+        if (link.type == LinkType.url && link.value?.isNotEmpty == true) {
+          // print('Link ${link.value}');
+          if (isValidEmail(link.value ?? '')) {
+            launchUrl(Uri.parse('mailto:${link.value}'));
+          } else {
+            launchUrl(Uri.parse(link.value ?? ''));
+          }
+        } else if (link.type == LinkType.email &&
+            link.value?.isNotEmpty == true) {
+          print('Value ${link.value}');
+          launchUrl(Uri.parse('mailto:${link.value}'));
+        } else {}
+      },
+      textStyle: TextStyle(
         fontFamily: kFontFamily,
         fontSize: isOnlyEmoji ? 30.sp : 10.sp,
         color: isOwnMessage

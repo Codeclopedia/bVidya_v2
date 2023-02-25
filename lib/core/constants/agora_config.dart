@@ -7,4 +7,5 @@ class AgoraConfig {
   static const orgName = '61420261';
   static const appName = '491569';
   static const bool autoAcceptContact = true;
+  static const int bViydaAdmitUserId = 184;
 }

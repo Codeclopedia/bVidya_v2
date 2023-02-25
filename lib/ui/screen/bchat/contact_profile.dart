@@ -78,7 +78,7 @@ class ContactProfileScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      if (isInContact) {
+      if (isInContact && contact.userId != AgoraConfig.bViydaAdmitUserId) {
         _loadMuteSetting(ref);
       }
 
@@ -111,15 +111,23 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    // bool showOption =
+    //     isInContact && contact.userId != AgoraConfig.bViydaAdmitUserId;
+    bool isAdmin = contact.userId == AgoraConfig.bViydaAdmitUserId;
     return Material(
       color: Colors.transparent,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isInContact) ...inContact(),
-            if (!isInContact) ...notInContact(),
-          ],
+          children: isAdmin
+              ? [_buildUserInfo()]
+              : isInContact
+                  ? inContact()
+                  : notInContact(),
+          // children: [
+          //   if (isInContact) ...inContact(),
+          //   if (!isInContact) ...notInContact(),
+          // ],
         ),
       ),
     );
@@ -576,6 +584,7 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Widget _topBar(BuildContext context) {
+    bool isAdmin = contact.userId == AgoraConfig.bViydaAdmitUserId;
     return SizedBox(
       width: 100.w,
       // padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
@@ -591,7 +600,7 @@ class ContactProfileScreen extends HookConsumerWidget {
               },
             ),
           ),
-          if (isInContact)
+          if (isInContact && !isAdmin)
             Positioned(
               right: 1.w,
               top: 1.h,
@@ -651,66 +660,68 @@ class ContactProfileScreen extends HookConsumerWidget {
                     ),
                   ),
                   SizedBox(height: 3.h),
-                  Consumer(builder: (context, ref, child) {
-                    return Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            if (fromChat) {
-                              Navigator.pop(context);
-                            } else {
-                              if (isInContact) {
-                                openChatScreen(context, contact, ref);
+                  if (!isAdmin)
+                    Consumer(builder: (context, ref, child) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              if (fromChat) {
+                                Navigator.pop(context);
                               } else {
-                                if (AgoraConfig.autoAcceptContact) {
-                                  _addContactSendRequest(ref, context, contact);
+                                if (isInContact) {
+                                  openChatScreen(context, contact, ref);
                                 } else {
-                                  AppSnackbar.instance
-                                      .message(context, 'Send request to chat');
+                                  if (AgoraConfig.autoAcceptContact) {
+                                    _addContactSendRequest(
+                                        ref, context, contact);
+                                  } else {
+                                    AppSnackbar.instance.message(
+                                        context, 'Send request to chat');
+                                  }
                                 }
                               }
-                            }
-                          },
-                          child: isInContact
-                              ? _buildIcon('icon_pr_chat.svg')
-                              : CircleAvatar(
-                                  radius: 6.w,
-                                  backgroundColor: AppColors.yellowAccent,
-                                  child: Icon(
-                                    Icons.person_add_alt_outlined,
-                                    color: AppColors.primaryColor,
-                                    size: 5.w,
+                            },
+                            child: isInContact
+                                ? _buildIcon('icon_pr_chat.svg')
+                                : CircleAvatar(
+                                    radius: 6.w,
+                                    backgroundColor: AppColors.yellowAccent,
+                                    child: Icon(
+                                      Icons.person_add_alt_outlined,
+                                      color: AppColors.primaryColor,
+                                      size: 5.w,
+                                    ),
                                   ),
-                                ),
-                        ),
-                        InkWell(
-                            onTap: () async {
-                              final msg =
-                                  await makeVideoCall(contact, ref, context);
-                              if (msg != null) {
-                                // ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
-                              }
-                              setScreen(RouteList.contactInfo);
+                          ),
+                          InkWell(
+                              onTap: () async {
+                                final msg =
+                                    await makeVideoCall(contact, ref, context);
+                                if (msg != null) {
+                                  // ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
+                                }
+                                setScreen(RouteList.contactInfo);
+                              },
+                              child: _buildIcon('icon_pr_vcall.svg')),
+                          InkWell(
+                              onTap: () async {
+                                await makeAudioCall(contact, ref, context);
+                                setScreen(RouteList.contactInfo);
+                              },
+                              child: _buildIcon('icon_pr_acall.svg')),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RouteList.searchContact);
                             },
-                            child: _buildIcon('icon_pr_vcall.svg')),
-                        InkWell(
-                            onTap: () async {
-                              await makeAudioCall(contact, ref, context);
-                              setScreen(RouteList.contactInfo);
-                            },
-                            child: _buildIcon('icon_pr_acall.svg')),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RouteList.searchContact);
-                          },
-                          child: _buildIcon('icon_pr_search.svg'),
-                        ),
-                      ],
-                    );
-                  }),
+                            child: _buildIcon('icon_pr_search.svg'),
+                          ),
+                        ],
+                      );
+                    }),
                 ],
               ),
             ),

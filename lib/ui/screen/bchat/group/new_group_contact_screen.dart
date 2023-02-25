@@ -2,7 +2,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'package:bvidya/core/constants/agora_config.dart';
+// import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/contact_list_provider.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:collection/collection.dart';
@@ -81,7 +82,11 @@ class NewGroupContactsScreen extends StatelessWidget {
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final list = ref.read(contactListProvider);
+                final list = ref
+                    .read(contactListProvider)
+                    .where((element) =>
+                        element.userId != AgoraConfig.bViydaAdmitUserId)
+                    .toList();
                 // return ref.watch(myContactsList).when(
                 //       data: (list) {
                 if (list.isEmpty) {

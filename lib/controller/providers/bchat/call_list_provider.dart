@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
 
+import '/data/models/call_message_body.dart';
 import '/core/sdk_helpers/bchat_call_manager.dart';
 import '/core/state.dart';
 
@@ -34,11 +34,13 @@ class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
 
   void addMessage(ChatMessage m) {
     if (m.body.type == MessageType.CUSTOM) {
-      ChatCustomMessageBody body = m.body as ChatCustomMessageBody;
-      final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-      CallListModel model = CallListModel(m.to.toString(), callBody.toName,
-          callBody.toImage, true, m.serverTime, m.msgId, callBody);
-      _callListMap.addAll({callBody.callId: model});
+      try {
+        ChatCustomMessageBody body = m.body as ChatCustomMessageBody;
+        final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+        CallListModel model = CallListModel(m.to.toString(), callBody.toName,
+            callBody.toImage, true, m.serverTime, m.msgId, callBody);
+        _callListMap.addAll({callBody.callId: model});
+      } catch (_) {}
       state = _callListMap.values.toList();
     }
   }
@@ -75,7 +77,8 @@ class CallMessageNotifier extends StateNotifier<List<CallListModel>> {
     if (_loading) return;
     _loading = true;
     _callListMap.clear();
-    _callListMap.addAll({...await getCallList()});
+    final calls = await getCallList();
+    _callListMap.addAll({...calls});
     state = _callListMap.values.toList();
     _loading = false;
     // ref.read(callListLoading.notifier).state = false;

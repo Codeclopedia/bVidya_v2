@@ -8,7 +8,7 @@ import 'package:bvidya/core/utils/chat_utils.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:uuid/uuid.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
@@ -255,6 +255,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         ? AppColors.contactBadgeUnreadTextColor
         : AppColors.contactBadgeReadTextColor;
     String textMessage = '';
+    // bool isCall = false;
+    Widget? desc;
     if (model.lastMessage != null) {
       textMessage =
           model.lastMessage!.body.type.name.toLowerCase(); //!=MessageType.TXT
@@ -263,17 +265,46 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         textMessage = body.content;
       } else if (model.lastMessage!.body.type == MessageType.CUSTOM) {
         try {
+          // print('Call Message ID:${model.lastMessage!.msgId}');
+
           ChatCustomMessageBody body =
               model.lastMessage!.body as ChatCustomMessageBody;
+
           final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-          textMessage = (callBody.callType == CallType.video)
-              ? 'Video Call'
-              : 'Audio call';
+          bool isMissed =
+              model.id == model.lastMessage?.from && callBody.isMissedType();
+          textMessage = (isMissed ? ' Missed' : '') +
+              ((callBody.callType == CallType.video)
+                  ? ' Video Call'
+                  : ' Audio call');
+          desc = Row(
+            children: [
+              Icon(isMissed ? Icons.call_missed : Icons.call,
+                  color: isMissed ? AppColors.redBColor : Colors.black),
+              Text(
+                textMessage,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: kFontFamily,
+                  fontWeight:
+                      model.badgeCount > 0 ? FontWeight.w500 : FontWeight.w200,
+                  color: isMissed
+                      ? AppColors.redBColor
+                      : model.badgeCount > 0
+                          ? AppColors.black
+                          : Colors.grey,
+                  fontSize: 9.sp,
+                ),
+              )
+            ],
+          );
         } catch (e) {
           textMessage = 'Call';
         }
       }
     }
+
     // final online = model.isOnline?.statusDescription ?? ' Unknown';
 
     return Container(
@@ -302,19 +333,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                     fontSize: 12.sp,
                   ),
                 ),
-                Text(
-                  textMessage,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    fontWeight: model.badgeCount > 0
-                        ? FontWeight.w500
-                        : FontWeight.w200,
-                    color: model.badgeCount > 0 ? AppColors.black : Colors.grey,
-                    fontSize: 9.sp,
-                  ),
-                ),
+                desc ??
+                    Text(
+                      textMessage,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: kFontFamily,
+                        fontWeight: model.badgeCount > 0
+                            ? FontWeight.w500
+                            : FontWeight.w200,
+                        color: model.badgeCount > 0
+                            ? AppColors.black
+                            : Colors.grey,
+                        fontSize: 9.sp,
+                      ),
+                    ),
               ],
             ),
           ),

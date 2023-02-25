@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/constants/agora_config.dart';
 
 class BChatContactManager {
   BChatContactManager._();
@@ -48,6 +49,10 @@ class BChatContactManager {
           //Avoid limitation error
         }
       }
+      if (!list.contains(AgoraConfig.bViydaAdmitUserId.toString())) {
+        list.add(AgoraConfig.bViydaAdmitUserId.toString().toString());
+      }
+      // print('List-> $list');
       return list;
     } on ChatError catch (e) {
       print('chatError: ${e.code}- ${e.description}');

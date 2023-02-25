@@ -37,7 +37,7 @@ String? get activeCallId => _activeCallId;
 String? get lastCallId => _lastCallId;
 String? get onGoingCallId => _onGoingCallId;
 
-String? _uuid;
+// String? _uuid;
 
 DateTime? get lastCallTime => _lastCallTime;
 
@@ -84,14 +84,14 @@ Future loadCallOnInit() async {
       if (diff > 10000) {
         // print('Very old call=> $diff ms');
         _activeCallId = null;
-        _uuid = null;
+        // _uuid = null;
         _activeCallMap = null;
         return;
       }
       // print('Loaded calls=> $_activeCallId');
 
       _activeCallMap = jsonDecode(callExra!);
-      _uuid = uuid;
+      // _uuid = uuid;
       _activeCallId = _activeCallMap!['call_id'];
       _lastCallId = _activeCallId;
       return;
@@ -236,7 +236,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     return;
   }
   // await _getActiveCall();
-  if (_activeCallId == null) {
+  if (activeCallId == null) {
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }

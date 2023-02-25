@@ -19,6 +19,12 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../../widgets.dart';
 
+final blockGroupProvider =
+    StateProvider.autoDispose.family<Future<bool>, String>(
+  ((ref, id) {
+    return BchatGroupManager.isGroupBlocked(id);
+  }),
+);
 //Mute
 final groupMuteProvider = StateProvider.autoDispose<bool>(
   ((_) => true),
@@ -96,13 +102,41 @@ class GroupInfoScreen extends HookConsumerWidget {
               });
             }),
             // SizedBox(height: 1.h),
-            _buildButton(Icons.block, S.current.pr_btx_block, () {
-              showBasicDialog(
-                  context, S.current.pr_btx_block, 'Are you sure?', 'Yes',
-                  () async {
-                await ChatClient.getInstance.groupManager
-                    .blockGroup(group.groupInfo.groupId);
-              });
+            Consumer(builder: (context, ref, child) {
+              return FutureBuilder<bool>(
+                  future: ref.watch(blockGroupProvider(group.id)),
+                  builder: (context, snapshot) {
+                    if (snapshot.data != null) {
+                      bool blocked = snapshot.data!;
+                      return _buildButton(
+                          Icons.block,
+                          blocked
+                              ? S.current.pr_btx_unblock
+                              : S.current.pr_btx_block, () async {
+                        if (blocked) {
+                          await BchatGroupManager.unBlockGroup(
+                              group.groupInfo.groupId);
+                          // await ChatClient.getInstance.groupManager
+                          //     .unblockGroup(group.groupInfo.groupId);
+                          ref.refresh(blockGroupProvider(group.id));
+                        } else {
+                          showBasicDialog(context, S.current.pr_btx_block,
+                              'Are you sure?', 'Yes', () async {
+                            await BchatGroupManager.blockGroup(
+                                group.groupInfo.groupId);
+
+                            ref.refresh(blockGroupProvider(group.id));
+                          });
+                        }
+                      });
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+
+                    // return _buildButton(Icons.block, S.current.pr_btx_block,
+                    //     () {
+                    // });
+                  });
             }),
             // SizedBox(height: 1.h),
             _buildButton(

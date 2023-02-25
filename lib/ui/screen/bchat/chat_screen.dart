@@ -3,8 +3,12 @@
 import 'dart:async';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/constants/agora_config.dart';
+import 'package:intl/intl.dart';
 
 import 'package:swipe_to/swipe_to.dart';
+import '/core/sdk_helpers/bchat_call_manager.dart';
+import '/data/models/call_message_body.dart';
 
 import '/ui/widget/chat_reply_body.dart';
 import '/core/helpers/extensions.dart';
@@ -329,6 +333,7 @@ class ChatScreen extends HookConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       reverse: true,
+      physics: const BouncingScrollPhysics(),
       controller: _scrollController,
       itemCount: chatList.length,
       itemBuilder: (context, i) {
@@ -361,11 +366,15 @@ class ChatScreen extends HookConsumerWidget {
         // print('notReply -> $notReply , type=> ${message.chatType} ');
 
         int progress = 0;
+        CallMessegeBody? callBody;
         if (isOwnMessage) {
           progress = ref.watch(sendingFileProgress(message.msg.msgId));
+        } else {
+          callBody = getMissedCallBody(message.msg);
         }
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           // crossAxisAlignment:
           //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
@@ -383,40 +392,80 @@ class ChatScreen extends HookConsumerWidget {
                       fontWeight: FontWeight.w600),
                 ),
               ),
-            SwipeTo(
-              rightSwipeWidget: const SizedBox.shrink(),
-              onRightSwipe: notReply
-                  ? null
-                  : () {
-                      ref
-                          .read(chatModelProvider.notifier)
-                          .setReplyOn(message.msg, model.contact.name);
-                      // print('open replyBox');
-                    },
-              child: GestureDetector(
-                onLongPress: () =>
-                    _onMessageLongPress(message, isSelected, ref),
-                onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageLongPress(message, isSelected, ref)
-                    : notReply || message.isGroupMedia
+            callBody != null
+                ? Center(
+                    child: Container(
+                      margin: EdgeInsets.all(2.w),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 2.w, vertical: 0.5.w),
+                      decoration: BoxDecoration(
+                          color: AppColors.cardWhite,
+                          borderRadius: BorderRadius.circular(2.w)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.call_missed, color: Colors.red),
+                          Text(
+                            callBody.callType == CallType.video
+                                ? S.current.chat_missed_call_video(
+                                    model.contact.name,
+                                    DateFormat('h:mm a').format(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            message.msg.serverTime)))
+                                : S.current.chat_missed_call(
+                                    model.contact.name,
+                                    DateFormat('h:mm a').format(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            message.msg.serverTime))),
+                            // 'Missed call from ${model.contact.name} at ${DateFormat('h:mm a').format(DateTime.fromMillisecondsSinceEpoch(message.msg.serverTime))}',
+                            style: TextStyle(
+                              fontFamily: kFontFamily,
+                              color: Colors.black,
+                              fontSize: 8.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : SwipeTo(
+                    rightSwipeWidget: const SizedBox.shrink(),
+                    // offsetDx: 0.8,
+                    onRightSwipe: notReply
                         ? null
-                        : _onMessageTap(message.msg, context, ref),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 2, bottom: 4),
-                  width: double.infinity,
-                  color: isSelected ? Colors.grey.shade200 : Colors.transparent,
-                  child: ChatMessageBubbleExt(
-                      message: message,
-                      isOwnMessage: isOwnMessage,
-                      senderUser: isOwnMessage ? _me : model.contact,
-                      isPreviousSameAuthor: isPreviousSameAuthor,
-                      isNextSameAuthor: isNextSameAuthor,
-                      isAfterDateSeparator: isAfterDateSeparator,
-                      isBeforeDateSeparator: isBeforeDateSeparator,
-                      progress: progress),
-                ),
-              ),
-            ),
+                        : () {
+                            ref
+                                .read(chatModelProvider.notifier)
+                                .setReplyOn(message.msg, model.contact.name);
+                            // print('open replyBox');
+                          },
+                    child: GestureDetector(
+                      onLongPress: () =>
+                          _onMessageLongPress(message, isSelected, ref),
+                      onTap: () => selectedItems.isNotEmpty
+                          ? _onMessageLongPress(message, isSelected, ref)
+                          : notReply || message.isGroupMedia
+                              ? null
+                              : _onMessageTap(message.msg, context, ref),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 2, bottom: 4),
+                        width: double.infinity,
+                        color: isSelected
+                            ? Colors.grey.shade200
+                            : Colors.transparent,
+                        child: ChatMessageBubbleExt(
+                            message: message,
+                            isOwnMessage: isOwnMessage,
+                            senderUser: isOwnMessage ? _me : model.contact,
+                            isPreviousSameAuthor: isPreviousSameAuthor,
+                            isNextSameAuthor: isNextSameAuthor,
+                            isAfterDateSeparator: isAfterDateSeparator,
+                            isBeforeDateSeparator: isBeforeDateSeparator,
+                            progress: progress),
+                      ),
+                    ),
+                  ),
           ],
         );
       },
@@ -797,6 +846,7 @@ class ChatScreen extends HookConsumerWidget {
 
   Widget _topBar(BuildContext context, WidgetRef ref) {
     // final value = ref.watch(onlineStatusProvier);
+    bool isAdmin = model.contact.userId == AgoraConfig.bViydaAdmitUserId;
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -856,8 +906,10 @@ class ChatScreen extends HookConsumerWidget {
                             ),
                             SizedBox(height: 0.3.h),
                             Text(
-                              parseChatPresenceToReadable(
-                                  ref.watch(onlineStatusProvider)),
+                              isAdmin
+                                  ? 'Any query or suggestion'
+                                  : parseChatPresenceToReadable(
+                                      ref.watch(onlineStatusProvider)),
                               // parseChatPresenceToReadable(value),
                               style: TextStyle(
                                 fontFamily: kFontFamily,
@@ -874,41 +926,43 @@ class ChatScreen extends HookConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              onPressed: () async {
-                final msg = await makeAudioCall(model.contact, ref, context);
-                if (msg != null) {
-                  ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
-                }
-                setScreen(RouteList.chatScreen);
-              },
-              icon: getSvgIcon(
-                'icon_audio_call.svg',
-                width: 6.w,
+            if (!isAdmin)
+              IconButton(
+                onPressed: () async {
+                  final msg = await makeAudioCall(model.contact, ref, context);
+                  if (msg != null) {
+                    // ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
+                  }
+                  setScreen(RouteList.chatScreen);
+                },
+                icon: getSvgIcon(
+                  'icon_audio_call.svg',
+                  width: 6.w,
+                ),
               ),
-            ),
             SizedBox(width: 2.w),
-            IconButton(
-              onPressed: () async {
-                // receiveAudioCall(
-                //   'YcJ5uHP31M8sMyAZ1msC',
-                //   model.contact.profileImage,
-                //   ref,
-                //   context,
-                // );
-                final msg = await makeVideoCall(model.contact, ref, context);
-                if (msg != null) {
-                  ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
-                }
-                setScreen(RouteList.chatScreen);
-                // Navigator.pushNamed(context, RouteList.bChatVideoCall);
-                // makeFakeCallInComing();
-              },
-              icon: getSvgIcon(
-                'icon_video_call.svg',
-                width: 6.w,
+            if (!isAdmin)
+              IconButton(
+                onPressed: () async {
+                  // receiveAudioCall(
+                  //   'YcJ5uHP31M8sMyAZ1msC',
+                  //   model.contact.profileImage,
+                  //   ref,
+                  //   context,
+                  // );
+                  final msg = await makeVideoCall(model.contact, ref, context);
+                  if (msg != null) {
+                    // ref.read(bChatMessagesProvider(model).notifier).addChat(msg);
+                  }
+                  setScreen(RouteList.chatScreen);
+                  // Navigator.pushNamed(context, RouteList.bChatVideoCall);
+                  // makeFakeCallInComing();
+                },
+                icon: getSvgIcon(
+                  'icon_video_call.svg',
+                  width: 6.w,
+                ),
               ),
-            ),
           ],
         ),
       ),

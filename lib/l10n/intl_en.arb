@@ -88,6 +88,8 @@
   "grp_caption_participation":"Participants",
   "grp_txt_add_participant":"Add Participants",
 
+  "chat_missed_call":"Missed call from {name} at {time}",
+  "chat_missed_call_video":"Missed video call from {name} at {time}",
   "chat_yourself":"Yourself",
   "chat_input_hint":"Write your message",
 
@@ -329,6 +331,8 @@
   "grp_chat_members":"{count} Memebers",
 
   "chat_replying":"Replying to {name}",
+  "recent_call_title":"Recent",
+  "recent_call_no_calls":"No Calls",
 
   "request_class_title":"Request Class",
   "request_class": "Request a class",

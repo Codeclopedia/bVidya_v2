@@ -29,7 +29,6 @@ Future<void> main() async {
               : DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
       print('Error init firebase $e');
-
       // await Firebase.initializeApp();
     }
   }

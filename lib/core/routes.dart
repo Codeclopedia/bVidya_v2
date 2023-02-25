@@ -313,16 +313,18 @@ class Routes {
           CallDirectionType direction = args['call_direction_type'];
           String prevScreen = args['prev_screen'];
           String userId = args['user_id'];
-
+          String? msgId = args['msg_id'];
           screen = ChatCallScreen(
-              fcmToken: fcmToken,
-              name: name,
-              image: image,
-              callInfo: callInfo,
-              callDirection: direction,
-              callType: CallType.video,
-              otherUserId: userId,
-              prevScreen: prevScreen);
+            fcmToken: fcmToken,
+            name: name,
+            image: image,
+            callInfo: callInfo,
+            callDirection: direction,
+            callType: CallType.video,
+            otherUserId: userId,
+            prevScreen: prevScreen,
+            msgId: msgId,
+          );
         } else {
           screen = _parameterMissing();
         }
@@ -338,15 +340,18 @@ class Routes {
           CallDirectionType direction = args['call_direction_type'];
           String prevScreen = args['prev_screen'];
           String userId = args['user_id'];
+          String? msgId = args['msg_id'];
           screen = ChatCallScreen(
-              fcmToken: fcmToken,
-              name: name,
-              image: image,
-              callInfo: callInfo,
-              callDirection: direction,
-              callType: CallType.audio,
-              otherUserId: userId,
-              prevScreen: prevScreen);
+            fcmToken: fcmToken,
+            name: name,
+            image: image,
+            callInfo: callInfo,
+            callDirection: direction,
+            callType: CallType.audio,
+            otherUserId: userId,
+            prevScreen: prevScreen,
+            msgId: msgId,
+          );
         } else {
           screen = _parameterMissing();
         }

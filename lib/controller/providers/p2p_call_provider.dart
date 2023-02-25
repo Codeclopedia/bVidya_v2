@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:bvidya/app.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
 
 // import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -80,8 +81,12 @@ class P2PCallProvider extends ChangeNotifier {
 
   // AudioPlayer? _player;
   AssetsAudioPlayer? _player;
-
-  void init(CallBody body, CallDirectionType type, CallType callType) async {
+  String? _msgId;
+  String? _toId;
+  void init(CallBody body, CallDirectionType type, CallType callType,
+      String? msgId, String? toId) async {
+    _msgId = msgId;
+    _toId = toId;
     // if (_isInitialized) {
     //   return;
     // }
@@ -101,13 +106,21 @@ class P2PCallProvider extends ChangeNotifier {
           if (!_disconnected && !_endCall) {
             if (action == NotiConstants.actionCallDeclineBusy) {
               Fluttertoast.showToast(
-                  msg: "${body.calleeName} is  Busy",
+                  msg: "${body.calleeName} is Busy",
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
                   fontSize: 16.0);
+            }
+            if (msgId != null) {
+              markCallMessageToMissed(
+                  _toId!,
+                  _msgId!,
+                  action == NotiConstants.actionCallDeclineBusy
+                      ? CallStatus.declineBusy
+                      : CallStatus.decline);
             }
             _endCall = true;
             _read.reset();
@@ -149,6 +162,10 @@ class P2PCallProvider extends ChangeNotifier {
 
     _timer = Timer(const Duration(seconds: 30), () {
       _endCall = true;
+      if (_msgId != null && _toId != null) {
+        markCallMessageToMissed(_toId!, _msgId!, CallStatus.missed);
+      }
+
       _read.reset();
       // print('Timer ended here');
       updateUI();
@@ -282,7 +299,7 @@ class P2PCallProvider extends ChangeNotifier {
 
   void setCallEnded() {
     _endCall = true;
-   updateUI();
+    updateUI();
   }
 
   void toggleVideo(BuildContext context) async {

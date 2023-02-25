@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:bvidya/data/models/call_message_body.dart';
 // import '/core/utils/connectycubekit.dart';
 import '/core/utils/callkit_utils.dart';
 // import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -43,17 +44,20 @@ class ChatCallScreen extends HookConsumerWidget {
   final CallType callType;
   final String otherUserId;
   final String prevScreen;
+  final String? msgId;
 
-  const ChatCallScreen(
-      {super.key,
-      required this.fcmToken,
-      required this.name,
-      required this.image,
-      required this.callInfo,
-      required this.callType,
-      required this.callDirection,
-      required this.otherUserId,
-      required this.prevScreen});
+  const ChatCallScreen({
+    super.key,
+    required this.fcmToken,
+    required this.name,
+    required this.image,
+    required this.callInfo,
+    required this.callType,
+    required this.callDirection,
+    required this.otherUserId,
+    required this.prevScreen,
+    required this.msgId,
+  });
 
   _finish(BuildContext context) async {
     if (_endingCall) {
@@ -83,7 +87,7 @@ class ChatCallScreen extends HookConsumerWidget {
       // print('Init Directly => $prevScreen');
       ref
           .read(audioCallChangeProvider.notifier)
-          .init(callInfo, callDirection, callType);
+          .init(callInfo, callDirection, callType, msgId, otherUserId);
       return () {};
     }, []);
     final provider = ref.watch(audioCallChangeProvider);
@@ -372,6 +376,11 @@ class ChatCallScreen extends HookConsumerWidget {
                     return;
                   }
                   // endCall(callInfo, otherUserId);
+                  if (msgId != null) {
+                    markCallMessageToMissed(
+                        otherUserId, msgId!, CallStatus.missed);
+                  }
+
                   FCMApiService.instance.sendCallEndPush(
                       fcmToken,
                       NotiConstants.actionCallEnd,

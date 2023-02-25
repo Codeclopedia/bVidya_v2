@@ -7,7 +7,6 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils.dart';
-import '../../../base_back_screen.dart';
 import '../../../dialog/basic_dialog.dart';
 import '../../../widget/base_drawer_setting_screen.dart';
 
@@ -44,9 +43,7 @@ class TeacherProfile extends StatelessWidget {
             //   mainAxisAlignment: MainAxisAlignment.center,
             //   children: const [],
             // ),
-            SizedBox(
-              height: 3.w,
-            ),
+            SizedBox(height: 3.w),
             Consumer(
               builder: (context, ref, child) {
                 return ref.watch(profileUserProvider).when(
@@ -70,10 +67,11 @@ class TeacherProfile extends StatelessWidget {
               return _buildContent(
                   S.current.profile_details, 'profile_user.svg', () async {
                 // final user = await getMeAsUser();
-                showLoading(ref);
-                final profile =
-                    await ref.read(profileRepositoryProvider).getUserProfile();
-                hideLoading(ref);
+                final profile = ref.read(profileUserProvider).valueOrNull;
+                // showLoading(ref);
+                // final profile =
+                //     await ref.read(profileRepositoryProvider).getUserProfile();
+                // hideLoading(ref);
 
                 if (profile != null) {
                   await updateProfile(ref, profile);

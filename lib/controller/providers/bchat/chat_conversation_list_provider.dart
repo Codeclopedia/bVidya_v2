@@ -1,4 +1,7 @@
+// import 'dart:js_util';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/constants/agora_config.dart';
 
 import '/core/utils/chat_utils.dart';
 import '/data/models/models.dart';
@@ -50,6 +53,7 @@ Future<ConversationModel?> onNewChatMessage(
 }
 
 Future<Contacts?> deleteContact(int id, WidgetRef ref) async {
+  if (id == AgoraConfig.bViydaAdmitUserId) return null;
   final deleted = ref.read(contactListProvider.notifier).removeContact(id);
   if (deleted != null) {
     ref
@@ -69,15 +73,22 @@ class ChatConversationChangeNotifier
 
   void _registerPresence(WidgetRef ref, List<String> ids) async {
     try {
+      List<String> onbserveList = [...ids];
+      onbserveList.removeWhere(
+          (element) => element == AgoraConfig.bViydaAdmitUserId.toString());
       ChatClient.getInstance.presenceManager
-          .subscribe(members: ids, expiry: 60);
-      print('register for pressence=>${ids}');
+          .subscribe(members: onbserveList, expiry: 60 * 30); //30 minutes
+      print('register for pressence=>$onbserveList');
       ChatClient.getInstance.presenceManager.addEventHandler(
         "user_presence_home_screen",
         ChatPresenceEventHandler(
           onPresenceStatusChanged: (list) async {
             for (ChatPresence s in list) {
+              if (s.publisher == AgoraConfig.bViydaAdmitUserId.toString()) {
+                continue;
+              }
               print('changed pressence=>${s.publisher}');
+
               final model = _chatConversationMap[s.publisher];
 
               if (model != null) {

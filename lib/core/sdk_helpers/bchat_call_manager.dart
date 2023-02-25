@@ -36,6 +36,7 @@ Future<Map<String, CallListModel>> getCallList() async {
     final list =
         await ChatClient.getInstance.chatManager.loadAllConversations();
     Map<String, CallListModel> maps = {};
+    List<String> toRemoveMsgIds = [];
     for (var conv in list) {
       if (conv.type != ChatConversationType.Chat) {
         continue;
@@ -48,6 +49,13 @@ Future<Map<String, CallListModel>> getCallList() async {
           final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
           bool isOwnMessage = m.from == me.id.toString();
           CallListModel model;
+          if (callBody.isMissedType()) {
+            String? id = callBody.ext['m'];
+            if (id != null) {
+              toRemoveMsgIds.add(id);
+              print('Id: $id ->');
+            }
+          }
           if (isOwnMessage) {
             model = CallListModel(m.to.toString(), callBody.toName,
                 callBody.toImage, true, m.serverTime, m.msgId, callBody);
@@ -57,15 +65,37 @@ Future<Map<String, CallListModel>> getCallList() async {
           }
           maps.addAll({callBody.callId: model});
         } catch (e) {
-          // print('Error in loading call ${m.body.toJson()}');
+          print('Error in loading call $e');
           break;
         }
       }
+      //  print('Id: $id -> ${m.msgId}');
+      maps.removeWhere((key, value) {
+        bool remove = toRemoveMsgIds.contains(value.msgId);
+        print('Remove ${value.msgId} -> $remove');
+        if (remove) {
+          // _deleteChat(conv, value.msgId);
+        }
+        return remove;
+      });
+      // bool remove = toRemoveMsgIds.contains(value.msgId);
+      // print('To Remove $toRemoveMsgIds of size ${maps.length}');
+
     }
+    // maps.removeWhere((key, value) => toRemoveMsgIds.contains(value.msgId));
+
+    print('Now of size ${maps.length}');
     return maps;
   } catch (_) {}
   return {};
 }
+
+// _deleteChat(ChatConversation conv, String msgId) async {
+//   try {
+//     await conv.deleteMessage(msgId);
+//     print('Deleted junk call info $msgId');
+//   } catch (_) {}
+// }
 
 Future<Map<String, GroupCallListModel>> getGroupCallList() async {
   try {
@@ -102,4 +132,18 @@ Future<Map<String, GroupCallListModel>> getGroupCallList() async {
     return maps;
   } catch (e) {}
   return {};
+}
+
+CallMessegeBody? getMissedCallBody(ChatMessage msg) {
+  try {
+    if (msg.body.type != MessageType.CUSTOM) {
+      return null;
+    }
+    ChatCustomMessageBody body = msg.body as ChatCustomMessageBody;
+    final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+    if (callBody.isMissedType()) {
+      return callBody;
+    }
+  } catch (_) {}
+  return null;
 }

@@ -24,13 +24,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(date) => "${date} Meeting";
 
-  static String m2(name) => "Replying to ${name}";
+  static String m2(name, time) => "Missed call from ${name} at ${time}";
 
-  static String m3(count) => "${count} Memebers";
+  static String m3(name, time) => "Missed video call from ${name} at ${time}";
 
-  static String m4(time) => "Resend OTP in ${time} seconds";
+  static String m4(name) => "Replying to ${name}";
 
-  static String m5(year) => "${year} Years of Experience";
+  static String m5(count) => "${count} Memebers";
+
+  static String m6(time) => "Resend OTP in ${time} seconds";
+
+  static String m7(year) => "${year} Years of Experience";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -293,7 +297,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_menu_forward": MessageLookupByLibrary.simpleMessage("Forward"),
         "chat_menu_reply": MessageLookupByLibrary.simpleMessage("Reply"),
         "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
-        "chat_replying": m2,
+        "chat_missed_call": m2,
+        "chat_missed_call_video": m3,
+        "chat_replying": m4,
         "chat_yourself": MessageLookupByLibrary.simpleMessage("Yourself"),
         "class_request_title":
             MessageLookupByLibrary.simpleMessage("Class Requested to"),
@@ -422,7 +428,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "grp_btx_report": MessageLookupByLibrary.simpleMessage("Report Group"),
         "grp_caption_participation":
             MessageLookupByLibrary.simpleMessage("Participants"),
-        "grp_chat_members": m3,
+        "grp_chat_members": m5,
         "grp_txt_add_participant":
             MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
@@ -507,7 +513,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter OTP"),
         "otp_login_txt_in_second":
             MessageLookupByLibrary.simpleMessage("Resend OTP in 59 seconds"),
-        "otp_login_txt_in_seconds": m4,
+        "otp_login_txt_in_seconds": m6,
         "passReset": MessageLookupByLibrary.simpleMessage(
             "Reset Password, Delete Account"),
         "pr_btx_all": MessageLookupByLibrary.simpleMessage("View All"),
@@ -559,6 +565,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "profile_learning": MessageLookupByLibrary.simpleMessage("My Learning"),
         "profile_logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "profile_title": MessageLookupByLibrary.simpleMessage("Profile"),
+        "recent_call_no_calls":
+            MessageLookupByLibrary.simpleMessage("No Calls"),
+        "recent_call_title": MessageLookupByLibrary.simpleMessage("Recent"),
         "reportDesc": MessageLookupByLibrary.simpleMessage(
             "Select a feature you\'re experiencing a\nproblem with:"),
         "reportTitle": MessageLookupByLibrary.simpleMessage("Report a Problem"),
@@ -703,7 +712,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("All Courses"),
         "teacher_exp":
             MessageLookupByLibrary.simpleMessage("7 Years of Experience"),
-        "teacher_exp_value": m5,
+        "teacher_exp_value": m7,
         "teacher_follow": MessageLookupByLibrary.simpleMessage("Follow"),
         "teacher_followed": MessageLookupByLibrary.simpleMessage("Followed"),
         "teacher_followers": MessageLookupByLibrary.simpleMessage("Followers"),

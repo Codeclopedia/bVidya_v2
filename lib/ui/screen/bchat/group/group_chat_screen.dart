@@ -642,7 +642,7 @@ class GroupChatScreen extends HookConsumerWidget {
         ),
       );
 
-      msg.needGroupAck = true; //todo uncomment when pricing
+      // msg.needGroupAck = true; //todo uncomment when pricing
 
       final sentMessage =
           await ChatClient.getInstance.chatManager.sendMessage(msg);

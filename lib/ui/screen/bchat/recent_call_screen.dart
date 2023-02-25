@@ -25,13 +25,16 @@ class RecentCallScreen extends StatelessWidget {
 
   Widget _callList() {
     return Padding(
-      padding: EdgeInsets.only(left: 6.w, right: 6.w, bottom: 2.h),
+      padding: EdgeInsets.only(
+        left: 6.w,
+        right: 6.w,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 3.h),
           Text(
-            'Recent',
+            S.current.recent_call_title,
             style: TextStyle(
               fontFamily: kFontFamily,
               color: Colors.black,
@@ -43,13 +46,14 @@ class RecentCallScreen extends StatelessWidget {
             child: Consumer(builder: (context, ref, child) {
               final callList = ref.watch(callListProvider);
               if (callList.isEmpty) {
-                return buildEmptyPlaceHolder('No Calls');
+                return buildEmptyPlaceHolder(S.current.recent_call_no_calls);
               }
               callList.sort(
                 (a, b) => b.time.compareTo(a.time),
               );
               return ListView.separated(
                 itemCount: callList.length,
+                physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   return SwipeActionCell(
                     key: ObjectKey(callList[index].msgId),
@@ -111,10 +115,10 @@ class RecentCallScreen extends StatelessWidget {
                   return Row(
                     children: [
                       SizedBox(width: 18.w),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           height: 1,
-                          color: Colors.grey.shade200,
+                          color: AppColors.dividerCall,
                         ),
                       ),
                     ],
@@ -149,7 +153,7 @@ class RecentCallScreen extends StatelessWidget {
                     fontFamily: kFontFamily,
                     color: AppColors.contactNameTextColor,
                     fontWeight: FontWeight.w500,
-                    fontSize: 13.sp,
+                    fontSize: 12.sp,
                   ),
                 ),
                 SizedBox(height: 0.5.h),
@@ -161,24 +165,39 @@ class RecentCallScreen extends StatelessWidget {
                             color: Colors.green,
                             size: 5.w,
                           )
-                        : Icon(
-                            Icons.call_received,
-                            color: Colors.black,
-                            size: 5.w,
-                          ),
+                        : model.body.isMissedType()
+                            ? Icon(
+                                Icons.call_missed,
+                                color: Colors.red,
+                                size: 5.w,
+                              )
+                            : Icon(
+                                Icons.call_received,
+                                color: Colors.black,
+                                size: 5.w,
+                              ),
                     SizedBox(width: 0.5.w),
                     Text(
                       time,
                       style: TextStyle(
                         fontFamily: kFontFamily,
                         color: AppColors.contactNameTextColor,
-                        fontSize: 12.sp,
+                        fontSize: 9.sp,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+          // Divider()
+          Container(
+            color: const Color(0x33707070),
+            height: 12.w,
+            width: 1,
+          ),
+          SizedBox(
+            width: 5.w,
           ),
           GestureDetector(
             onTap: () => onCall(),

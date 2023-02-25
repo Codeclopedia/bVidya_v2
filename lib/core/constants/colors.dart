@@ -30,7 +30,7 @@ class AppColors {
   static const Color inputHeaderText = Color(0xFF010101);
 
   static const Color inputHintText = Color(0x99010101);
-  
+
   static const Color inputText = Color(0xFF000000);
 
   static const Color yellowAccent = Color(0xFFFFC948);
@@ -106,6 +106,7 @@ class AppColors {
   static const Color cardBorder = Color(0xFF707070);
 
   static const Color divider = Color(0xAA707070);
+  static const Color dividerCall = Color(0x77707070);
   //old colors
 
   // static const Color gray = Color(0xFF6C7B8A);
