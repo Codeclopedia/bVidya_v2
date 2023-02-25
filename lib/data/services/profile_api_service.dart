@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
+import '../models/response/profile/schduled_classes_model.dart';
+import '../models/response/profile/scheduled_class_instructor_model.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -192,6 +194,49 @@ class ProfileApiService {
     } catch (e) {
       print(e);
       return RequestedClassesResponse(status: 'error');
+    }
+  }
+
+  Future<SchduledClassesModel> getSchduledClassesStudent(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response =
+          await _dio.get(baseUrlApi + ApiList.scheduledClassesStudent);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return SchduledClassesModel.fromJson(response.data);
+      } else {
+        return SchduledClassesModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return SchduledClassesModel(status: 'error');
+    }
+  }
+
+  Future<SchduledClassesInstructorModel> getSchduledClassesInstructor(
+      String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response =
+          await _dio.get(baseUrlApi + ApiList.scheduledClassesInstructor);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return SchduledClassesInstructorModel.fromJson(response.data);
+      } else {
+        return SchduledClassesInstructorModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return SchduledClassesInstructorModel(status: 'error');
     }
   }
 }

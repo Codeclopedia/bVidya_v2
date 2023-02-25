@@ -14,8 +14,6 @@ import '/core/utils.dart';
 import '/data/models/models.dart';
 import '../../screens.dart';
 
-//provider for rasing hand
-
 class BMeetCallScreen extends StatelessWidget {
   final Meeting meeting;
   final bool enableVideo;
@@ -27,8 +25,8 @@ class BMeetCallScreen extends StatelessWidget {
   final String userName;
   final int userId;
   final int id;
-
-  const BMeetCallScreen({
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  BMeetCallScreen({
     Key? key,
     required this.meeting,
     required this.enableVideo,
@@ -49,10 +47,12 @@ class BMeetCallScreen extends StatelessWidget {
       return BaseWilPopupScreen(
         onBack: () async {
           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
           PIPView.of(context)?.presentBelow(const BMeetHomeScreen());
           return false;
         },
         child: Scaffold(
+          key: _scaffoldKey,
           resizeToAvoidBottomInset: !isFloating,
           backgroundColor: Colors.black,
           appBar: _appBar(context),
@@ -1294,43 +1294,52 @@ class BMeetCallScreen extends StatelessWidget {
                               height: 1,
                               thickness: 2,
                             ),
-                            GestureDetector(
-                                child: Card(
-                                  elevation: 0,
-                                  color: const Color(0xff696969),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.w)),
-                                  child: Center(
-                                      child: Padding(
-                                          padding: EdgeInsets.all(2.w),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                S.current.bmeet_call_bxt_record,
-                                                style: TextStyle(
-                                                    fontSize: 10.sp,
-                                                    letterSpacing: .5,
-                                                    color: Colors.white),
-                                              ),
-                                              Image.asset(
-                                                'assets/icons/svg/recorder.png',
-                                                height: 2.h,
-                                                width: 2.h,
-                                                color: Colors.white,
-                                              )
-                                            ],
-                                          ))),
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    provider.startRecording();
-                                    EasyLoading.showInfo(
-                                        S.current.bmeet_call_msg_na_yet);
-                                    //  _onShareWithEmptyFields(context, widget.meetingid);
+                            Consumer(builder: (context, ref, child) {
+                              return GestureDetector(
+                                  child: Card(
+                                    elevation: 0,
+                                    color: const Color(0xff696969),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.w)),
+                                    child: Center(
+                                        child: Padding(
+                                            padding: EdgeInsets.all(2.w),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  ref.watch(isScreenRecording)
+                                                      ? S.current
+                                                          .bmeet_call_stop_record
+                                                      : S.current
+                                                          .bmeet_call_bxt_record,
+                                                  style: TextStyle(
+                                                      fontSize: 10.sp,
+                                                      letterSpacing: .5,
+                                                      color: Colors.white),
+                                                ),
+                                                Image.asset(
+                                                  'assets/icons/svg/recorder.png',
+                                                  height: 2.h,
+                                                  width: 2.h,
+                                                  color: Colors.white,
+                                                )
+                                              ],
+                                            ))),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      ref.watch(isScreenRecording)
+                                          ? provider.stopRecording(ref)
+                                          : provider.startRecording(ref);
+
+                                      //  _onShareWithEmptyFields(context, widget.meetingid);
+                                    });
                                   });
-                                }),
+                            }),
                           ],
                         )),
                     SizedBox(
@@ -1369,18 +1378,26 @@ class BMeetCallScreen extends StatelessWidget {
     );
   }
 
+  // PersistentBottomSheetController? _controller;
   // _showDetails(BuildContext context, BMeetProvider provider) {}
   _showParticipantsList(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      // isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return MeetParticipantsDialog(
-          isHost: meeting.role == 'host',
-        );
-      },
-    );
+    _scaffoldKey.currentState
+        ?.showBottomSheet(backgroundColor: Colors.transparent, (context) {
+      return MeetParticipantsDialog(
+        isHost: meeting.role == 'host',
+      );
+    });
+
+    // showModalBottomSheet(
+    //   context: context,
+    //   // isScrollControlled: true,
+    //   backgroundColor: Colors.transparent,
+    //   builder: (context) {
+    //     return MeetParticipantsDialog(
+    //       isHost: meeting.role == 'host',
+    //     );
+    //   },
+    // );
   }
 
   // Widget _buildMember(

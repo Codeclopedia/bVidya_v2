@@ -213,6 +213,30 @@ class ChatConversationChangeNotifier
     }
   }
 
+  Future updateConversationPin(String id, bool pinned) async {
+    final model = _chatConversationMap[id];
+    if (model != null) {
+      try {
+        if (model.conversation?.latestMessage() == null) return;
+        final lastMessage = await model.conversation!.latestMessage();
+        final contact = model.contact;
+        contact.ispinned = pinned;
+        final newModel = ConversationModel(
+            id: model.id,
+            badgeCount: await model.conversation?.unreadCount() ?? 0,
+            contact: contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: model.isOnline);
+        _chatConversationMap.addAll({model.id: newModel});
+      } catch (e) {
+        // print('error $e');
+        return;
+      }
+      state = _chatConversationMap.values.toList();
+    }
+  }
+
   Future addConversationMessage(ChatMessage lastMessage) async {
     final model = _chatConversationMap[lastMessage.conversationId!];
     if (model != null) {

@@ -1,4 +1,5 @@
 import 'package:bvidya/ui/screens.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 // import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';
@@ -85,14 +86,24 @@ class TeacherProfileDetailScreen extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 3.h),
                   child: Column(
                     children: [
-                      Container(
-                        height: 12.5.h,
-                        width: 25.w,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            image: DecorationImage(
-                                image: getImageProvider(instructor.image ?? ''),
-                                fit: BoxFit.cover)),
+                      GestureDetector(
+                        onTap: () async {
+                          await showImageViewer(
+                              context, getImageProvider(instructor.image ?? ""),
+                              doubleTapZoomable: true, onViewerDismissed: () {
+                            // print("dismissed");
+                          });
+                        },
+                        child: Container(
+                          height: 12.5.h,
+                          width: 25.w,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              image: DecorationImage(
+                                  image:
+                                      getImageProvider(instructor.image ?? ''),
+                                  fit: BoxFit.cover)),
+                        ),
                       ),
                       SizedBox(
                         height: 2.w,

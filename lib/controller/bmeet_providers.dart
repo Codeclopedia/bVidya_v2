@@ -6,6 +6,8 @@ import '/data/repository/bmeet_repository.dart';
 import '/data/services/bmeet_api_services.dart';
 import 'providers/bmeet_provider.dart';
 
+final isScreenRecording = StateProvider<bool>((ref) => false);
+
 final callTimerProvider =
     StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(
   (_) => DurationNotifier(),

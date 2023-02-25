@@ -2,6 +2,7 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '/core/state.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
@@ -59,6 +60,25 @@ class ConversationMenuDialog extends StatelessWidget {
             ),
           ),
         ),
+
+        Container(height: 0.8, color: const Color(0xFFF5F6F6)),
+        // SizedBox(height: 1.h),
+        Consumer(
+          builder: (context, ref, child) {
+            final isUserPinned = model.contact.ispinned ?? false;
+            return _buildOption(
+                isUserPinned == true
+                    ? S.current.bchat_conv_unpin
+                    : S.current.bchat_conv_pin,
+                isUserPinned == true ? 'UnPin.svg' : 'Pin.svg', () async {
+              await BChatContactManager.updatePin(ref, model.id, !isUserPinned);
+
+              Navigator.pop(context, 4);
+              // hideLoading(ref);
+            });
+          },
+        ),
+
         if (hasUnread) SizedBox(height: 2.h),
         if (hasUnread)
           _buildOption(S.current.bchat_conv_read, 'icon_markread_conv.svg',

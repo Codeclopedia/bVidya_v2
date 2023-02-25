@@ -117,6 +117,9 @@ class RouteList {
   static const String teacherRequestedClassDetail =
       '/teacher_class-requested-detail';
 
+  static const String scheduledClassesStudent = 'scheduled-classes-user'; 
+  static const String scheduledClassesInstructor ='scheduled-classes-instructor'; 
+
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 
   //

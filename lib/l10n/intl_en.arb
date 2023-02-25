@@ -261,6 +261,11 @@
   "bmeet_call_bxt_cancel":"Cancel",
 
 
+  "bmeet_recording_start":"Recording Started..",
+  "bmeet_call_stop_record":"Stop recording",
+
+
+
   "bmeet_call_msg_na_yet":"This is not available yet.",
   "bmeet_call_msg_diable_audio_host":"Your are muted by host",
   "bmeet_call_msg_diable_camera_host":"Your camera disabled by host.",
@@ -307,6 +312,11 @@
   "t_schedule_class_msg":"Send Request for group or personal class",
   "t_schedule_caption":"Upcoming classes",
   "t_schedule_no_class":"No Upcoming class",
+
+  "bchat_conv_pin": "Pin Conversation",
+  "bchat_conv_unpin": "Unpin Conversation",
+  "bchat_conv_pinned":"Pinned Conversation",
+  "bchat_conv_unpinned": "Unpinned Conversation",
 
 
 

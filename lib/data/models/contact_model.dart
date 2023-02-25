@@ -20,6 +20,8 @@ class Contacts {
   final String? fcmToken;
   final String? bio;
   final ContactStatus status;
+  final String? role;
+  bool? ispinned;
   // final int statusIndex;
   // ContactStatus get status => ContactStatus.values[statusIndex];
 
@@ -35,18 +37,22 @@ class Contacts {
       required this.profileImage,
       this.email,
       this.phone,
+      this.role,
       this.fcmToken,
-      this.bio});
+      this.bio,
+      this.ispinned});
 
   Contacts.fromJson(Map<String, dynamic> json)
       : userId = json['user_id'],
         name = json['name'],
         email = json['email'],
         phone = json['phone'],
+        role = json['role'],
         status = ContactStatus.values[(json['status'] as int?) ?? 0],
         fcmToken = json['fcm_token'],
         profileImage = json['profile_image'],
-        bio = json['bio'];
+        bio = json['bio'],
+        ispinned = json['is_pinned'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
@@ -54,10 +60,12 @@ class Contacts {
     data['name'] = name;
     data['email'] = email;
     data['phone'] = phone;
+    data['role'] = role;
     data['status'] = status.index;
     data['fcm_token'] = fcmToken;
     data['profile_image'] = profileImage;
     data['bio'] = bio;
+    data['is_pinned'] = ispinned;
     return data;
   }
 }

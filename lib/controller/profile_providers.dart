@@ -1,5 +1,7 @@
+import 'package:bvidya/data/models/response/profile/schduled_classes_model.dart';
 import 'package:collection/collection.dart';
 
+import '../data/models/response/profile/scheduled_class_instructor_model.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/profile_repository.dart';
@@ -49,3 +51,17 @@ final requestedClassesProvider =
     FutureProvider.autoDispose<RequestedClassesBody?>((ref) {
   return ref.read(profileRepositoryProvider).requestedClassList();
 });
+
+final scheduledClassesAsStudent =
+    FutureProvider.autoDispose<ScheduledClassBody?>(
+  (ref) {
+    return ref.read(profileRepositoryProvider).getschduledClassesAsStudent();
+  },
+);
+
+final scheduledClassesAsInstructor =
+    FutureProvider.autoDispose<ScheduledClassInstructorBody?>(
+  (ref) {
+    return ref.read(profileRepositoryProvider).getschduledClassesAsInstructor();
+  },
+);

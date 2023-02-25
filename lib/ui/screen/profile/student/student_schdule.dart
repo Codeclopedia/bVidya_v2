@@ -1,14 +1,13 @@
 // import 'package:bvidya/core/constants/route_list.dart';
 
-import 'package:bvidya/core/constants.dart';
-
+import '/core/constants.dart';
+import '/data/models/response/profile/schduled_classes_model.dart';
 import '/controller/profile_providers.dart';
 import '/core/ui_core.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/sliding_tab.dart';
 import '/ui/widgets.dart';
 
-import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/data/models/response/bmeet/requested_class_response.dart';
 import '../base_settings_noscroll.dart';
@@ -93,99 +92,117 @@ class StudentSchdule extends StatelessWidget {
     return Expanded(
         child: Padding(
       padding: EdgeInsets.symmetric(horizontal: 3.w),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.w),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: AppColors.cardBackground,
-                  borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Jan \n ${DateTime.now().day.toString()} ",
-                    style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Course name",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 5.w),
-                      ),
-                      SizedBox(
-                        height: 2.w,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: AppColors.iconGreyColor,
-                            size: 3.w,
-                          ),
-                          Text(
-                            "Instructor name",
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          ),
-                          SizedBox(width: 2.w),
-                          Icon(
-                            Icons.notes,
-                            size: 3.w,
-                            color: AppColors.iconGreyColor,
-                          ),
-                          Text(
-                            "Instructor name",
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 2.w,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.timer,
-                            size: 3.w,
-                            color: AppColors.iconGreyColor,
-                          ),
-                          SizedBox(
-                            width: 2.w,
-                          ),
-                          Text(
-                            "11:00 AM - 12:00 PM",
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                  CircleAvatar(
-                    backgroundColor: AppColors.yellowAccent,
-                    radius: 5.w,
-                    child: Icon(
-                      Icons.adaptive.arrow_forward,
-                      size: 5.w,
-                      color: AppColors.primaryColor,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+      child: Consumer(builder: (context, ref, child) {
+        return ref.watch(scheduledClassesAsStudent).when(
+          data: (data) {
+            if (data == null) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
+            return scheduledClasseslist(data.scheduledRequests ?? []);
+          },
+          error: (error, stackTrace) {
+            return buildEmptyPlaceHolder(S.current.error);
+          },
+          loading: () {
+            return const CircularProgressIndicator.adaptive();
+          },
+        );
+      }),
     ));
+  }
+
+  Widget scheduledClasseslist(List<ScheduledRequest> scheduledRequests) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: scheduledRequests.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 2.w),
+          child: Container(
+            decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(10)),
+            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  scheduledRequests[index].updatedAt.toString(),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      scheduledRequests[index].topic ?? "",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
+                    ),
+                    SizedBox(
+                      height: 2.w,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: AppColors.iconGreyColor,
+                          size: 3.w,
+                        ),
+                        Text(
+                          scheduledRequests[index].instructor?.name ?? "",
+                          style: TextStyle(
+                              fontSize: 3.w, color: AppColors.iconGreyColor),
+                        ),
+                        SizedBox(width: 2.w),
+                        Icon(
+                          Icons.notes,
+                          size: 3.w,
+                          color: AppColors.iconGreyColor,
+                        ),
+                        Text(
+                          scheduledRequests[index].instructor?.name ?? "",
+                          style: TextStyle(
+                              fontSize: 3.w, color: AppColors.iconGreyColor),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 2.w,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.timer,
+                          size: 3.w,
+                          color: AppColors.iconGreyColor,
+                        ),
+                        SizedBox(
+                          width: 2.w,
+                        ),
+                        Text(
+                          "11:00 AM - 12:00 PM",
+                          style: TextStyle(
+                              fontSize: 3.w, color: AppColors.iconGreyColor),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                CircleAvatar(
+                  backgroundColor: AppColors.yellowAccent,
+                  radius: 5.w,
+                  child: Icon(
+                    Icons.adaptive.arrow_forward,
+                    size: 5.w,
+                    color: AppColors.primaryColor,
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildRequestRow(RequestedClass data, BuildContext context) {

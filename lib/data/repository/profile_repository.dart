@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import '../models/models.dart';
+import '../models/response/profile/schduled_classes_model.dart';
+import '../models/response/profile/scheduled_class_instructor_model.dart';
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -95,6 +97,25 @@ class ProfileRepository {
       return result.body!;
     } else {
       return RequestedClassesBody();
+    }
+  }
+
+  Future<ScheduledClassBody> getschduledClassesAsStudent() async {
+    final result = await _api.getSchduledClassesStudent(_authToken);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return ScheduledClassBody();
+    }
+  }
+
+  //get List of schduled class As Instructor
+  Future<ScheduledClassInstructorBody> getschduledClassesAsInstructor() async {
+    final result = await _api.getSchduledClassesInstructor(_authToken);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return ScheduledClassInstructorBody();
     }
   }
 }

@@ -221,6 +221,25 @@ class BChatApiService {
     }
   }
 
+  Future<BaseResponse> pinUnpinContact(String token, String userId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      final data = {'user_id': userId};
+      final response =
+          await _dio.post('$baseUrlApi${ApiList.pinUnpinContact}', data: data);
+      // print('${jsonEncode(response.data)}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return BaseResponse(status: 'error', message: '$e');
+    }
+  }
+
   //dynamic data = {
   //   'callee_id': id,
   //   'callee_name': name,

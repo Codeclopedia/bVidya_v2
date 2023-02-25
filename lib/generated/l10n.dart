@@ -2250,6 +2250,26 @@ class S {
     );
   }
 
+  /// `Recording Started..`
+  String get bmeet_recording_start {
+    return Intl.message(
+      'Recording Started..',
+      name: 'bmeet_recording_start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stop recording`
+  String get bmeet_call_stop_record {
+    return Intl.message(
+      'Stop recording',
+      name: 'bmeet_call_stop_record',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `This is not available yet.`
   String get bmeet_call_msg_na_yet {
     return Intl.message(
@@ -2605,6 +2625,46 @@ class S {
     return Intl.message(
       'No Upcoming class',
       name: 't_schedule_no_class',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pin Conversation`
+  String get bchat_conv_pin {
+    return Intl.message(
+      'Pin Conversation',
+      name: 'bchat_conv_pin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpin Conversation`
+  String get bchat_conv_unpin {
+    return Intl.message(
+      'Unpin Conversation',
+      name: 'bchat_conv_unpin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pinned Conversation`
+  String get bchat_conv_pinned {
+    return Intl.message(
+      'Pinned Conversation',
+      name: 'bchat_conv_pinned',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpinned Conversation`
+  String get bchat_conv_unpinned {
+    return Intl.message(
+      'Unpinned Conversation',
+      name: 'bchat_conv_unpinned',
       desc: '',
       args: [],
     );

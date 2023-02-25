@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:bvidya/core/state.dart';
 import 'package:bvidya/core/utils.dart';
+import 'package:bvidya/core/utils/save_locally.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
@@ -180,17 +182,24 @@ class ChatMessageBubbleExt extends StatelessWidget {
       case MessageType.IMAGE:
         {
           ChatImageMessageBody body = message.body as ChatImageMessageBody;
-          return GestureDetector(
-              onTap: () {
-                showImageViewer(
-                    context,
-                    getImageProviderChatImage(
-                        message.body as ChatImageMessageBody,
-                        loadThumbFirst: false), onViewerDismissed: () {
-                  // print("dismissed");
-                });
-              },
-              child: _imageOnly(body));
+          return Consumer(builder: (context, ref, child) {
+            return GestureDetector(
+                onTap: () {
+                  showImageViewer(
+                      context,
+                      ondownloadPressed: () {
+                        saveFile(ref, body.displayName ?? "",
+                            body.remotePath ?? "", message.body.type);
+                      },
+                      getImageProviderChatImage(
+                          message.body as ChatImageMessageBody,
+                          loadThumbFirst: false),
+                      onViewerDismissed: () {
+                        // print("dismissed");
+                      });
+                },
+                child: _imageOnly(body));
+          });
         }
       case MessageType.VIDEO:
         {
@@ -732,7 +741,27 @@ class ChatMessageBubbleExt extends StatelessWidget {
               //   children: getMessage(body.content),
               // )),
               // const Spacer(),
-              SizedBox(width: 3.w)
+              // SizedBox(width: 3.w)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.w, horizontal: 1.w),
+                child: Consumer(builder: (context, ref, child) {
+                  return InkWell(
+                    onTap: () {
+                      // saveFile(ref, fileName, url, filetype)
+                      saveFile(ref, body.displayName ?? "",
+                          body.remotePath ?? "", message.body.type);
+                      // saveDocuments(
+                      //     ref, body.remotePath ?? "", body.displayName ?? "");
+                    },
+                    child: Icon(
+                      Icons.file_download_outlined,
+                      color: isOwnMessage
+                          ? AppColors.cardBackground
+                          : AppColors.black,
+                    ),
+                  );
+                }),
+              )
             ],
           ),
           SizedBox(height: 1.w),

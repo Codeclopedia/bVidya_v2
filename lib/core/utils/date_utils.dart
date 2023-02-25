@@ -18,18 +18,33 @@ bool shouldShowDateRTMSeparator(
 }
 
 /// Check if a date separator needs to be shown
+
 bool shouldShowDateSeparator(
     ChatMessage? previousMessage, ChatMessage message) {
   if (previousMessage == null) {
     return true;
   }
-
-  final DateTime previousDate =
+  DateTime previousDate =
       DateTime.fromMillisecondsSinceEpoch(previousMessage.serverTime);
   final DateTime messageDate =
       DateTime.fromMillisecondsSinceEpoch(message.serverTime);
+  previousDate = DateTime(
+      previousDate.year, previousDate.month, previousDate.day, 0, 0, 0, 0, 0);
   return previousDate.difference(messageDate).inDays.abs() > 0;
 }
+
+// bool shouldShowDateSeparator(
+//     ChatMessage? previousMessage, ChatMessage message) {
+//   if (previousMessage == null) {
+//     return true;
+//   }
+
+//   final DateTime previousDate =
+//       DateTime.fromMillisecondsSinceEpoch(previousMessage.serverTime);
+//   final DateTime messageDate =
+//       DateTime.fromMillisecondsSinceEpoch(message.serverTime);
+//   return previousDate.difference(messageDate).inDays.abs() > 0;
+// }
 
 // String formatDateSeparator(DateTime date) {
 //   final DateTime today = DateTime.now();

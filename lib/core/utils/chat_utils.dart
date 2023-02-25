@@ -228,9 +228,10 @@ openGroupChat() {}
 openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
     {bool sendInviateMessage = false, String message = ''}) async {
   final User? user = await getMeAsUser();
-  final conv = await ChatClient.getInstance.chatManager.getConversation(
-      contact.userId.toString(),
-      type: ChatConversationType.Chat);
+  final conv = await ChatClient.getInstance.chatManager
+      .getConversation(contact.userId.toString(),
+          // createIfNeed: true,
+          type: ChatConversationType.Chat);
   if (conv != null) {
     if (sendInviateMessage) {
       final inviateMessage = ChatMessage.createTxtSendMessage(
@@ -239,7 +240,9 @@ openChatScreen(BuildContext context, Contacts contact, WidgetRef ref,
       inviateMessage.attributes = {
         "em_apns_ext": {
           "em_push_title": "${user?.name ?? ''} sent you a message",
-          "em_push_content": message.isEmpty ? 'Hi' : message,
+          "em_push_content":
+              // message.isEmpty ? 'Hi' :
+              message,
           'type': 'chat',
         },
       };

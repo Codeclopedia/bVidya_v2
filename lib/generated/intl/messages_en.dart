@@ -72,9 +72,17 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Delete Conversation"),
         "bchat_conv_mute":
             MessageLookupByLibrary.simpleMessage("Mute Conversation"),
+        "bchat_conv_pin":
+            MessageLookupByLibrary.simpleMessage("Pin Conversation"),
+        "bchat_conv_pinned":
+            MessageLookupByLibrary.simpleMessage("Pinned Conversation"),
         "bchat_conv_read": MessageLookupByLibrary.simpleMessage("Mark as Read"),
         "bchat_conv_unmute":
             MessageLookupByLibrary.simpleMessage("Unmute Conversation"),
+        "bchat_conv_unpin":
+            MessageLookupByLibrary.simpleMessage("Unpin Conversation"),
+        "bchat_conv_unpinned":
+            MessageLookupByLibrary.simpleMessage("Unpinned Conversation"),
         "blearn": MessageLookupByLibrary.simpleMessage("bLearn"),
         "blearn_added": MessageLookupByLibrary.simpleMessage("Added"),
         "blearn_btx_mostviewed":
@@ -174,6 +182,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Your camera disabled by host."),
         "bmeet_call_msg_na_yet":
             MessageLookupByLibrary.simpleMessage("This is not available yet."),
+        "bmeet_call_stop_record":
+            MessageLookupByLibrary.simpleMessage("Stop recording"),
         "bmeet_call_txt_enable":
             MessageLookupByLibrary.simpleMessage("Enabled"),
         "bmeet_call_txt_encryption":
@@ -239,6 +249,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Always mute my microphone on start"),
         "bmeet_no_meetings":
             MessageLookupByLibrary.simpleMessage("No scheduled Meetings."),
+        "bmeet_recording_start":
+            MessageLookupByLibrary.simpleMessage("Recording Started.."),
         "bmeet_schedule_heading":
             MessageLookupByLibrary.simpleMessage("Schedule a Meeting"),
         "bmeet_sharable_caption":

@@ -322,17 +322,38 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  model.contact.name,
-                  style: TextStyle(
-                    fontWeight: model.badgeCount > 0
-                        ? FontWeight.w700
-                        : FontWeight.w500,
-                    fontFamily: kFontFamily,
-                    color: AppColors.contactNameTextColor,
-                    fontSize: 12.sp,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      model.contact.name,
+                      style: TextStyle(
+                        fontWeight: model.badgeCount > 0
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        fontFamily: kFontFamily,
+                        color: AppColors.contactNameTextColor,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 1.w,
+                    ),
+                    if (model.contact.role == "instructor" ||
+                        model.contact.role == "Teacher")
+                      getSvgIcon('Badge.svg', width: 3.w),
+                  ],
                 ),
+                // Text(
+                //   model.contact.name,
+                //   style: TextStyle(
+                //     fontWeight: model.badgeCount > 0
+                //         ? FontWeight.w700
+                //         : FontWeight.w500,
+                //     fontFamily: kFontFamily,
+                //     color: AppColors.contactNameTextColor,
+                //     fontSize: 12.sp,
+                //   ),
+                // ),
                 desc ??
                     Text(
                       textMessage,

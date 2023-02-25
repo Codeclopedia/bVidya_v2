@@ -461,14 +461,17 @@ class BMeetProvider extends ChangeNotifier {
     //   print('_updateMemberList : $e');
     // }
     _memberList.clear();
-    _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
-    for (var e in _memberList) {
+    // memberList.addAll(await rtmChannel?.getMembers() ?? []);
+    final newList = await _rtmChannel?.getMembers() ?? [];
+    for (var e in newList) {
       String user = e.userId;
 
       if (user.contains(':')) {
         int id = int.tryParse(user.split(':')[0]) ?? 0;
+
         String name = user.split(':')[1];
         if (_userList.containsKey(id)) {
+          _memberList.add(e);
           _userList.update(
             id,
             (value) {
@@ -488,21 +491,78 @@ class BMeetProvider extends ChangeNotifier {
           );
         } else {
           // if (id == _localUid) {
-          //   _userList.addAll({id: ConnectedUserInfo(id, name, _localView())});
+          //   userList.addAll({id: ConnectedUserInfo(id, name, localView())});
           // } else if (id != _screenShareId) {
           //   _userList
           //       .addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
           // }
-          // _userList.addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
+          // userList.addAll({id: ConnectedUserInfo(id, name, remoteView(id))});
         }
       }
     }
     // if (_screenShareId == 1000) {
-    //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
+    //   memberList.add(AgoraRtmMember('1000:You', meeting.channel));
     // }
     // _viewModels = getRenderViews();
     if (_localUserJoined) notifyListeners();
   }
+
+  void startRecording(WidgetRef ref) {
+    // FlutterScreenRecording.startRecordScreenAndAudio(
+    //     "Bvidya_Bmeet_recording_${DateTime.now()}");
+    // ref.read(isScreenRecording.notifier).state = true;
+    // EasyLoading.showToast(S.current.bmeet_recording_start,
+    //     toastPosition: EasyLoadingToastPosition.bottom);
+  }
+
+  void stopRecording(WidgetRef ref) {
+    // final path = FlutterScreenRecording.stopRecordScreen;
+    // ref.read(isScreenRecording.notifier).state = false;
+    // EasyLoading.showInfo("Recording Complete...\n Video Saved at $path ");
+  }
+
+  // // _memberList.addAll(await _rtmChannel?.getMembers() ?? []);
+  // for (var e in _memberList) {
+  //   String user = e.userId;
+
+  //   if (user.contains(':')) {
+  //     int id = int.tryParse(user.split(':')[0]) ?? 0;
+  //     String name = user.split(':')[1];
+  //     if (_userList.containsKey(id)) {
+  //       _userList.update(
+  //         id,
+  //         (value) {
+  //           if (value.enabledVideo) {
+  //             if (id == _localUid) {
+  //               value.widget = _localView();
+  //             } else {
+  //               value.widget = _remoteView(id);
+  //             }
+  //           } else {
+  //             value.widget = getRectFAvatar(name, '');
+  //           }
+  //           value.muteAudio = _ref?.read(muteStartMeetingProvider) ?? false;
+  //           value.name = name;
+  //           return value;
+  //         },
+  //       );
+  //     } else {
+  //       // if (id == _localUid) {
+  //       //   _userList.addAll({id: ConnectedUserInfo(id, name, _localView())});
+  //       // } else if (id != _screenShareId) {
+  //       //   _userList
+  //       //       .addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
+  //       // }
+  //       // _userList.addAll({id: ConnectedUserInfo(id, name, _remoteView(id))});
+  //     }
+  //   }
+  // }
+  // // if (_screenShareId == 1000) {
+  // //   _memberList.add(AgoraRtmMember('1000:You', _meeting.channel));
+  // // }
+  // // _viewModels = getRenderViews();
+  // if (_localUserJoined) notifyListeners();
+  // }
 
   void sendPeerMessage(String userId, String content) async {
     AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
@@ -776,10 +836,6 @@ class BMeetProvider extends ChangeNotifier {
   }
 
   void disconnectAll() {}
-
-  void startRecording() {
-    // _engine.startAudioRecording(config);
-  }
 
   // StatefulWidget _remoteScreenView() {
   //   return AgoraVideoView(

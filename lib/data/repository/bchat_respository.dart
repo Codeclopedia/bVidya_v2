@@ -121,5 +121,13 @@ class BChatRepository {
     return result.body?.source;
   }
 
+  Future<String?> pinUnpinContact(String userId) async {
+    final result = await api.pinUnpinContact(token, userId);
+    if (result.status == "success") {
+      return null;
+    }
+    return result.message ?? 'Error ';
+  }
+
   // getGroupMediaList(ChatGroup groupInfo) {}
 }

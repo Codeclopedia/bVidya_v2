@@ -54,16 +54,21 @@ class Contact {
   final String? fcmToken;
   final String profileImage;
   final String? bio;
+  final String? role;
+  final bool? ispinned;
 
-  Contact(
-      {required this.userId,
-      required this.name,
-      // required this.peerId,
-      required this.profileImage,
-      this.email,
-      this.phone,
-      this.fcmToken,
-      this.bio});
+  Contact({
+    required this.userId,
+    required this.name,
+    // required this.peerId,
+    required this.profileImage,
+    this.email,
+    this.phone,
+    this.fcmToken,
+    this.bio,
+    this.role,
+    this.ispinned,
+  });
 
   Contact.fromJson(Map<String, dynamic> json)
       : userId = json['user_id'],
@@ -73,7 +78,9 @@ class Contact {
         // peerId = json['peer_id'],
         fcmToken = json['fcm_token'],
         profileImage = json['profile_image'],
-        bio = json['bio'];
+        bio = json['bio'],
+        role = json['role'],
+        ispinned = json['is_pinned'] == 1 ? true : false;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
@@ -85,6 +92,8 @@ class Contact {
     data['fcm_token'] = fcmToken;
     data['profile_image'] = profileImage;
     data['bio'] = bio;
+    data['role'] = role;
+    data['is_pinned'] = ispinned;
     return data;
   }
 }

@@ -633,11 +633,14 @@ class Routes {
         break;
 
       case RouteList.teacherSchedule:
+        // screen =
+        //     const TeacherClasses(); // at line 635 rename the class from teacherclassrequests to teacherclasses
+
         screen = const TeacherScheduleScreen();
         break;
 
       case RouteList.teacherClassRequest:
-        screen = const TeacherClassRequest();
+        screen = const TeacherClasses();
         break;
 
       case RouteList.teacherProfile:

@@ -17,7 +17,7 @@ class ApiList {
   static const String updateProfileImage = 'profile/upload';
   static const String deleteUserAccount = 'account-dismiss';
 
-
+  static const String pinUnpinContact = 'chat-user/contact/pin-unpin'; //POST
 
   //bMeet
   static const String meetingList = 'meeting/meetings'; //GET
@@ -32,6 +32,10 @@ class ApiList {
   static const String personalClassRequests = 'personal-class-requests'; //GET
   static const String requestedClasses = 'requested-personal-classes'; //GET
   static const String requestClass = 'personal-class-request'; //POST
+
+  static const String scheduledClassesStudent = 'scheduled-classes-user'; //GET
+  static const String scheduledClassesInstructor =
+      'scheduled-classes-instructor'; //GET
 
   //bLive
   static const String createLiveClass = 'live-class/create'; //POST
