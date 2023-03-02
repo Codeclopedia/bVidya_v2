@@ -203,65 +203,115 @@ class SubscriptionPlans extends HookConsumerWidget {
     }));
   }
 
-  paymentProcess(Razorpay razorpay, WidgetRef ref, String userId) async {
-    return ref.read(paymentIdProvider(userId)).when(
-      data: (data) {
-        data.then((value) {
-          var options = {
-            "key": value?.key,
-            "amount": value!.plan!.price! *
-                100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
-            "name": "Bvidya",
-            "description": "Bvidya ${value.plan?.name}",
-            "image": "https://bvidya.com/assets/images/logo.png",
-            "order_id": value.orderId,
+  paymentProcess(Razorpay razorpay, WidgetRef ref, String planId) async {
+    final value =
+        await ref.read(profileRepositoryProvider).getpaymentId(planId);
+    if (value.key != null && value.plan?.price != null && value.user != null) {
+      razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+      razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+      razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+      var options = {
+        "key": value.key,
+        "amount": value.plan!.price! *
+            100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "Bvidya",
+        "description": "Bvidya ${value.plan?.name}",
+        "image": "https://bvidya.com/assets/images/logo.png",
+        "order_id": value.orderId,
 
-            "prefill": {
-              "name": value.user?.name,
-              "email": value.user?.email,
-              "contact": value.user?.phone
-            },
+        "prefill": {
+          "name": value.user?.name,
+          "email": value.user?.email,
+          "contact": value.user?.phone
+        },
 
-            "theme": {"color": "#3399cc"}
-            // "theme": {"color": "#660629"}
-            // 'key': value?.orderId,
-            // 'amount': value?.plan?.price ?? 99 * 100,
-            // 'name': "Bvidya ${value?.plan?.name}",
-            // 'description': value?.plan?.name,
-            // // 'retry': {'enabled': true, 'max_count': 1},
-            // 'send_sms_hash': true,
-            // 'prefill': {'contact': user?.phone, 'email': user?.email},
-            // 'external': {
-            //   'wallets': [
-            //     'paytm',
-            //     'freecharge',
-            //     'payzapp',
-            //     'airtelmoney',
-            //     'mobikwik',
-            //     'jiomoney',
-            //     'olamoney',
-            //     'phonepe',
-            //     'phonepeswitch',
-            //     'paypal',
-            //     'amazonpay'
-            //   ]
-            // }
-          };
-          hideLoading(ref);
-          razorpay.open(options);
-        });
-        razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-        razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-        razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-      },
-      error: (error, stackTrace) {
-        return buildEmptyPlaceHolder(S.current.error);
-      },
-      loading: () {
-        return const CircularProgressIndicator.adaptive();
-      },
-    );
+        "theme": {"color": "#3399cc"}
+        // "theme": {"color": "#660629"}
+        // 'key': value?.orderId,
+        // 'amount': value?.plan?.price ?? 99 * 100,
+        // 'name': "Bvidya ${value?.plan?.name}",
+        // 'description': value?.plan?.name,
+        // // 'retry': {'enabled': true, 'max_count': 1},
+        // 'send_sms_hash': true,
+        // 'prefill': {'contact': user?.phone, 'email': user?.email},
+        // 'external': {
+        //   'wallets': [
+        //     'paytm',
+        //     'freecharge',
+        //     'payzapp',
+        //     'airtelmoney',
+        //     'mobikwik',
+        //     'jiomoney',
+        //     'olamoney',
+        //     'phonepe',
+        //     'phonepeswitch',
+        //     'paypal',
+        //     'amazonpay'
+        //   ]
+        // }
+      };
+      hideLoading(ref);
+      razorpay.open(options);
+    }
+    // return ref.read(paymentIdProvider(planId)).when(
+    //   data: (data) {
+    //     data.then((value) {
+    //       var options = {
+    //         "key": value?.key,
+    //         "amount": value!.plan!.price! *
+    //             100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    //         "currency": "INR",
+    //         "name": "Bvidya",
+    //         "description": "Bvidya ${value.plan?.name}",
+    //         "image": "https://bvidya.com/assets/images/logo.png",
+    //         "order_id": value.orderId,
+
+    //         "prefill": {
+    //           "name": value.user?.name,
+    //           "email": value.user?.email,
+    //           "contact": value.user?.phone
+    //         },
+
+    //         "theme": {"color": "#3399cc"}
+    //         // "theme": {"color": "#660629"}
+    //         // 'key': value?.orderId,
+    //         // 'amount': value?.plan?.price ?? 99 * 100,
+    //         // 'name': "Bvidya ${value?.plan?.name}",
+    //         // 'description': value?.plan?.name,
+    //         // // 'retry': {'enabled': true, 'max_count': 1},
+    //         // 'send_sms_hash': true,
+    //         // 'prefill': {'contact': user?.phone, 'email': user?.email},
+    //         // 'external': {
+    //         //   'wallets': [
+    //         //     'paytm',
+    //         //     'freecharge',
+    //         //     'payzapp',
+    //         //     'airtelmoney',
+    //         //     'mobikwik',
+    //         //     'jiomoney',
+    //         //     'olamoney',
+    //         //     'phonepe',
+    //         //     'phonepeswitch',
+    //         //     'paypal',
+    //         //     'amazonpay'
+    //         //   ]
+    //         // }
+    //       };
+    //       hideLoading(ref);
+    //       razorpay.open(options);
+    //     });
+    //     razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    //     razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    //     razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    //   },
+    //   error: (error, stackTrace) {
+    //     return buildEmptyPlaceHolder(S.current.error);
+    //   },
+    //   loading: () {
+    //     return const CircularProgressIndicator.adaptive();
+    //   },
+    // );
   }
 
   _handlePaymentSuccess(PaymentSuccessResponse response) async {
