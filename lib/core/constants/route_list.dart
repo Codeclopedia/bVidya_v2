@@ -117,11 +117,16 @@ class RouteList {
   static const String teacherRequestedClassDetail =
       '/teacher_class-requested-detail';
 
-  static const String scheduledClassesStudent = 'scheduled-classes-user'; 
-  static const String scheduledClassesInstructor ='scheduled-classes-instructor'; 
+  static const String scheduledClassesStudent = 'scheduled-classes-user';
+  static const String scheduledClassesInstructor =
+      'scheduled-classes-instructor';
 
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 
+  static const String subscriptionPlans = '/subscription-plans';
+  static const String subscriptionDetail = '/subscription-details';
+  static const String classScheduleDetails = '/class-schedule-details';
+  static const String classScheduledDetail = '/class-schdeduled-detail';
   //
   // static const String bForum = '/forum';
   // static const String bDiscuss = '/discuss';

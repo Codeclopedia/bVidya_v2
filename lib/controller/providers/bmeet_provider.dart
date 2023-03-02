@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 import '/core/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';

@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/constants/agora_config.dart';
+import '/core/constants/agora_config.dart';
 import 'package:intl/intl.dart';
 
 import 'package:swipe_to/swipe_to.dart';

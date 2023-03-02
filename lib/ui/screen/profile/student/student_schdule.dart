@@ -1,4 +1,6 @@
-// import 'package:bvidya/core/constants/route_list.dart';
+// import '/core/constants/route_list.dart';
+
+import 'package:intl/intl.dart';
 
 import '/core/constants.dart';
 import '/data/models/response/profile/schduled_classes_model.dart';
@@ -41,17 +43,17 @@ class StudentSchdule extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 2.w),
                       child: ref.watch(requestedClassesProvider).when(
                             data: (data) {
-                              print(data);
+                              // print(data);
                               if (data == null) {
                                 return Center(
                                   child: buildEmptyPlaceHolder(
-                                      "No requested classes"),
+                                      S.current.t_no_requested_class_title),
                                 );
                               }
                               if (data.requestedClasses?.isEmpty ?? false) {
                                 return Center(
                                   child: buildEmptyPlaceHolder(
-                                      "No requested classes"),
+                                      S.current.t_no_requested_class_title),
                                 );
                               }
 
@@ -67,7 +69,7 @@ class StudentSchdule extends StatelessWidget {
                               );
                             },
                             error: (error, stackTrace) =>
-                                buildEmptyPlaceHolder('Error '),
+                                buildEmptyPlaceHolder('Error'),
                             loading: () => ListView.builder(
                               shrinkWrap: true,
                               itemCount: 10,
@@ -98,109 +100,40 @@ class StudentSchdule extends StatelessWidget {
             if (data == null) {
               return const Center(child: CircularProgressIndicator.adaptive());
             }
+            if (data.scheduledRequests?.isEmpty ?? false) {
+              return Center(
+                child: buildEmptyPlaceHolder(S.current.s_no_schedule_class),
+              );
+            }
             return scheduledClasseslist(data.scheduledRequests ?? []);
           },
           error: (error, stackTrace) {
             return buildEmptyPlaceHolder(S.current.error);
           },
           loading: () {
-            return const CircularProgressIndicator.adaptive();
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.h),
+                  child: CustomizableShimmerTile(height: 30.w, width: 100.w),
+                );
+              },
+            );
           },
         );
       }),
     ));
   }
 
-  Widget scheduledClasseslist(List<ScheduledRequest> scheduledRequests) {
+  Widget scheduledClasseslist(
+      List<StudentScheduledClassDetails> scheduledRequests) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: scheduledRequests.length,
       itemBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 2.w),
-          child: Container(
-            decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(10)),
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  scheduledRequests[index].updatedAt.toString(),
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      scheduledRequests[index].topic ?? "",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 5.w),
-                    ),
-                    SizedBox(
-                      height: 2.w,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person,
-                          color: AppColors.iconGreyColor,
-                          size: 3.w,
-                        ),
-                        Text(
-                          scheduledRequests[index].instructor?.name ?? "",
-                          style: TextStyle(
-                              fontSize: 3.w, color: AppColors.iconGreyColor),
-                        ),
-                        SizedBox(width: 2.w),
-                        Icon(
-                          Icons.notes,
-                          size: 3.w,
-                          color: AppColors.iconGreyColor,
-                        ),
-                        Text(
-                          scheduledRequests[index].instructor?.name ?? "",
-                          style: TextStyle(
-                              fontSize: 3.w, color: AppColors.iconGreyColor),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 2.w,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.timer,
-                          size: 3.w,
-                          color: AppColors.iconGreyColor,
-                        ),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          "11:00 AM - 12:00 PM",
-                          style: TextStyle(
-                              fontSize: 3.w, color: AppColors.iconGreyColor),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-                CircleAvatar(
-                  backgroundColor: AppColors.yellowAccent,
-                  radius: 5.w,
-                  child: Icon(
-                    Icons.adaptive.arrow_forward,
-                    size: 5.w,
-                    color: AppColors.primaryColor,
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
+        return scheduledClassRow(scheduledRequests[index], context);
       },
     );
   }
@@ -256,6 +189,127 @@ class StudentSchdule extends StatelessWidget {
               ),
             ),
             getSvgIcon("request_sent.svg")
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget scheduledClassRow(
+      StudentScheduledClassDetails scheduledClass, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2.w),
+      child: Container(
+        decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat("MMMM \n d").format(
+                      scheduledClass.scheduledClass?.scheduledAt ??
+                          DateTime.now()),
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(fontWeight: FontWeight.w800, fontSize: 3.5.w),
+                ),
+                SizedBox(
+                  width: 4.w,
+                ),
+                SizedBox(
+                  width: 40.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        scheduledClass.scheduledClass?.title ?? "",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 4.5.w),
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: AppColors.iconGreyColor,
+                            size: 3.w,
+                          ),
+                          Text(
+                            scheduledClass.scheduledClass?.participants?.length
+                                    .toString() ??
+                                "",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                          SizedBox(width: 2.w),
+                          Icon(
+                            Icons.notes,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          SizedBox(width: 1.w),
+                          Text(
+                            scheduledClass.type ?? "",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                            DateFormat('hh:mm a').format(
+                                scheduledClass.scheduledClass?.scheduledAt ??
+                                    DateTime.now()),
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            InkWell(
+              onTap: () {
+                // Navigator.pushNamed(
+                //               context, RouteList.teacherRequestedClassDetail,
+                //               arguments: data.personalClasses?[index] ??
+                //                   PersonalClass());
+                Navigator.pushNamed(context, RouteList.classScheduledDetail,
+                    arguments: scheduledClass);
+              },
+              child: CircleAvatar(
+                backgroundColor: AppColors.yellowAccent,
+                radius: 5.w,
+                child: Icon(
+                  Icons.adaptive.arrow_forward,
+                  size: 5.w,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            )
           ],
         ),
       ),

@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 
-import '../models/response/profile/schduled_classes_model.dart';
-import '../models/response/profile/scheduled_class_instructor_model.dart';
+// import '../models/response/profile/schduled_classes_model.dart';
+// import '../models/response/profile/scheduled_class_instructor_model.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -197,7 +196,8 @@ class ProfileApiService {
     }
   }
 
-  Future<SchduledClassesModel> getSchduledClassesStudent(String token) async {
+  Future<StudentScheduledClasses> getSchduledClassesStudent(
+      String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
 
     try {
@@ -206,19 +206,19 @@ class ProfileApiService {
       // print('response ${response.data} . ${response.realUri}');
       if (response.statusCode == 200) {
         print(response);
-        return SchduledClassesModel.fromJson(response.data);
+        return StudentScheduledClasses.fromJson(response.data);
       } else {
-        return SchduledClassesModel(
+        return StudentScheduledClasses(
           status: 'error',
         );
       }
     } catch (e) {
       print("error $e");
-      return SchduledClassesModel(status: 'error');
+      return StudentScheduledClasses(status: 'error');
     }
   }
 
-  Future<SchduledClassesInstructorModel> getSchduledClassesInstructor(
+  Future<InstructorScheduledClasses> getSchduledClassesInstructor(
       String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
 
@@ -228,15 +228,169 @@ class ProfileApiService {
       // print('response ${response.data} . ${response.realUri}');
       if (response.statusCode == 200) {
         print(response);
-        return SchduledClassesInstructorModel.fromJson(response.data);
+        return InstructorScheduledClasses.fromJson(response.data);
       } else {
-        return SchduledClassesInstructorModel(
+        return InstructorScheduledClasses(
           status: 'error',
         );
       }
     } catch (e) {
       print("error $e");
-      return SchduledClassesInstructorModel(status: 'error');
+      return InstructorScheduledClasses(status: 'error');
+    }
+  }
+  // Future<SchduledClassesModel> getSchduledClassesStudent(String token) async {
+  //   _dio.options.headers['X-Auth-Token'] = token;
+
+  //   try {
+  //     final response =
+  //         await _dio.get(baseUrlApi + ApiList.scheduledClassesStudent);
+  //     // print('response ${response.data} . ${response.realUri}');
+  //     if (response.statusCode == 200) {
+  //       print(response);
+  //       return SchduledClassesModel.fromJson(response.data);
+  //     } else {
+  //       return SchduledClassesModel(
+  //         status: 'error',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("error $e");
+  //     return SchduledClassesModel(status: 'error');
+  //   }
+  // }
+
+  // Future<SchduledClassesInstructorModel> getSchduledClassesInstructor(
+  //     String token) async {
+  //   _dio.options.headers['X-Auth-Token'] = token;
+
+  //   try {
+  //     final response =
+  //         await _dio.get(baseUrlApi + ApiList.scheduledClassesInstructor);
+  //     // print('response ${response.data} . ${response.realUri}');
+  //     if (response.statusCode == 200) {
+  //       print(response);
+  //       return SchduledClassesInstructorModel.fromJson(response.data);
+  //     } else {
+  //       return SchduledClassesInstructorModel(
+  //         status: 'error',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("error $e");
+  //     return SchduledClassesInstructorModel(status: 'error');
+  //   }
+  // }
+
+  Future<CreditDetailModel> getCreditsDetails(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response =
+          await _dio.get(baseUrlApi + ApiList.purchasedCreditDetails);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return CreditDetailModel.fromJson(response.data);
+      } else {
+        return CreditDetailModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return CreditDetailModel(status: 'error');
+    }
+  }
+
+  Future<SubscriptionPlansModel> getSubscriptionPlans(String token) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response = await _dio.get(baseUrlApi + ApiList.getAllSubscriptions);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return SubscriptionPlansModel.fromJson(response.data);
+      } else {
+        return SubscriptionPlansModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return SubscriptionPlansModel(status: 'error');
+    }
+  }
+
+  Future<PaymentDetailModel> getpaymentId(String token, String plan_id) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    final data = {"plan_id": plan_id};
+
+    try {
+      final response =
+          await _dio.post(baseUrlApi + ApiList.getpaymentId, data: data);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return PaymentDetailModel.fromJson(response.data);
+      } else {
+        return PaymentDetailModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return PaymentDetailModel(status: 'error');
+    }
+  }
+
+  // Future<InstructorScheduledClasses> getSchduledClassesInstructor(
+  //     String token) async {
+  //   _dio.options.headers['X-Auth-Token'] = token;
+
+  //   try {
+  //     final response =
+  //         await _dio.get(baseUrlApi + ApiList.scheduledClassesInstructor);
+  //     // print('response ${response.data} . ${response.realUri}');
+  //     if (response.statusCode == 200) {
+  //       print(response);
+  //       return InstructorScheduledClasses.fromJson(response.data);
+  //     } else {
+  //       return InstructorScheduledClasses(
+  //         status: 'error',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("error $e");
+  //     return InstructorScheduledClasses(status: 'error');
+  //   }
+  // }
+
+  Future<PaymentSuccessModel> getpaymentSuccessDetails(
+      String token, String orderId, String paymentId, String signature) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    final data = {
+      'razorpay_order_id': orderId,
+      'razorpay_payment_id': paymentId,
+      'razorpay_signature': signature
+    };
+
+    print("hiited payment successful api with details $data");
+    try {
+      final response =
+          await _dio.post(baseUrlApi + ApiList.getpaymentRecord, data: data);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        return PaymentSuccessModel.fromJson(response.data);
+      } else {
+        return PaymentSuccessModel(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return PaymentSuccessModel(status: 'error');
     }
   }
 }

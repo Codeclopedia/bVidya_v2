@@ -83,7 +83,7 @@ class RequestedClass {
   DateTime? updatedAt;
   String? instructorName;
   String? instructorImage;
-  DateTime? preferred_date_time;
+  String? preferred_date_time;
 
   factory RequestedClass.fromRawJson(String str) =>
       RequestedClass.fromJson(json.decode(str));

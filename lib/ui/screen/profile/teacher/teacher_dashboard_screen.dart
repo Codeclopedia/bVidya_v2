@@ -1,5 +1,6 @@
 import 'package:chart_sparkline/chart_sparkline.dart';
 
+import '../../../widgets.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -76,7 +77,7 @@ class TeacherDashboard extends StatelessWidget {
                     ]);
               },
               error: (_, s) => buildEmptyPlaceHolder(''),
-              loading: () => buildLoading);
+              loading: () => buildDashboardloading());
         }),
       ),
     );
@@ -92,6 +93,48 @@ class TeacherDashboard extends StatelessWidget {
   //         fontWeight: FontWeight.bold),
   //   );
   // }
+
+  Widget buildDashboardloading() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 4.h),
+        Text(
+          S.current.td_dash,
+          style: TextStyle(
+              fontSize: 16.sp,
+              color: AppColors.primaryColor,
+              fontFamily: kFontFamily,
+              fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 2.h),
+        CustomizableShimmerTile(height: 40.w, width: 100.w),
+        SizedBox(height: 2.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomizableShimmerTile(height: 20.w, width: 42.5.w),
+            CustomizableShimmerTile(height: 20.w, width: 42.5.w),
+          ],
+        ),
+        SizedBox(height: 2.h),
+        Text(
+          S.current.td_courses,
+          style: TextStyle(
+              color: AppColors.primaryColor,
+              fontFamily: kFontFamily,
+              fontWeight: FontWeight.w600,
+              fontSize: 16.sp),
+        ),
+        SizedBox(
+          height: 2.h,
+        ),
+        CustomizableShimmerTile(height: 40.w, width: 100.w),
+      ],
+    );
+  }
 
   Widget _buildRevenue() {
     return ClipRRect(

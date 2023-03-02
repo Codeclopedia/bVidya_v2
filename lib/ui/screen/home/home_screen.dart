@@ -4,12 +4,13 @@ import 'dart:convert';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/chat_utils.dart';
+import '/core/utils/chat_utils.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:uuid/uuid.dart';
 
+import '../../../core/sdk_helpers/bchat_contact_manager.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -245,6 +246,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           // ref.read(chatConversationProvider).deleteConversationOnly(model.id);
           ref.read(callListProvider.notifier).setup();
         }
+        if (result == 4 || result == 3) {
+          ref
+              .read(chatConversationProvider.notifier)
+              .updateConversation(model.id);
+        }
       }),
       child: _contactRow(model),
     );
@@ -393,6 +399,39 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               SizedBox(height: 1.h),
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                FutureBuilder(
+                  future: BChatContactManager.getUpdatedPinned(model.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data == true) {
+                      return Row(
+                        children: [
+                          getSvgIcon('Pin.svg', width: 4.w),
+                          SizedBox(width: 1.w),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                    //return null;
+                  },
+                ),
+                FutureBuilder(
+                  future: BChatContactManager.fetchChatMuteStateFor(model.id),
+                  builder: (context, snapshot) {
+                    bool mute = snapshot.data != ChatPushRemindType.NONE;
+                    if (mute) {
+                      return Row(
+                        children: [
+                          getSvgIcon('icon_mute_conv.svg', width: 4.w),
+                          SizedBox(width: 1.w),
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                    //return null;
+                  },
+                )
+              ]),
               model.badgeCount > 0
                   ? CircleAvatar(
                       radius: 3.w,

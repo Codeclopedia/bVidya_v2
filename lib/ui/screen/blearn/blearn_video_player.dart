@@ -1,6 +1,6 @@
 // import 'package:chewie/chewie.dart';
 // import 'dart:async';
-import 'package:bvidya/ui/base_back_screen.dart';
+import '/ui/base_back_screen.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';

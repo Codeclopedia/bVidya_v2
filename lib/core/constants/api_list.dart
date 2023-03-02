@@ -62,6 +62,12 @@ class ApiList {
   static const String lmsFollowInstructor = 'follow-unfollow/'; //GET
   static const String lmsRecordVideoPlayback = 'watch-time/record'; //POST
 
+  //subscriptions
+  static const String getAllSubscriptions = 'subscription-plans'; //GET
+  static const String getpaymentId = 'payment-order'; //POST
+  static const String getpaymentRecord = 'payment-record'; //POST
+  static const String purchasedCreditDetails = 'purchased-plans-detail';
+
   //Settings
   static const String reportProblem = 'report'; //POST
   static const String userProfile = 'profile'; //POST

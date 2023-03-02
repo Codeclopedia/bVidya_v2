@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bvidya/data/models/call_message_body.dart';
-import 'package:bvidya/firebase_options.dart';
+import '/data/models/call_message_body.dart';
+import '/firebase_options.dart';
 import 'package:dio/dio.dart';
 import '/core/constants.dart';
 
@@ -116,8 +116,8 @@ class FCMApiService {
     }
   }
 
-  Future sendCallStartPush(String toToken, String fromId, String callId,String msgId,
-      CallMessegeBody body) async {
+  Future sendCallStartPush(String toToken, String fromId, String callId,
+      String msgId, CallMessegeBody body) async {
     _dio.options.headers['Authorization'] = 'key=  $webPushKey';
 
     // print('token:=> $toToken');
@@ -132,7 +132,7 @@ class FCMApiService {
         'action': NotiConstants.actionCallStart,
         'f': fromId,
         'e': jsonEncode(body),
-        'm':msgId
+        'm': msgId
       },
       // 'ttl': '30s',
       'android': {'priority': 'normal'},

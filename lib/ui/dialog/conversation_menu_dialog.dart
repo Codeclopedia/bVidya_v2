@@ -70,8 +70,8 @@ class ConversationMenuDialog extends StatelessWidget {
                 isUserPinned == true
                     ? S.current.bchat_conv_unpin
                     : S.current.bchat_conv_pin,
-                isUserPinned == true ? 'UnPin.svg' : 'Pin.svg', () async {
-              await BChatContactManager.updatePin(ref, model.id, !isUserPinned);
+                isUserPinned ? 'UnPin.svg' : 'Pin.svg', () async {
+              // await BChatContactManager.updatePin(ref, model.id, !isUserPinned);
 
               Navigator.pop(context, 4);
               // hideLoading(ref);

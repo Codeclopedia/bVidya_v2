@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import '../models/models.dart';
-import '../models/response/profile/schduled_classes_model.dart';
-import '../models/response/profile/scheduled_class_instructor_model.dart';
 import '../services/profile_api_service.dart';
 
 class ProfileRepository {
@@ -100,22 +98,79 @@ class ProfileRepository {
     }
   }
 
-  Future<ScheduledClassBody> getschduledClassesAsStudent() async {
+  // Future<ScheduledClassBody> getschduledClassesAsStudent() async {
+  //   final result = await _api.getSchduledClassesStudent(_authToken);
+  //   if (result.status == 'success' && result.body != null) {
+  //     return result.body!;
+  //   } else {
+  //     return ScheduledClassBody();
+  //   }
+  // }
+
+  // //get List of schduled class As Instructor
+  // Future<ScheduledClassInstructorBody> getschduledClassesAsInstructor() async {
+  //   final result = await _api.getSchduledClassesInstructor(_authToken);
+  //   if (result.status == 'success' && result.body != null) {
+  //     return result.body!;
+  //   } else {
+  //     return ScheduledClassInstructorBody();
+  //   }
+  // }
+
+  Future<StudentScheduledClassBody> getschduledClassesAsStudent() async {
     final result = await _api.getSchduledClassesStudent(_authToken);
     if (result.status == 'success' && result.body != null) {
       return result.body!;
     } else {
-      return ScheduledClassBody();
+      return StudentScheduledClassBody();
+    }
+  }
+
+  Future<SubscriptionPlansBody> getSubscriptionPlans() async {
+    final result = await _api.getSubscriptionPlans(_authToken);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return SubscriptionPlansBody();
+    }
+  }
+
+  Future<PaymentDetailBody> getpaymentId(String planId) async {
+    final result = await _api.getpaymentId(_authToken, planId);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return PaymentDetailBody();
+    }
+  }
+
+  Future<PaymentSuccessBody> getpaymentSuccessResponse(
+      String orderId, String paymentId, String signature) async {
+    final result = await _api.getpaymentSuccessDetails(
+        _authToken, orderId, paymentId, signature);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return PaymentSuccessBody();
+    }
+  }
+
+  Future<CreditDetailBody> getCreditsHistory() async {
+    final result = await _api.getCreditsDetails(_authToken);
+    if (result.status == 'success' && result.body != null) {
+      return result.body!;
+    } else {
+      return CreditDetailBody();
     }
   }
 
   //get List of schduled class As Instructor
-  Future<ScheduledClassInstructorBody> getschduledClassesAsInstructor() async {
+  Future<InstructorScheduledClassBody> getschduledClassesAsInstructor() async {
     final result = await _api.getSchduledClassesInstructor(_authToken);
     if (result.status == 'success' && result.body != null) {
       return result.body!;
     } else {
-      return ScheduledClassInstructorBody();
+      return InstructorScheduledClassBody();
     }
   }
 }

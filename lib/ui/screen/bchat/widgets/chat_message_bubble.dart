@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/utils/file_utils.dart';
+import '/core/utils/file_utils.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';

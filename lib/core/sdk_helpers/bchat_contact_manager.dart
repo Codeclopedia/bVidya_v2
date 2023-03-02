@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
-import 'package:bvidya/core/constants/agora_config.dart';
-import 'package:bvidya/ui/base_back_screen.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/core/constants/agora_config.dart';
+import '/ui/base_back_screen.dart';
 
 import '../../controller/bchat_providers.dart';
 import '../state.dart';
@@ -73,9 +73,11 @@ class BChatContactManager {
       WidgetRef ref, String userId, bool isUserPinned) async {
     showLoading(ref);
     final error = await ref.read(bChatProvider).pinUnpinContact(userId);
+    final updatedPinnedvalue = await getUpdatedPinned(userId);
+
     ref
         .read(chatConversationProvider.notifier)
-        .updateConversationPin(userId, isUserPinned);
+        .updateConversationPin(userId, updatedPinnedvalue);
     if (error == null) {
       hideLoading(ref);
       EasyLoading.showToast(
@@ -86,6 +88,16 @@ class BChatContactManager {
     } else {
       hideLoading(ref);
       EasyLoading.showError('Error $error');
+    }
+  }
+
+  static Future<bool> getUpdatedPinned(String userId) async {
+    final contactData = await getConversationModel(userId);
+
+    if (contactData?.contact.ispinned ?? false) {
+      return true;
+    } else {
+      return false;
     }
   }
 

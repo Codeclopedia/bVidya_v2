@@ -2,8 +2,7 @@
 
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/utils.dart';
-
+import '/core/utils.dart';
 import '/core/utils/common.dart';
 
 import '/controller/profile_providers.dart';
@@ -22,6 +21,7 @@ class StudentProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final creditHistoryData = ref.watch(creditHistoryProvider);
     return BaseDrawerSettingScreen(
       showEmail: true,
       currentIndex: DrawerMenu.profile,
@@ -46,7 +46,41 @@ class StudentProfileScreen extends ConsumerWidget {
             //     },
             //   ),
             // ),
-            SizedBox(height: 8.h),
+            creditHistoryData.when(
+              data: (data) {
+                if (data == null) {
+                  return Container();
+                }
+
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 2.w,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        getPngIcon('coin.png', width: 4.w),
+                        SizedBox(
+                          width: 2.w,
+                        ),
+                        Text(
+                          "You have ${data.avilableCourseCredits} Credits",
+                          style: textStyleBlack.copyWith(fontSize: 10.sp),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+              error: (error, stackTrace) {
+                return Container();
+              },
+              loading: () {
+                return Container();
+              },
+            ),
+            SizedBox(height: 3.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
               child: Text(
@@ -90,6 +124,24 @@ class StudentProfileScreen extends ConsumerWidget {
               //   MaterialPageRoute(
               //       builder: (context) => const NotificationSettingScreen()),
               // );
+            }),
+            _buildContent(S.current.profile_subscription, 'noti_calender.svg',
+                () {
+              // return Navigator.push(context, MaterialPageRoute(
+              //   builder: (context) {
+              //     return SubscriptionDetail(
+              //         creditsDetails:
+              //             creditHistoryData.value ?? CreditDetailBody());
+              //   },
+              // ));
+              if (creditHistoryData.isLoading) {}
+              if (creditHistoryData.value == null) {}
+              if (creditHistoryData.value!.avilableCourseCredits! > 0) {
+                return Navigator.pushReplacementNamed(
+                    context, RouteList.subscriptionDetail);
+              } else {
+                Navigator.pushNamed(context, RouteList.subscriptionPlans);
+              }
             }),
             _buildContent(S.current.profile_instr, "profile_instru.svg", () {
               showLoading(ref);

@@ -1,7 +1,7 @@
 // import 'dart:js_util';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/constants/agora_config.dart';
+import '/core/constants/agora_config.dart';
 
 import '/core/utils/chat_utils.dart';
 import '/data/models/models.dart';
@@ -220,7 +220,9 @@ class ChatConversationChangeNotifier
         if (model.conversation?.latestMessage() == null) return;
         final lastMessage = await model.conversation!.latestMessage();
         final contact = model.contact;
-        contact.ispinned = pinned;
+        // contact.ispinned = pinned;
+        contact.ispinned = model.contact.ispinned;
+
         final newModel = ConversationModel(
             id: model.id,
             badgeCount: await model.conversation?.unreadCount() ?? 0,

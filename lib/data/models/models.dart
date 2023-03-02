@@ -24,6 +24,12 @@ export 'response/profile/user_profile_response.dart';
 export 'response/profile/subscribed_courses_response.dart';
 export 'response/profile/image_update_response.dart';
 export 'response/profile/update_profile_response.dart';
+export 'response/profile/payment_detail_model.dart';
+export 'response/profile/payment_success_response.dart';
+export 'response/profile/subscription_plans_model.dart';
+export 'response/profile/credit_detail_model.dart';
+export 'response/profile/schduled_classes_model.dart';
+export 'response/profile/scheduled_class_instructor_model.dart';
 
 export 'response/bchat/search_contact_response.dart';
 export 'response/bchat/contacts_response.dart';

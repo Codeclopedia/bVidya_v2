@@ -101,7 +101,18 @@ class MyLearningScreen extends ConsumerWidget {
           error: (error, stackTrace) {
             return buildEmptyPlaceHolder("error");
           },
-          loading: () => buildLoading,
+          loading: () => ListView.builder(
+            shrinkWrap: true,
+            itemCount: 10,
+            physics: const BouncingScrollPhysics(),
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 1.w),
+                child: CustomizableShimmerTile(height: 40.w, width: 100.w),
+              );
+            },
+            // children: [CustomizableShimmerTile(height: 45.w, width: 100.w)],
+          ),
         );
   }
 
@@ -209,7 +220,7 @@ class MyLearningScreen extends ConsumerWidget {
                       error: (error, stackTrace) {
                         return buildEmptyPlaceHolder("error");
                       },
-                      loading: () => buildLoading,
+                      loading: () => buildEmptyPlaceHolder("..."),
                     ),
               ],
             ),

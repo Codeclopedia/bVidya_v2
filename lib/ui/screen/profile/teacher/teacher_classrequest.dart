@@ -1,17 +1,19 @@
 // import 'package:flutter/material.dart';
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/core/utils/chat_utils.dart';
-// import 'package:path/path.dart';
+import '/data/models/models.dart';
+import '/controller/profile_providers.dart';
+import '/core/utils/chat_utils.dart';
+// import '/data/models/response/profile/scheduled_class_instructor_model.dart';
+import 'package:intl/intl.dart';
 
-import '../../../widget/sliding_tab.dart';
+import '/ui/widget/sliding_tab.dart';
 import '/core/constants/route_list.dart';
 import '/controller/bmeet_providers.dart';
 import '/core/state.dart';
 import '/ui/screen/blearn/components/common.dart';
 import '/ui/widget/shimmer_tile.dart';
 
-import '/data/models/response/bmeet/class_request_response.dart';
 import '../base_settings_noscroll.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
@@ -31,10 +33,10 @@ class TeacherClasses extends StatelessWidget {
     return BaseNoScrollSettings(
         showName: false,
         bodyContent: Padding(
-          padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 5.h),
+          padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h),
           child: Consumer(builder: (context, ref, child) {
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
                   padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
@@ -47,73 +49,248 @@ class TeacherClasses extends StatelessWidget {
                     },
                   ),
                 ),
-                Text(
-                  S.current.tp_classes,
-                  style: TextStyle(
-                      fontFamily: kFontFamily,
-                      color: AppColors.primaryColor,
-                      fontSize: 5.5.w,
-                      fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 1.h),
-                Expanded(
-                  child: Consumer(builder: (context, ref, child) {
-                    return ref.watch(bmeetClassesProvider).when(
-                      data: (data) {
-                        if (data == null) {
-                          return buildEmptyPlaceHolder(
-                              S.current.empty_class_request);
-                        }
-                        if (data.personalClasses?.isEmpty ?? false) {
-                          return buildEmptyPlaceHolder(
-                              S.current.empty_class_request);
-                        }
-
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: data.personalClasses?.length ?? 0,
-                          scrollDirection: Axis.vertical,
-                          separatorBuilder: (context, index) =>
-                              const Divider(color: AppColors.divider),
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context,
-                                    RouteList.teacherRequestedClassDetail,
-                                    arguments: data.personalClasses?[index] ??
-                                        PersonalClass());
-                              },
-                              child: _buildRequestRow(
-                                  context,
-                                  data.personalClasses?[index] ??
-                                      PersonalClass()),
-                            );
-                          },
-                        );
-                      },
-                      error: (error, stackTrace) {
-                        return buildEmptyPlaceHolder("Error");
-                      },
-                      loading: () {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: 20,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 1.h),
-                              child: CustomizableShimmerTile(
-                                  height: 20.w, width: 100.w),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  }),
-                )
+                ref.watch(teacherClassesTabProvider) == 0
+                    ? scheduledClassWidget()
+                    : classRequestWidget()
               ],
             );
           }),
         ));
+  }
+
+  Widget scheduledClassWidget() {
+    return Expanded(
+        child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.w),
+      child: Consumer(builder: (context, ref, child) {
+        return ref.watch(scheduledClassesAsInstructor).when(
+          data: (data) {
+            if (data == null) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            }
+            return scheduledClasseslist(data.scheduledClasses ?? [], context);
+          },
+          error: (error, stackTrace) {
+            return buildEmptyPlaceHolder(S.current.error);
+          },
+          loading: () {
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: 20,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.h),
+                  child: CustomizableShimmerTile(height: 30.w, width: 100.w),
+                );
+              },
+            );
+          },
+        );
+      }),
+    ));
+  }
+
+  Widget classRequestWidget() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // SizedBox(
+          //   height: 2.w,
+          // ),
+          // Text(
+          //   S.current.tp_classes,
+          //   style: TextStyle(
+          //       fontFamily: kFontFamily,
+          //       color: AppColors.primaryColor,
+          //       fontSize: 5.5.w,
+          //       fontWeight: FontWeight.w500),
+          // ),
+          SizedBox(height: 1.h),
+          Expanded(
+            child: Consumer(builder: (context, ref, child) {
+              return ref.watch(bmeetClassesProvider).when(
+                data: (data) {
+                  if (data == null) {
+                    return buildEmptyPlaceHolder(S.current.empty_class_request);
+                  }
+                  if (data.personalClasses?.isEmpty ?? false) {
+                    return buildEmptyPlaceHolder(S.current.empty_class_request);
+                  }
+
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: data.personalClasses?.length ?? 0,
+                    scrollDirection: Axis.vertical,
+                    physics: const BouncingScrollPhysics(),
+                    separatorBuilder: (context, index) =>
+                        const Divider(color: AppColors.divider),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteList.teacherRequestedClassDetail,
+                              arguments: data.personalClasses?[index] ??
+                                  PersonalClass());
+                        },
+                        child: _buildRequestRow(context,
+                            data.personalClasses?[index] ?? PersonalClass()),
+                      );
+                    },
+                  );
+                },
+                error: (error, stackTrace) {
+                  return buildEmptyPlaceHolder("Error");
+                },
+                loading: () {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 20,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 1.h),
+                        child:
+                            CustomizableShimmerTile(height: 20.w, width: 100.w),
+                      );
+                    },
+                  );
+                },
+              );
+            }),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget scheduledClasseslist(
+      List<InstructorScheduledClass> scheduledRequests, BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      itemCount: scheduledRequests.length,
+      itemBuilder: (context, index) {
+        return scheduledClassRow(scheduledRequests[index], context);
+      },
+    );
+  }
+
+  Widget scheduledClassRow(
+      InstructorScheduledClass scheduledClass, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2.w),
+      child: Container(
+        decoration: BoxDecoration(
+            color: AppColors.cardBackground,
+            borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat("MMMM \n d")
+                      .format(scheduledClass.scheduledAt ?? DateTime.now()),
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(fontWeight: FontWeight.w800, fontSize: 3.5.w),
+                ),
+                SizedBox(
+                  width: 4.w,
+                ),
+                SizedBox(
+                  width: 40.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        scheduledClass.title ?? "",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 4.5.w),
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: AppColors.iconGreyColor,
+                            size: 3.w,
+                          ),
+                          Text(
+                            scheduledClass.participants?.length.toString() ??
+                                "",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                          SizedBox(width: 2.w),
+                          Icon(
+                            Icons.notes,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          SizedBox(width: 1.w),
+                          Text(
+                            scheduledClass.type ?? "",
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 2.w,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.timer,
+                            size: 3.w,
+                            color: AppColors.iconGreyColor,
+                          ),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                            DateFormat('hh:mm a').format(
+                                scheduledClass.scheduledAt ?? DateTime.now()),
+                            style: TextStyle(
+                                fontSize: 3.w, color: AppColors.iconGreyColor),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            InkWell(
+              onTap: () {
+                // Navigator.pushNamed(
+                //               context, RouteList.teacherRequestedClassDetail,
+                //               arguments: data.personalClasses?[index] ??
+                //                   PersonalClass());
+                Navigator.pushNamed(context, RouteList.classScheduledDetail,
+                    arguments: scheduledClass);
+              },
+              child: CircleAvatar(
+                backgroundColor: AppColors.yellowAccent,
+                radius: 5.w,
+                child: Icon(
+                  Icons.adaptive.arrow_forward,
+                  size: 5.w,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildRequestRow(BuildContext context, PersonalClass data) {

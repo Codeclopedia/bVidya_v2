@@ -1,4 +1,4 @@
-import 'package:bvidya/data/models/response/profile/schduled_classes_model.dart';
+import '/data/models/response/profile/schduled_classes_model.dart';
 import 'package:collection/collection.dart';
 
 import '../data/models/response/profile/scheduled_class_instructor_model.dart';
@@ -52,16 +52,56 @@ final requestedClassesProvider =
   return ref.read(profileRepositoryProvider).requestedClassList();
 });
 
+// final scheduledClassesAsStudent =
+//     FutureProvider.autoDispose<ScheduledClassBody?>(
+//   (ref) {
+//     return ref.read(profileRepositoryProvider).getschduledClassesAsStudent();
+//   },
+// );
+
+// final scheduledClassesAsInstructor =
+//     FutureProvider.autoDispose<ScheduledClassInstructorBody?>(
+//   (ref) {
+//     return ref.read(profileRepositoryProvider).getschduledClassesAsInstructor();
+//   },
+// );
+
 final scheduledClassesAsStudent =
-    FutureProvider.autoDispose<ScheduledClassBody?>(
+    FutureProvider.autoDispose<StudentScheduledClassBody?>(
   (ref) {
     return ref.read(profileRepositoryProvider).getschduledClassesAsStudent();
   },
 );
 
 final scheduledClassesAsInstructor =
-    FutureProvider.autoDispose<ScheduledClassInstructorBody?>(
+    FutureProvider.autoDispose<InstructorScheduledClassBody?>(
   (ref) {
     return ref.read(profileRepositoryProvider).getschduledClassesAsInstructor();
+  },
+);
+
+final subscriptionPlansProvider =
+    FutureProvider.autoDispose<SubscriptionPlansBody?>((ref) {
+  return ref.read(profileRepositoryProvider).getSubscriptionPlans();
+});
+
+final paymentIdProvider =
+    FutureProvider.autoDispose.family<Future<PaymentDetailBody?>, String>(
+  (ref, planId) {
+    return ref.read(profileRepositoryProvider).getpaymentId(planId);
+  },
+);
+
+final creditHistoryProvider = FutureProvider.autoDispose<CreditDetailBody?>(
+  (ref) {
+    return ref.read(profileRepositoryProvider).getCreditsHistory();
+  },
+);
+
+final paymentSuccessProvider =
+    FutureProvider.autoDispose.family<Future<PaymentSuccessBody>?, Map>(
+  (ref, data) {
+    return ref.read(profileRepositoryProvider).getpaymentSuccessResponse(
+        data['orderId'], data['paymentId'], data['signature']);
   },
 );

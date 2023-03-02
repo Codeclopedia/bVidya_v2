@@ -3,9 +3,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/app.dart';
-import 'package:bvidya/core/ui_core.dart';
-import 'package:bvidya/ui/base_back_screen.dart';
+import '/app.dart';
+import '/core/ui_core.dart';
+import '/ui/base_back_screen.dart';
 
 import 'package:clipboard/clipboard.dart';
 // import 'package:flutter/services.dart';

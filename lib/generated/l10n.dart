@@ -2730,6 +2730,186 @@ class S {
     );
   }
 
+  /// `No Requested Class`
+  String get t_no_requested_class_title {
+    return Intl.message(
+      'No Requested Class',
+      name: 't_no_requested_class_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Schedule Class`
+  String get s_no_schedule_class {
+    return Intl.message(
+      'No Schedule Class',
+      name: 's_no_schedule_class',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Timing`
+  String get Class_timing_title {
+    return Intl.message(
+      'Class Timing',
+      name: 'Class_timing_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Scheduled by`
+  String get class_Scheduled_title {
+    return Intl.message(
+      'Class Scheduled by',
+      name: 'class_Scheduled_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participants`
+  String get class_participants_title {
+    return Intl.message(
+      'Participants',
+      name: 'class_participants_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription`
+  String get profile_subscription {
+    return Intl.message(
+      'Subscription',
+      name: 'profile_subscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Subscription`
+  String get Select_subscription_title {
+    return Intl.message(
+      'Select Subscription',
+      name: 'Select_subscription_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Plan`
+  String get add_plan_title {
+    return Intl.message(
+      'Add Plan',
+      name: 'add_plan_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Credit`
+  String get credits_title {
+    return Intl.message(
+      'Credit',
+      name: 'credits_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Subscription`
+  String get active_plan_title {
+    return Intl.message(
+      'Active Subscription',
+      name: 'active_plan_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The bCoin balance shows the number of coins available for you under the plan you have choosen. You can use these coins to subscribe to 3 different courses of your choice.`
+  String get credit_description {
+    return Intl.message(
+      'The bCoin balance shows the number of coins available for you under the plan you have choosen. You can use these coins to subscribe to 3 different courses of your choice.',
+      name: 'credit_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something went wrong! Try again /n /n Please contact our support team if money has been deducted from your account as course payment and is not being reflected.`
+  String get transaction_error {
+    return Intl.message(
+      'Something went wrong! Try again /n /n Please contact our support team if money has been deducted from your account as course payment and is not being reflected.',
+      name: 'transaction_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total (Incl taxes)`
+  String get total_incltax_title {
+    return Intl.message(
+      'Total (Incl taxes)',
+      name: 'total_incltax_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Transaction History`
+  String get transaction_title {
+    return Intl.message(
+      'Transaction History',
+      name: 'transaction_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Transaction History`
+  String get no_transaction_title {
+    return Intl.message(
+      'No Transaction History',
+      name: 'no_transaction_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By Completing your purchase you agree to these`
+  String get subscription_term_condition_title_part1 {
+    return Intl.message(
+      'By Completing your purchase you agree to these',
+      name: 'subscription_term_condition_title_part1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` terms of service.`
+  String get subscription_term_condition_title_part2 {
+    return Intl.message(
+      ' terms of service.',
+      name: 'subscription_term_condition_title_part2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Plan`
+  String get get_plan_title {
+    return Intl.message(
+      'Get Plan',
+      name: 'get_plan_title',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `New Group`
   String get groups_create_title {
     return Intl.message(

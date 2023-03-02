@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:any_link_preview/any_link_preview.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/core/utils.dart';
-import 'package:bvidya/core/utils/save_locally.dart';
+import '/core/state.dart';
+import '/core/utils.dart';
+import '/core/utils/save_locally.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';

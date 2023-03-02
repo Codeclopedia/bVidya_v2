@@ -44,6 +44,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Yes, Backup the chat"),
         "ChatBackupMessage": MessageLookupByLibrary.simpleMessage(
             "Do you want Backup the chat?"),
+        "Class_timing_title":
+            MessageLookupByLibrary.simpleMessage("Class Timing"),
         "ClearChatConfirm":
             MessageLookupByLibrary.simpleMessage("Yes, Clear chats"),
         "ClearChatMessage": MessageLookupByLibrary.simpleMessage(
@@ -55,7 +57,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select a problem type"),
         "Requested_time_Note": MessageLookupByLibrary.simpleMessage(
             "Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence."),
+        "Select_subscription_title":
+            MessageLookupByLibrary.simpleMessage("Select Subscription"),
         "accnt_security": MessageLookupByLibrary.simpleMessage("Security"),
+        "active_plan_title":
+            MessageLookupByLibrary.simpleMessage("Active Subscription"),
+        "add_plan_title": MessageLookupByLibrary.simpleMessage("Add Plan"),
         "atc_audio": MessageLookupByLibrary.simpleMessage("Audio"),
         "atc_audio_desc": MessageLookupByLibrary.simpleMessage("Share audios"),
         "atc_camera": MessageLookupByLibrary.simpleMessage("Camera"),
@@ -313,6 +320,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_missed_call_video": m3,
         "chat_replying": m4,
         "chat_yourself": MessageLookupByLibrary.simpleMessage("Yourself"),
+        "class_Scheduled_title":
+            MessageLookupByLibrary.simpleMessage("Class Scheduled by"),
+        "class_participants_title":
+            MessageLookupByLibrary.simpleMessage("Participants"),
         "class_request_title":
             MessageLookupByLibrary.simpleMessage("Class Requested to"),
         "class_requested_title":
@@ -356,6 +367,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "Stock Market Trading: \nThe Complete Technical \nCourses"),
         "course_work": MessageLookupByLibrary.simpleMessage(
             "Worked at BHARAT CHEMISTRY\nCLASSES"),
+        "credit_description": MessageLookupByLibrary.simpleMessage(
+            "The bCoin balance shows the number of coins available for you under the plan you have choosen. You can use these coins to subscribe to 3 different courses of your choice."),
+        "credits_title": MessageLookupByLibrary.simpleMessage("Credit"),
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
             MessageLookupByLibrary.simpleMessage("Delete your Account"),
@@ -415,6 +429,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Invalid Email Address"),
         "fp_header_title":
             MessageLookupByLibrary.simpleMessage("Forgot Password"),
+        "get_plan_title": MessageLookupByLibrary.simpleMessage("Get Plan"),
         "groupDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block group notifications"),
         "group_empty_no_contacts":
@@ -497,6 +512,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "menu_delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "messDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block message notifications"),
+        "no_transaction_title":
+            MessageLookupByLibrary.simpleMessage("No Transaction History"),
         "notiHistory": MessageLookupByLibrary.simpleMessage(
             "Sound ,notifications & others"),
         "noti_call": MessageLookupByLibrary.simpleMessage("Call"),
@@ -576,6 +593,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Invite a Friend"),
         "profile_learning": MessageLookupByLibrary.simpleMessage("My Learning"),
         "profile_logout": MessageLookupByLibrary.simpleMessage("Logout"),
+        "profile_subscription":
+            MessageLookupByLibrary.simpleMessage("Subscription"),
         "profile_title": MessageLookupByLibrary.simpleMessage("Profile"),
         "recent_call_no_calls":
             MessageLookupByLibrary.simpleMessage("No Calls"),
@@ -614,6 +633,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetPassDesc":
             MessageLookupByLibrary.simpleMessage("Reset your Password"),
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "s_no_schedule_class":
+            MessageLookupByLibrary.simpleMessage("No Schedule Class"),
         "search_contact_ppl": MessageLookupByLibrary.simpleMessage("People"),
         "secrityDesc":
             MessageLookupByLibrary.simpleMessage("End-to-End encrypted"),
@@ -683,7 +704,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "sp_tab_followed":
             MessageLookupByLibrary.simpleMessage("Teacher Followed"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
+        "subscription_term_condition_title_part1":
+            MessageLookupByLibrary.simpleMessage(
+                "By Completing your purchase you agree to these"),
+        "subscription_term_condition_title_part2":
+            MessageLookupByLibrary.simpleMessage(" terms of service."),
         "sureDlt": MessageLookupByLibrary.simpleMessage("Sure, want to delete"),
+        "t_no_requested_class_title":
+            MessageLookupByLibrary.simpleMessage("No Requested Class"),
         "t_request_class_description_invalid":
             MessageLookupByLibrary.simpleMessage(
                 "Class Request description must contains at least 5 characters"),
@@ -746,6 +774,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "termsDesc":
             MessageLookupByLibrary.simpleMessage("Terms and Conditions"),
         "terms_title": MessageLookupByLibrary.simpleMessage("Terms of Use"),
+        "total_incltax_title":
+            MessageLookupByLibrary.simpleMessage("Total (Incl taxes)"),
         "tp_classes": MessageLookupByLibrary.simpleMessage("Class Requests"),
         "tp_dashboard": MessageLookupByLibrary.simpleMessage("My Dashboard"),
         "tp_schedule": MessageLookupByLibrary.simpleMessage("My Schedule"),
@@ -756,6 +786,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("What language do you know?"),
         "tpe_worked": MessageLookupByLibrary.simpleMessage("Worked At"),
         "tpe_worked_hint": MessageLookupByLibrary.simpleMessage(
-            "What was the name of our previous Organzation?")
+            "What was the name of our previous Organzation?"),
+        "transaction_error": MessageLookupByLibrary.simpleMessage(
+            "Something went wrong! Try again /n /n Please contact our support team if money has been deducted from your account as course payment and is not being reflected."),
+        "transaction_title":
+            MessageLookupByLibrary.simpleMessage("Transaction History")
       };
 }

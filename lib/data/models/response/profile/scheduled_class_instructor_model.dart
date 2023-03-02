@@ -4,23 +4,23 @@
 
 import 'dart:convert';
 
-class SchduledClassesInstructorModel {
-  SchduledClassesInstructorModel({
+class InstructorScheduledClasses {
+  InstructorScheduledClasses({
     this.body,
     this.status,
   });
 
-  ScheduledClassInstructorBody? body;
+  InstructorScheduledClassBody? body;
   String? status;
 
-  factory SchduledClassesInstructorModel.fromRawJson(String str) =>
-      SchduledClassesInstructorModel.fromJson(json.decode(str));
+  factory InstructorScheduledClasses.fromRawJson(String str) =>
+      InstructorScheduledClasses.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory SchduledClassesInstructorModel.fromJson(Map<String, dynamic> json) =>
-      SchduledClassesInstructorModel(
-        body: ScheduledClassInstructorBody.fromJson(json["body"]),
+  factory InstructorScheduledClasses.fromJson(Map<String, dynamic> json) =>
+      InstructorScheduledClasses(
+        body: InstructorScheduledClassBody.fromJson(json["body"]),
         status: json["status"],
       );
 
@@ -30,23 +30,23 @@ class SchduledClassesInstructorModel {
       };
 }
 
-class ScheduledClassInstructorBody {
-  ScheduledClassInstructorBody({
+class InstructorScheduledClassBody {
+  InstructorScheduledClassBody({
     this.scheduledClasses,
   });
 
-  List<ScheduledClassInstructor>? scheduledClasses;
+  List<InstructorScheduledClass>? scheduledClasses;
 
-  factory ScheduledClassInstructorBody.fromRawJson(String str) =>
-      ScheduledClassInstructorBody.fromJson(json.decode(str));
+  factory InstructorScheduledClassBody.fromRawJson(String str) =>
+      InstructorScheduledClassBody.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory ScheduledClassInstructorBody.fromJson(Map<String, dynamic> json) =>
-      ScheduledClassInstructorBody(
-        scheduledClasses: List<ScheduledClassInstructor>.from(
+  factory InstructorScheduledClassBody.fromJson(Map<String, dynamic> json) =>
+      InstructorScheduledClassBody(
+        scheduledClasses: List<InstructorScheduledClass>.from(
             json["scheduled_classes"]
-                .map((x) => ScheduledClassInstructor.fromJson(x))),
+                .map((x) => InstructorScheduledClass.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -55,8 +55,8 @@ class ScheduledClassInstructorBody {
       };
 }
 
-class ScheduledClassInstructor {
-  ScheduledClassInstructor({
+class InstructorScheduledClass {
+  InstructorScheduledClass({
     this.id,
     this.instructorId,
     this.meetingId,
@@ -78,15 +78,15 @@ class ScheduledClassInstructor {
   DateTime? scheduledAt;
   DateTime? createdAt;
   DateTime? updatedAt;
-  List<ParticipantInstructorModel>? participants;
+  List<ScheduledClassParticipantDetail>? participants;
 
-  factory ScheduledClassInstructor.fromRawJson(String str) =>
-      ScheduledClassInstructor.fromJson(json.decode(str));
+  factory InstructorScheduledClass.fromRawJson(String str) =>
+      InstructorScheduledClass.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory ScheduledClassInstructor.fromJson(Map<String, dynamic> json) =>
-      ScheduledClassInstructor(
+  factory InstructorScheduledClass.fromJson(Map<String, dynamic> json) =>
+      InstructorScheduledClass(
         id: json["id"],
         instructorId: json["instructor_id"],
         meetingId: json["meeting_id"],
@@ -96,8 +96,9 @@ class ScheduledClassInstructor {
         scheduledAt: DateTime.parse(json["scheduled_at"]),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        participants: List<ParticipantInstructorModel>.from(json["participants"]
-            .map((x) => ParticipantInstructorModel.fromJson(x))),
+        participants: List<ScheduledClassParticipantDetail>.from(
+            json["participants"]
+                .map((x) => ScheduledClassParticipantDetail.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -115,8 +116,8 @@ class ScheduledClassInstructor {
       };
 }
 
-class ParticipantInstructorModel {
-  ParticipantInstructorModel({
+class ScheduledClassParticipantDetail {
+  ScheduledClassParticipantDetail({
     this.id,
     this.userId,
     this.instructorId,
@@ -147,18 +148,18 @@ class ParticipantInstructorModel {
   DateTime? preferredDateTime;
   DateTime? createdAt;
   DateTime? updatedAt;
-  Instructor? user;
+  UserDetails? user;
   RImage? userImage;
-  Instructor? instructor;
+  UserDetails? instructor;
   RImage? instructorImage;
 
-  factory ParticipantInstructorModel.fromRawJson(String str) =>
-      ParticipantInstructorModel.fromJson(json.decode(str));
+  factory ScheduledClassParticipantDetail.fromRawJson(String str) =>
+      ScheduledClassParticipantDetail.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory ParticipantInstructorModel.fromJson(Map<String, dynamic> json) =>
-      ParticipantInstructorModel(
+  factory ScheduledClassParticipantDetail.fromJson(Map<String, dynamic> json) =>
+      ScheduledClassParticipantDetail(
         id: json["id"],
         userId: json["user_id"],
         instructorId: json["instructor_id"],
@@ -171,9 +172,9 @@ class ParticipantInstructorModel {
         preferredDateTime: DateTime.parse(json["preferred_date_time"]),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        user: Instructor.fromJson(json["user"]),
+        user: UserDetails.fromJson(json["user"]),
         userImage: RImage.fromJson(json["user_image"]),
-        instructor: Instructor.fromJson(json["instructor"]),
+        instructor: UserDetails.fromJson(json["instructor"]),
         instructorImage: RImage.fromJson(json["instructor_image"]),
       );
 
@@ -197,8 +198,8 @@ class ParticipantInstructorModel {
       };
 }
 
-class Instructor {
-  Instructor({
+class UserDetails {
+  UserDetails({
     this.name,
     this.id,
   });
@@ -206,12 +207,12 @@ class Instructor {
   String? name;
   int? id;
 
-  factory Instructor.fromRawJson(String str) =>
-      Instructor.fromJson(json.decode(str));
+  factory UserDetails.fromRawJson(String str) =>
+      UserDetails.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Instructor.fromJson(Map<String, dynamic> json) => Instructor(
+  factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
         name: json["name"],
         id: json["id"],
       );

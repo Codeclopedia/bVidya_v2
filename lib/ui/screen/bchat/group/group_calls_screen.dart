@@ -1,5 +1,5 @@
-import 'package:bvidya/core/helpers/group_call_helper.dart';
-import 'package:bvidya/core/utils/date_utils.dart';
+import '/core/helpers/group_call_helper.dart';
+import '/core/utils/date_utils.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 
 import '/ui/screen/blearn/components/common.dart';

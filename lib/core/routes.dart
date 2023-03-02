@@ -222,6 +222,16 @@ class Routes {
         }
         break;
 
+      case RouteList.classScheduledDetail:
+        if (settings.arguments is InstructorScheduledClass) {
+          InstructorScheduledClass scheduledClassData =
+              settings.arguments as InstructorScheduledClass;
+          screen =
+              ScheduledClassDetailScreen(scheduledClass: scheduledClassData);
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
       case RouteList.groupCallScreenReceive:
         if (settings.arguments is Map) {
           Map args = settings.arguments as Map<String, dynamic>;
@@ -630,6 +640,14 @@ class Routes {
         } else {
           screen = _parameterMissing();
         }
+        break;
+
+      case RouteList.subscriptionPlans:
+        screen = const SubscriptionPlans();
+        break;
+      case RouteList.subscriptionDetail:
+        screen = const SubscriptionDetail();
+
         break;
 
       case RouteList.teacherSchedule:

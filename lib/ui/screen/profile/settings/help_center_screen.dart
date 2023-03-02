@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import '/core/utils.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 
@@ -34,11 +37,16 @@ class HelpCenterScreen extends StatelessWidget {
             //   //       builder: (context) => const ContactUsScreen()),
             //   // );
             // }),
+
             getTwoRowSettingItem(
                 S.current.faq_title, S.current.faqDesc, "help_question.svg",
-                () {
+                () async {
+              final user = await getMeAsUser();
+
               Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://www.bvidya.com/faqs.php",
+                'url': user?.role == "instructor" || user?.role == "teacher"
+                    ? "https://site.bvidya.com/app-faqs"
+                    : "https://site.bvidya.com/app-faq-learner",
               });
               // Navigator.push(
               //   context,
@@ -52,14 +60,14 @@ class HelpCenterScreen extends StatelessWidget {
             getTwoRowSettingItem(S.current.privacy_title, S.current.privacyDesc,
                 "help_privacy.svg", () {
               Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://www.bvidya.com/privacy.php",
+                'url': "https://site.bvidya.com/app-privacy",
               });
             }),
             getTwoRowSettingItem(
                 S.current.terms_title, S.current.termsDesc, "help_terms.svg",
                 () {
               Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://www.bvidya.com/term.php",
+                'url': "https://site.bvidya.com/app-tc",
               });
             }),
             Container(

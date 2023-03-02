@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bvidya/core/ui_core.dart';
+import '/core/ui_core.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';

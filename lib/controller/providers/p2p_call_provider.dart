@@ -2,8 +2,8 @@ import 'dart:async';
 // import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:bvidya/app.dart';
-import 'package:bvidya/data/models/call_message_body.dart';
+import '/app.dart';
+import '/data/models/call_message_body.dart';
 
 // import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';

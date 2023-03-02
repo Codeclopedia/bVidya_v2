@@ -327,6 +327,32 @@
   "t_request_class_empty_description":"Class Request description type can't be empty",
   "t_request_class_description_invalid":"Class Request description must contains at least 5 characters",
 
+  "t_no_requested_class_title": "No Requested Class",
+
+
+  "s_no_schedule_class":"No Schedule Class",  
+  "Class_timing_title":"Class Timing",
+  "class_Scheduled_title":"Class Scheduled by",
+  "class_participants_title": "Participants",
+  
+  "profile_subscription":"Subscription",
+  "Select_subscription_title": "Select Subscription",
+  "add_plan_title":"Add Plan",
+  "credits_title":"Credit",
+  "active_plan_title":"Active Subscription",
+  "credit_description":"The bCoin balance shows the number of coins available for you under the plan you have choosen. You can use these coins to subscribe to 3 different courses of your choice.",
+  
+  "transaction_error":"Something went wrong! Try again /n /n Please contact our support team if money has been deducted from your account as course payment and is not being reflected.",
+  
+  "total_incltax_title":"Total (Incl taxes)",
+  "transaction_title":"Transaction History",
+  "no_transaction_title":"No Transaction History",
+  "subscription_term_condition_title_part1":"By Completing your purchase you agree to these",
+  "subscription_term_condition_title_part2":" terms of service.",
+  "get_plan_title":"Get Plan",
+  
+  
+  
 
   "groups_create_title":"New Group",
   "groups_create_edit_title":"Edit Group",
