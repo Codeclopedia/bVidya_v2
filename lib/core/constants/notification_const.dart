@@ -10,4 +10,6 @@ class NotiConstants {
 
   static const String typeGroupChat = 'group_chat';
   static const String typeChat = 'chat';
+  static const String typeContact = 'contact';
+  static const String typeGroupMemberUpdate = 'group_member';
 }

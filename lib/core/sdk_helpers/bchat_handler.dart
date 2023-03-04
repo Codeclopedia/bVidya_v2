@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../utils/request_utils.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/sdk_helpers/typing_helper.dart';
@@ -8,10 +9,10 @@ import '/data/models/models.dart';
 import '/core/constants/agora_config.dart';
 
 import '../state.dart';
-import '/core/utils/notification_controller.dart';
+// import '/core/utils/notification_controller.dart';
 
-String? lastUserId;
-String? lastAction;
+// String? lastUserId;
+// String? lastAction;
 
 registerForContact(String key, WidgetRef? ref) {
   try {
@@ -29,11 +30,11 @@ registerForContact(String key, WidgetRef? ref) {
         onContactInvited: (userId, reason) async {
           //
           if (AgoraConfig.autoAcceptContact) {
-            if (lastUserId == userId && lastAction == 'Add') {
-              return;
-            }
-            lastUserId = userId;
-            lastAction = 'Add';
+            // if (lastUserId == userId && lastAction == 'Add') {
+            //   return;
+            // }
+            // lastUserId = userId;
+            // lastAction = 'Add';
             // print('Added: $userId ');
             if (ref != null) {
               await addNewContactById(int.parse(userId), ref);
@@ -45,13 +46,14 @@ registerForContact(String key, WidgetRef? ref) {
 
             return;
           }
+          ContactRequestHelper.addNewRequest(userId);
 
-          if (lastUserId == userId && lastAction == 'Invite') {
-            return;
-          }
+          // if (lastUserId == userId && lastAction == 'Invite') {
+          //   return;
+          // }
           // print('Invited: $userId - $reason');
-          lastUserId = userId;
-          lastAction = 'Invite';
+          // lastUserId = userId;
+          // lastAction = 'Invite';
 
           // EasyLoading.showInfo('Invited: $userId - $reason');
           // NotificationController.showContactInviteNotification(
@@ -59,11 +61,11 @@ registerForContact(String key, WidgetRef? ref) {
         },
         onContactAdded: (userId) async {
           //
-          if (lastUserId == userId && lastAction == 'Add') {
-            return;
-          }
-          lastUserId = userId;
-          lastAction = 'Add';
+          // if (lastUserId == userId && lastAction == 'Add') {
+          //   return;
+          // }
+          // lastUserId = userId;
+          // lastAction = 'Add';
           // print('Added: $userId ');
           Contacts? result;
           if (ref != null) {
@@ -75,22 +77,25 @@ registerForContact(String key, WidgetRef? ref) {
           if (AgoraConfig.autoAcceptContact) {
             return;
           }
-          if (result != null) {
-            NotificationController.showContactActionNotification(
-                userId, 'bVidya', 'New Contact ${result.name} added');
-          } else {
-            // NotificationController.showContactActionNotification(
-            //     userId, 'bVidya', 'New Contact added');
-          }
+          ContactRequestHelper.removeFromList(userId);
+          ContactRequestHelper.removeFromSendList(userId);
+          // if (result != null) {
+          //   NotificationController.showContactActionNotification(
+          //       userId, 'bVidya', 'New Contact ${result.name} added');
+          // } else {
+          //   // NotificationController.showContactActionNotification(
+          //   //     userId, 'bVidya', 'New Contact added');
+          // }
           // EasyLoading.showInfo('Added: $userId ');
         },
         onContactDeleted: (userId) async {
           //
-          if (lastUserId == userId && lastAction == 'Deleted') {
-            return;
-          }
-          lastUserId = userId;
-          lastAction = 'Deleted';
+          // if (lastUserId == userId && lastAction == 'Deleted') {
+          //   return;
+          // }
+
+          // lastUserId = userId;
+          // lastAction = 'Deleted';
           // print('Deleted: $userId ');
           Contacts? result;
           if (ref != null) {
@@ -100,13 +105,13 @@ registerForContact(String key, WidgetRef? ref) {
           // final result = await ref
           //     ?.read(chatConversationProvider)
           //     .removedContact(int.tryParse(userId) ?? -1);
-          if (result != null) {
-            NotificationController.showContactActionNotification(
-                userId, 'bVidya', 'Contact ${result.name} deleted');
-          } else {
-            // NotificationController.showContactActionNotification(
-            //     userId, 'bVidya', 'Contact deleted');
-          }
+          // if (result != null) {
+          //   NotificationController.showContactActionNotification(
+          //       userId, 'bVidya', 'Contact ${result.name} deleted');
+          // } else {
+          //   // NotificationController.showContactActionNotification(
+          //   //     userId, 'bVidya', 'Contact deleted');
+          // }
           // EasyLoading.showInfo('Deleted: $userId ');
         },
         onFriendRequestAccepted: (userId) {
@@ -114,29 +119,34 @@ registerForContact(String key, WidgetRef? ref) {
           if (AgoraConfig.autoAcceptContact) {
             return;
           }
-          if (lastUserId == userId && lastAction == 'Acceped') {
-            return;
-          }
-          lastUserId = userId;
-          lastAction = 'Acceped';
+          ContactRequestHelper.removeFromSendList(userId);
+          // ContactRequestHelper.removeFromList(userId);
+          // if (lastUserId == userId && lastAction == 'Acceped') {
+          //   return;
+          // }
+          // lastUserId = userId;
+          // lastAction = 'Acceped';
+
           // print('Acceped: $userId ');
           // EasyLoading.showInfo('Acceped: $userId ');
-          NotificationController.showContactActionNotification(
-              userId, 'bVidya', 'Connection request accepted');
+          // NotificationController.showContactActionNotification(
+          //     userId, 'bVidya', 'Connection request accepted');
         },
         onFriendRequestDeclined: (userId) {
           //
           if (AgoraConfig.autoAcceptContact) {
             return;
           }
-          if (lastUserId == userId && lastAction == 'Declined') {
-            return;
-          }
-          lastUserId = userId;
-          lastAction = 'Declined';
+          ContactRequestHelper.removeFromSendList(userId);
+          // if (lastUserId == userId && lastAction == 'Declined') {
+          //   return;
+          // }
+          // lastUserId = userId;
+          // lastAction = 'Declined';
+
           // EasyLoading.showInfo('Declined: $userId ');
-          NotificationController.showContactActionNotification(
-              userId, 'bVidya', 'Connection request declined');
+          // NotificationController.showContactActionNotification(
+          //     userId, 'bVidya', 'Connection request declined');
         },
       ),
     );

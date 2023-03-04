@@ -3,18 +3,18 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import '/ui/base_back_screen.dart';
-import '/core/helpers/foreground_message_helper.dart';
-import '/core/sdk_helpers/bchat_sdk_controller.dart';
-import '/controller/providers/bchat/chat_conversation_list_provider.dart';
-import '/core/sdk_helpers/bchat_handler.dart';
-import '/core/state.dart';
-import '/core/utils.dart';
+import 'core/utils/request_utils.dart';
+import 'ui/base_back_screen.dart';
+import 'core/helpers/foreground_message_helper.dart';
+import 'core/sdk_helpers/bchat_sdk_controller.dart';
+import 'controller/providers/bchat/chat_conversation_list_provider.dart';
+import 'core/sdk_helpers/bchat_handler.dart';
+import 'core/state.dart';
+import 'core/utils.dart';
 
 import 'controller/providers/bchat/groups_conversation_provider.dart';
 import 'controller/providers/user_auth_provider.dart';
@@ -131,7 +131,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }
 
     FirebaseMessaging.onMessage.listen((message) async {
-      // print('onMessage => ${message.data} : ${message.notification}');
+      print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {
@@ -148,6 +148,15 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
         if (action == NotiConstants.actionCallEnd) {
           closeIncomingGroupCall(message);
+        }
+      } else if (message.data['type'] == NotiConstants.typeContact) {
+        final String? act = message.data['action'];
+        final String? fromId = message.data['f'];
+        if (act != null && fromId != null) {
+          ContactAction action = contactActionFrom(act);
+          ContactRequestHelper.handleNotification(
+              message.notification, action, fromId, true,
+              ref: ref);
         }
       }
     });

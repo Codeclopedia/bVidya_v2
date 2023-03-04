@@ -3,25 +3,21 @@
 import 'dart:async';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/constants/agora_config.dart';
+import 'package:bvidya/controller/providers/bchat/contact_list_provider.dart';
+
 import 'package:intl/intl.dart';
 
 import 'package:swipe_to/swipe_to.dart';
-import '/core/sdk_helpers/bchat_call_manager.dart';
-import '/data/models/call_message_body.dart';
-
-import '/ui/widget/chat_reply_body.dart';
-import '/core/helpers/extensions.dart';
-import '/controller/providers/bchat/chat_conversation_list_provider.dart';
-import '/controller/providers/bchat/group_chats_provider.dart';
-import '/core/sdk_helpers/typing_helper.dart';
-import '/core/utils/common.dart';
 
 import '/app.dart';
-import '/data/models/contact_model.dart';
-import '/data/models/conversation_model.dart';
-import '/controller/providers/chat_messagelist_provider.dart';
-import '/controller/providers/bchat/chat_messeges_provider.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/utils/request_utils.dart';
+import '/core/constants/agora_config.dart';
+import '/core/sdk_helpers/bchat_call_manager.dart';
+import '/core/helpers/extensions.dart';
+
+import '/core/sdk_helpers/typing_helper.dart';
+import '/core/utils/common.dart';
 import '/core/utils/chat_utils.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/sdk_helpers/bchat_handler.dart';
@@ -30,12 +26,23 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
+
+import '/data/models/contact_model.dart';
+import '/data/models/conversation_model.dart';
+import '/controller/providers/chat_messagelist_provider.dart';
+import '/controller/providers/bchat/chat_messeges_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/group_chats_provider.dart';
+import '/data/models/call_message_body.dart';
+import '/ui/widget/chat_reply_body.dart';
+
 import 'models/attach_type.dart';
 import 'models/reply_model.dart';
 import 'utils/attach_uihelper.dart';
 import '/ui/dialog/message_menu_popup.dart';
 import 'widgets/chat_message_bubble_ex.dart';
 import 'widgets/typing_indicator.dart';
+
 import '../../base_back_screen.dart';
 import '../../widgets.dart';
 import '../../dialog/forward_dialog.dart';
@@ -114,7 +121,11 @@ class ChatScreen extends HookConsumerWidget {
           topBar: selectedItems.isNotEmpty
               ? _menuBar(context, selectedItems, ref)
               : _topBar(context, ref),
-          body: _chatList(context),
+          body: model.contact.status == ContactStatus.invited
+              ? _buildRequest(context)
+              : model.contact.status == ContactStatus.friend
+                  ? _chatList(context)
+                  : _buildWaiting(),
         ),
       ),
     );
@@ -203,12 +214,150 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
         ),
-        _buildReplyBox(),
-        buildAttachedFile(_buildChatInputBox(),
-            (AttachedFile attFile, WidgetRef ref) async {
-          return await _sendMediaFile(attFile, ref);
-        })
+        //  _buildReplyBox(),
+        // if (model.contact.status == ContactStatus.sentInvite) _buildWaiting(),
+        if (model.contact.status == ContactStatus.friend)
+          buildAttachedFile(_buildChatInputBox(),
+              (AttachedFile attFile, WidgetRef ref) async {
+            return await _sendMediaFile(attFile, ref);
+          })
       ],
+    );
+  }
+
+  Widget _buildRequest(BuildContext context) {
+    return Container(
+      color: const Color(0xFFB0B0B0),
+      height: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Spacer(),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(4.w),
+                topRight: Radius.circular(4.w),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(child: Text('Chat Request', style: textStyleHeading)),
+                SizedBox(height: 1.w),
+                Center(
+                  child: Text('Accept the request to join the chat',
+                      style: textStyleTitle),
+                ),
+                SizedBox(height: 2.w),
+                Consumer(builder: (context, ref, child) {
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 30.w,
+                        child: ElevatedButton(
+                          style: elevatedButtonSecondaryStyle,
+                          onPressed: () async {
+                            await BChatContactManager.sendRequestResponse(
+                                ref,
+                                model.id,
+                                model.contact.fcmToken!,
+                                ContactAction.declineRequest);
+
+                            ref
+                                .read(contactListProvider.notifier)
+                                .removeContact(model.contact.userId);
+                            ref
+                                .read(chatConversationProvider.notifier)
+                                .removeConversation(
+                                    model.contact.userId.toString());
+
+                            if (direct) {
+                              Navigator.pushReplacementNamed(
+                                  context, RouteList.homeDirect);
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: Text('Decline'.toUpperCase()),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      SizedBox(
+                        width: 30.w,
+                        child: ElevatedButton(
+                          style: elevatedButtonStyle,
+                          // style: dialogElevatedButtonStyle,
+                          onPressed: () async {
+                            await BChatContactManager.sendRequestResponse(
+                                ref,
+                                model.id,
+                                model.contact.fcmToken!,
+                                ContactAction.acceptRequest);
+                            final contact = await ref
+                                .read(contactListProvider.notifier)
+                                .addContact(
+                                    model.contact.userId, ContactStatus.friend);
+                            if (contact != null) {
+                              final model = await ref
+                                  .read(chatConversationProvider.notifier)
+                                  .addConversationByContact(contact);
+                              if (model != null) {
+                                await Navigator.pushReplacementNamed(
+                                    context,
+                                    direct
+                                        ? RouteList.chatScreenDirect
+                                        : RouteList.chatScreen,
+                                    arguments: model);
+                              }
+                            }
+                            //     if (direct) {
+                            //   Navigator.pushReplacementNamed(
+                            //       context, RouteList.homeDirect);
+                            // } else {
+                            //   Navigator.pop(context);
+                            // }
+                          },
+                          child: Text('Accept'.toUpperCase()),
+                        ),
+                      )
+                    ],
+                  );
+                })
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWaiting() {
+    return Container(
+      color: const Color(0xFFCCCCCC),
+      height: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+              width: double.infinity,
+              alignment: Alignment.bottomCenter,
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(4.w),
+                  topRight: Radius.circular(4.w),
+                ),
+              ),
+              child: const Text('Waiting for accept request')),
+        ],
+      ),
     );
   }
 

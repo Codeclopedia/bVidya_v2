@@ -5,7 +5,7 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../../dialog/basic_dialog.dart';
 import '../base_settings.dart';
-import 'reset_password_screen.dart';
+// import 'reset_password_screen.dart';
 
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({Key? key}) : super(key: key);

@@ -52,6 +52,10 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
     } catch (e) {
       debugPrint('other error in chats: $e');
     }
+    // Future.delayed(
+    //   const Duration(seconds: 2),
+    //   () => updateMessageList(),
+    // );
     updateMessageList();
   }
 
@@ -212,7 +216,7 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
         i++;
       }
     }
-    state = messages;
+    if (mounted) state = messages;
   }
 
   bool isMissedCall(ChatMessage msg) {

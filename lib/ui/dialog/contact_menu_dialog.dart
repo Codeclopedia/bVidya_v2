@@ -123,7 +123,8 @@ class ContactMenuDialog extends StatelessWidget {
                 'icon_delete_conv.svg',
                 width: 4.w,
               ), () async {
-            await BChatContactManager.deleteContact(userId.toString());
+                
+            // await BChatContactManager.deleteContact(userId.toString());
 
             // await ref.read(chatConversationProvider).removedContact(userId);
 

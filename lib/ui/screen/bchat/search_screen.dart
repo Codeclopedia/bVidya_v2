@@ -1,8 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '/core/constants/agora_config.dart';
+import '/core/utils.dart';
+import '/core/utils/request_utils.dart';
+import '/data/services/fcm_api_service.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
-
-import '../../../controller/providers/bchat/contact_list_provider.dart';
+import '/controller/providers/bchat/contact_list_provider.dart';
 import '/ui/dialog/add_contact_dialog.dart';
 import 'package:collection/collection.dart';
 import '/core/utils/chat_utils.dart';
@@ -131,7 +134,9 @@ class SearchScreen extends StatelessWidget {
             ),
             Consumer(builder: (context, ref, child) {
               final result = ref.watch(searchChatContact);
-              final contacts = ref.watch(contactListProvider);
+              final contacts = ref
+                  .watch(contactListProvider)
+                  .where((element) => element.status == ContactStatus.friend);
               final contactIds = contacts.map((e) => e.userId).toList();
               return result.when(
                   data: ((data) {
@@ -173,7 +178,26 @@ class SearchScreen extends StatelessWidget {
                                   },
                                 );
                               } else if (value == 2) {
-                                await deleteContact(item.userId!, ref);
+                                final Contacts element = contacts.firstWhere(
+                                    (e) => e.userId == item.userId!);
+                                try {
+                                  await BChatContactManager.sendRequestResponse(
+                                      ref,
+                                      element.userId.toString(),
+                                      element.fcmToken!,
+                                      ContactAction.deleteContact);
+                                  ref
+                                      .read(contactListProvider.notifier)
+                                      .removeContact(element.userId);
+                                  ref
+                                      .read(chatConversationProvider.notifier)
+                                      .removeConversation(
+                                          element.userId.toString());
+                                } catch (e) {
+                                  debugPrint(
+                                      'Error in starting new chat of ${item.name}');
+                                }
+                                // await deleteContact(item.userId!, ref);
                                 // ref
                                 //     .read(chatConversationProvider)
                                 //     .removedContact(item.userId!);
@@ -265,7 +289,7 @@ class SearchScreen extends StatelessWidget {
 
     showLoading(ref);
     final result = await BChatContactManager.sendRequestToAddContact(
-        item.userId.toString());
+        item.userId.toString(), input);
 
     if (result == null) {
       AppSnackbar.instance
@@ -274,10 +298,25 @@ class SearchScreen extends StatelessWidget {
               .read(bChatProvider)
               .getContactsByIds(item.userId.toString()) ??
           [];
-      if (contacts.isNotEmpty) {
+      if (contacts.isNotEmpty && AgoraConfig.autoAcceptContact) {
         openChatScreen(context,
             Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
             sendInviateMessage: true, message: input);
+      } else {
+        hideLoading(ref);
+        ref.read(contactListProvider.notifier).addNewContact(
+            Contacts.fromContact(contacts[0], ContactStatus.sentInvite));
+        User? me = await getMeAsUser();
+        if (me != null) {
+          await FCMApiService.instance.pushContactAlert(
+            contacts[0].fcmToken!,
+            me.id.toString(),
+            item.userId.toString(),
+            '${me.name} sent you request',
+            input,
+            ContactAction.sendRequestContact,
+          );
+        }
       }
     } else {
       hideLoading(ref);

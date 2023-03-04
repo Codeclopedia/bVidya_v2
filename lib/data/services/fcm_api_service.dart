@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../core/utils/request_utils.dart';
 import '/data/models/call_message_body.dart';
 import '/firebase_options.dart';
 import 'package:dio/dio.dart';
@@ -183,4 +184,116 @@ class FCMApiService {
       return null;
     }
   }
+
+  Future pushContactAlert(String toToken, String fromId, String toId,
+      String title, String message, ContactAction action) async {
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': [toToken],
+      'type': NotiConstants.typeContact,
+      'content_available': true,
+      'notification': {
+        'title': title,
+        'body': message,
+      },
+      'data': {
+        'type': NotiConstants.typeContact,
+        'action': action.name,
+        'f': fromId,
+        't': toId,
+        'tm': DateTime.now().millisecondsSinceEpoch
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+
+  Future pushContactDeleteAlert(
+    String toToken,
+    String fromId,
+    String toId,
+  ) async {
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': [toToken],
+      'type': NotiConstants.typeContact,
+      'content_available': true,
+      'notification': {},
+      'data': {
+        'type': NotiConstants.typeContact,
+        'action': ContactAction.deleteContact.name,
+        'f': fromId,
+        't': toId,
+        'tm': DateTime.now().millisecondsSinceEpoch
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+
+  Future pushGroupMemberAlert(String toToken, String fromId, String groupId,
+      String title, String message, GroupMemberUpdateAction action) async {
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': [toToken],
+      'type': NotiConstants.typeGroupMemberUpdate,
+      'content_available': true,
+      'notification': {
+        'title': title,
+        'body': message,
+      },
+      'data': {
+        'type': NotiConstants.typeGroupMemberUpdate,
+        'action': action.name,
+        'f': fromId,
+        'g': groupId,
+        'tm': DateTime.now().millisecondsSinceEpoch
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+}
+
+enum GroupMemberUpdateAction {
+  addedMember,
+  leftMember,
+  removeMember,
+  deleteContact;
 }

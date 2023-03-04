@@ -10,7 +10,7 @@ import 'core/constants/notification_const.dart';
 import 'core/state.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
-// import 'core/utils/notification_controller.dart';
+import 'core/utils/request_utils.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 
@@ -76,7 +76,14 @@ Future<void> backgroundHandler(RemoteMessage message) async {
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingGroupCall(message);
       }
-    } else {
+    } else if (message.data['type'] == NotiConstants.typeContact) {
+      final String? act = message.data['action'];
+      final String? fromId = message.data['f'];
+      if (act != null && fromId != null) {
+        ContactAction action = contactActionFrom(act);
+        ContactRequestHelper.handleNotification(
+            message.notification, action, fromId, false);
+      } else {}
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');
       // await BChatSDKController.instance.loginOnlyInBackground();
       // BackgroundHelper.handleRemoteMessageBackground(message);

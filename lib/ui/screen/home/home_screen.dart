@@ -4,13 +4,13 @@ import 'dart:convert';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/utils/chat_utils.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:uuid/uuid.dart';
 
-import '../../../core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/utils/chat_utils.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -21,7 +21,7 @@ import '/core/utils/date_utils.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
-import '/core/sdk_helpers/bchat_handler.dart';
+// import '/core/sdk_helpers/bchat_handler.dart';
 import '../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -125,7 +125,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _addHandler(WidgetRef ref) {
-    registerForContact('home_screen_contact', ref);
+    // registerForContact('home_screen_contact', ref);
     // registerForNewMessage('home_screen_chat', (msgs) {
     //   for (var lastMessage in msgs) {
     //     // print(
@@ -150,7 +150,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _disposeAll() {
     // ref.read(chatConversationProvider.notifier).unRegisterPresence();
-    unregisterForContact('home_screen_contact');
+    // unregisterForContact('home_screen_contact');
     try {
       ChatClient.getInstance.presenceManager
           .removeEventHandler("user_presence_home_screen");
@@ -380,6 +380,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 model.lastMessage == null
@@ -430,22 +431,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                     return const SizedBox.shrink();
                     //return null;
                   },
-                )
-              ]),
-              model.badgeCount > 0
-                  ? CircleAvatar(
-                      radius: 3.w,
-                      backgroundColor: AppColors.contactBadgeUnreadTextColor,
-                      child: Text(
-                        model.badgeCount.toString(),
-                        style: TextStyle(
-                          fontFamily: kFontFamily,
-                          color: Colors.white,
-                          fontSize: 9.sp,
+                ),
+                model.badgeCount > 0
+                    ? CircleAvatar(
+                        radius: 3.w,
+                        backgroundColor: AppColors.contactBadgeUnreadTextColor,
+                        child: Text(
+                          model.badgeCount.toString(),
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.white,
+                            fontSize: 9.sp,
+                          ),
                         ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+                      )
+                    : const SizedBox.shrink(),
+              ]),
             ],
           ),
           SizedBox(width: 2.w),

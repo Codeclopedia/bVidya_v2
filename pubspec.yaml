@@ -75,6 +75,7 @@ dependencies:
   shared_preferences: ^2.0.15
   shared_preferences_android: ^2.0.14
   shimmer: ^2.0.0
+  smart_snackbars: ^1.0.0
   spring: ^2.0.2
   sqflite: ^2.1.0+1
   swipe_to: ^1.0.2

@@ -8,6 +8,7 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 // import '../utils/connectycubekit.dart';
 import '../constants/notification_const.dart';
+import '../utils/request_utils.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/conversation_model.dart';
 
@@ -22,7 +23,6 @@ import '../utils/chat_utils.dart';
 import 'background_helper.dart';
 
 class ForegroundMessageHelper {
-  
   static Future<bool> onMessageOpen(
       RemoteMessage message, BuildContext context) async {
     if (message.data.isNotEmpty &&
@@ -52,6 +52,23 @@ class ForegroundMessageHelper {
                 context, RouteList.groupChatScreenDirect,
                 arguments: model);
             return true;
+          }
+        }
+      }
+    } else {
+      if (message.data['type'] == NotiConstants.typeContact) {
+        final String? act = message.data['action'];
+        final String? fromId = message.data['f'];
+        if (act != null && fromId != null) {
+          ContactAction action = contactActionFrom(act);
+          if (action == ContactAction.acceptRequest) {
+            final model = await getConversationModel(fromId);
+            if (model != null) {
+              await Navigator.pushReplacementNamed(
+                  context, RouteList.chatScreenDirect,
+                  arguments: model);
+              return true;
+            }
           }
         }
       }

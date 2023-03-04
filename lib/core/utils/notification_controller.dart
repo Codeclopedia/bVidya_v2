@@ -1,30 +1,258 @@
 // import 'package:awesome_notifications/awesome_notifications.dart';
 
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:smart_snackbars/enums/animate_from.dart';
+import 'package:smart_snackbars/smart_snackbars.dart';
+// import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-// import '../helpers/background_helper.dart';
-// import '../constants.dart';
-// import '/core/helpers/foreground_message_helper.dart';
-// import '/core/sdk_helpers/bchat_contact_manager.dart';
-// import '/core/utils.dart';
+import '/controller/providers/bchat/contact_list_provider.dart';
+import '/core/utils/request_utils.dart';
+
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '../state.dart';
+import '/data/models/contact_model.dart';
+import '../constants/colors.dart';
+import '../sdk_helpers/bchat_contact_manager.dart';
 import '/app.dart';
-// import '../routes.dart';
 import '../ui_core.dart';
 
 class NotificationController {
   static Future showContactActionNotification(
-      String userId, String title, String content) async {
+      String userId, String title, String content, Color color) async {
     BuildContext? context = navigatorKey.currentContext;
     if (context != null) {
-      showTopSnackBar(
-        Overlay.of(context)!,
-        CustomSnackBar.success(
-          message: content,
+      SmartSnackBars.showTemplatedSnackbar(
+        context: context,
+        backgroundColor: color,
+        animateFrom: AnimateFrom.fromTop,
+        leading: Container(
+          margin: const EdgeInsets.only(right: 10),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withOpacity(0.2),
+          ),
+          child: const Icon(
+            Icons.info_outline,
+            color: Colors.white,
+          ),
+        ),
+        titleWidget: Text(
+          title,
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: kFontFamily,
+            fontWeight: FontWeight.bold,
+            fontSize: 11.sp,
+          ),
+        ),
+        subTitleWidget: Padding(
+          padding: EdgeInsets.only(top: 2.w),
+          child: Text(
+            content,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 8.sp,
+            ),
+          ),
+        ),
+        trailing: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {},
+          child: const Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
         ),
       );
+
+      // showTopSnackBar(
+      //   Overlay.of(context)!,
+      //   CustomSnackBar.success(
+      //     message: content,
+      //   ),
+      // );
       return;
     }
+  }
+
+  static showNewInvitation(String userId, Contacts contact, String title,
+      String content, WidgetRef ref) {
+    BuildContext? context = navigatorKey.currentContext;
+    if (context == null) return;
+
+    SmartSnackBars.showCustomSnackBar(
+      context: context,
+      persist: true,
+      duration: const Duration(milliseconds: 1000),
+      animationCurve: Curves.bounceOut,
+      animateFrom: AnimateFrom.fromTop,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+        decoration: BoxDecoration(
+            color: AppColors.cardWhite,
+            borderRadius: BorderRadius.all(Radius.circular(3.w))),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: textStyleCaption,
+            ),
+            SizedBox(height: 2.w),
+            Text(
+              content,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 8.sp,
+              ),
+            ),
+            SizedBox(height: 2.h),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () {
+                      // localAnimationController?.reverse();
+                    },
+                    child: const Text('Dismiss')),
+                const Spacer(),
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () async {
+                      // await BChatContactManager.acceptRequest(userId);
+                      await BChatContactManager.sendRequestResponse(
+                          ref,
+                          contact.userId.toString(),
+                          contact.fcmToken!,
+                          ContactAction.declineRequest);
+                      ref
+                          .read(contactListProvider.notifier)
+                          .removeContact(contact.userId);
+                      ref
+                          .read(chatConversationProvider.notifier)
+                          .removeConversation(contact.userId.toString());
+
+                      // localAnimationController?.reverse();
+                    },
+                    child: const Text('Decline')),
+                TextButton(
+                    style: textButtonStyle,
+                    onPressed: () async {
+                      // await BChatContactManager.declineRequest(userId);
+                      await BChatContactManager.sendRequestResponse(
+                          ref,
+                          contact.userId.toString(),
+                          contact.fcmToken!,
+                          ContactAction.acceptRequest);
+                      final contacts = await ref
+                          .read(contactListProvider.notifier)
+                          .addContact(contact.userId, ContactStatus.friend);
+                      if (contacts != null) {
+                        await ref
+                            .read(chatConversationProvider.notifier)
+                            .addConversationByContact(contacts);
+                      }
+
+                      // localAnimationController?.reverse();
+                    },
+                    child: const Text('Accept')),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+
+    // AnimationController? localAnimationController;
+    // showTopSnackBar(
+    //   Overlay.of(context)!,
+    // Container(
+    //   margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+    //   padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+    //   decoration: BoxDecoration(
+    //       color: AppColors.cardWhite,
+    //       borderRadius: BorderRadius.all(Radius.circular(3.w))),
+    //   child: Column(
+    //     children: [
+    //       Text(
+    //         'You have received an invitation from ${contact.name}',
+    //         style: textStyleCaption,
+    //       ),
+    //       SizedBox(
+    //         height: 1.h,
+    //       ),
+    //       Row(
+    //         mainAxisSize: MainAxisSize.max,
+    //         children: [
+    //           TextButton(
+    //               style: textButtonStyle,
+    //               onPressed: () {
+    //                 localAnimationController?.reverse();
+    //               },
+    //               child: const Text('Dismiss')),
+    //           const Spacer(),
+    //           TextButton(
+    //               style: textButtonStyle,
+    //               onPressed: () async {
+    //                 // await BChatContactManager.acceptRequest(userId);
+    //                 if (ref != null) {
+    //                   await BChatContactManager.sendRequestResponse(
+    //                       ref,
+    //                       contact.userId.toString(),
+    //                       contact.fcmToken!,
+    //                       ContactAction.declineRequest);
+    //                   ref
+    //                       .read(contactListProvider.notifier)
+    //                       .removeContact(contact.userId);
+    //                   ref
+    //                       .read(chatConversationProvider.notifier)
+    //                       .removeConversation(contact.userId.toString());
+    //                 }
+
+    //                 localAnimationController?.reverse();
+    //               },
+    //               child: const Text('Decline')),
+    //           TextButton(
+    //               style: textButtonStyle,
+    //               onPressed: () async {
+    //                 // await BChatContactManager.declineRequest(userId);
+    //                 if (ref != null) {
+    //                   await BChatContactManager.sendRequestResponse(
+    //                       ref,
+    //                       contact.userId.toString(),
+    //                       contact.fcmToken!,
+    //                       ContactAction.acceptRequest);
+    //                   final contacts = await ref
+    //                       .read(contactListProvider.notifier)
+    //                       .addContact(contact.userId, ContactStatus.friend);
+    //                   if (contacts != null) {
+    //                     await ref
+    //                         .read(chatConversationProvider.notifier)
+    //                         .addConversationByContact(contacts);
+    //                   }
+    //                 }
+
+    //                 localAnimationController?.reverse();
+    //               },
+    //               child: const Text('Accept')),
+    //         ],
+    //       )
+    //     ],
+    //   ),
+    // ),
+    //   persistent: true,
+    //   dismissType: DismissType.onSwipe,
+    //   onAnimationControllerInit: (controller) =>
+    //       localAnimationController = controller,
+    //   // const CustomSnackBar.info(
+    //   //   message: 'You have received an invitation',
+    //   // ),
+    // );
   }
 }
 //   static ReceivedAction? initialAction;
@@ -257,63 +485,6 @@ class NotificationController {
 //     );
 //   }
 
-//   static showNewInvitation(BuildContext context, String userId) {
-//     AnimationController? localAnimationController;
-//     showTopSnackBar(
-//       Overlay.of(context)!,
-//       Container(
-//         margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-//         padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-//         decoration: BoxDecoration(
-//             color: AppColors.cardWhite,
-//             borderRadius: BorderRadius.all(Radius.circular(3.w))),
-//         child: Column(
-//           children: [
-//             Text(
-//               'You have received an invitation',
-//               style: textStyleCaption,
-//             ),
-//             SizedBox(
-//               height: 1.h,
-//             ),
-//             Row(
-//               mainAxisSize: MainAxisSize.max,
-//               children: [
-//                 TextButton(
-//                     style: textButtonStyle,
-//                     onPressed: () {
-//                       localAnimationController?.reverse();
-//                     },
-//                     child: const Text('Dismiss')),
-//                 const Spacer(),
-//                 TextButton(
-//                     style: textButtonStyle,
-//                     onPressed: () async {
-//                       await BChatContactManager.acceptRequest(userId);
-//                       localAnimationController?.reverse();
-//                     },
-//                     child: const Text('Accept')),
-//                 TextButton(
-//                     style: textButtonStyle,
-//                     onPressed: () async {
-//                       await BChatContactManager.declineRequest(userId);
-//                       localAnimationController?.reverse();
-//                     },
-//                     child: const Text('Decline')),
-//               ],
-//             )
-//           ],
-//         ),
-//       ),
-//       persistent: true,
-//       dismissType: DismissType.onSwipe,
-//       onAnimationControllerInit: (controller) =>
-//           localAnimationController = controller,
-//       // const CustomSnackBar.info(
-//       //   message: 'You have received an invitation',
-//       // ),
-//     );
-//   }
 
 //   static Future showContactInviteNotification(
 //       String userId, String content) async {

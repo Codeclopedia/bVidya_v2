@@ -1125,6 +1125,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
+  smart_snackbars:
+    dependency: "direct main"
+    description:
+      name: smart_snackbars
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   source_span:
     dependency: transitive
     description:

@@ -30,15 +30,18 @@ Future<ConversationModel?> addNewContact(
 }
 
 Future<Contacts?> addNewContactById(int contactId, WidgetRef ref) async {
-  return await ref.read(contactListProvider.notifier).addContact(contactId);
+  return await ref
+      .read(contactListProvider.notifier)
+      .addContact(contactId, ContactStatus.friend);
 }
 
 Future<ConversationModel?> onNewChatMessage(
     ChatMessage message, WidgetRef ref) async {
   // int startTime = DateTime.now().millisecondsSinceEpoch;
   int id = int.parse(message.conversationId!);
-  Contacts? contact =
-      await ref.read(contactListProvider.notifier).addContact(id);
+  Contacts? contact = await ref
+      .read(contactListProvider.notifier)
+      .addContact(id, ContactStatus.invited);
   if (contact != null) {
     final model = await ref
         .read(chatConversationProvider.notifier)
@@ -93,7 +96,8 @@ class ChatConversationChangeNotifier
 
               if (model != null) {
                 try {
-                  if (model.conversation?.latestMessage() == null) return;
+                  if (model.conversation?.latestMessage() == null &&
+                      model.contact.status == ContactStatus.friend) return;
                   final lastMessage = await model.conversation!.latestMessage();
                   final newModel = ConversationModel(
                       id: model.id,
@@ -195,7 +199,8 @@ class ChatConversationChangeNotifier
     final model = _chatConversationMap[id];
     if (model != null) {
       try {
-        if (model.conversation?.latestMessage() == null) return;
+        if (model.conversation?.latestMessage() == null &&
+            model.contact.status == ContactStatus.friend) return;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
             id: model.id,
@@ -217,7 +222,8 @@ class ChatConversationChangeNotifier
     final model = _chatConversationMap[id];
     if (model != null) {
       try {
-        if (model.conversation?.latestMessage() == null) return;
+        if (model.conversation?.latestMessage() == null &&
+            model.contact.status == ContactStatus.friend) return;
         final lastMessage = await model.conversation!.latestMessage();
         final contact = model.contact;
         // contact.ispinned = pinned;
@@ -333,7 +339,8 @@ class ChatConversationChangeNotifier
   Future updateUnread() async {
     for (var model in _chatConversationMap.values) {
       try {
-        if (model.conversation?.latestMessage() == null) continue;
+        if (model.conversation?.latestMessage() == null &&
+            model.contact.status == ContactStatus.friend) continue;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
             id: model.id,

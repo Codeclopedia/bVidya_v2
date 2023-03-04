@@ -197,7 +197,6 @@ final elevatedButtonPrimaryStyle = ElevatedButton.styleFrom(
   ),
   backgroundColor: AppColors.redBColor,
   foregroundColor: Colors.white,
-  
   padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(2.w),

@@ -1,6 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
+import '/core/utils/request_utils.dart';
+
+import '/core/utils.dart';
+import '/data/services/fcm_api_service.dart';
+import '/controller/providers/bchat/contact_list_provider.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
@@ -12,7 +18,6 @@ import '/core/constants/agora_config.dart';
 import '/ui/dialog/basic_dialog.dart';
 import '/ui/screens.dart';
 import '/core/utils/chat_utils.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/ui/screen/blearn/components/common.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
@@ -613,14 +618,24 @@ class ContactProfileScreen extends HookConsumerWidget {
                     await showBasicDialog(
                         context, 'Delete Contact', 'Are you sure?', 'Yes',
                         () async {
-                      await BChatContactManager.deleteContact(
-                          contact.userId.toString());
-                      await deleteContact(contact.userId, ref);
+                      await BChatContactManager.sendRequestResponse(
+                          ref,
+                          contact.userId.toString(),
+                          contact.fcmToken!,
+                          ContactAction.deleteContact);
+                      ref
+                          .read(contactListProvider.notifier)
+                          .removeContact(contact.userId);
+                      ref
+                          .read(chatConversationProvider.notifier)
+                          .removeConversation(contact.userId.toString());
+
+                      // await deleteContact(contact.userId, ref);
                       // await ref
                       //     .read(chatConversationProvider)
                       //     .removedContact(contact.userId);
                       Navigator.pushNamedAndRemoveUntil(
-                          context, RouteList.home, (route) => route.isFirst);
+                          context, RouteList.home, (route) => false);
                     }, negativeButton: 'No');
                   },
                 );
@@ -740,7 +755,7 @@ class ContactProfileScreen extends HookConsumerWidget {
 
     showLoading(ref);
     final result = await BChatContactManager.sendRequestToAddContact(
-        item.userId.toString());
+        item.userId.toString(), input);
 
     if (result == null) {
       AppSnackbar.instance
@@ -749,10 +764,34 @@ class ContactProfileScreen extends HookConsumerWidget {
               .read(bChatProvider)
               .getContactsByIds(item.userId.toString()) ??
           [];
-      if (contacts.isNotEmpty) {
-        openChatScreen(context,
-            Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
-            sendInviateMessage: true, message: input);
+
+      if (contacts.isNotEmpty && AgoraConfig.autoAcceptContact) {
+        openChatScreen(
+          context,
+          Contacts.fromContact(contacts[0], ContactStatus.sentInvite),
+          ref,
+          sendInviateMessage: true,
+          message: input,
+        );
+      } else {
+        hideLoading(ref);
+        ref.read(contactListProvider.notifier).addNewContact(
+              Contacts.fromContact(
+                contacts[0],
+                ContactStatus.sentInvite,
+              ),
+            );
+        User? me = await getMeAsUser();
+        if (me != null) {
+          await FCMApiService.instance.pushContactAlert(
+            contacts[0].fcmToken!,
+            me.id.toString(),
+            item.userId.toString(),
+            '${me.name} sent you request',
+            input,
+            ContactAction.sendRequestContact,
+          );
+        }
       }
     } else {
       hideLoading(ref);

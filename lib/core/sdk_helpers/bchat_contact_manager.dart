@@ -1,11 +1,15 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../../data/models/models.dart';
+import '../utils.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/constants/agora_config.dart';
 import '/ui/base_back_screen.dart';
+import '/core/utils/request_utils.dart';
+import '/data/services/fcm_api_service.dart';
 
-import '../../controller/bchat_providers.dart';
+import '/controller/bchat_providers.dart';
 import '../state.dart';
 import '../ui_core.dart';
 import '../utils/chat_utils.dart';
@@ -161,8 +165,53 @@ class BChatContactManager {
     return '';
   }
 
-  static Future<String?> sendRequestToAddContact(String contactId) async {
+  static Future sendRequestResponse(WidgetRef ref, String contactId,
+      String fcmToken, ContactAction action) async {
+    User? me = await getMeAsUser();
+    if (me != null) {
+      String title;
+      String message;
+      if (action == ContactAction.acceptRequest) {
+        title = '${me.name} has accepted your request';
+        message = 'Start talking with ${me.name}';
+        await acceptRequest(contactId);
+      } else if (action == ContactAction.declineRequest) {
+        title = 'bVidya';
+        message = '${me.name} declined your request';
+        await declineRequest(contactId);
+      } else if (action == ContactAction.deleteContact) {
+        await BChatContactManager.deleteContact(contactId);
+        await FCMApiService.instance
+            .pushContactDeleteAlert(fcmToken, me.id.toString(), contactId);
+        return;
+      } else {
+        // title = 'Contact removed';
+        return;
+      }
+      await FCMApiService.instance.pushContactAlert(
+        fcmToken,
+        me.id.toString(),
+        contactId,
+        title,
+        message,
+        action,
+      );
+    }
+  }
+
+  static Future<String?> sendRequestToAddContact(
+    String contactId,
+    String message,
+  ) async {
     try {
+      if (!AgoraConfig.autoAcceptContact) {
+        List<String> sentRequestList =
+            await ContactRequestHelper.getSendRequestList();
+        if (sentRequestList.contains(contactId)) {
+          return 'Already sent request';
+        }
+      }
+
       List<String> list = await getContactList(fromServer: false);
       // print('before list : ${list.join(',')}');
       if (list.contains(contactId)) {
@@ -173,10 +222,15 @@ class BChatContactManager {
         if (list.contains(contactId)) {
           return 'Already exists';
         }
-        await ChatClient.getInstance.contactManager.addContact(contactId
-            // , reason: 'Hi, Please accept my invitation'
-            );
-        final updatedList = await getContactList(fromServer: true);
+
+        if (AgoraConfig.autoAcceptContact) {
+          await ChatClient.getInstance.contactManager.addContact(contactId);
+        } else {
+          await ChatClient.getInstance.contactManager
+              .addContact(contactId, reason: message);
+          await ContactRequestHelper.addSentRequest(contactId);
+        }
+        // final updatedList = await getContactList(fromServer: true);
         // print('after list : ${updatedList.join(',')}');
         return null;
       }

@@ -1,13 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
 // import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:grouped_list/grouped_list.dart';
 
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/utils/request_utils.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/contact_list_provider.dart';
 
 import '/core/utils/chat_utils.dart';
 import '/ui/dialog/contact_menu_dialog.dart';
-import 'package:grouped_list/grouped_list.dart';
 
 import '/core/constants/route_list.dart';
 import '/core/state.dart';
@@ -28,7 +30,10 @@ class ContactListScreen extends StatelessWidget {
         topBar: const BAppBar(title: 'Start New Conversation'),
         body: Consumer(
           builder: (context, ref, child) {
-            final data = ref.watch(contactListProvider);
+            final data = ref
+                .watch(contactListProvider)
+                .where((element) => element.status == ContactStatus.friend)
+                .toList();
             if (data.isNotEmpty) {
               return _buildList(context, ref, data);
             } else {
@@ -88,7 +93,18 @@ class ContactListScreen extends StatelessWidget {
                           },
                         );
                       } else if (value == 2) {
-                        await deleteContact(element.userId, ref);
+                        // await deleteContact(element.userId, ref);
+                        await BChatContactManager.sendRequestResponse(
+                            ref,
+                            element.userId.toString(),
+                            element.fcmToken!,
+                            ContactAction.deleteContact);
+                        ref
+                            .read(contactListProvider.notifier)
+                            .removeContact(element.userId);
+                        ref
+                            .read(chatConversationProvider.notifier)
+                            .removeConversation(element.userId.toString());
                         // ref
                         //     .read(chatConversationProvider)
                         //     .removedContact(element.userId);
