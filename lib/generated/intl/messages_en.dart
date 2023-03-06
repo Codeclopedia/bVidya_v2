@@ -109,6 +109,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "blearn_recently": MessageLookupByLibrary.simpleMessage("Recently"),
         "blearn_recommended":
             MessageLookupByLibrary.simpleMessage("Recommended"),
+        "blearn_subscribed_courses":
+            MessageLookupByLibrary.simpleMessage("Subscribed Courses"),
         "blearn_testimonial":
             MessageLookupByLibrary.simpleMessage("Testimonials"),
         "blearn_thebest": MessageLookupByLibrary.simpleMessage("the Best"),
@@ -251,7 +253,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bmeet_join_heading":
             MessageLookupByLibrary.simpleMessage("Join a Meeting"),
         "bmeet_mute_desc": MessageLookupByLibrary.simpleMessage(
-            "Grand or restrict audio access"),
+            "Grant or restrict audio access"),
         "bmeet_mute_title": MessageLookupByLibrary.simpleMessage(
             "Always mute my microphone on start"),
         "bmeet_no_meetings":
@@ -292,7 +294,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Generate your meeting link to begin."),
         "bmeet_user_you": MessageLookupByLibrary.simpleMessage("You"),
         "bmeet_videooff_desc": MessageLookupByLibrary.simpleMessage(
-            "Grand or restrict video access"),
+            "Grant or restrict video access"),
         "bmeet_videooff_title": MessageLookupByLibrary.simpleMessage(
             "Always turn off my camera on start"),
         "bmmet_txt_start_title":
@@ -473,6 +475,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Pick an image from Gallery"),
         "instructor_notApproved_note": MessageLookupByLibrary.simpleMessage(
             "NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com"),
+        "internet_error": MessageLookupByLibrary.simpleMessage(
+            "There was an error Connecting. Please check your connection and try again"),
         "issueDescriptionError": MessageLookupByLibrary.simpleMessage(
             "Issue description can\'t be empty"),
         "issues": MessageLookupByLibrary.simpleMessage("Issues Description"),
@@ -599,6 +603,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "recent_call_no_calls":
             MessageLookupByLibrary.simpleMessage("No Calls"),
         "recent_call_title": MessageLookupByLibrary.simpleMessage("Recent"),
+        "refresh": MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "reportDesc": MessageLookupByLibrary.simpleMessage(
             "Select a feature you\'re experiencing a\nproblem with:"),
         "reportTitle": MessageLookupByLibrary.simpleMessage("Report a Problem"),

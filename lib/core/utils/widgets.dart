@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:lottie/lottie.dart';
 
 import '../constants.dart';
 import '../ui_core.dart';
@@ -174,6 +175,17 @@ Image getPngIcon(String name,
       width: width,
       color: color,
       fit: BoxFit.fitWidth,
+    );
+
+Widget getLottieIcon(String name,
+        {double? width = 24.0,
+        Color? color,
+        double height = 24.0,
+        BoxFit fit = BoxFit.fitWidth}) =>
+    LottieBuilder.asset(
+      'assets/icons/lottie/$name',
+      width: width,
+      fit: fit,
     );
 
 Widget getRectFAvatar(String name, String image, {double? size}) => Avatar(

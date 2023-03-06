@@ -158,6 +158,9 @@
   "blearn_testimonial":"Testimonials",
 
 
+  "blearn_subscribed_courses":"Subscribed Courses",
+
+
   "bmeet_txt_schedule":"Scheduled Meetings",
   "bmmet_txt_start_title":"Start Instant Meeting",
   "bmeet_txt_start_desc":"Generate your meeting link to begin.",
@@ -169,13 +172,16 @@
   "bmeet_date_meeting":"{date} Meeting",
   "bmeet_no_meetings":"No scheduled Meetings.",
 
+  "bmeet_join_desc":"You can also clink on the link received to join directly",
+
+
   "bmeet_btn_start":"Start",
   "bmeet_start_heading":"Start a Meeting",
   "bmeet_start_option":"Meeting Joining Options",
   "bmeet_mute_title":"Always mute my microphone on start",
-  "bmeet_mute_desc":"Grand or restrict audio access",
+  "bmeet_mute_desc":"Grant or restrict audio access",
   "bmeet_videooff_title":"Always turn off my camera on start",
-  "bmeet_videooff_desc":"Grand or restrict video access",
+  "bmeet_videooff_desc":"Grant or restrict video access",
 
   "bmeet_sharable_caption":"Sharable Link",
   "bmeet_sharable_title":"Your Unique Meeting link or ID",
@@ -186,7 +192,6 @@
   "bmeet_join_caption":"Meeting ID or Link",
   "bmeet_hint_join_id_link":"Enter Meeting ID or Link",
 
-  "bmeet_join_desc":"You can also clink on the link received to join directly",
 
   "bmeet_schedule_heading":"Schedule a Meeting",
   "bmeet_caption_title":"Meeting Title",
@@ -536,7 +541,11 @@
 "td_courses": "Uploaded Courses",
 "td_running": "Top Running Courses",
 
-"error":"Something went wrong! Try again."
+"error":"Something went wrong! Try again.",
+
+"internet_error":"There was an error Connecting. Please check your connection and try again",
+"refresh":"Refreshing..."
+
 
 
 

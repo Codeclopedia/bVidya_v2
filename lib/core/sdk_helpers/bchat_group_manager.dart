@@ -349,6 +349,22 @@ class BchatGroupManager {
     return [];
   }
 
+  static Future<int> getGroupUnreadCount() async {
+    int count = 0;
+    try {
+      final list =
+          await ChatClient.getInstance.chatManager.loadAllConversations();
+
+      for (var item in list) {
+        if (item.type == ChatType.GroupChat) {
+          count += await item.unreadCount();
+        }
+      }
+      // print('Group Unread $count');
+    } catch (e) {}
+    return count;
+  }
+
   // static Future<List<Contacts>> loadGroupMemebers(
   //     ChatGroup groupInfo, WidgetRef ref) async {
   //   final groups = groupInfo.memberList ?? [];
@@ -361,4 +377,6 @@ class BchatGroupManager {
   //   }
   //   return [];
   // }
+
+
 }

@@ -64,6 +64,7 @@ class GroupConversationMenuDialog extends StatelessWidget {
               await ChatClient.getInstance.chatManager.sendConversationReadAck(
                 model.id,
               );
+              
             } catch (e) {}
 
             Navigator.pop(context, 1);

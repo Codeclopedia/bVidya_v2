@@ -1,5 +1,6 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '../../bchat_providers.dart';
 import '/core/utils/chat_utils.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/core/state.dart';
@@ -182,6 +183,7 @@ class GroupConversationChangeNotifier
     // ref.read(groupLoadingStateProvider.notifier).state = _isLoading;
     // print('Loaded groups : ${list.length}');
     state = _groupConversationMap.values.toList();
+    ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
   }
 
   void update() {

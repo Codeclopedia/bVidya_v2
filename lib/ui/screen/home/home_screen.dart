@@ -4,13 +4,14 @@ import 'dart:convert';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/bchat_providers.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:uuid/uuid.dart';
 
+import '/core/constants/agora_config.dart';
 import '/core/utils/chat_utils.dart';
-import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
@@ -186,8 +187,32 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
                 // ref.watch(chatConversationProvider
                 //     .select((value) => value.chatConversationList));
-                conversationList.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
-                    .compareTo((a.lastMessage?.serverTime ?? 1)));
+                // conversationList.sort((a, b) => (b.lastMessage?.serverTime ?? 0)
+                //     .compareTo((a.lastMessage?.serverTime ?? 1)));
+                if (conversationList.length > 1) {
+                  conversationList.sort(
+                    (a, b) {
+                      if (b.id == AgoraConfig.bViydaAdmitUserId.toString()) {
+                        return 1;
+                      }
+                      if (a.id == AgoraConfig.bViydaAdmitUserId.toString()) {
+                        return -1;
+                      }
+                      // int value = (b.lastMessage?.serverTime ?? 0)
+                      //     .compareTo((a.lastMessage?.serverTime ?? 1));
+                      if ((b.contact.ispinned ?? false) &&
+                          !(a.contact.ispinned ?? false)) {
+                        return 1;
+                      }
+                      if ((a.contact.ispinned ?? false) &&
+                          !(b.contact.ispinned ?? false)) {
+                        return -1;
+                      }
+                      return (b.lastMessage?.serverTime ?? 0)
+                          .compareTo((a.lastMessage?.serverTime ?? 1));
+                    },
+                  );
+                }
 
                 // print('conversationList:${conversationList.length}');
                 return loading && conversationList.isEmpty
@@ -246,11 +271,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           // ref.read(chatConversationProvider).deleteConversationOnly(model.id);
           ref.read(callListProvider.notifier).setup();
         }
-        if (result == 4 || result == 3) {
-          ref
-              .read(chatConversationProvider.notifier)
-              .updateConversation(model.id);
-        }
+        //result == 4 ||
+        // if (result == 3) {
+        //   ref
+        //       .read(chatConversationProvider.notifier)
+        //       .updateConversation(model.id);
+        // }
       }),
       child: _contactRow(model),
     );
@@ -400,53 +426,31 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               SizedBox(height: 1.h),
-              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                FutureBuilder(
-                  future: BChatContactManager.getUpdatedPinned(model.id),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data == true) {
-                      return Row(
-                        children: [
-                          getSvgIcon('Pin.svg', width: 4.w),
-                          SizedBox(width: 1.w),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                    //return null;
-                  },
-                ),
-                FutureBuilder(
-                  future: BChatContactManager.fetchChatMuteStateFor(model.id),
-                  builder: (context, snapshot) {
-                    bool mute = snapshot.data != ChatPushRemindType.NONE;
-                    if (mute) {
-                      return Row(
-                        children: [
-                          getSvgIcon('icon_mute_conv.svg', width: 4.w),
-                          SizedBox(width: 1.w),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                    //return null;
-                  },
-                ),
-                model.badgeCount > 0
-                    ? CircleAvatar(
-                        radius: 3.w,
-                        backgroundColor: AppColors.contactBadgeUnreadTextColor,
-                        child: Text(
-                          model.badgeCount.toString(),
-                          style: TextStyle(
-                            fontFamily: kFontFamily,
-                            color: Colors.white,
-                            fontSize: 9.sp,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (model.contact.ispinned ?? false)
+                    getSvgIcon('Pin.svg', width: 4.w),
+                  if (model.contact.ispinned ?? false) SizedBox(width: 1.w),
+                  if (model.mute) getSvgIcon('icon_mute_conv.svg', width: 4.w),
+                  if (model.mute) SizedBox(width: 1.w),
+                  model.badgeCount > 0
+                      ? CircleAvatar(
+                          radius: 3.w,
+                          backgroundColor:
+                              AppColors.contactBadgeUnreadTextColor,
+                          child: Text(
+                            model.badgeCount.toString(),
+                            style: TextStyle(
+                              fontFamily: kFontFamily,
+                              color: Colors.white,
+                              fontSize: 9.sp,
+                            ),
                           ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ]),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ],
           ),
           SizedBox(width: 2.w),
@@ -530,27 +534,47 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
-              FutureBuilder(
-                future: getGroupUnreadCount(),
-                builder: (context, snapshot) {
-                  if (snapshot.data != null && snapshot.data! > 0) {
-                    return CircleAvatar(
-                      backgroundColor: AppColors.redBColor,
-                      radius: 2.5.w,
-                      child: Text(
-                        '${snapshot.data}',
-                        style: TextStyle(
-                            fontFamily: kFontFamily,
-                            fontSize: 7.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              )
+              ref.watch(groupUnreadCountProvider).when(
+                    data: (count) {
+                      return count > 0
+                          ? CircleAvatar(
+                              backgroundColor: AppColors.redBColor,
+                              radius: 2.5.w,
+                              child: Text(
+                                '$count',
+                                style: TextStyle(
+                                    fontFamily: kFontFamily,
+                                    fontSize: 7.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                    error: (error, stackTrace) => const SizedBox.shrink(),
+                    loading: () => const SizedBox.shrink(),
+                  ),
+              // FutureBuilder(
+              //   future: getGroupUnreadCount(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.data != null && snapshot.data! > 0) {
+              //       return CircleAvatar(
+              //         backgroundColor: AppColors.redBColor,
+              //         radius: 2.5.w,
+              //         child: Text(
+              //           '${snapshot.data}',
+              //           style: TextStyle(
+              //               fontFamily: kFontFamily,
+              //               fontSize: 7.sp,
+              //               color: Colors.white,
+              //               fontWeight: FontWeight.w700),
+              //         ),
+              //       );
+              //     } else {
+              //       return const SizedBox.shrink();
+              //     }
+              //   },
+              // )
             ],
           );
         }),
@@ -558,23 +582,43 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Future<int> getGroupUnreadCount() async {
-    int count = 0;
-    try {
-      final list =
-          await ChatClient.getInstance.chatManager.loadAllConversations();
-
-      for (var item in list) {
-        if (item.type == ChatType.GroupChat) {
-          count += await item.unreadCount();
+  Widget _newMessageButton(BuildContext context) {
+    // return Consumer(builder: (context, ref, child) {
+    return InkWell(
+      splashColor: AppColors.primaryColor,
+      onTap: () async {
+        final model = await Navigator.pushNamed(context, RouteList.contactList);
+        setScreen(RouteList.home);
+        if (model != null) {
+          // ref.read(chatConversationProvider).updateUi();
+          // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
+          // ref
+          //     .read(bChatSDKControllerProvider)
+          //     .reloadConversation(ref,reloadContacts: true);
+          // Navigator.pushNamed(context, RouteList.chatScreen,
+          //     arguments: model);
         }
-      }
-      print('Group Unread $count');
-    } catch (e) {}
-    return count;
+
+        // _loadConversations(ref);
+      },
+      child: Row(
+        children: [
+          Text(
+            S.current.home_btx_new_message,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              color: AppColors.primaryColor,
+              fontSize: 11.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+    // });
   }
 
-  Widget _newMessageButton(BuildContext context) {
+  Widget _newMessageButton2(BuildContext context) {
     // return Consumer(builder: (context, ref, child) {
     return InkWell(
       splashColor: AppColors.primaryColor,

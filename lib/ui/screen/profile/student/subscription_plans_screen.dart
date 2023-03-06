@@ -17,21 +17,19 @@ final selectedSubscriptionIndex = StateProvider.autoDispose(
   },
 );
 
-class SubscriptionPlans extends HookConsumerWidget {
-  const SubscriptionPlans({super.key});
+class SubscriptionPlansScreen extends HookConsumerWidget {
+  const SubscriptionPlansScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     late Razorpay _razorpay;
 
-    useEffect(
-      () {
-        _razorpay = Razorpay();
-        return () {
-          _razorpay.clear();
-        };
-      },
-    );
+    useEffect(() {
+      _razorpay = Razorpay();
+      return () {
+        _razorpay.clear();
+      };
+    }, const []);
     return BaseNoScrollSettings(
         bodyContent: Consumer(builder: (context, ref, child) {
       final subscriptionPlansData = ref.watch(subscriptionPlansProvider);

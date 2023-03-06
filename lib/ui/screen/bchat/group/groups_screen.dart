@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/bchat_providers.dart';
 import 'package:bvidya/core/helpers/group_member_helper.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/helpers/call_helper.dart';
@@ -129,10 +130,13 @@ class GroupsScreen extends HookConsumerWidget {
           ref
               .read(groupConversationProvider.notifier)
               .updateConversationOnly(model.id);
+          ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
         } else if (result == 2) {
           ref
               .read(groupConversationProvider.notifier)
               .deleteConversationOnly(model.id);
+
+          ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
           // ref.read(callListProvider.notifier).setup();
         }
       },

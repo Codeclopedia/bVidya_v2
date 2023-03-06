@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
 
 import '/core/state.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
@@ -67,11 +68,11 @@ class ConversationMenuDialog extends StatelessWidget {
           builder: (context, ref, child) {
             final isUserPinned = model.contact.ispinned ?? false;
             return _buildOption(
-                isUserPinned == true
+                isUserPinned
                     ? S.current.bchat_conv_unpin
                     : S.current.bchat_conv_pin,
                 isUserPinned ? 'UnPin.svg' : 'Pin.svg', () async {
-              // await BChatContactManager.updatePin(ref, model.id, !isUserPinned);
+              await BChatContactManager.updatePin(ref, model.id, !isUserPinned);
 
               Navigator.pop(context, 4);
               // hideLoading(ref);
@@ -105,18 +106,23 @@ class ConversationMenuDialog extends StatelessWidget {
         // SizedBox(height: 1.h),
         Container(height: 0.8, color: const Color(0xFFF5F6F6)),
         // SizedBox(height: 1.h),
-        _buildOption(
-            muted ? S.current.bchat_conv_unmute : S.current.bchat_conv_mute,
-            muted ? 'icon_unmute_conv.svg' : 'icon_mute_conv.svg', () async {
-          await BChatContactManager.chageChatMuteStateFor(model.id, !muted);
-          Navigator.pop(context, 3);
+        Consumer(builder: (context, ref, child) {
+          return _buildOption(
+              muted ? S.current.bchat_conv_unmute : S.current.bchat_conv_mute,
+              muted ? 'icon_unmute_conv.svg' : 'icon_mute_conv.svg', () async {
+            await BChatContactManager.chageChatMuteStateFor(model.id, !muted);
+            ref
+                .read(chatConversationProvider.notifier)
+                .updateConversationMute(model.id, !muted);
+            Navigator.pop(context, 3);
+          });
         }),
         SizedBox(height: 1.h),
       ],
     );
   }
 
-  _buildOption(String title, String icon, Function() onOption) {
+  Widget _buildOption(String title, String icon, Function() onOption) {
     return InkWell(
       onTap: onOption,
       child: Padding(

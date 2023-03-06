@@ -1400,6 +1400,16 @@ class S {
     );
   }
 
+  /// `Subscribed Courses`
+  String get blearn_subscribed_courses {
+    return Intl.message(
+      'Subscribed Courses',
+      name: 'blearn_subscribed_courses',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Scheduled Meetings`
   String get bmeet_txt_schedule {
     return Intl.message(
@@ -1500,6 +1510,16 @@ class S {
     );
   }
 
+  /// `You can also clink on the link received to join directly`
+  String get bmeet_join_desc {
+    return Intl.message(
+      'You can also clink on the link received to join directly',
+      name: 'bmeet_join_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Start`
   String get bmeet_btn_start {
     return Intl.message(
@@ -1540,10 +1560,10 @@ class S {
     );
   }
 
-  /// `Grand or restrict audio access`
+  /// `Grant or restrict audio access`
   String get bmeet_mute_desc {
     return Intl.message(
-      'Grand or restrict audio access',
+      'Grant or restrict audio access',
       name: 'bmeet_mute_desc',
       desc: '',
       args: [],
@@ -1560,10 +1580,10 @@ class S {
     );
   }
 
-  /// `Grand or restrict video access`
+  /// `Grant or restrict video access`
   String get bmeet_videooff_desc {
     return Intl.message(
-      'Grand or restrict video access',
+      'Grant or restrict video access',
       name: 'bmeet_videooff_desc',
       desc: '',
       args: [],
@@ -1625,16 +1645,6 @@ class S {
     return Intl.message(
       'Enter Meeting ID or Link',
       name: 'bmeet_hint_join_id_link',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `You can also clink on the link received to join directly`
-  String get bmeet_join_desc {
-    return Intl.message(
-      'You can also clink on the link received to join directly',
-      name: 'bmeet_join_desc',
       desc: '',
       args: [],
     );
@@ -4635,6 +4645,26 @@ class S {
     return Intl.message(
       'Something went wrong! Try again.',
       name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There was an error Connecting. Please check your connection and try again`
+  String get internet_error {
+    return Intl.message(
+      'There was an error Connecting. Please check your connection and try again',
+      name: 'internet_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refreshing...`
+  String get refresh {
+    return Intl.message(
+      'Refreshing...',
+      name: 'refresh',
       desc: '',
       args: [],
     );

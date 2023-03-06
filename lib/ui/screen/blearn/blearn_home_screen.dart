@@ -1,7 +1,13 @@
 // import '/data/models/response/blearn/blearn_home_response.dart';
 // import '/co/blearntopbar.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:convert';
 
+import 'package:bvidya/core/utils/local_data.dart';
+import 'package:bvidya/ui/widget/no_internet_connection_screen.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:lottie/lottie.dart';
+
+import '../../widget/courses_circularIndicator.dart';
 import '/core/helpers/blive_helper.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
@@ -13,7 +19,6 @@ import '../../widgets.dart';
 import 'all_courses_page.dart';
 import 'components/blearntopbar.dart';
 import 'components/common.dart';
-import 'components/complemetry_course.dart';
 import 'components/course_list_row.dart';
 import 'components/course_row.dart';
 import 'components/instructor_row.dart';
@@ -41,13 +46,195 @@ class BLearnHomeScreen extends StatelessWidget {
                   if (data != null) {
                     return _buildContent(context, data, ref);
                   } else {
-                    return buildEmptyPlaceHolder('No Data');
+                    return FutureBuilder(
+                      future: getLocalData(S.current.blearn_subscribed_courses),
+                      builder: (context, snapshot) {
+                        if (snapshot.data == null) {
+                          return const NoInternetConnectionScreen();
+                        }
+                        final locallySavedCourses =
+                            SubscribedCourseBody.fromJson(
+                                jsonDecode(snapshot.data ?? ""));
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 3.w),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 3.w, vertical: 2.w),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.primaryColor
+                                          .withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(5.w)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text("No Internet connection",
+                                          style: textStyleBlack.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 10.sp)),
+                                      SizedBox(width: 1.w),
+                                      getLottieIcon("59204-sad-look.json",
+                                          width: 5.w)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 3.w),
+                              Text(
+                                S.current.blearn_subscribed_courses,
+                                style: textStyleHeading,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: locallySavedCourses
+                                          .subscribedCourses?.length ??
+                                      0,
+                                  itemBuilder: (context, index) {
+                                    return rowCourse(
+                                        locallySavedCourses
+                                            .subscribedCourses?[index],
+                                        context,
+                                        ref);
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    );
                   }
                 },
                 error: (error, stackTrace) => buildEmptyPlaceHolder('$error'),
                 loading: () => buildloadingbar(context));
           },
         ),
+      ),
+    );
+  }
+
+  Widget rowCourse(
+      SubscribedCourse? subscribedCourse, BuildContext context, WidgetRef ref) {
+    return Container(
+      // height: 20.h,
+      width: 100.w,
+      margin: EdgeInsets.symmetric(vertical: 1.h),
+      decoration: BoxDecoration(
+          color: AppColors.cardWhite,
+          border: Border.all(color: AppColors.cardBorder, width: 0.3),
+          borderRadius: BorderRadius.circular(3.w)),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 15.h,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 50.w,
+                    child: Text(
+                      subscribedCourse?.name ?? "",
+                      style: TextStyle(
+                          fontFamily: kFontFamily,
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11.sp),
+                    ),
+                  ),
+                  CoursesCircularIndicator(
+                    progressValue:
+                        subscribedCourse?.progress?.toDouble() ?? 0.0,
+                  )
+                ],
+              ),
+            ),
+          ),
+          const Divider(
+            color: AppColors.divider,
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+                left: 3.w, right: 3.w, top: 0.5.h, bottom: 1.5.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.video_collection_rounded,
+                      color: AppColors.primaryColor,
+                      size: 5.w,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 1.w, right: 1.w),
+                      child: Text(
+                        "${subscribedCourse?.lessonsLeft} left",
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 9.sp),
+                      ),
+                    )
+                  ],
+                ),
+                ref
+                    .watch(
+                        bLearnCourseDetailProvider(subscribedCourse?.id ?? 0))
+                    .when(
+                      data: (data) {
+                        return InkWell(
+                          onTap: () =>
+                              Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return const NoInternetConnectionScreen();
+                            },
+                          )),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.play_arrow,
+                                color: AppColors.primaryColor,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 1.w, right: 1.w),
+                                child: Text(
+                                  subscribedCourse?.progress == 0
+                                      ? "Start Learning"
+                                      : "Continue Learning",
+                                  style: TextStyle(
+                                      fontFamily: kFontFamily,
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 8.sp),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                      error: (error, stackTrace) {
+                        return buildEmptyPlaceHolder("error");
+                      },
+                      loading: () => buildEmptyPlaceHolder("..."),
+                    ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

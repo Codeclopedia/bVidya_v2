@@ -10,6 +10,7 @@ class ConversationModel {
   final ChatConversation? conversation;
   final bool mute;
   final ChatPresence? isOnline;
+  // final bool isPinned;
 
   ConversationModel(
       {required this.id,
@@ -18,7 +19,8 @@ class ConversationModel {
       required this.conversation,
       required this.lastMessage,
       required this.isOnline,
-      this.mute = false});
+      // required this.isPinned,
+      required this.mute});
 }
 
 class GroupConversationModel {

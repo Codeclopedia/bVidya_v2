@@ -77,13 +77,13 @@ class BChatContactManager {
       WidgetRef ref, String userId, bool isUserPinned) async {
     showLoading(ref);
     final error = await ref.read(bChatProvider).pinUnpinContact(userId);
-    final updatedPinnedvalue = await getUpdatedPinned(userId);
+    // final updatedPinnedvalue = await getUpdatedPinned(userId);
 
-    ref
-        .read(chatConversationProvider.notifier)
-        .updateConversationPin(userId, updatedPinnedvalue);
     if (error == null) {
       hideLoading(ref);
+      ref
+          .read(chatConversationProvider.notifier)
+          .updateConversationPin(userId, isUserPinned);
       EasyLoading.showToast(
           isUserPinned == true
               ? S.current.bchat_conv_pinned
@@ -95,28 +95,28 @@ class BChatContactManager {
     }
   }
 
-  static Future<bool> getUpdatedPinned(String userId) async {
-    final contactData = await getConversationModel(userId);
+  // static Future<bool> getUpdatedPinned(String userId) async {
+  //   final contactData = await getConversationModel(userId);
 
-    if (contactData?.contact.ispinned ?? false) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  //   if (contactData?.contact.ispinned ?? false) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  static Future<bool> isUserPinned(String userId) async {
-    final contactData = await getConversationModel(userId);
-    print("is contact pinned ${contactData?.contact.ispinned}");
-    if (contactData?.contact.ispinned ?? false) {
-      return true;
-    } else {
-      // if ((await getBlockList(fromServer: true)).contains(userId)) {
-      //   return true;
-      // }
-      return false;
-    }
-  }
+  // static Future<bool> isUserPinned(String userId) async {
+  //   final contactData = await getConversationModel(userId);
+  //   print("is contact pinned ${contactData?.contact.ispinned}");
+  //   if (contactData?.contact.ispinned ?? false) {
+  //     return true;
+  //   } else {
+  //     // if ((await getBlockList(fromServer: true)).contains(userId)) {
+  //     //   return true;
+  //     // }
+  //     return false;
+  //   }
+  // }
 
   static Future<String> getContacts({bool fromServer = false}) async {
     try {

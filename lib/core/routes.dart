@@ -643,10 +643,10 @@ class Routes {
         break;
 
       case RouteList.subscriptionPlans:
-        screen = const SubscriptionPlans();
+        screen = const SubscriptionPlansScreen();
         break;
       case RouteList.subscriptionDetail:
-        screen = const SubscriptionDetail();
+        screen = const ActivePlanDetailScreen();
 
         break;
 

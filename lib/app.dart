@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'controller/bchat_providers.dart';
 import 'core/helpers/group_member_helper.dart';
 import 'core/utils/request_utils.dart';
 import 'ui/base_back_screen.dart';
@@ -228,6 +229,8 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
               ForegroundMessageHelper.showForegroundGroupChatNotification(
                   value, lastMessage);
             }
+
+            ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
             // if(values.l.contains(lastMessage.conversationId)){
             // }
             // NotificationController.handleForegroundMessage(lastMessage);

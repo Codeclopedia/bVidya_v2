@@ -190,6 +190,7 @@ Future<ConversationModel?> getConversationModel(String fromId) async {
         badgeCount: 0,
         conversation: conv,
         lastMessage: null,
+        mute: false,
         isOnline: null);
   } else {
     return null;

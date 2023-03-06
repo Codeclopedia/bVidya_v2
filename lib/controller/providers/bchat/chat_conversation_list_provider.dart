@@ -1,6 +1,7 @@
 // import 'dart:js_util';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/constants/agora_config.dart';
 
 import '/core/utils/chat_utils.dart';
@@ -105,7 +106,8 @@ class ChatConversationChangeNotifier
                       contact: model.contact,
                       conversation: model.conversation,
                       lastMessage: lastMessage,
-                      isOnline: s);
+                      isOnline: s,
+                      mute: model.mute);
                   _chatConversationMap.addAll({model.id: newModel});
                   state = _chatConversationMap.values.toList();
                 } catch (e) {
@@ -173,7 +175,10 @@ class ChatConversationChangeNotifier
             contact: contact,
             conversation: conv,
             lastMessage: lastMessage,
-            isOnline: updateStatus ? statuses[index] : null);
+            isOnline: updateStatus ? statuses[index] : null,
+            mute: (await BChatContactManager.fetchChatMuteStateFor(
+                    contact.userId.toString()) !=
+                ChatPushRemindType.NONE));
       } catch (e) {
         // print('error $e');
         continue;
@@ -208,7 +213,8 @@ class ChatConversationChangeNotifier
             contact: model.contact,
             conversation: model.conversation,
             lastMessage: lastMessage,
-            isOnline: model.isOnline);
+            isOnline: model.isOnline,
+            mute: model.mute);
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         // print('error $e');
@@ -226,8 +232,8 @@ class ChatConversationChangeNotifier
             model.contact.status == ContactStatus.friend) return;
         final lastMessage = await model.conversation!.latestMessage();
         final contact = model.contact;
-        // contact.ispinned = pinned;
-        contact.ispinned = model.contact.ispinned;
+        contact.ispinned = pinned;
+        // contact.ispinned = model.contact.ispinned;
 
         final newModel = ConversationModel(
             id: model.id,
@@ -235,7 +241,33 @@ class ChatConversationChangeNotifier
             contact: contact,
             conversation: model.conversation,
             lastMessage: lastMessage,
-            isOnline: model.isOnline);
+            isOnline: model.isOnline,
+            mute: model.mute);
+        _chatConversationMap.addAll({model.id: newModel});
+      } catch (e) {
+        // print('error $e');
+        return;
+      }
+      state = _chatConversationMap.values.toList();
+    }
+  }
+
+  Future updateConversationMute(String id, bool muted) async {
+    final model = _chatConversationMap[id];
+    if (model != null) {
+      try {
+        if (model.conversation?.latestMessage() == null &&
+            model.contact.status == ContactStatus.friend) return;
+        final lastMessage = await model.conversation!.latestMessage();
+
+        final newModel = ConversationModel(
+            id: model.id,
+            badgeCount: await model.conversation?.unreadCount() ?? 0,
+            contact: model.contact,
+            conversation: model.conversation,
+            lastMessage: lastMessage,
+            isOnline: model.isOnline,
+            mute: muted);
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         // print('error $e');
@@ -252,12 +284,16 @@ class ChatConversationChangeNotifier
         // if (model.conversation?.latestMessage() == null) return;
         // final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
-            id: model.id,
-            badgeCount: 0,
-            contact: model.contact,
-            conversation: model.conversation,
-            lastMessage: lastMessage,
-            isOnline: await fetchOnlineStatus(model.id));
+          id: model.id,
+          badgeCount: 0,
+          contact: model.contact,
+          conversation: model.conversation,
+          lastMessage: lastMessage,
+          isOnline: await fetchOnlineStatus(model.id),
+          mute: (await BChatContactManager.fetchChatMuteStateFor(
+                  model.id.toString()) !=
+              ChatPushRemindType.NONE),
+        );
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         print('error $e');
@@ -279,7 +315,8 @@ class ChatConversationChangeNotifier
             contact: contact,
             conversation: model.conversation,
             lastMessage: lastMessage,
-            isOnline: model.isOnline);
+            isOnline: model.isOnline,
+            mute: model.mute);
       } catch (e) {
         print('error $e');
         return model;
@@ -292,12 +329,16 @@ class ChatConversationChangeNotifier
             createIfNeed: true);
         if (conv == null) return null;
         newModel = ConversationModel(
-            id: contact.userId.toString(),
-            badgeCount: await conv.unreadCount(),
-            contact: contact,
-            conversation: conv,
-            lastMessage: lastMessage,
-            isOnline: await fetchOnlineStatus(contact.userId.toString()));
+          id: contact.userId.toString(),
+          badgeCount: await conv.unreadCount(),
+          contact: contact,
+          conversation: conv,
+          lastMessage: lastMessage,
+          isOnline: await fetchOnlineStatus(contact.userId.toString()),
+          mute: (await BChatContactManager.fetchChatMuteStateFor(
+                  contact.userId.toString()) !=
+              ChatPushRemindType.NONE),
+        );
       } catch (e) {
         print('error $e');
         return null;
@@ -321,12 +362,16 @@ class ChatConversationChangeNotifier
       final lastMessage = await conv.latestMessage();
       // if (lastMessage == null) return null;
       model = ConversationModel(
-          id: contact.userId.toString(),
-          badgeCount: await conv.unreadCount(),
-          contact: contact,
-          conversation: conv,
-          lastMessage: lastMessage,
-          isOnline: await fetchOnlineStatus(contact.userId.toString()));
+        id: contact.userId.toString(),
+        badgeCount: await conv.unreadCount(),
+        contact: contact,
+        conversation: conv,
+        lastMessage: lastMessage,
+        isOnline: await fetchOnlineStatus(contact.userId.toString()),
+        mute: (await BChatContactManager.fetchChatMuteStateFor(
+                contact.userId.toString()) !=
+            ChatPushRemindType.NONE),
+      );
     } catch (e) {
       print('error $e');
       return null;
@@ -343,12 +388,14 @@ class ChatConversationChangeNotifier
             model.contact.status == ContactStatus.friend) continue;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
-            id: model.id,
-            badgeCount: await model.conversation?.unreadCount() ?? 0,
-            contact: model.contact,
-            conversation: model.conversation,
-            lastMessage: lastMessage,
-            isOnline: model.isOnline);
+          id: model.id,
+          badgeCount: await model.conversation?.unreadCount() ?? 0,
+          contact: model.contact,
+          conversation: model.conversation,
+          lastMessage: lastMessage,
+          isOnline: model.isOnline,
+          mute: model.mute,
+        );
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
         print('error $e');

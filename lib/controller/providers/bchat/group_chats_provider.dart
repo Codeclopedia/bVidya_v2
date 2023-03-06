@@ -1,4 +1,5 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../../bchat_providers.dart';
 import '/core/helpers/extensions.dart';
 import '/data/models/conversation_model.dart';
 import '/core/state.dart';
@@ -42,6 +43,7 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessageExt>> {
           await grpModel.conversation?.markAllMessagesAsRead();
           await ChatClient.getInstance.chatManager
               .sendConversationReadAck(grpModel.id);
+          ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
         } catch (_) {}
 
         final chats = await grpModel.conversation?.loadMessages(loadCount: 20);

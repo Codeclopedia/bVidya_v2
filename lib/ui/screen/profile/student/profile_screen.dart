@@ -134,6 +134,7 @@ class StudentProfileScreen extends ConsumerWidget {
               //             creditHistoryData.value ?? CreditDetailBody());
               //   },
               // ));
+              
               if (creditHistoryData.isLoading) {}
               if (creditHistoryData.value == null) {}
               if (creditHistoryData.value!.avilableCourseCredits! > 0) {

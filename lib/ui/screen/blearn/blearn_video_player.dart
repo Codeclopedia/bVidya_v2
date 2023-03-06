@@ -1,5 +1,10 @@
 // import 'package:chewie/chewie.dart';
 // import 'dart:async';
+import 'dart:ui';
+
+import 'package:flutter_portal/flutter_portal.dart';
+import 'package:secure_content/secure_content.dart';
+
 import '/ui/base_back_screen.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:pausable_timer/pausable_timer.dart';
@@ -69,165 +74,370 @@ class BlearnVideoPlayer extends HookConsumerWidget {
         timer?.cancel();
       };
 
+      // SecureWidget(
+      //     overlayWidgetBuilder: (context) => BackdropFilter(
+      //           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      //           child: Container(
+      //             color: Colors.black,
+      //             height: double.infinity,
+      //             width: double.infinity,
+      //           ),
+      //         ),
+      //     onScreenshotCaptured: () {
+      //       print("Screenshot captured");
+      //     },
+      //     builder: (context, onInit, onDispose) {
+      //       return SafeArea(
+      //         child: Stack(
+      //           children: [
+      //             Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               mainAxisSize: MainAxisSize.max,
+      //               children: <Widget>[
+      //                 !ref.watch(videoStateProvider) || flickManager == null
+      //                     ? Container(
+      //                         width: double.infinity,
+      //                         color: Colors.black,
+      //                         height: 30.h,
+      //                         child: Column(
+      //                           mainAxisAlignment: MainAxisAlignment.center,
+      //                           children: [
+      //                             const CircularProgressIndicator(),
+      //                             const SizedBox(height: 20),
+      //                             Text(
+      //                               'Loading',
+      //                               style: TextStyle(
+      //                                   color: Colors.white,
+      //                                   fontFamily: kFontFamily,
+      //                                   fontSize: 12.sp),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                       )
+      //                     : FlickVideoPlayer(
+      //                         flickVideoWithControls:
+      //                             const FlickVideoWithControls(
+      //                           controls: CustomOrientationControls(),
+      //                         ),
+      //                         flickManager: flickManager!,
+      //                       ),
+      //                 SizedBox(
+      //                   height: 4.w,
+      //                 ),
+      //                 Consumer(builder: (context, ref, child) {
+      //                   return ref
+      //                       .watch(bLearnCourseDetailProvider(course.id ?? 0))
+      //                       .when(
+      //                           data: (data) {
+      //                             return Padding(
+      //                               padding:
+      //                                   EdgeInsets.symmetric(horizontal: 4.w),
+      //                               child: Row(
+      //                                 mainAxisSize: MainAxisSize.max,
+      //                                 mainAxisAlignment:
+      //                                     MainAxisAlignment.spaceBetween,
+      //                                 children: [
+      //                                   Expanded(
+      //                                     child: Text(
+      //                                       data?.courses?[0].name ?? '',
+      //                                       style: TextStyle(
+      //                                           fontFamily: kFontFamily,
+      //                                           fontSize: 14.sp,
+      //                                           fontWeight: FontWeight.w600,
+      //                                           color: Colors.black),
+      //                                     ),
+      //                                   ),
+      //                                   SizedBox(width: 12.w),
+      //                                   InkWell(
+      //                                     onTap: () async {
+      //                                       showLoading(ref);
+      //                                       await ref
+      //                                           .read(bLearnRepositoryProvider)
+      //                                           .changeinWishlist(
+      //                                               data?.courses?[0].id ?? 0);
+
+      //                                       // ref.watch(
+      //                                       //     blearnAddorRemoveinWishlistProvider(
+      //                                       //         data?.courses?[0].id ?? 0));
+      //                                       ref.refresh(
+      //                                           bLearnCourseDetailProvider(
+      //                                               course.id ?? 0));
+      //                                       hideLoading(ref);
+      //                                     },
+      //                                     child: Container(
+      //                                       width: 12.w,
+      //                                       height: 12.w,
+      //                                       decoration: BoxDecoration(
+      //                                           color:
+      //                                               data?.isWishlisted == true
+      //                                                   ? Colors.pink[100]
+      //                                                   : AppColors.cardWhite,
+      //                                           shape: BoxShape.circle,
+      //                                           boxShadow: const [
+      //                                             BoxShadow(
+      //                                               color: Colors.grey,
+      //                                               // offset: Offset(0, 0),
+      //                                               // blurRadius: 1,
+      //                                             )
+      //                                           ]),
+      //                                       child: data?.isWishlisted == true
+      //                                           ? Icon(
+      //                                               Icons.favorite,
+      //                                               color: Colors.pink[400],
+      //                                             )
+      //                                           : Icon(
+      //                                               Icons.favorite_outline,
+      //                                               size: 8.w,
+      //                                               color:
+      //                                                   AppColors.iconGreyColor,
+      //                                             ),
+      //                                     ),
+      //                                   ),
+      //                                 ],
+      //                               ),
+      //                             );
+      //                           },
+      //                           error: ((error, stackTrace) =>
+      //                               buildEmptyPlaceHolder('Error')),
+      //                           loading: () => buildLoading);
+      //                 }),
+      //                 Padding(
+      //                   padding: EdgeInsets.symmetric(horizontal: 4.w),
+      //                   child: Text(
+      //                     '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
+      //                     style: TextStyle(
+      //                       fontFamily: kFontFamily,
+      //                       fontSize: 8.sp,
+      //                       color: Colors.black,
+      //                       fontWeight: FontWeight.w700,
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 SizedBox(
+      //                   height: 3.w,
+      //                 ),
+      //                 Consumer(
+      //                   builder: (context, ref, child) {
+      //                     return ref
+      //                         .watch(bLearnLessonsProvider(course.id ?? 0))
+      //                         .when(
+      //                             data: (data) {
+      //                               if (data?.lessons?.isNotEmpty == true) {
+      //                                 return _buildLessons(ref, data!.lessons!);
+      //                               } else {
+      //                                 return buildEmptyPlaceHolder(
+      //                                     'No Lessons');
+      //                                 // return _buildLessons();
+      //                               }
+      //                             },
+      //                             error: (error, stackTrace) =>
+      //                                 buildEmptyPlaceHolder('text'),
+      //                             loading: () => buildLoading);
+      //                   },
+      //                 ),
+      //               ],
+      //             ),
+      //             Align(
+      //                 alignment: Alignment.topLeft,
+      //                 child: IconButton(
+      //                     onPressed: () {
+      //                       Navigator.pop(context);
+      //                     },
+      //                     icon: Icon(
+      //                       Icons.adaptive.arrow_back,
+      //                       color: AppColors.iconGreyColor,
+      //                     ))),
+      //           ],
+      //         ),
+      //       );
+      //     },
+      //     isSecure: true),
+
       // return dispose();
     }, const ['KEY']);
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                !ref.watch(videoStateProvider) || flickManager == null
-                    ? Container(
-                        width: double.infinity,
-                        color: Colors.black,
-                        height: 30.h,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 20),
-                            Text(
-                              'Loading',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: kFontFamily,
-                                  fontSize: 12.sp),
-                            ),
-                          ],
-                        ),
-                      )
-                    : FlickVideoPlayer(
-                        flickVideoWithControls: const FlickVideoWithControls(
-                          controls: CustomOrientationControls(),
-                        ),
-                        flickManager: flickManager!,
-                      ),
-                SizedBox(
-                  height: 4.w,
-                ),
-                Consumer(builder: (context, ref, child) {
-                  return ref
-                      .watch(bLearnCourseDetailProvider(course.id ?? 0))
-                      .when(
-                          data: (data) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 4.w),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      data?.courses?[0].name ?? '',
-                                      style: TextStyle(
-                                          fontFamily: kFontFamily,
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.w),
-                                  InkWell(
-                                    onTap: () async {
-                                      showLoading(ref);
-                                      await ref
-                                          .read(bLearnRepositoryProvider)
-                                          .changeinWishlist(
-                                              data?.courses?[0].id ?? 0);
-
-                                      // ref.watch(
-                                      //     blearnAddorRemoveinWishlistProvider(
-                                      //         data?.courses?[0].id ?? 0));
-                                      ref.refresh(bLearnCourseDetailProvider(
-                                          course.id ?? 0));
-                                      hideLoading(ref);
-                                    },
-                                    child: Container(
-                                      width: 12.w,
-                                      height: 12.w,
-                                      decoration: BoxDecoration(
-                                          color: data?.isWishlisted == true
-                                              ? Colors.pink[100]
-                                              : AppColors.cardWhite,
-                                          shape: BoxShape.circle,
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.grey,
-                                              // offset: Offset(0, 0),
-                                              // blurRadius: 1,
-                                            )
-                                          ]),
-                                      child: data?.isWishlisted == true
-                                          ? Icon(
-                                              Icons.favorite,
-                                              color: Colors.pink[400],
-                                            )
-                                          : Icon(
-                                              Icons.favorite_outline,
-                                              size: 8.w,
-                                              color: AppColors.iconGreyColor,
-                                            ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          error: ((error, stackTrace) =>
-                              buildEmptyPlaceHolder('Error')),
-                          loading: () => buildLoading);
-                }),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: Text(
-                    '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
-                    style: TextStyle(
-                      fontFamily: kFontFamily,
-                      fontSize: 8.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                    ),
+      body: Portal(
+        child: SecureWidget(
+            overlayWidgetBuilder: (context) => BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: Colors.black,
+                    height: double.infinity,
+                    width: double.infinity,
                   ),
                 ),
-                SizedBox(
-                  height: 3.w,
-                ),
-                Consumer(
-                  builder: (context, ref, child) {
-                    return ref
-                        .watch(bLearnLessonsProvider(course.id ?? 0))
-                        .when(
-                            data: (data) {
-                              if (data?.lessons?.isNotEmpty == true) {
-                                return _buildLessons(ref, data!.lessons!);
-                              } else {
-                                return buildEmptyPlaceHolder('No Lessons');
-                                // return _buildLessons();
-                              }
+            onScreenshotCaptured: () {
+              print("Screenshot captured");
+            },
+            builder: (context, onInit, onDispose) {
+              return SafeArea(
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        !ref.watch(videoStateProvider) || flickManager == null
+                            ? Container(
+                                width: double.infinity,
+                                color: Colors.black,
+                                height: 30.h,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const CircularProgressIndicator(),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      'Loading',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: kFontFamily,
+                                          fontSize: 12.sp),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : FlickVideoPlayer(
+                                flickVideoWithControls:
+                                    const FlickVideoWithControls(
+                                  controls: CustomOrientationControls(),
+                                ),
+                                flickManager: flickManager!,
+                              ),
+                        SizedBox(
+                          height: 4.w,
+                        ),
+                        Consumer(builder: (context, ref, child) {
+                          return ref
+                              .watch(bLearnCourseDetailProvider(course.id ?? 0))
+                              .when(
+                                  data: (data) {
+                                    return Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 4.w),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              data?.courses?[0].name ?? '',
+                                              style: TextStyle(
+                                                  fontFamily: kFontFamily,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                          SizedBox(width: 12.w),
+                                          InkWell(
+                                            onTap: () async {
+                                              showLoading(ref);
+                                              await ref
+                                                  .read(
+                                                      bLearnRepositoryProvider)
+                                                  .changeinWishlist(
+                                                      data?.courses?[0].id ??
+                                                          0);
+
+                                              // ref.watch(
+                                              //     blearnAddorRemoveinWishlistProvider(
+                                              //         data?.courses?[0].id ?? 0));
+                                              ref.refresh(
+                                                  bLearnCourseDetailProvider(
+                                                      course.id ?? 0));
+                                              hideLoading(ref);
+                                            },
+                                            child: Container(
+                                              width: 12.w,
+                                              height: 12.w,
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      data?.isWishlisted == true
+                                                          ? Colors.pink[100]
+                                                          : AppColors.cardWhite,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: const [
+                                                    BoxShadow(
+                                                      color: Colors.grey,
+                                                      // offset: Offset(0, 0),
+                                                      // blurRadius: 1,
+                                                    )
+                                                  ]),
+                                              child: data?.isWishlisted == true
+                                                  ? Icon(
+                                                      Icons.favorite,
+                                                      color: Colors.pink[400],
+                                                    )
+                                                  : Icon(
+                                                      Icons.favorite_outline,
+                                                      size: 8.w,
+                                                      color: AppColors
+                                                          .iconGreyColor,
+                                                    ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  error: ((error, stackTrace) =>
+                                      buildEmptyPlaceHolder('Error')),
+                                  loading: () => buildLoading);
+                        }),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.w),
+                          child: Text(
+                            '${course.numberOfLesson} Lessons | ${course.duration!} Hours',
+                            style: TextStyle(
+                              fontFamily: kFontFamily,
+                              fontSize: 8.sp,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 3.w,
+                        ),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            return ref
+                                .watch(bLearnLessonsProvider(course.id ?? 0))
+                                .when(
+                                    data: (data) {
+                                      if (data?.lessons?.isNotEmpty == true) {
+                                        return _buildLessons(
+                                            ref, data!.lessons!);
+                                      } else {
+                                        return buildEmptyPlaceHolder(
+                                            'No Lessons');
+                                        // return _buildLessons();
+                                      }
+                                    },
+                                    error: (error, stackTrace) =>
+                                        buildEmptyPlaceHolder('text'),
+                                    loading: () => buildLoading);
+                          },
+                        ),
+                      ],
+                    ),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
                             },
-                            error: (error, stackTrace) =>
-                                buildEmptyPlaceHolder('text'),
-                            loading: () => buildLoading);
-                  },
+                            icon: Icon(
+                              Icons.adaptive.arrow_back,
+                              color: AppColors.iconGreyColor,
+                            ))),
+                  ],
                 ),
-              ],
-            ),
-            Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.adaptive.arrow_back,
-                      color: AppColors.iconGreyColor,
-                    ))),
-          ],
-        ),
+              );
+            },
+            isSecure: true),
       ),
     );
   }

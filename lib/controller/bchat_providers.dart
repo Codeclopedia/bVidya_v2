@@ -178,6 +178,10 @@ final groupMediaProvier = FutureProvider.autoDispose
 
 // final chatUnreadCount = FutureProvider((ref) => Chat,)
 
+final groupUnreadCountProvider = FutureProvider<int>((ref) {
+  return BchatGroupManager.getGroupUnreadCount();
+});
+
 final chatImageFiles = FutureProvider.autoDispose
     .family<List<ChatMediaFile>, String>((ref, convId) async {
   return BChatContactManager.loadMediaFiles(convId);

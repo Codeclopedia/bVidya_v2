@@ -64,8 +64,8 @@ export 'screen/profile/student/student_profile_detail.dart';
 export 'screen/profile/student/student_schdule.dart';
 export 'screen/profile/student/request_detail_screen.dart';
 export 'screen/profile/student/scheduled_class_detail.dart';
-export 'screen/profile/student/subscriptions.dart';
-export 'screen/profile/student/subscriptions_details.dart';
+export 'screen/profile/student/subscription_plans_screen.dart';
+export 'screen/profile/student/active_plan_detail_screen.dart';
 
 export 'screen/profile/teacher/teacher_dashboard_screen.dart';
 export 'screen/profile/teacher/teacher_profile.dart';
