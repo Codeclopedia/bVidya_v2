@@ -2,7 +2,10 @@
 
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/group_member_helper.dart';
 
 import 'package:swipe_to/swipe_to.dart';
 
@@ -448,12 +451,12 @@ class GroupChatScreen extends HookConsumerWidget {
         if (nextMessage?.from == message.msg.from) {
           isNextSameAuthor = true;
         }
+
         final selectedItems = ref.watch(selectedChatMessageListProvider);
         bool isSelected = selectedItems.contains(message.msg);
 
         bool isOwnMessage = message.msg.from == _myUserId;
 
-        isOwnMessage ? _markOwnRead(message.msg) : _markRead(message.msg);
         int progress = 0;
         if (isOwnMessage) {
           progress = ref.watch(sendingGroupFileProgress(message.msg.msgId));
@@ -466,8 +469,71 @@ class GroupChatScreen extends HookConsumerWidget {
             name: name,
             profileImage: image,
             status: ContactStatus.group);
+
         bool notReply = message.msg.body.type == MessageType.CMD ||
             message.msg.body.type == MessageType.CUSTOM;
+
+        Widget? grpMemberUpdateView;
+
+        if (message.msg.body.type == MessageType.CUSTOM) {
+          ChatCustomMessageBody body =
+              message.msg.body as ChatCustomMessageBody;
+          try {
+            final map = jsonDecode(body.event);
+            // print('map: $map');
+            if (map['type'] == 'member_update') {
+              final memebers = map['members'];
+              if (memebers != null) {
+                String actionStr = '';
+                GroupMemberAction? action = groupActionFrom(map['action']);
+                String by = name.isEmpty ? '' : ' by ${contact.name}';
+                if (action == GroupMemberAction.added) {
+                  actionStr = ' added$by';
+                } else if (action == GroupMemberAction.removed) {
+                  actionStr = ' removed$by';
+                } else if (action == GroupMemberAction.joined) {
+                  actionStr = ' joined';
+                } else if (action == GroupMemberAction.left ||
+                    action == GroupMemberAction.left) {
+                  actionStr = ' left';
+                } else {
+                  actionStr = '';
+                }
+
+                final grpMemebers = GroupMembers.fromJson(jsonDecode(memebers));
+                final List<Widget> list = grpMemebers.infos
+                    .map(
+                      (e) => Container(
+                        margin: EdgeInsets.all(2.w),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 3.w, vertical: 0.8.w),
+                        decoration: BoxDecoration(
+                            color: AppColors.cardWhite,
+                            borderRadius: BorderRadius.circular(2.w)),
+                        child: Text(
+                          '${e.name ?? e.id}$actionStr',
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            color: Colors.black,
+                            fontSize: 9.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList();
+                grpMemberUpdateView = Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: list,
+                );
+              }
+            }
+          } catch (_) {
+            // print('Error parsing custom message: $e');
+          }
+        }
+        isOwnMessage ? _markOwnRead(message.msg) : _markRead(message.msg);
+
         return Column(
           // crossAxisAlignment:
           //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -484,47 +550,45 @@ class GroupChatScreen extends HookConsumerWidget {
                       color: AppColors.black,
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w600),
-                  // style: TextStyle(
-                  //   fontFamily: kFontFamily,
-                  //   color: Colors.grey,
-                  //   fontSize: 8.sp,
-                  // ),
                 ),
               ),
-            SwipeTo(
-              onRightSwipe: notReply
-                  ? null
-                  : () {
-                      ref
-                          .read(chatModelProvider.notifier)
-                          .setReplyOn(message.msg, contact.name);
-                      // print('open replyBox');
-                    },
-              child: GestureDetector(
-                onLongPress: () =>
-                    _onMessageLongPress(message, isSelected, ref),
-                onTap: () => selectedItems.isNotEmpty
-                    ? _onMessageLongPress(message, isSelected, ref)
-                    : notReply
-                        ? null
-                        : _onMessageTap(message.msg, context, ref),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 2, bottom: 4),
-                  width: double.infinity,
-                  color: isSelected ? Colors.grey.shade200 : Colors.transparent,
-                  child: ChatMessageBubbleExt(
-                      message: message,
-                      isOwnMessage: isOwnMessage,
-                      senderUser: isOwnMessage ? _me : contact,
-                      isPreviousSameAuthor: isPreviousSameAuthor,
-                      isNextSameAuthor: isNextSameAuthor,
-                      isAfterDateSeparator: isAfterDateSeparator,
-                      isBeforeDateSeparator: isBeforeDateSeparator,
-                      showOtherUserName: true,
-                      progress: progress),
+            grpMemberUpdateView ??
+                SwipeTo(
+                  onRightSwipe: notReply
+                      ? null
+                      : () {
+                          ref
+                              .read(chatModelProvider.notifier)
+                              .setReplyOn(message.msg, contact.name);
+                          // print('open replyBox');
+                        },
+                  child: GestureDetector(
+                    onLongPress: () =>
+                        _onMessageLongPress(message, isSelected, ref),
+                    onTap: () => selectedItems.isNotEmpty
+                        ? _onMessageLongPress(message, isSelected, ref)
+                        : notReply
+                            ? null
+                            : _onMessageTap(message.msg, context, ref),
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 2, bottom: 4),
+                      width: double.infinity,
+                      color: isSelected
+                          ? Colors.grey.shade200
+                          : Colors.transparent,
+                      child: ChatMessageBubbleExt(
+                          message: message,
+                          isOwnMessage: isOwnMessage,
+                          senderUser: isOwnMessage ? _me : contact,
+                          isPreviousSameAuthor: isPreviousSameAuthor,
+                          isNextSameAuthor: isNextSameAuthor,
+                          isAfterDateSeparator: isAfterDateSeparator,
+                          isBeforeDateSeparator: isBeforeDateSeparator,
+                          showOtherUserName: true,
+                          progress: progress),
+                    ),
+                  ),
                 ),
-              ),
-            ),
           ],
         );
       },

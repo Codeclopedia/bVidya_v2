@@ -130,9 +130,25 @@ class GroupConversationChangeNotifier
     // notifyListeners();
   }
 
+  Future<GroupConversationModel?> addConversationOnly(String groupId) async {
+    final model = _groupConversationMap[groupId];
+    if (model == null) {
+      final grp = await ChatClient.getInstance.groupManager
+          .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+      return await addConveration(grp);
+    }
+    return model;
+    // notifyListeners();
+  }
+
   // void update() {
   //   // notifyListeners();
   // }
+
+  Future removeEntry(String groupId) async {
+    _groupConversationMap.remove(groupId);
+    state = _groupConversationMap.values.toList();
+  }
 
   Future delete(String groupId) async {
     await BchatGroupManager.deleteGroup(groupId);

@@ -111,8 +111,8 @@ final searchGroupProvider = FutureProvider.autoDispose<List<ChatGroup>>((ref) {
 //   return contacts ?? [];
 // });
 
-final groupMembersInfo =
-    FutureProvider.family<GroupMeberInfo?, String>((ref, groupId) async {
+final groupMembersInfo = FutureProvider.family
+    .autoDispose<GroupMeberInfo?, String>((ref, groupId) async {
   try {
     ChatGroup info =
         await ChatClient.getInstance.groupManager.getGroupWithId(groupId) ??
@@ -188,7 +188,6 @@ class GroupMeberInfo {
   final ChatGroup group;
   final String userId;
   GroupMeberInfo(this.members, this.group, this.userId);
-  
 }
 
 class ForwardModel {
@@ -260,7 +259,6 @@ final commonGroupsProvider = FutureProvider.family
   }
   return groupList;
 });
-
 
 final groupCallTimerProvider =
     StateNotifierProvider.autoDispose<DurationNotifier, DurationModel>(

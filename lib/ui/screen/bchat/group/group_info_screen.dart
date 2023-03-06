@@ -229,12 +229,12 @@ class GroupInfoScreen extends HookConsumerWidget {
     return InkWell(
       onTap: () async {
         ref.read(selectedContactProvider.notifier).clear();
-        if (contacts.isNotEmpty) {
-          ref.read(selectedContactProvider.notifier).addContacts(contacts);
-          await Navigator.pushNamed(context, RouteList.editGroup,
-              arguments: group.groupInfo);
-          // ref.read(groupConversationProvider.notifier).update();
-        }
+        // if (contacts.isNotEmpty) {
+        ref.read(selectedContactProvider.notifier).addContacts(contacts);
+        await Navigator.pushNamed(context, RouteList.editGroup,
+            arguments: group.groupInfo);
+        // ref.read(groupConversationProvider.notifier).update();
+        // }
         // await Navigator.pushNamed(context, RouteList.newGroupContacts);
       },
       child: Padding(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import '../../controller/bchat_providers.dart';
+import '../helpers/group_member_helper.dart';
 import '../state.dart';
 import '/data/models/models.dart';
 
@@ -74,24 +75,26 @@ class BchatGroupManager {
     return null;
   }
 
-  static Future<ChatGroup?> updateMembers(
-      String groupId, List<String> ids, List<String> removeIds) async {
-    try {
-      if (ids.isNotEmpty) {
-        await ChatClient.getInstance.groupManager.addMembers(groupId, ids);
-      }
-      if (removeIds.isNotEmpty) {
-        await ChatClient.getInstance.groupManager
-            .removeMembers(groupId, removeIds);
-      }
+  // static Future<ChatGroup?> updateMembers(
+  //     String groupId, List<String> ids, List<String> removeIds) async {
+  //   try {
+  //     if (ids.isNotEmpty) {
+  //       await ChatClient.getInstance.groupManager.addMembers(groupId, ids);
+  //       // await GroupMemberHelper.sendMembersAddedToGroup(groupId, ids);
+  //     }
+  //     if (removeIds.isNotEmpty) {
+  //       // await GroupMemberHelper.sendMembersLeftFromGroup(groupId, removeIds);
+  //       await ChatClient.getInstance.groupManager
+  //           .removeMembers(groupId, removeIds);
+  //     }
 
-      return await ChatClient.getInstance.groupManager
-          .fetchGroupInfoFromServer(groupId, fetchMembers: true);
-    } catch (e) {
-      print('Error creating group $e');
-    }
-    return null;
-  }
+  //     return await ChatClient.getInstance.groupManager
+  //         .fetchGroupInfoFromServer(groupId, fetchMembers: true);
+  //   } catch (e) {
+  //     print('Error creating group $e');
+  //   }
+  //   return null;
+  // }
 
   static Future<ChatGroup?> editGroup(
       String groupId,
@@ -106,8 +109,11 @@ class BchatGroupManager {
 
       if (ids.isNotEmpty) {
         await ChatClient.getInstance.groupManager.addMembers(groupId, ids);
+        await GroupMemberHelper.sendMembersAddedToGroup(groupId, name, ids);
       }
       if (removeIds.isNotEmpty) {
+        await GroupMemberHelper.sendMembersRemovedFromGroup(
+            groupId, name, removeIds);
         await ChatClient.getInstance.groupManager
             .removeMembers(groupId, removeIds);
       }

@@ -77,13 +77,21 @@ Future<void> backgroundHandler(RemoteMessage message) async {
         closeIncomingGroupCall(message);
       }
     } else if (message.data['type'] == NotiConstants.typeContact) {
-      final String? act = message.data['action'];
+      ContactAction? action = contactActionFrom(message.data['action']);
       final String? fromId = message.data['f'];
-      if (act != null && fromId != null) {
-        ContactAction action = contactActionFrom(act);
+      if (action != null && fromId != null) {
         ContactRequestHelper.handleNotification(
             message.notification, action, fromId, false);
-      } else {}
+      } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
+        // final String? fromId = message.data['f'];
+        // final String? grpId = message.data['g'];
+        // GroupMemberAction? action = groupActionFrom(message.data['action']);
+        // if (action != null && fromId != null && grpId != null) {
+        //   GroupMemberHelper.handleNotification(
+        //       message.notification, action, fromId, grpId, true,
+        //       ref: ref);
+        // }
+      }
       // NotificationController.showErrorMessage('New Background : ${message.senderId}');
       // await BChatSDKController.instance.loginOnlyInBackground();
       // BackgroundHelper.handleRemoteMessageBackground(message);

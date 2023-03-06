@@ -13,7 +13,7 @@ class ContactRequestHelper {
   static Future handleNotification(RemoteNotification? notification,
       ContactAction action, String fromId, bool foreground,
       {WidgetRef? ref}) async {
-    print('Action  $action');
+    // print('Action  $action');
     switch (action) {
       case ContactAction.sendRequestContact:
         await ContactRequestHelper.addNewRequest(fromId);
@@ -75,7 +75,7 @@ class ContactRequestHelper {
               .removeConversation(fromId);
           if (notification != null) {
             NotificationController.showContactActionNotification(fromId,
-                notification.title ?? '', notification.body ?? '', Colors.red);
+                notification.title ?? '', notification.body ?? '', Colors.blue);
           }
         }
 
@@ -140,7 +140,8 @@ enum ContactAction {
   deleteContact;
 }
 
-ContactAction contactActionFrom(String name) {
+ContactAction? contactActionFrom(String? name) {
+  if (name == null) return null;
   if (name == ContactAction.acceptRequest.name) {
     return ContactAction.acceptRequest;
   }
@@ -150,5 +151,10 @@ ContactAction contactActionFrom(String name) {
   if (name == ContactAction.deleteContact.name) {
     return ContactAction.deleteContact;
   }
-  return ContactAction.sendRequestContact;
+  if (name == ContactAction.sendRequestContact.name) {
+    return ContactAction.sendRequestContact;
+  }
+  return null;
 }
+
+

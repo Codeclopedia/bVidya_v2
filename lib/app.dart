@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'core/helpers/group_member_helper.dart';
 import 'core/utils/request_utils.dart';
 import 'ui/base_back_screen.dart';
 import 'core/helpers/foreground_message_helper.dart';
@@ -150,12 +151,20 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
           closeIncomingGroupCall(message);
         }
       } else if (message.data['type'] == NotiConstants.typeContact) {
-        final String? act = message.data['action'];
         final String? fromId = message.data['f'];
-        if (act != null && fromId != null) {
-          ContactAction action = contactActionFrom(act);
+        ContactAction? action = contactActionFrom(message.data['action']);
+        if (action != null && fromId != null) {
           ContactRequestHelper.handleNotification(
               message.notification, action, fromId, true,
+              ref: ref);
+        }
+      } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
+        final String? fromId = message.data['f'];
+        final String? grpId = message.data['g'];
+        GroupMemberAction? action = groupActionFrom(message.data['action']);
+        if (action != null && fromId != null && grpId != null) {
+          GroupMemberHelper.handleNotification(
+              message.notification, action, fromId, grpId, true,
               ref: ref);
         }
       }

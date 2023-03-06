@@ -117,6 +117,46 @@ class FCMApiService {
     }
   }
 
+  Future sendGroupMemberUpdatePush(
+    List<String> toTokens,
+    String action,
+    String grpName,
+    int fromId,
+    String grpId,
+    String title,
+    String body,
+  ) async {
+    //p2p_call
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+
+    final data = {
+      'registration_ids': toTokens,
+      'type': NotiConstants.typeGroupMemberUpdate,
+      'content_available': true,
+      'notification': {'title': title, 'body': body},
+      'data': {
+        'type': NotiConstants.typeGroupMemberUpdate,
+        'action': action,
+        'f': fromId,
+        'g': grpId,
+      },
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
+    };
+    // print('fcm request.callId: $callId , grpId:$grpId');
+    var response =
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+    if (response.statusCode == 200) {
+      print('fcm response.data:${response.data}');
+      return null;
+    } else {
+      print(
+          'error code: ${response.statusCode} response.data:${response.data}');
+      return null;
+    }
+  }
+
   Future sendCallStartPush(String toToken, String fromId, String callId,
       String msgId, CallMessegeBody body) async {
     _dio.options.headers['Authorization'] = 'key=  $webPushKey';
@@ -255,40 +295,40 @@ class FCMApiService {
     }
   }
 
-  Future pushGroupMemberAlert(String toToken, String fromId, String groupId,
-      String title, String message, GroupMemberUpdateAction action) async {
-    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
+  // Future pushGroupMemberAlert(String toToken, String fromId, String groupId,
+  //     String title, String message, GroupMemberUpdateAction action) async {
+  //   _dio.options.headers['Authorization'] = 'key=  $webPushKey';
 
-    final data = {
-      'registration_ids': [toToken],
-      'type': NotiConstants.typeGroupMemberUpdate,
-      'content_available': true,
-      'notification': {
-        'title': title,
-        'body': message,
-      },
-      'data': {
-        'type': NotiConstants.typeGroupMemberUpdate,
-        'action': action.name,
-        'f': fromId,
-        'g': groupId,
-        'tm': DateTime.now().millisecondsSinceEpoch
-      },
-      // 'ttl': '30s',
-      'android': {'priority': 'normal'},
-      'priority': 10
-    };
-    var response =
-        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
-    if (response.statusCode == 200) {
-      print('fcm response.data:${response.data}');
-      return null;
-    } else {
-      print(
-          'error code: ${response.statusCode} response.data:${response.data}');
-      return null;
-    }
-  }
+  //   final data = {
+  //     'registration_ids': [toToken],
+  //     'type': NotiConstants.typeGroupMemberUpdate,
+  //     'content_available': true,
+  //     'notification': {
+  //       'title': title,
+  //       'body': message,
+  //     },
+  //     'data': {
+  //       'type': NotiConstants.typeGroupMemberUpdate,
+  //       'action': action.name,
+  //       'f': fromId,
+  //       'g': groupId,
+  //       'tm': DateTime.now().millisecondsSinceEpoch
+  //     },
+  //     // 'ttl': '30s',
+  //     'android': {'priority': 'normal'},
+  //     'priority': 10
+  //   };
+  //   var response =
+  //       await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
+  //   if (response.statusCode == 200) {
+  //     print('fcm response.data:${response.data}');
+  //     return null;
+  //   } else {
+  //     print(
+  //         'error code: ${response.statusCode} response.data:${response.data}');
+  //     return null;
+  //   }
+  // }
 }
 
 enum GroupMemberUpdateAction {

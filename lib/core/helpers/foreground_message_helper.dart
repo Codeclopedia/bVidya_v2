@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:bvidya/core/helpers/group_member_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -57,10 +58,9 @@ class ForegroundMessageHelper {
       }
     } else {
       if (message.data['type'] == NotiConstants.typeContact) {
-        final String? act = message.data['action'];
+        ContactAction? action = contactActionFrom(message.data['action']);
         final String? fromId = message.data['f'];
-        if (act != null && fromId != null) {
-          ContactAction action = contactActionFrom(act);
+        if (action != null && fromId != null) {
           if (action == ContactAction.acceptRequest) {
             final model = await getConversationModel(fromId);
             if (model != null) {
@@ -70,6 +70,24 @@ class ForegroundMessageHelper {
               return true;
             }
           }
+        }
+      } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
+        final String? fromId = message.data['f'];
+        final String? grpId = message.data['g'];
+        GroupMemberAction? action = groupActionFrom(message.data['action']);
+        if (action != null && fromId != null && grpId != null) {
+          if (action == GroupMemberAction.added) {
+            final model = await getGroupConversationModel(grpId);
+            if (model != null) {
+              await Navigator.pushReplacementNamed(
+                  context, RouteList.groupChatScreenDirect,
+                  arguments: model);
+              return true;
+            }
+          }
+          // GroupMemberHelper.handleNotification(
+          //     message.notification, action, fromId, grpId, true,
+          //     ref: ref);
         }
       }
     }

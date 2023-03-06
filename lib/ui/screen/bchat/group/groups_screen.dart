@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/group_member_helper.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
@@ -154,11 +155,26 @@ class GroupsScreen extends HookConsumerWidget {
         try {
           ChatCustomMessageBody body =
               model.lastMessage!.body as ChatCustomMessageBody;
-          final callBody =
-              GroupCallMessegeBody.fromJson(jsonDecode(body.event));
-          textMessage = (callBody.callType == CallType.video)
-              ? 'Video Call'
-              : 'Audio call';
+          final map = jsonDecode(body.event);
+          if (map['type'] == 'member_update') {
+            GroupMemberAction? action = groupActionFrom(map['action']);
+            if (action == GroupMemberAction.added) {
+              textMessage = 'Member added';
+            } else if (action == GroupMemberAction.joined) {
+              textMessage = 'Member joined';
+            } else if (action == GroupMemberAction.removed) {
+              textMessage = 'Member removed';
+            } else if (action == GroupMemberAction.left) {
+              textMessage = 'Member left';
+            } else {
+              textMessage = 'Member update';
+            }
+          } else {
+            final callBody = GroupCallMessegeBody.fromJson(map);
+            textMessage = (callBody.callType == CallType.video)
+                ? 'Video Call'
+                : 'Audio call';
+          }
         } catch (e) {
           textMessage = 'Call';
         }
