@@ -5,10 +5,10 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/helpers/group_member_helper.dart';
-
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:swipe_to/swipe_to.dart';
 
+import '/core/helpers/group_member_helper.dart';
 import '../utils/attach_uihelper.dart';
 import '../widgets/chat_message_bubble_ex.dart';
 import '/app.dart';
@@ -52,7 +52,7 @@ class GroupChatScreen extends HookConsumerWidget {
       : super(key: key);
 
   String _myUserId = '';
-  late final ScrollController _scrollController;
+  late final AutoScrollController _scrollController;
 
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
@@ -64,7 +64,13 @@ class GroupChatScreen extends HookConsumerWidget {
     useEffect(() {
       _addHandler(ref);
       ref.read(groupChatProvider(model).notifier).init(ref);
-      _scrollController = ScrollController();
+      // _scrollController = ScrollController();
+      _scrollController = AutoScrollController(
+        viewportBoundaryGetter: () =>
+            Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+        axis: Axis.vertical,
+      );
+
       _myUserId = ChatClient.getInstance.currentUserId ?? '';
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
@@ -534,49 +540,53 @@ class GroupChatScreen extends HookConsumerWidget {
         }
         isOwnMessage ? _markOwnRead(message.msg) : _markRead(message.msg);
 
-        return Column(
-          // crossAxisAlignment:
-          //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            if (isAfterDateSeparator)
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  formatDateSeparator(DateTime.fromMillisecondsSinceEpoch(
-                      message.msg.serverTime)),
-                  style: TextStyle(
-                      fontFamily: kFontFamily,
-                      color: AppColors.black,
-                      fontSize: 9.sp,
-                      fontWeight: FontWeight.w600),
+        return AutoScrollTag(
+          controller: _scrollController,
+          index: i,
+          key: ValueKey(message.msg.msgId),
+          child: Column(
+            // crossAxisAlignment:
+            //     isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              if (isAfterDateSeparator)
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Text(
+                    formatDateSeparator(DateTime.fromMillisecondsSinceEpoch(
+                        message.msg.serverTime)),
+                    style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: AppColors.black,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w600),
+                  ),
                 ),
-              ),
-            grpMemberUpdateView ??
-                SwipeTo(
-                  onRightSwipe: notReply
-                      ? null
-                      : () {
-                          ref
-                              .read(chatModelProvider.notifier)
-                              .setReplyOn(message.msg, contact.name);
-                          // print('open replyBox');
-                        },
-                  child: GestureDetector(
-                    onLongPress: () =>
-                        _onMessageLongPress(message, isSelected, ref),
-                    onTap: () => selectedItems.isNotEmpty
-                        ? _onMessageLongPress(message, isSelected, ref)
-                        : notReply
-                            ? null
-                            : _onMessageTap(message.msg, context, ref),
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 2, bottom: 4),
-                      width: double.infinity,
-                      color: isSelected
-                          ? Colors.grey.shade200
-                          : Colors.transparent,
-                      child: ChatMessageBubbleExt(
+              grpMemberUpdateView ??
+                  SwipeTo(
+                    onRightSwipe: notReply
+                        ? null
+                        : () {
+                            ref
+                                .read(chatModelProvider.notifier)
+                                .setReplyOn(message.msg, contact.name);
+                            // print('open replyBox');
+                          },
+                    child: GestureDetector(
+                      onLongPress: () =>
+                          _onMessageLongPress(message, isSelected, ref),
+                      onTap: () => selectedItems.isNotEmpty
+                          ? _onMessageLongPress(message, isSelected, ref)
+                          : notReply
+                              ? null
+                              : _onMessageTap(message.msg, context, ref),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 2, bottom: 4),
+                        width: double.infinity,
+                        color: isSelected
+                            ? Colors.grey.shade200
+                            : Colors.transparent,
+                        child: ChatMessageBubbleExt(
                           message: message,
                           isOwnMessage: isOwnMessage,
                           senderUser: isOwnMessage ? _me : contact,
@@ -585,11 +595,25 @@ class GroupChatScreen extends HookConsumerWidget {
                           isAfterDateSeparator: isAfterDateSeparator,
                           isBeforeDateSeparator: isBeforeDateSeparator,
                           showOtherUserName: true,
-                          progress: progress),
+                          progress: progress,
+                          onTapRepliedMsg: (msg) async {
+                            int intx = await ref
+                                .read(groupChatProvider(model).notifier)
+                                .searchRepliedMessageIndex(ref, msg);
+                            if (intx >= 0) {
+                              // print('Index ${intx}');
+                              _scrollController.scrollToIndex(intx,
+                                  preferPosition: AutoScrollPosition.begin);
+                            } else {
+                              // print('Index ${intx}');
+                            }
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
-          ],
+            ],
+          ),
         );
       },
     );
@@ -725,11 +749,12 @@ class GroupChatScreen extends HookConsumerWidget {
       AppSnackbar.instance.error(navigatorKey.currentContext!, "$e");
       return e.toString();
     }
-    _scrollController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    _scrollController.scrollToIndex(0);
+    // _scrollController.animateTo(
+    //   0.0,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeInOut,
+    // );
     return null;
   }
 

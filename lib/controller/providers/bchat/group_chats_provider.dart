@@ -148,6 +148,31 @@ class GroupChatChangeNotifier extends StateNotifier<List<ChatMessageExt>> {
     _isLoadingMore = false;
   }
 
+  Future<int> searchRepliedMessageIndex(
+      WidgetRef ref, ChatMessage message) async {
+    while (_hasMoreData && !_messagesMap.keys.contains(message.msgId)) {
+      await loadMore(ref);
+    }
+    if (!_messagesMap.keys.contains(message.msgId)) {
+      //Not found
+      return -1;
+    }
+    int index = 0;
+    for (var msg in state) {
+      if (msg.isGroupMedia) {
+        if (msg.messages.contains(message)) {
+          return index;
+        }
+      } else {
+        if (msg.msg.msgId == message.msgId) {
+          return index;
+        }
+      }
+      index++;
+    }
+    return -1;
+  }
+
   // void deleteMessages(List<ChatMessage> selectedItems) {}
 
   void deleteMessages(List<ChatMessage> msgs) {

@@ -110,7 +110,31 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
     updateMessageList();
   }
 
-  void loadMore() async {
+  Future<int> searchRepliedMessageIndex(ChatMessage message) async {
+    while (_hasMoreData && !_messagesMap.keys.contains(message.msgId)) {
+      await loadMore();
+    }
+    if (!_messagesMap.keys.contains(message.msgId)) {
+      //Not found
+      return -1;
+    }
+    int index = 0;
+    for (var msg in state) {
+      if (msg.isGroupMedia) {
+        if (msg.messages.contains(message)) {
+          return index;
+        }
+      } else {
+        if (msg.msg.msgId == message.msgId) {
+          return index;
+        }
+      }
+      index++;
+    }
+    return -1;
+  }
+
+  Future loadMore() async {
     try {
       if (convModel.conversation != null && state.isNotEmpty) {
         _isLoadingMore = true;

@@ -45,7 +45,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
   final bool showOtherUserName;
   final int progress;
   // final bool showAvatar;
-
+  final Function(ChatMessage message)? onTapRepliedMsg;
   final Function(Mention)? onPressMention;
   const ChatMessageBubbleExt(
       {Key? key,
@@ -59,6 +59,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
       this.showOtherUserName = false,
       // this.showAvatar = false,
       this.progress = 0,
+      this.onTapRepliedMsg,
       this.onPressMention})
       : super(key: key);
 
@@ -584,52 +585,59 @@ class ChatMessageBubbleExt extends StatelessWidget {
     final replyMap = message.msg.attributes?['reply_of'];
     // print('Reply : ${jsonEncode(replyMap)}');
     final replyOf = ReplyModel.fromJson(replyMap);
-    return Container(
-      margin: EdgeInsets.only(bottom: 1.h),
-      decoration: replyTextBubbleDecoration(),
-      // padding: const EdgeInsets.all(0.1),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Container(
-              // constraints: BoxConstraints(
-              //   minWidth: 30.w,
-              //   maxWidth: 50.w,
-              // ),
-              width: 50.w,
-              decoration: BoxDecoration(
-                color: isOwnMessage
-                    ? const Color(0xFF6F3253)
-                    : const Color.fromARGB(255, 248, 213, 131),
-                borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(3.w),
-                  bottomLeft: Radius.zero,
-                  topRight: Radius.circular(3.w),
-                  topLeft: Radius.zero,
+    return GestureDetector(
+      onTap: () {
+        if (onTapRepliedMsg != null) {
+          onTapRepliedMsg!(replyOf.message);
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 1.h),
+        decoration: replyTextBubbleDecoration(),
+        // padding: const EdgeInsets.all(0.1),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Container(
+                // constraints: BoxConstraints(
+                //   minWidth: 30.w,
+                //   maxWidth: 50.w,
+                // ),
+                width: 50.w,
+                decoration: BoxDecoration(
+                  color: isOwnMessage
+                      ? const Color(0xFF6F3253)
+                      : const Color.fromARGB(255, 248, 213, 131),
+                  borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(3.w),
+                    bottomLeft: Radius.zero,
+                    topRight: Radius.circular(3.w),
+                    topLeft: Radius.zero,
+                  ),
+                ),
+                margin: EdgeInsets.only(left: 2.w),
+                padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      replyOf.fromName,
+                      style: TextStyle(
+                          fontFamily: kFontFamily,
+                          color: isOwnMessage
+                              ? AppColors.chatBoxBackgroundOthers
+                              : AppColors.chatBoxBackgroundMine,
+                          fontSize: 7.sp),
+                    ),
+                    ChatMessageBodyWidget(
+                        message: replyOf.message, isOwnMessage: isOwnMessage)
+                  ],
                 ),
               ),
-              margin: EdgeInsets.only(left: 2.w),
-              padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    replyOf.fromName,
-                    style: TextStyle(
-                        fontFamily: kFontFamily,
-                        color: isOwnMessage
-                            ? AppColors.chatBoxBackgroundOthers
-                            : AppColors.chatBoxBackgroundMine,
-                        fontSize: 7.sp),
-                  ),
-                  ChatMessageBodyWidget(
-                      message: replyOf.message, isOwnMessage: isOwnMessage)
-                ],
-              ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
