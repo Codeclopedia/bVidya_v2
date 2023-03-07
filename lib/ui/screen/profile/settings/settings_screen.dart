@@ -1,3 +1,5 @@
+import 'package:bvidya/ui/screens.dart';
+
 import '/core/utils.dart';
 
 import '/core/constants.dart';
@@ -9,46 +11,53 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDrawerSettingScreen(
-      currentIndex: DrawerMenu.settings,
-      bodyContent: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 4.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-              child: Text(S.current.setting_title, style: textStyleHeading),
-            ),
-            getTwoRowSettingItem(
-                S.current.Account, S.current.passReset, "ic_set_account.svg",
-                () {
-              Navigator.pushNamed(context, RouteList.accountSetting);
-            }),
-            //todo uncomment phase3
-            // getTwoRowSettingItem(
-            //     S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
-            //     () {
-            //   Navigator.pushNamed(context, RouteList.chatSetting);
-            // }),
-            // getTwoRowSettingItem(S.current.settingsNoti, S.current.notiHistory,
-            //     "ic_set_noty.svg", () {
-            //   Navigator.pushNamed(context, RouteList.notificationSetting);
-            // }),
-            getTwoRowSettingItem(
-                S.current.settingHelp, S.current.helpCenter, "ic_set_help.svg",
-                () {
-              Navigator.pushNamed(context, RouteList.help);
-            }),
-            _buildSingleLineItem(S.current.settingShare, "ic_set_share.svg",
-                () {
-              shareApp();
-            }),
-            _buildSingleLineItem(S.current.settingRate, "ic_set_rate.svg", () {
-              rateApp(context);
-            }),
-          ]),
+    return BaseWilPopupScreen(
+      onBack: () async {
+        Navigator.pushNamedAndRemoveUntil(
+            context, RouteList.home, (route) => false);
+        return true;
+      },
+      child: BaseDrawerSettingScreen(
+        currentIndex: DrawerMenu.settings,
+        bodyContent: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 4.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                child: Text(S.current.setting_title, style: textStyleHeading),
+              ),
+              getTwoRowSettingItem(
+                  S.current.Account, S.current.passReset, "ic_set_account.svg",
+                  () {
+                Navigator.pushNamed(context, RouteList.accountSetting);
+              }),
+              //todo uncomment phase3
+              // getTwoRowSettingItem(
+              //     S.current.settingChat, S.current.chatHistory, "ic_set_chat.svg",
+              //     () {
+              //   Navigator.pushNamed(context, RouteList.chatSetting);
+              // }),
+              // getTwoRowSettingItem(S.current.settingsNoti, S.current.notiHistory,
+              //     "ic_set_noty.svg", () {
+              //   Navigator.pushNamed(context, RouteList.notificationSetting);
+              // }),
+              getTwoRowSettingItem(S.current.settingHelp, S.current.helpCenter,
+                  "ic_set_help.svg", () {
+                Navigator.pushNamed(context, RouteList.help);
+              }),
+              _buildSingleLineItem(S.current.settingShare, "ic_set_share.svg",
+                  () {
+                shareApp();
+              }),
+              _buildSingleLineItem(S.current.settingRate, "ic_set_rate.svg",
+                  () {
+                rateApp(context);
+              }),
+            ]),
+      ),
     );
   }
 

@@ -4,12 +4,12 @@ import 'dart:convert';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/bchat_providers.dart';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:uuid/uuid.dart';
 
+import '../blearn/components/common.dart';
+import '/controller/bchat_providers.dart';
 import '/core/constants/agora_config.dart';
 import '/core/utils/chat_utils.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
@@ -22,8 +22,7 @@ import '/core/utils/date_utils.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';
-// import '/core/sdk_helpers/bchat_handler.dart';
-import '../blearn/components/common.dart';
+
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -83,6 +82,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     // print('object')
     // final uid = const Uuid().v5(Uuid.NAMESPACE_OID, 'mGf3ee4gcOlj2hsnyhcH');
     // print('UUID=> $uid   : ${Uuid.isValidUUID(fromString: uid)}');
+    await ref.read(chatConversationProvider.notifier).registerPresence(ref);
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       _firebaseNotification();
@@ -99,7 +99,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         announcement: false,
         badge: true,
         carPlay: false,
-        criticalAlert: false,
+        criticalAlert: true,
         provisional: false,
         sound: true,
       );
@@ -506,23 +506,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                   alignment: Alignment.center,
                 ),
                 onPressed: () async {
-                  // try {
-                  //   ref.refresh(groupConversationProvider);
-                  // } catch (e) {
-                  //   print('error :$e');
-                  // }
                   await Navigator.pushNamed(context, RouteList.groups);
                   setScreen(RouteList.home);
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => const DashChatScreen(),
-                  //     ));
-                  // final result =
-                  //     await Navigator.pushNamed(context, RouteList.contactProfile);
-                  // if (result != null) {
-                  //   print('Return value $result');
-                  // }
                 },
                 child: Text(
                   S.current.home_btx_groups,
@@ -554,27 +539,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                     error: (error, stackTrace) => const SizedBox.shrink(),
                     loading: () => const SizedBox.shrink(),
                   ),
-              // FutureBuilder(
-              //   future: getGroupUnreadCount(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.data != null && snapshot.data! > 0) {
-              //       return CircleAvatar(
-              //         backgroundColor: AppColors.redBColor,
-              //         radius: 2.5.w,
-              //         child: Text(
-              //           '${snapshot.data}',
-              //           style: TextStyle(
-              //               fontFamily: kFontFamily,
-              //               fontSize: 7.sp,
-              //               color: Colors.white,
-              //               fontWeight: FontWeight.w700),
-              //         ),
-              //       );
-              //     } else {
-              //       return const SizedBox.shrink();
-              //     }
-              //   },
-              // )
             ],
           );
         }),
@@ -584,35 +548,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _newMessageButton(BuildContext context) {
     // return Consumer(builder: (context, ref, child) {
-    return InkWell(
-      splashColor: AppColors.primaryColor,
-      onTap: () async {
-        final model = await Navigator.pushNamed(context, RouteList.contactList);
+    return TextButton(
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 2.w),
+        alignment: Alignment.center,
+      ),
+      onPressed: () async {
+        // final model =
+        await Navigator.pushNamed(context, RouteList.contactList);
         setScreen(RouteList.home);
-        if (model != null) {
-          // ref.read(chatConversationProvider).updateUi();
-          // ref.read(bChatSDKControllerProvider).reloadConversation(ref);
-          // ref
-          //     .read(bChatSDKControllerProvider)
-          //     .reloadConversation(ref,reloadContacts: true);
-          // Navigator.pushNamed(context, RouteList.chatScreen,
-          //     arguments: model);
-        }
-
+        // if (model != null) {}
         // _loadConversations(ref);
       },
-      child: Row(
-        children: [
-          Text(
-            S.current.home_btx_new_message,
-            style: TextStyle(
-              fontFamily: kFontFamily,
-              color: AppColors.primaryColor,
-              fontSize: 11.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+      child: Text(
+        S.current.home_btx_new_message,
+        style: TextStyle(
+          fontFamily: kFontFamily,
+          color: AppColors.primaryColor,
+          fontSize: 11.sp,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
     // });

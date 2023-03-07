@@ -25,7 +25,9 @@ class StudentProfileScreen extends ConsumerWidget {
     return WillPopScope(
       onWillPop: () async {
         hideLoading(ref);
-        Navigator.pop(context);
+        // Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(
+            context, RouteList.home, (route) => false);
         return true;
       },
       child: BaseDrawerSettingScreen(

@@ -62,8 +62,7 @@ class ConversationMenuDialog extends StatelessWidget {
           ),
         ),
 
-        Container(height: 0.8, color: const Color(0xFFF5F6F6)),
-        // SizedBox(height: 1.h),
+        SizedBox(height: 1.w),
         Consumer(
           builder: (context, ref, child) {
             final isUserPinned = model.contact.ispinned ?? false;
@@ -79,6 +78,7 @@ class ConversationMenuDialog extends StatelessWidget {
             });
           },
         ),
+        const Divider(height: 1, color: Color(0xFFE2E2E2)),
 
         if (hasUnread) SizedBox(height: 2.h),
         if (hasUnread)
@@ -88,7 +88,7 @@ class ConversationMenuDialog extends StatelessWidget {
               await model.conversation?.markAllMessagesAsRead();
               await ChatClient.getInstance.chatManager
                   .sendConversationReadAck(model.id);
-            } catch (e) {}
+            } catch (_) {}
 
             Navigator.pop(context, 1);
           }),
@@ -104,7 +104,8 @@ class ConversationMenuDialog extends StatelessWidget {
           Navigator.pop(context, 2);
         }),
         // SizedBox(height: 1.h),
-        Container(height: 0.8, color: const Color(0xFFF5F6F6)),
+        // const Divider(height: 0.8, color: Color(0xFFF5F6F6)),
+        const Divider(height: 1, color: Color(0xFFE2E2E2)),
         // SizedBox(height: 1.h),
         Consumer(builder: (context, ref, child) {
           return _buildOption(

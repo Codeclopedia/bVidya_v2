@@ -1,7 +1,7 @@
 // import 'dart:js_util';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/core/constants/agora_config.dart';
 
 import '/core/utils/chat_utils.dart';
@@ -30,11 +30,11 @@ Future<ConversationModel?> addNewContact(
       .addConversationByContact(contact);
 }
 
-Future<Contacts?> addNewContactById(int contactId, WidgetRef ref) async {
-  return await ref
-      .read(contactListProvider.notifier)
-      .addContact(contactId, ContactStatus.friend);
-}
+// Future<Contacts?> addNewFriendById(int contactId, WidgetRef ref) async {
+//   return await ref
+//       .read(contactListProvider.notifier)
+//       .addContact(contactId, ContactStatus.friend);
+// }
 
 Future<ConversationModel?> onNewChatMessage(
     ChatMessage message, WidgetRef ref) async {
@@ -75,14 +75,22 @@ class ChatConversationChangeNotifier
 
   final Map<String, ConversationModel> _chatConversationMap = {};
 
-  void _registerPresence(WidgetRef ref, List<String> ids) async {
+  Future registerPresence(
+    WidgetRef ref,
+  ) async {
     try {
+      final List<String> ids = ref
+          .read(contactListProvider)
+          .where((element) => element.status == ContactStatus.friend)
+          .map((e) => e.userId.toString())
+          .toList();
+
       List<String> onbserveList = [...ids];
       onbserveList.removeWhere(
           (element) => element == AgoraConfig.bViydaAdmitUserId.toString());
       ChatClient.getInstance.presenceManager
           .subscribe(members: onbserveList, expiry: 60 * 30); //30 minutes
-      print('register for pressence=>$onbserveList');
+      // print('register for pressence=>$onbserveList');
       ChatClient.getInstance.presenceManager.addEventHandler(
         "user_presence_home_screen",
         ChatPresenceEventHandler(
@@ -134,7 +142,11 @@ class ChatConversationChangeNotifier
     try {
       if (isDestroyed) return;
       isDestroyed = true;
-      List<String> ids = _chatConversationMap.keys.toList();
+      final List<String> ids = _chatConversationMap.values
+          .where((element) => element.contact.status == ContactStatus.friend)
+          .map((e) => e.id)
+          .toList();
+      // List<String> ids = _chatConversationMap.keys.toList();
       ChatClient.getInstance.presenceManager.unsubscribe(members: ids);
     } on ChatError catch (e) {
       print('error in unsubscribe presence: $e');
@@ -152,7 +164,7 @@ class ChatConversationChangeNotifier
     if (updateStatus) {
       List<String> ids = contacts.map((e) => e.userId.toString()).toList();
       statuses = await fetchOnlineStatuses(ids);
-      _registerPresence(ref, ids);
+      // registerPresence(ref, ids);
     } else {
       statuses = [];
     }

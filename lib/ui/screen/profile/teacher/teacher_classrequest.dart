@@ -1,11 +1,11 @@
 // import 'package:flutter/material.dart';
 // ignore_for_file: use_build_context_synchronously
+import 'package:intl/intl.dart';
 
 import '/data/models/models.dart';
 import '/controller/profile_providers.dart';
 import '/core/utils/chat_utils.dart';
 // import '/data/models/response/profile/scheduled_class_instructor_model.dart';
-import 'package:intl/intl.dart';
 
 import '/ui/widget/sliding_tab.dart';
 import '/core/constants/route_list.dart';
@@ -20,9 +20,7 @@ import '/core/ui_core.dart';
 // import '../base_settings.dart';
 
 final teacherClassesTabProvider = StateProvider.autoDispose<int>(
-  (ref) {
-    return 0;
-  },
+  (ref) => 0,
 );
 
 class TeacherClasses extends StatelessWidget {
@@ -41,7 +39,7 @@ class TeacherClasses extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
                   child: SlidingTab(
-                    label1: "scheduled Class",
+                    label1: "Scheduled Class",
                     label2: S.current.tp_classes,
                     selectedIndex: ref.watch(teacherClassesTabProvider),
                     callback: (p0) {
@@ -124,7 +122,7 @@ class TeacherClasses extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     physics: const BouncingScrollPhysics(),
                     separatorBuilder: (context, index) =>
-                        const Divider(color: AppColors.divider),
+                        const Divider(color: AppColors.dividerCall),
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
@@ -182,91 +180,98 @@ class TeacherClasses extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(10)),
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+            borderRadius: BorderRadius.circular(2.w)),
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 5.w),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  DateFormat("MMMM \n d")
-                      .format(scheduledClass.scheduledAt ?? DateTime.now()),
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(fontWeight: FontWeight.w800, fontSize: 3.5.w),
-                ),
-                SizedBox(
-                  width: 4.w,
-                ),
-                SizedBox(
-                  width: 40.w,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Text(
+              DateFormat("MMMM \n d")
+                  .format(scheduledClass.scheduledAt ?? DateTime.now()),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontFamily: kFontFamily,
+                fontSize: 10.sp,
+              ),
+            ),
+            SizedBox(width: 4.w),
+            Expanded(
+              // child: Row(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   children: [
+              // Expanded(
+              // width: 40.w,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    scheduledClass.title ?? "",
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontFamily: kFontFamily,
+                      fontSize: 13.sp,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2.w,
+                  ),
+                  Row(
                     children: [
+                      Icon(
+                        Icons.person,
+                        color: AppColors.iconGreyColor,
+                        size: 3.w,
+                      ),
                       Text(
-                        scheduledClass.title ?? "",
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                        scheduledClass.participants?.length.toString() ?? "",
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 4.5.w),
+                            fontSize: 8.sp,
+                            fontFamily: kFontFamily,
+                            color: AppColors.iconGreyColor),
                       ),
-                      SizedBox(
-                        height: 2.w,
+                      SizedBox(width: 2.w),
+                      Icon(
+                        Icons.notes,
+                        size: 3.w,
+                        color: AppColors.iconGreyColor,
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: AppColors.iconGreyColor,
-                            size: 3.w,
-                          ),
-                          Text(
-                            scheduledClass.participants?.length.toString() ??
-                                "",
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          ),
-                          SizedBox(width: 2.w),
-                          Icon(
-                            Icons.notes,
-                            size: 3.w,
-                            color: AppColors.iconGreyColor,
-                          ),
-                          SizedBox(width: 1.w),
-                          Text(
-                            scheduledClass.type ?? "",
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          ),
-                        ],
+                      SizedBox(width: 1.w),
+                      Text(
+                        scheduledClass.type ?? "",
+                        style: TextStyle(
+                            fontSize: 8.sp,
+                            fontFamily: kFontFamily,
+                            color: AppColors.iconGreyColor),
                       ),
-                      SizedBox(
-                        height: 2.w,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.timer,
-                            size: 3.w,
-                            color: AppColors.iconGreyColor,
-                          ),
-                          SizedBox(
-                            width: 2.w,
-                          ),
-                          Text(
-                            DateFormat('hh:mm a').format(
-                                scheduledClass.scheduledAt ?? DateTime.now()),
-                            style: TextStyle(
-                                fontSize: 3.w, color: AppColors.iconGreyColor),
-                          )
-                        ],
-                      )
                     ],
                   ),
-                ),
-              ],
+                  SizedBox(height: 2.w),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.timer,
+                        size: 3.w,
+                        color: AppColors.iconGreyColor,
+                      ),
+                      SizedBox(width: 2.w),
+                      Text(
+                        DateFormat('hh:mm a').format(
+                            scheduledClass.scheduledAt ?? DateTime.now()),
+                        style: TextStyle(
+                            fontSize: 9.sp,
+                            fontFamily: kFontFamily,
+                            color: AppColors.iconGreyColor),
+                      )
+                    ],
+                  )
+                ],
+              ),
+              //     ),
+              //   ],
+              // ),
             ),
             InkWell(
               onTap: () {
@@ -328,14 +333,20 @@ class TeacherClasses extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-              onPressed: () {
-                chatwithstudent(
-                  context,
-                  data.userId ?? 0,
-                );
-              },
-              icon: getSvgIcon('icon_req_chat.svg'))
+          InkWell(
+            onTap: () {
+              chatwithstudent(
+                context,
+                data.userId ?? 0,
+              );
+            },
+            child: getSvgIcon(
+              'icon_req_chat.svg',
+              width: 4.5.w,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          SizedBox(width: 1.w),
         ],
       ),
     );

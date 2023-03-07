@@ -191,7 +191,7 @@ class TeacherDashboard extends StatelessWidget {
           width: 43.w,
           height: 10.h,
           child: Stack(
-            children: <Widget>[
+            children: [
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -236,9 +236,7 @@ class TeacherDashboard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(
-                        width: 5.w,
-                      ),
+                      SizedBox(width: 5.w),
                     ],
                   ),
                 ),

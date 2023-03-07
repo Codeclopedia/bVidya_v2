@@ -31,101 +31,108 @@ class TeacherProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDrawerSettingScreen(
-      showEmail: true,
-      currentIndex: DrawerMenu.profile,
-      bodyContent: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: const [],
-            // ),
-            SizedBox(height: 3.w),
-            Consumer(
-              builder: (context, ref, child) {
-                return ref.watch(profileUserProvider).when(
-                  data: (data) {
-                    return data?.isApproved ?? false
-                        ? const SizedBox.shrink()
-                        : approvalNote();
-                  },
-                  error: (error, stackTrace) {
-                    return const SizedBox.shrink();
-                  },
-                  loading: () {
-                    return const SizedBox.shrink();
-                  },
-                );
-              },
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushNamedAndRemoveUntil(
+            context, RouteList.home, (route) => false);
+        return true;
+      },
+      child: BaseDrawerSettingScreen(
+        showEmail: true,
+        currentIndex: DrawerMenu.profile,
+        bodyContent: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: const [],
+              // ),
+              SizedBox(height: 3.w),
+              Consumer(
+                builder: (context, ref, child) {
+                  return ref.watch(profileUserProvider).when(
+                    data: (data) {
+                      return data?.isApproved ?? false
+                          ? const SizedBox.shrink()
+                          : approvalNote();
+                    },
+                    error: (error, stackTrace) {
+                      return const SizedBox.shrink();
+                    },
+                    loading: () {
+                      return const SizedBox.shrink();
+                    },
+                  );
+                },
+              ),
 
-            _buildProfile(),
-            Consumer(builder: (context, ref, child) {
-              return _buildContent(
-                  S.current.profile_details, 'profile_user.svg', () async {
-                // final user = await getMeAsUser();
-                final profile = ref.read(profileUserProvider).valueOrNull;
-                // showLoading(ref);
-                // final profile =
-                //     await ref.read(profileRepositoryProvider).getUserProfile();
-                // hideLoading(ref);
+              _buildProfile(),
+              Consumer(builder: (context, ref, child) {
+                return _buildContent(
+                    S.current.profile_details, 'profile_user.svg', () async {
+                  // final user = await getMeAsUser();
+                  final profile = ref.read(profileUserProvider).valueOrNull;
+                  // showLoading(ref);
+                  // final profile =
+                  //     await ref.read(profileRepositoryProvider).getUserProfile();
+                  // hideLoading(ref);
 
-                if (profile != null) {
-                  await updateProfile(ref, profile);
-                  Navigator.pushNamed(context, RouteList.teacherEditProfile,
-                      arguments: profile);
-                } else {
-                  AppSnackbar.instance
-                      .error(context, 'Error in loading teacher profile');
-                }
+                  if (profile != null) {
+                    await updateProfile(ref, profile);
+                    Navigator.pushNamed(context, RouteList.teacherEditProfile,
+                        arguments: profile);
+                  } else {
+                    AppSnackbar.instance
+                        .error(context, 'Error in loading teacher profile');
+                  }
 
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => TeacherProfileEdit()),
-                // );
-              });
-            }),
-            _buildContent(S.current.tp_dashboard, 'profile_learning.svg',
-                () async {
-              final user = await getMeAsUser();
-              if (user != null) {
-                Navigator.pushNamed(context, RouteList.teacherDashboard);
-              }
-            }),
-            //todo uncomment phase3
-            // _buildContent(S.current.tp_schedule, 'noti_calender.svg', () async {
-            //   final user = await getMeAsUser();
-            //   if (user != null) {
-            //     Navigator.pushNamed(context, RouteList.teacherSchedule);
-            //   }
-            // }),
-            _buildClassRequest(S.current.tp_classes, 'profile_instru.svg',
-                () async {
-              final user = await getMeAsUser();
-              if (user != null) {
-                Navigator.pushNamed(context, RouteList.teacherClassRequest);
-              }
-            }),
-            _buildContent(S.current.profile_invite, 'profile_invite.svg', () {
-              shareApp();
-            }),
-            Consumer(builder: (context, ref, child) {
-              return _buildContent(
-                  S.current.profile_logout, 'profile_logout.svg', () {
-                showLogoutDialog(context, ref, callback: () async {
-                  // ref.watch(loginRepositoryProvider).loggedOut();
-                  // Navigator.pushNamedAndRemoveUntil(
-                  //     context, RouteList.login, (route) => route.isFirst);
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => TeacherProfileEdit()),
+                  // );
                 });
-              });
-            }),
-            Container(
-              width: 0.5.w,
-            )
-          ]),
+              }),
+              _buildContent(S.current.tp_dashboard, 'profile_learning.svg',
+                  () async {
+                final user = await getMeAsUser();
+                if (user != null) {
+                  Navigator.pushNamed(context, RouteList.teacherDashboard);
+                }
+              }),
+              //todo uncomment phase3
+              // _buildContent(S.current.tp_schedule, 'noti_calender.svg', () async {
+              //   final user = await getMeAsUser();
+              //   if (user != null) {
+              //     Navigator.pushNamed(context, RouteList.teacherSchedule);
+              //   }
+              // }),
+              _buildClassRequest(S.current.tp_classes, 'profile_instru.svg',
+                  () async {
+                final user = await getMeAsUser();
+                if (user != null) {
+                  Navigator.pushNamed(context, RouteList.teacherClassRequest);
+                }
+              }),
+              _buildContent(S.current.profile_invite, 'profile_invite.svg', () {
+                shareApp();
+              }),
+              Consumer(builder: (context, ref, child) {
+                return _buildContent(
+                    S.current.profile_logout, 'profile_logout.svg', () {
+                  showLogoutDialog(context, ref, callback: () async {
+                    // ref.watch(loginRepositoryProvider).loggedOut();
+                    // Navigator.pushNamedAndRemoveUntil(
+                    //     context, RouteList.login, (route) => route.isFirst);
+                  });
+                });
+              }),
+              Container(
+                width: 0.5.w,
+              )
+            ]),
+      ),
     );
   }
 
