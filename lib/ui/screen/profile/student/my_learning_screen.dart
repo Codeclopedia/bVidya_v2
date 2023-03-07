@@ -155,9 +155,7 @@ class MyLearningScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(
-            color: AppColors.divider,
-          ),
+          const Divider(color: AppColors.divider),
           Padding(
             padding: EdgeInsets.only(
                 left: 3.w, right: 3.w, top: 0.5.h, bottom: 1.5.h),
@@ -286,7 +284,9 @@ class MyLearningScreen extends ConsumerWidget {
         },
         child: Row(
           children: [
-            getCicleAvatar('A', followedInstructor.image ?? "", radius: 3.h),
+            getCicleAvatar(followedInstructor.instructorName ?? '',
+                followedInstructor.image ?? '',
+                radius: 3.h),
             // CircleAvatar(
             //   radius: 7.w,
             //   backgroundImage:

@@ -103,7 +103,7 @@ class RequestedClass {
         updatedAt: DateTime.parse(json["updated_at"]),
         instructorName: json["instructor_name"],
         instructorImage: json["instructor_image"],
-        preferred_date_time: json["preferred_date_time"],
+        preferred_date_time: json["preferred_date_time"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

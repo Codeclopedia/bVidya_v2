@@ -645,7 +645,7 @@ class Routes {
       case RouteList.subscriptionPlans:
         screen = const SubscriptionPlansScreen();
         break;
-      case RouteList.subscriptionDetail:
+      case RouteList.activePlan:
         screen = const ActivePlanDetailScreen();
 
         break;

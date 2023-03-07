@@ -6,7 +6,7 @@ import '/core/utils.dart';
 import '/core/utils/common.dart';
 
 import '/controller/profile_providers.dart';
-import '../../../screens.dart';
+import '/ui/screens.dart';
 import '/ui/dialog/basic_dialog.dart';
 
 import '/core/constants/colors.dart';
@@ -14,7 +14,7 @@ import '/core/constants/route_list.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 
-import '../../../widget/base_drawer_setting_screen.dart';
+import '/ui/widget/base_drawer_setting_screen.dart';
 
 class StudentProfileScreen extends ConsumerWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
@@ -22,152 +22,172 @@ class StudentProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final creditHistoryData = ref.watch(creditHistoryProvider);
-    return BaseDrawerSettingScreen(
-      showEmail: true,
-      currentIndex: DrawerMenu.profile,
-      bodyContent: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // SizedBox(height: 0.4.h),
-            // Center(
-            //   child: Consumer(
-            //     builder: (context, ref, child) {
-            //       return Text(
-            //         user?.email ?? '',
-            //         style: TextStyle(
-            //           fontSize: 8.sp,
-            //           fontWeight: FontWeight.w600,
-            //           color: AppColors.primaryColor,
-            //           fontFamily: kFontFamily,
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
-            creditHistoryData.when(
-              data: (data) {
-                if (data == null) {
-                  return Container();
-                }
+    return WillPopScope(
+      onWillPop: () async {
+        hideLoading(ref);
+        Navigator.pop(context);
+        return true;
+      },
+      child: BaseDrawerSettingScreen(
+        showEmail: true,
+        currentIndex: DrawerMenu.profile,
+        bodyContent: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // SizedBox(height: 0.4.h),
+              // Center(
+              //   child: Consumer(
+              //     builder: (context, ref, child) {
+              //       return Text(
+              //         user?.email ?? '',
+              //         style: TextStyle(
+              //           fontSize: 8.sp,
+              //           fontWeight: FontWeight.w600,
+              //           color: AppColors.primaryColor,
+              //           fontFamily: kFontFamily,
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
+              creditHistoryData.when(
+                data: (data) {
+                  if (data == null) {
+                    return const SizedBox.shrink();
+                  }
 
-                return Column(
-                  children: [
-                    SizedBox(
-                      height: 2.w,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        getPngIcon('coin.png', width: 4.w),
-                        SizedBox(
-                          width: 2.w,
-                        ),
-                        Text(
-                          "You have ${data.avilableCourseCredits} Credits",
-                          style: textStyleBlack.copyWith(fontSize: 10.sp),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-              error: (error, stackTrace) {
-                return Container();
-              },
-              loading: () {
-                return Container();
-              },
-            ),
-            SizedBox(height: 3.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-              child: Text(
-                S.current.profile_title,
-                style: textStyleHeading,
+                  return Column(
+                    children: [
+                      SizedBox(height: 2.w),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getPngIcon('coin.png', width: 4.w),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                            "You have ${data.avilableCourseCredits ?? 0} Credits",
+                            style: textStyleBlack.copyWith(fontSize: 10.sp),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+                error: (error, stackTrace) {
+                  return const SizedBox.shrink();
+                },
+                loading: () {
+                  return const SizedBox.shrink();
+                },
               ),
-            ),
-            SizedBox(height: 1.h),
-            _buildContent(S.current.profile_details, "profile_user.svg",
-                () async {
-              showLoading(ref);
-              final profile =
-                  await ref.watch(profileRepositoryProvider).getUserProfile();
-              hideLoading(ref);
+              SizedBox(height: 3.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                child: Text(
+                  S.current.profile_title,
+                  style: textStyleHeading,
+                ),
+              ),
+              SizedBox(height: 1.h),
+              _buildContent(S.current.profile_details, "profile_user.svg",
+                  () async {
+                showLoading(ref);
+                final profile =
+                    await ref.watch(profileRepositoryProvider).getUserProfile();
+                hideLoading(ref);
 
-              if (profile != null) {
-                await updateProfile(ref, profile);
-                await Navigator.pushNamed(
-                    context, RouteList.studentProfileDetail,
-                    arguments: profile);
-              } else {
-                AppSnackbar.instance.error(context, 'Error in loading profile');
-              }
-            }),
-            _buildContent(S.current.profile_learning, "profile_learning.svg",
-                () {
-              Navigator.pushNamed(context, RouteList.studentLearnings);
-            }),
-            // _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
-            //   Navigator.pushNamed(context, RouteList.notificationSetting);
-            //   // Navigator.push(
-            //   //   context,
-            //   //   MaterialPageRoute(
-            //   //       builder: (context) => const NotificationSettingScreen()),
-            //   // );
-            // }),
-            _buildContent(S.current.tp_schedule, 'noti_calender.svg', () {
-              Navigator.pushNamed(context, RouteList.studentProfileSchdule);
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => const NotificationSettingScreen()),
-              // );
-            }),
-            _buildContent(S.current.profile_subscription, 'noti_calender.svg',
-                () {
-              // return Navigator.push(context, MaterialPageRoute(
-              //   builder: (context) {
-              //     return SubscriptionDetail(
-              //         creditsDetails:
-              //             creditHistoryData.value ?? CreditDetailBody());
-              //   },
-              // ));
-              
-              if (creditHistoryData.isLoading) {}
-              if (creditHistoryData.value == null) {}
-              if (creditHistoryData.value!.avilableCourseCredits! > 0) {
-                return Navigator.pushReplacementNamed(
-                    context, RouteList.subscriptionDetail);
-              } else {
-                Navigator.pushNamed(context, RouteList.subscriptionPlans);
-              }
-            }),
-            _buildContent(S.current.profile_instr, "profile_instru.svg", () {
-              showLoading(ref);
-              Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://www.app.bvidya.com/",
-              });
-              hideLoading(ref);
-            }),
-            _buildContent(S.current.profile_invite, "profile_invite.svg", () {
-              shareApp();
-            }),
-            Consumer(builder: (context, ref, child) {
-              return _buildContent(
-                  S.current.profile_logout, "profile_logout.svg", () {
-                showLogoutDialog(context, ref, callback: () async {
-                  // ref.watch(loginRepositoryProvider).loggedOut();
-                  // Navigator.pushNamedAndRemoveUntil(
-                  //     context, RouteList.login, (route) => route.isFirst);
+                if (profile != null) {
+                  await updateProfile(ref, profile);
+                  await Navigator.pushNamed(
+                      context, RouteList.studentProfileDetail,
+                      arguments: profile);
+                } else {
+                  AppSnackbar.instance
+                      .error(context, 'Error in loading profile');
+                }
+              }),
+              _buildContent(S.current.profile_learning, "profile_learning.svg",
+                  () {
+                Navigator.pushNamed(context, RouteList.studentLearnings);
+              }),
+              // _buildContent(S.current.settingsNoti, "ic_set_noty.svg", () {
+              //   Navigator.pushNamed(context, RouteList.notificationSetting);
+              //   // Navigator.push(
+              //   //   context,
+              //   //   MaterialPageRoute(
+              //   //       builder: (context) => const NotificationSettingScreen()),
+              //   // );
+              // }),
+              _buildContent(S.current.tp_schedule, 'noti_calender.svg', () {
+                Navigator.pushNamed(context, RouteList.studentProfileSchdule);
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => const NotificationSettingScreen()),
+                // );
+              }),
+              _buildContent(S.current.profile_subscription, 'subscription.svg',
+                  () {
+                // return Navigator.push(context, MaterialPageRoute(
+                //   builder: (context) {
+                //     return SubscriptionDetail(
+                //         creditsDetails:
+                //             creditHistoryData.value ?? CreditDetailBody());
+                //   },
+                // ));
+                // final data = creditHistoryData.valueOrNull;
+                if ((creditHistoryData.valueOrNull?.avilableCourseCredits ??
+                        0) >
+                    0) {
+                  Navigator.pushReplacementNamed(context, RouteList.activePlan);
+                } else {
+                  Navigator.pushNamed(context, RouteList.subscriptionPlans);
+                }
+                // if (creditHistoryData.isLoading) {
+                //   showLoading(ref);
+                // }
+                // if (creditHistoryData.value == null) {
+                //   hideLoading(ref);
+                // }
+                // creditHistoryData.whenData((value) {
+                //   hideLoading(ref);
+                //   if (creditHistoryData.value!.avilableCourseCredits! > 0) {
+                //     Navigator.pushReplacementNamed(
+                //         context, RouteList.activePlan);
+                //   } else {
+                //     Navigator.pushNamed(context, RouteList.subscriptionPlans);
+                //   }
+                // });
+              }),
+              _buildContent(S.current.profile_instr, "profile_instru.svg", () {
+                showLoading(ref);
+                Navigator.pushNamed(context, RouteList.webview, arguments: {
+                  'url': "https://www.app.bvidya.com/",
                 });
-              });
-            }),
-            Container(
-              width: 0.5.w,
-            )
-          ]),
+                hideLoading(ref);
+              }),
+              _buildContent(S.current.profile_invite, "profile_invite.svg", () {
+                shareApp();
+              }),
+              Consumer(builder: (context, ref, child) {
+                return _buildContent(
+                    S.current.profile_logout, "profile_logout.svg", () {
+                  showLogoutDialog(context, ref, callback: () async {
+                    // ref.watch(loginRepositoryProvider).loggedOut();
+                    // Navigator.pushNamedAndRemoveUntil(
+                    //     context, RouteList.login, (route) => route.isFirst);
+                  });
+                });
+              }),
+              Container(
+                width: 0.5.w,
+              )
+            ]),
+      ),
     );
   }
 

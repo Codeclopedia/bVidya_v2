@@ -124,7 +124,7 @@ class RouteList {
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 
   static const String subscriptionPlans = '/subscription-plans';
-  static const String subscriptionDetail = '/subscription-details';
+  static const String activePlan = '/subscription-details';
   static const String classScheduleDetails = '/class-schedule-details';
   static const String classScheduledDetail = '/class-schdeduled-detail';
   //
