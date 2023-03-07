@@ -240,7 +240,8 @@ class GroupMemberHelper {
       final map = {
         'type': 'member_update',
         'action': GroupMemberAction.joined.name,
-        'members': [me.id.toString()].toString()
+        'members': jsonEncode(
+            GroupMembers([MemberInfo(me.id, name: me.name)]).toJson())
       };
       final event = jsonEncode(map);
       final message = ChatMessage.createCustomSendMessage(
@@ -261,10 +262,12 @@ class GroupMemberHelper {
       if (me == null) {
         return false;
       }
+
       final map = {
         'type': 'member_update',
         'action': GroupMemberAction.left.name,
-        'members': [me.id.toString()].toString()
+        'members': jsonEncode(
+            GroupMembers([MemberInfo(me.id, name: me.name)]).toJson())
       };
       final event = jsonEncode(map);
       final message = ChatMessage.createCustomSendMessage(

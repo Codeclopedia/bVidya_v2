@@ -492,7 +492,10 @@ class GroupChatScreen extends HookConsumerWidget {
               if (memebers != null) {
                 String actionStr = '';
                 GroupMemberAction? action = groupActionFrom(map['action']);
-                String by = name.isEmpty ? '' : ' by ${contact.name}';
+
+                String by = name.isEmpty
+                    ? ''
+                    : ' by ${isOwnMessage ? S.current.bmeet_user_you : (contact.name)}';
                 if (action == GroupMemberAction.added) {
                   actionStr = ' added$by';
                 } else if (action == GroupMemberAction.removed) {
@@ -517,7 +520,7 @@ class GroupChatScreen extends HookConsumerWidget {
                             color: AppColors.cardWhite,
                             borderRadius: BorderRadius.circular(2.w)),
                         child: Text(
-                          '${e.name ?? e.id}$actionStr',
+                          '${e.id == _me.userId ? S.current.bmeet_user_you : (e.name ?? 'User #${e.id}')}$actionStr',
                           style: TextStyle(
                             fontFamily: kFontFamily,
                             color: Colors.black,
