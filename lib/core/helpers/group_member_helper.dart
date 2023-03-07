@@ -249,17 +249,17 @@ class GroupMemberHelper {
       message.attributes ??= {};
       message.attributes?.addAll({'from_name': me.name});
       message.attributes?.addAll({'from_image': me.image});
-      // message.attributes?.addAll({"em_force_notification": true});
+      message.attributes?.addAll({"em_force_notification": false});
 
       await ChatClient.getInstance.chatManager.sendMessage(message);
     } catch (_) {}
   }
 
-  static Future sendMemberLeftFromGroup(String groupId, String member) async {
+  static Future<bool> sendMemberLeftFromGroup(String groupId) async {
     try {
       User? me = await getMeAsUser();
       if (me == null) {
-        return;
+        return false;
       }
       final map = {
         'type': 'member_update',
@@ -274,6 +274,9 @@ class GroupMemberHelper {
       message.attributes?.addAll({'from_image': me.image});
       message.attributes?.addAll({"em_force_notification": false});
       await ChatClient.getInstance.chatManager.sendMessage(message);
+      await ChatClient.getInstance.groupManager.leaveGroup(groupId);
+      return true;
     } catch (_) {}
+    return false;
   }
 }

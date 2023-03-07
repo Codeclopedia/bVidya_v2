@@ -157,16 +157,16 @@ class GroupConversationChangeNotifier
     state = _groupConversationMap.values.toList();
   }
 
-  Future leave(String groupId) async {
-    try {
-      await ChatClient.getInstance.groupManager.leaveGroup(groupId);
-      _groupConversationMap.remove(groupId);
-      state = _groupConversationMap.values.toList();
-      return null;
-    } catch (e) {
-      return 'Error in leaving group';
-    }
-  }
+  // Future leave(String groupId) async {
+  //   try {
+  //     // await ChatClient.getInstance.groupManager.leaveGroup(groupId);
+  //     _groupConversationMap.remove(groupId);
+  //     state = _groupConversationMap.values.toList();
+  //     return null;
+  //   } catch (e) {
+  //     return 'Error in leaving group';
+  //   }
+  // }
 
   void reset(WidgetRef ref) async {
     // print('Loading groups $_isLoading');

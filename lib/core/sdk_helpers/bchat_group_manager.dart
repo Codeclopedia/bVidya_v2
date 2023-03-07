@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
-import '../../controller/bchat_providers.dart';
+import '/controller/bchat_providers.dart';
 import '../helpers/group_member_helper.dart';
 import '../state.dart';
 import '/data/models/models.dart';
@@ -361,7 +361,7 @@ class BchatGroupManager {
         }
       }
       // print('Group Unread $count');
-    } catch (e) {}
+    } catch (_) {}
     return count;
   }
 
@@ -377,6 +377,5 @@ class BchatGroupManager {
   //   }
   //   return [];
   // }
-
 
 }

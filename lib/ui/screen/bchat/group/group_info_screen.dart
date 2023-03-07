@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/helpers/group_member_helper.dart';
 import '/core/helpers/call_helper.dart';
 import '/core/helpers/group_call_helper.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
@@ -84,18 +85,13 @@ class GroupInfoScreen extends HookConsumerWidget {
                 showBasicDialog(
                     context, S.current.grp_btx_exit, 'Are you sure?', 'Yes',
                     () async {
-                  final result = await ref
-                      .read(groupConversationProvider.notifier)
-                      .leave(group.id);
-                  if (result == null) {
-                    // Navigator.popUntil(context, (route) {
-                    //   print('screen names=> ${route.settings.name}');
-                    //   // return route.isFirst ||
-                    //   //     route.settings.name == RouteList.groups;
-                    //   return route.isFirst;
-                    // });
+                  if (await GroupMemberHelper.sendMemberLeftFromGroup(
+                      group.id)) {
+                    await ref
+                        .read(groupConversationProvider.notifier)
+                        .removeEntry(group.id);
                     Navigator.pushNamedAndRemoveUntil(
-                        context, RouteList.groups, (route) => route.isFirst);
+                        context, RouteList.groups, (route) => false);
                     return;
                   }
                 });
