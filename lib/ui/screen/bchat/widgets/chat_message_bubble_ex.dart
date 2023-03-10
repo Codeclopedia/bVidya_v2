@@ -29,6 +29,7 @@ import '/ui/widgets.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '../dash/models/mention.dart';
+import 'chat_image_list.dart';
 
 const String urlPattern =
     r"(https?|http)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:‌​,.;]*)?";
@@ -141,10 +142,10 @@ class ChatMessageBubbleExt extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _groupMedia(this.message.messages[0]),
+                  child: _groupMedia(context, 0),
                 ),
                 Expanded(
-                  child: _groupMedia(this.message.messages[1]),
+                  child: _groupMedia(context, 1),
                 ),
               ],
             ),
@@ -152,15 +153,13 @@ class ChatMessageBubbleExt extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _groupMedia(
-                    this.message.messages[2],
-                  ),
+                  child: _groupMedia(context, 2),
                 ),
                 Expanded(
                     child: Stack(
                   // fit: StackFit.expand,
                   children: [
-                    _groupMedia(this.message.messages[3],
+                    _groupMedia(context, 3,
                         count: this.message.messages.length - 4),
                     // if (this.message.messages.length > 4)
                   ],
@@ -213,6 +212,9 @@ class ChatMessageBubbleExt extends StatelessWidget {
               child: _videoOnly(body));
         }
       case MessageType.CUSTOM:
+        if (message.chatType == ChatType.Chat) {
+          return const SizedBox.shrink();
+        }
         ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
         if (message.chatType == ChatType.GroupChat) {
           try {
@@ -225,15 +227,17 @@ class ChatMessageBubbleExt extends StatelessWidget {
             // print('Error Grp=> $e');
             break;
           }
-        } else if (message.chatType == ChatType.Chat) {
-          try {
-            final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-
-            return _callBody(callBody.callType);
-          } catch (e) {
-            break;
-          }
-        } else {
+        }
+        // else if (message.chatType == ChatType.Chat) {
+        // return const SizedBox.shrink();
+        // try {
+        //   final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
+        //   return _callBody(callBody.callType);
+        // } catch (e) {
+        // break;
+        // }
+        // }
+        else {
           break;
         }
 
@@ -311,32 +315,44 @@ class ChatMessageBubbleExt extends StatelessWidget {
     );
   }
 
-  Widget _groupMedia(ChatMessage message, {int count = 0}) {
-    return Container(
-      margin: EdgeInsets.all(0.5.w),
-      width: 30.w,
-      height: 30.w,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(1.w)),
-            child: Image(
-              image: message.body.type == MessageType.IMAGE
-                  ? getImageProviderChatImage(
-                      message.body as ChatImageMessageBody)
-                  : getImageProviderChatVideo(
-                      message.body as ChatVideoMessageBody),
-              fit: BoxFit.cover,
+  Widget _groupMedia(BuildContext context, int index, {int count = 0}) {
+    final ChatMessage message = this.message.messages[index];
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatImageList(
+            message: this.message,
+            index: index,
+          ),
+        ),
+      ),
+      child: Container(
+        margin: EdgeInsets.all(0.5.w),
+        width: 30.w,
+        height: 30.w,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(1.w)),
+              child: Image(
+                image: message.body.type == MessageType.IMAGE
+                    ? getImageProviderChatImage(
+                        message.body as ChatImageMessageBody)
+                    : getImageProviderChatVideo(
+                        message.body as ChatVideoMessageBody),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          Positioned(
-            right: 2.w,
-            bottom: 1.h,
-            child: _buildTimeGroupMedia(message),
-          ),
-          if (count > 0) Center(child: Text('+ $count'))
-        ],
+            Positioned(
+              right: 2.w,
+              bottom: 1.h,
+              child: _buildTimeGroupMedia(message),
+            ),
+            if (count > 0) Center(child: Text('+ $count'))
+          ],
+        ),
       ),
     );
   }

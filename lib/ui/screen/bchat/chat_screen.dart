@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/contact_list_provider.dart';
 
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -27,7 +26,7 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/core/utils/date_utils.dart';
-
+import '/controller/providers/bchat/contact_list_provider.dart';
 import '/data/models/contact_model.dart';
 import '/data/models/conversation_model.dart';
 import '/controller/providers/chat_messagelist_provider.dart';

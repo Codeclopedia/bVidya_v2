@@ -185,14 +185,17 @@ class TeacherClasses extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              DateFormat("MMMM \n d")
-                  .format(scheduledClass.scheduledAt ?? DateTime.now()),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontFamily: kFontFamily,
-                fontSize: 10.sp,
+            SizedBox(
+              width: 20.w,
+              child: Text(
+                DateFormat("MMMM \n d")
+                    .format(scheduledClass.scheduledAt ?? DateTime.now()),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontFamily: kFontFamily,
+                  fontSize: 10.sp,
+                ),
               ),
             ),
             SizedBox(width: 4.w),

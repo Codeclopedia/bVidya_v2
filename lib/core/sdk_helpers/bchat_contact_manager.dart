@@ -12,7 +12,7 @@ import '/data/services/fcm_api_service.dart';
 import '/controller/bchat_providers.dart';
 import '../state.dart';
 import '../ui_core.dart';
-import '../utils/chat_utils.dart';
+// import '../utils/chat_utils.dart';
 
 class BChatContactManager {
   BChatContactManager._();
