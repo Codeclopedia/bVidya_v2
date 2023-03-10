@@ -16,7 +16,7 @@ import '../../screens.dart';
 
 class BMeetCallScreen extends StatelessWidget {
   final Meeting meeting;
-  final bool enableVideo;
+  final bool camoff;
   final bool disableMic;
   final String rtmToken;
   final String rtmUser;
@@ -29,7 +29,7 @@ class BMeetCallScreen extends StatelessWidget {
   BMeetCallScreen({
     Key? key,
     required this.meeting,
-    required this.enableVideo,
+    required this.camoff,
     required this.disableMic,
     required this.rtmToken,
     required this.rtmUser,
@@ -42,7 +42,7 @@ class BMeetCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("values $enableVideo $disableMic");
+    print("the value $camoff $disableMic");
     return PIPView(builder: (context, isFloating) {
       return BaseWilPopupScreen(
         onBack: () async {
@@ -67,8 +67,8 @@ class BMeetCallScreen extends StatelessWidget {
               Consumer(builder: (context, ref, child) {
                 final provider = ref.watch(bMeetCallChangeProvider);
 
-                provider.init(
-                    ref, meeting, enableVideo, rtmToken, rtmUser, userId);
+                provider.init(ref, meeting, camoff, disableMic, rtmToken,
+                    rtmUser, userId);
 
                 ref.listen(bMeetCallChangeProvider, (previous, next) {
                   if (next.kickOut) {
@@ -680,7 +680,7 @@ class BMeetCallScreen extends StatelessWidget {
                 // )
               ),
               _buildToolItemIcon(
-                  text: !provider.disableLocalCamera
+                  text: provider.disableLocalCamera
                       ? S.current.bmeet_tool_video
                       : S.current.bmeet_tool_stop_video,
                   onTap: () {
@@ -694,9 +694,9 @@ class BMeetCallScreen extends StatelessWidget {
                     }
                   },
                   icon: provider.disableLocalCamera
-                      ? Icons.videocam
-                      : Icons.videocam_off,
-                  color: provider.disableLocalCamera ? Colors.white : Colors.red
+                      ? Icons.videocam_off
+                      : Icons.videocam,
+                  color: provider.disableLocalCamera ? Colors.red : Colors.white
                   // child: getSvgIcon(
                   //     provider.camera ? 'vc_camera_on.svg' : 'vc_camera_off.svg'),
                   ),

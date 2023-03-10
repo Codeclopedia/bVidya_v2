@@ -95,7 +95,7 @@ Future _openMeetingScreen(BuildContext context, Meeting meeting,
 
   final args = <String, dynamic>{
     'id': id,
-    'video': !camOff,
+    'video': camOff,
     'meeting': meeting,
     'user_id': user.id,
     'rtm_token': userToken.rtmToken ?? '',

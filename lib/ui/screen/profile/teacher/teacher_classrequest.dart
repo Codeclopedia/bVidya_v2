@@ -66,6 +66,9 @@ class TeacherClasses extends StatelessWidget {
             if (data == null) {
               return const Center(child: CircularProgressIndicator.adaptive());
             }
+            if (data.scheduledClasses?.isEmpty ?? true) {
+              return buildEmptyPlaceHolder('No scheduled class.');
+            }
             return scheduledClasseslist(data.scheduledClasses ?? [], context);
           },
           error: (error, stackTrace) {

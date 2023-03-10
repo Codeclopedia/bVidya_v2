@@ -64,7 +64,7 @@ class BMeetProvider extends ChangeNotifier {
   bool get speakerOn => _speakerOn;
 
 //
-  bool _disableLocalCamera = true;
+  bool _disableLocalCamera = false;
   bool get disableLocalCamera => _disableLocalCamera;
 
 //
@@ -104,7 +104,7 @@ class BMeetProvider extends ChangeNotifier {
 
 //
   late final Meeting _meeting;
-  late final bool _enableVideo;
+  late final bool _camOff;
 
   final DurationNotifier _callTimerProvider;
 
@@ -135,13 +135,16 @@ class BMeetProvider extends ChangeNotifier {
   // }
 
   WidgetRef? _ref;
-  void init(WidgetRef ref, Meeting meeting, bool enableVideo, String rtmToken,
-      String rtmUser, int userid) {
+  void init(WidgetRef ref, Meeting meeting, bool camoff, bool audioMuted,
+      String rtmToken, String rtmUser, int userid) {
+    print("the values in createRtmClient are $camoff and $audioMuted");
     if (_initialized) return;
     _ref = ref;
     _initialized = true;
     _meeting = meeting;
-    _enableVideo = enableVideo;
+    _camOff = camoff;
+    _muted = audioMuted;
+    _disableLocalCamera = camoff;
     _createRTMClient(rtmToken, rtmUser, userid);
   }
 
@@ -241,16 +244,27 @@ class BMeetProvider extends ChangeNotifier {
           // } else {
           //   value.widget = getRectFAvatar(value.name, '');
           // }
-          _userList.addAll(
-              {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
+          _userList.addAll({
+            _localUid: ConnectedUserInfo(_localUid, '',
+                !_camOff ? _localView() : getRectFAvatar("#", ""), _camOff)
+          });
           _updateMemberList();
         },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+        onUserJoined:
+            (RtcConnection connection, int remoteUid, int elapsed) async {
           _userList.addAll({
-            remoteUid: ConnectedUserInfo(remoteUid, '', _remoteView(remoteUid))
+            remoteUid: ConnectedUserInfo(
+                remoteUid,
+                '',
+                // _camOff ? getRectFAvatar("#", "") : _remoteView(remoteUid),
+                _remoteView(remoteUid),
+                _camOff)
           });
+
           // notifyListeners();
-          _updateMemberList();
+          await _updateMemberList();
+          EasyLoading.showToast("${_userList[remoteUid]?.name} Joined",
+              toastPosition: EasyLoadingToastPosition.bottom);
         },
         onRemoteVideoStateChanged:
             (connection, remoteUid, state, reason, elapsed) {
@@ -277,12 +291,15 @@ class BMeetProvider extends ChangeNotifier {
           // _updateMemberList();
           if (_localUserJoined) {
             _localUserJoined = false;
+
             // print('User Id:$userid');
             notifyListeners();
           }
         },
         onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
           _userRemoteIds.remove(remoteUid);
+          EasyLoading.showToast("${_userList[remoteUid]?.name} left",
+              toastPosition: EasyLoadingToastPosition.bottom);
           _userList.removeWhere((key, value) => key == remoteUid);
 
           // if (remoteUid < 1000000) {
@@ -341,8 +358,8 @@ class BMeetProvider extends ChangeNotifier {
         onUserMuteVideo: (connection, remoteUid, muted) {
           if (_userList.containsKey(remoteUid)) {
             _userList.update(remoteUid, (value) {
-              value.enabledVideo = !muted;
-              if (value.enabledVideo) {
+              value.camOff = muted;
+              if (!value.camOff) {
                 value.widget = _remoteView(remoteUid);
               } else {
                 value.widget = getRectFAvatar(value.name, '');
@@ -372,8 +389,11 @@ class BMeetProvider extends ChangeNotifier {
     await _engine.enableLocalVideo(true);
     await _engine.enableAudioVolumeIndication(
         interval: 250, smooth: 3, reportVad: true);
-    await _engine.muteLocalAudioStream(_muted);
-    await _engine.muteLocalVideoStream(_disableLocalCamera);
+
+    await _engine.muteLocalAudioStream(muted);
+    await _engine.muteLocalVideoStream(_camOff);
+    // await _engine.mu
+    print("value of local video stream $_camOff");
     // await _engine.enableVideo();
 // await _engine.setEnableSpeakerphone(speakerOn)
     await _engine.setVideoEncoderConfiguration(
@@ -385,6 +405,7 @@ class BMeetProvider extends ChangeNotifier {
     );
 
     await _engine.startPreview();
+
     await _engine.joinChannel(
         token: _meeting.token,
         channelId: _meeting.channel,
@@ -451,7 +472,7 @@ class BMeetProvider extends ChangeNotifier {
     return false;
   }
 
-  void _updateMemberList() async {
+  _updateMemberList() async {
     if (_rtmChannel == null) {
       notifyListeners();
       return;
@@ -472,10 +493,12 @@ class BMeetProvider extends ChangeNotifier {
         String name = user.split(':')[1];
         if (_userList.containsKey(id)) {
           _memberList.add(e);
+          print(
+              "userlist in video ${_userList[id]?.camOff ?? false} ${_userList[id]?.muteAudio ?? true}");
           _userList.update(
             id,
             (value) {
-              if (value.enabledVideo) {
+              if (!value.camOff) {
                 if (id == _localUid) {
                   value.widget = _localView();
                 } else {
@@ -582,8 +605,8 @@ class BMeetProvider extends ChangeNotifier {
     await _engine.muteLocalVideoStream(_disableLocalCamera);
     if (_userList.containsKey(_localUid)) {
       _userList.update(_localUid, (value) {
-        value.enabledVideo = !_disableLocalCamera;
-        if (value.enabledVideo) {
+        value.camOff = _disableLocalCamera;
+        if (!value.camOff) {
           value.widget = _localView();
         } else {
           value.widget = getRectFAvatar(value.name, '');
@@ -869,7 +892,8 @@ class ConnectedUserInfo {
   String name;
   bool isSpeaking = false;
   bool muteAudio = false;
-  bool enabledVideo = false;
+  bool camOff;
+  // bool enabledVideo = true;
 
-  ConnectedUserInfo(this.uid, this.name, this.widget);
+  ConnectedUserInfo(this.uid, this.name, this.widget, this.camOff);
 }

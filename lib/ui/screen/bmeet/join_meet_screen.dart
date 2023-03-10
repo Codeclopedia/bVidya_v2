@@ -39,6 +39,7 @@ class JoinMeetScreen extends HookWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(S.current.bmeet_join_heading,
                           style: textStyleHeading),

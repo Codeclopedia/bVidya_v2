@@ -309,7 +309,9 @@ class MyLearningScreen extends ConsumerWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 0.3.h),
                     child: Text(
-                      "2K Followers",
+                      followedInstructor.specialization ?? "",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 8.sp,
                           color: AppColors.descTextColor,

@@ -177,6 +177,18 @@ Image getPngIcon(String name,
       fit: BoxFit.fitWidth,
     );
 
+Image getPngImage(String name,
+        {double? width = 24.0,
+        Color? color,
+        double height = 24.0,
+        BoxFit fit = BoxFit.fitWidth}) =>
+    Image.asset(
+      'assets/images/$name',
+      width: width,
+      color: color,
+      fit: fit,
+    );
+
 Widget getLottieIcon(String name,
         {double? width = 24.0,
         Color? color,

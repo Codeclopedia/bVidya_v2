@@ -445,7 +445,7 @@ class Routes {
           // print('Meeting: ${meeting.toJson()}');
           screen = BMeetCallScreen(
               meeting: meeting,
-              enableVideo: video,
+              camoff: video,
               meetingId: meetingId,
               rtmToken: rtmToken,
               rtmUser: rtmUser,

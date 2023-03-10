@@ -1,5 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '../../dialog/bmeet_forward_link_dialog.dart';
+import '/app.dart';
+// import 'package:bvidya/ui/dialog/forward_dialog.dart';
+// import 'package:bvidya/ui/screen/bmeet/bmeet_forward_link_dialog.dart';
+
 import '/core/constants.dart';
 import '/core/helpers/bmeet_helper.dart';
 import '/core/state.dart';
@@ -74,6 +79,7 @@ class StartMeetScreen extends StatelessWidget {
                       onPressed: () {
                         final camOff = ref.read(videoOffStartMeetingProvider);
                         final micOff = ref.read(muteStartMeetingProvider);
+                        print("the value before $camOff $micOff");
                         startMeeting(
                             context, ref, scheduledMeeting, camOff, micOff);
                       },
@@ -111,9 +117,8 @@ class StartMeetScreen extends StatelessWidget {
               ),
             ),
             InkWell(
-              onTap: () {
-                shareUserMeetContent('Meeting Id', scheduledMeeting.meetingId,
-                    'Instant Meeting');
+              onTap: () async {
+                await _buildshareWidget();
               },
               child: Column(
                 children: [
@@ -132,6 +137,98 @@ class StartMeetScreen extends StatelessWidget {
           ],
         ),
       );
+
+  Future<Widget> _buildshareWidget() async {
+    return await showDialog(
+      context: navigatorKey.currentContext!,
+      builder: (context) {
+        return Center(
+          child: Container(
+            height: 40.w,
+            width: 60.w,
+            padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
+            decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(3.w)),
+            child: Column(
+              children: [
+                Text(
+                  "Share with",
+                  style: textStyleHeading.copyWith(color: Colors.white),
+                ),
+                SizedBox(height: 6.w),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        final user = await getMeAsUser();
+                        if (user == null) return;
+                        String content =
+                            '${user.name} just invited you to a bvidya Instant Meeting.\n'
+                            'Instant Meeting code -${scheduledMeeting.meetingId}\n'
+                            'To join, copy the code and enter it on the bvidya app or website.';
+
+                        await showBmeetForwardList(
+                            context, content, user.id.toString());
+                        // await showForwardList(
+                        //     context,
+                        //     [
+                        //       ChatMessage.createTxtSendMessage(
+                        //           targetId: '184', content: 'tessting')
+                        //     ],
+                        //     user?.id.toString() ?? "");
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getPngIcon('menu_bchat.png', width: 12.w),
+                          RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                              text: S.current.bchat.substring(0, 1),
+                              style: textStyleBlack.copyWith(
+                                  fontSize: 10.sp, color: Colors.white),
+                            ),
+                            TextSpan(
+                              text: S.current.bchat.substring(1, 5),
+                              style: textStyleBlack.copyWith(
+                                  fontSize: 10.sp,
+                                  color: AppColors.yellowAccent),
+                            ),
+                          ]))
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    InkWell(
+                      onTap: () {
+                        shareUserMeetContent('Meeting Id',
+                            scheduledMeeting.meetingId, 'Instant Meeting');
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getPngImage('apps-icon-png-5.jpg', width: 12.w),
+                          Text(
+                            'Other Apps',
+                            style: textStyleBlack.copyWith(
+                                fontSize: 10.sp, color: Colors.white),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildSettingRow(
       String title, String desc, bool value, Function(bool) onTapSetting) {

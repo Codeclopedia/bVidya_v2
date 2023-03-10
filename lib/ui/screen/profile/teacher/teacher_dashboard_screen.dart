@@ -45,7 +45,6 @@ class TeacherDashboard extends StatelessWidget {
           return data.when(
               data: (data) {
                 if (data == null) {
-                  print('data is null');
                   return const SizedBox.shrink();
                 }
                 return Column(
@@ -186,6 +185,7 @@ class TeacherDashboard extends StatelessWidget {
 
   Widget _buildPerformance(int? followers, String? totalWatchTime) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SizedBox(
           width: 43.w,
@@ -258,12 +258,11 @@ class TeacherDashboard extends StatelessWidget {
             ],
           ),
         ),
-        Container(
+        SizedBox(
           width: 43.w,
           height: 10.h,
-          margin: EdgeInsets.only(left: 2.w),
           child: Stack(
-            children: <Widget>[
+            children: [
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -288,26 +287,22 @@ class TeacherDashboard extends StatelessWidget {
                             child: Text(
                               S.current.td_hrs,
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600,
                                   fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
                                   fontFamily: kFontFamily,
                                   color: AppColors.primaryColor),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
-                            child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Text(
-                                totalWatchTime ?? "",
-                                // S.current.td_watch_time,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16.sp,
-                                    fontFamily: kFontFamily,
-                                    color: AppColors.primaryColor),
-                              ),
+                            child: Text(
+                              (totalWatchTime ?? 0).toString(),
+                              // S.current.td_total_subs,
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontFamily: kFontFamily,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primaryColor),
                             ),
                           ),
                         ],
@@ -319,12 +314,12 @@ class TeacherDashboard extends StatelessWidget {
               ),
               Positioned(
                 right: 0,
-                bottom: 0,
+                // bottom: 0,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 1.h, right: 3.w),
                   child: Icon(
                     Icons.access_time,
-                    size: 18.w,
+                    size: 22.w,
                     color: const Color(0x08500D34),
                     // width: 25.w,
                     // fit: BoxFit.fitHeight,
@@ -334,6 +329,82 @@ class TeacherDashboard extends StatelessWidget {
             ],
           ),
         ),
+        // Container(
+        //   width: 43.w,
+        //   height: 10.h,
+        //   margin: EdgeInsets.only(left: 2.w),
+        //   child: Stack(
+        //     children: <Widget>[
+        //       Positioned(
+        //         bottom: 0,
+        //         left: 0,
+        //         right: 0,
+        //         child: Container(
+        //           height: 10.h,
+        //           decoration: BoxDecoration(
+        //             color: Colors.grey[200],
+        //             borderRadius: BorderRadius.all(
+        //               Radius.circular(2.w),
+        //             ),
+        //           ),
+        //           child: Row(
+        //             mainAxisSize: MainAxisSize.max,
+        //             crossAxisAlignment: CrossAxisAlignment.center,
+        //             children: [
+        //               Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Padding(
+        //                     padding: EdgeInsets.only(left: 3.w, top: 2.h),
+        //                     child: Text(
+        //                       S.current.td_hrs,
+        //                       style: TextStyle(
+        //                           fontWeight: FontWeight.w600,
+        //                           fontSize: 12.sp,
+        //                           fontFamily: kFontFamily,
+        //                           color: AppColors.primaryColor),
+        //                     ),
+        //                   ),
+        //                   Padding(
+        //                     padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
+        //                     child: FittedBox(
+        //                       fit: BoxFit.contain,
+        //                       child: Text(
+        //                         totalWatchTime ?? "",
+        //                         // S.current.td_watch_time,
+        //                         overflow: TextOverflow.ellipsis,
+        //                         style: TextStyle(
+        //                             fontWeight: FontWeight.w600,
+        //                             fontSize: 16.sp,
+        //                             fontFamily: kFontFamily,
+        //                             color: AppColors.primaryColor),
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ),
+        //               SizedBox(width: 5.w),
+        //             ],
+        //           ),
+        //         ),
+        //       ),
+        //       Positioned(
+        //         right: 0,
+        //         bottom: 0,
+        //         child: Padding(
+        //           padding: EdgeInsets.only(bottom: 1.h, right: 3.w),
+        //           child: Icon(
+        //             Icons.access_time,
+        //             size: 18.w,
+        //             color: const Color(0x08500D34),
+        //             // width: 25.w,
+        //             // fit: BoxFit.fitHeight,
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

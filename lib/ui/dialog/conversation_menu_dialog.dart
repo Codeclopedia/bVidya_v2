@@ -80,7 +80,7 @@ class ConversationMenuDialog extends StatelessWidget {
         ),
         const Divider(height: 1, color: Color(0xFFE2E2E2)),
 
-        if (hasUnread) SizedBox(height: 2.h),
+        // if (hasUnread) SizedBox(height: 2.h),
         if (hasUnread)
           _buildOption(S.current.bchat_conv_read, 'icon_markread_conv.svg',
               () async {

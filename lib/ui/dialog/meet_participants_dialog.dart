@@ -77,7 +77,7 @@ class MeetParticipantsDialog extends StatelessWidget {
     String id = split[0];
     final ConnectedUserInfo? info = provider.userList[id];
     bool isMe = provider.localUid?.toString() == id;
-    bool isVideo = info?.enabledVideo ?? true;
+    bool isVideo = !(info?.camOff ?? true);
     bool isMute = info?.muteAudio ?? false;
     return Container(
       height: 10.h,

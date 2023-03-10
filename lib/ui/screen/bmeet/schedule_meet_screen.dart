@@ -235,6 +235,7 @@ class ScheduleMeetScreen extends HookWidget {
             ),
             SizedBox(height: 0.5.h),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Consumer(builder: (context, ref, child) {
@@ -266,6 +267,9 @@ class ScheduleMeetScreen extends HookWidget {
                       focusNode: _startFocus,
                       decoration: inputMeetStyle.copyWith(
                           hintText: S.current.bmeet_hint_start,
+                          isDense: true,
+                          errorStyle: const TextStyle(height: 0),
+                          errorMaxLines: 3,
                           suffixIcon: const Icon(
                             Icons.keyboard_arrow_down,
                           )),
@@ -279,7 +283,6 @@ class ScheduleMeetScreen extends HookWidget {
                       controller: _endController,
                       autofocus: false,
                       showCursor: false,
-                      keyboardType: TextInputType.none,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty == true ||
@@ -304,6 +307,8 @@ class ScheduleMeetScreen extends HookWidget {
                       onEditingComplete: () {},
                       decoration: inputMeetStyle.copyWith(
                           hintText: S.current.bmeet_hint_end,
+                          errorMaxLines: 2,
+                          isDense: true,
                           suffixIcon: const Icon(
                             Icons.keyboard_arrow_down,
                           )),
@@ -312,7 +317,7 @@ class ScheduleMeetScreen extends HookWidget {
                 ),
               ],
             ),
-            SizedBox(height: 6.h),
+            SizedBox(height: 3.h),
             Consumer(
               builder: (context, ref, child) {
                 bool mute = ref.watch(muteSchdeuleMeetingProvider);
