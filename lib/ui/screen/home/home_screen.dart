@@ -371,7 +371,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       width: 1.w,
                     ),
                     if (model.id == AgoraConfig.bViydaAdmitUserId.toString())
-                      getPngImage('check.png'),
+                      getPngImage('check.png', width: 4.5.w),
                     if (model.contact.role == "instructor" ||
                         model.contact.role == "Teacher")
                       getSvgIcon('Badge.svg', width: 3.w),

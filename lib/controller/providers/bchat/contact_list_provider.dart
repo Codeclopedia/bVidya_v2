@@ -100,6 +100,38 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
     return null;
   }
 
+  Future<Contacts?> addContactNewChat(int id) async {
+    if (_contactsMap.containsKey(id)) {
+      final con = _contactsMap[id];
+      return con;
+    }
+    final user = await getMeAsUser();
+    if (user == null) {
+      return null;
+    }
+    final result = await BChatApiService.instance
+        .getContactsByIds(user.authToken, id.toString());
+
+    if (result.body?.contacts?.isNotEmpty == true) {
+      final ids = await BChatContactManager.getContactList();
+      final requestIds = await ContactRequestHelper.getRequestList();
+      final sendRequestIds = await ContactRequestHelper.getSendRequestList();
+      ContactStatus cStatus = ids.contains(id.toString())
+          ? ContactStatus.friend
+          : sendRequestIds.contains(id.toString())
+              ? ContactStatus.sentInvite
+              : requestIds.contains(id.toString())
+                  ? ContactStatus.invited
+                  : ContactStatus.friend;
+
+      final contact = Contacts.fromContact(result.body!.contacts![0], cStatus);
+      _contactsMap.addAll({contact.userId: contact});
+      state = _contactsMap.values.toList();
+      return contact;
+    }
+    return null;
+  }
+
   Future addNewContact(Contacts contact) async {
     if (!_contactsMap.containsKey(contact.userId)) {
       _contactsMap.addAll({contact.userId: contact});

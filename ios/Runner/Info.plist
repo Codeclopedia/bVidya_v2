@@ -30,12 +30,12 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Need music access for sending music file(s) on Chat</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access for uploading images and video call</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need microphone access for audio/video call</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Need music access for sending music file(s) on Chat</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app requires access add into the photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

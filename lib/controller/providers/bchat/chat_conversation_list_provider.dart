@@ -42,7 +42,7 @@ Future<ConversationModel?> onNewChatMessage(
   int id = int.parse(message.conversationId!);
   Contacts? contact = await ref
       .read(contactListProvider.notifier)
-      .addContact(id, ContactStatus.invited);
+      .addContactNewChat(id); //invited
   if (contact != null) {
     final model = await ref
         .read(chatConversationProvider.notifier)
