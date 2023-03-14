@@ -368,9 +368,9 @@ class GroupInfoScreen extends HookConsumerWidget {
                                   MultiImageProvider(list, initialIndex: 0);
                               showImageViewerPager(context, multiImageProvider,
                                   onPageChanged: (page) {
-                                print("page changed to $page");
+                                // print("page changed to $page");
                               }, onViewerDismissed: (page) {
-                                print("dismissed while on page $page");
+                                // print("dismissed while on page $page");
                               });
                             }),
                             child: Text(
@@ -418,9 +418,9 @@ class GroupInfoScreen extends HookConsumerWidget {
                                 MultiImageProvider(list, initialIndex: index);
                             showImageViewerPager(context, multiImageProvider,
                                 onPageChanged: (page) {
-                              print("page changed to $page");
+                              // print("page changed to $page");
                             }, onViewerDismissed: (page) {
-                              print("dismissed while on page $page");
+                              // print("dismissed while on page $page");
                             });
                           },
                           child: _rowFileImage(
@@ -532,7 +532,7 @@ class GroupInfoScreen extends HookConsumerWidget {
           );
   }
 
-  _updateSetting(bool mute) async {
+  Future _updateSetting(bool mute) async {
     await BchatGroupManager.chageGroupMuteStateFor(
         group.groupInfo.groupId, mute);
   }
@@ -552,9 +552,12 @@ class GroupInfoScreen extends HookConsumerWidget {
       builder: (context, ref, child) {
         final mute = ref.watch(groupMuteProvider);
         return InkWell(
-          onTap: () {
+          onTap: () async {
             ref.read(groupMuteProvider.notifier).state = !mute;
-            _updateSetting(!mute);
+            await _updateSetting(!mute);
+            await ref
+                .read(groupConversationProvider.notifier)
+                .updateConversationMute(group.id);
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
@@ -570,9 +573,12 @@ class GroupInfoScreen extends HookConsumerWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                mySwitch(mute, (value) {
+                mySwitch(mute, (value) async {
                   ref.read(groupMuteProvider.notifier).state = value;
-                  _updateSetting(value);
+                  await _updateSetting(value);
+                  await ref
+                      .read(groupConversationProvider.notifier)
+                      .updateConversationMute(group.id);
                 })
               ],
             ),

@@ -116,6 +116,7 @@ class ContactsListNotifier extends StateNotifier<List<Contacts>> {
       final ids = await BChatContactManager.getContactList();
       final requestIds = await ContactRequestHelper.getRequestList();
       final sendRequestIds = await ContactRequestHelper.getSendRequestList();
+      print('${sendRequestIds.length} -> $sendRequestIds');
       ContactStatus cStatus = ids.contains(id.toString())
           ? ContactStatus.friend
           : sendRequestIds.contains(id.toString())

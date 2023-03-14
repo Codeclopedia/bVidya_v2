@@ -41,5 +41,5 @@ class GroupConversationModel {
       required this.lastMessage,
       required this.image,
       // required this.isOnline,
-      this.mute = false});
+      required this.mute});
 }

@@ -186,7 +186,7 @@ Future<ConversationModel?> getConversationModel(String fromId) async {
     final contact = response.body!.contacts!.first;
     return ConversationModel(
         id: fromId,
-        contact: Contacts.fromContact(contact, ContactStatus.unknown),
+        contact: Contacts.fromContact(contact, ContactStatus.friend),
         badgeCount: 0,
         conversation: conv,
         lastMessage: null,
@@ -218,7 +218,8 @@ Future<GroupConversationModel?> getGroupConversationModel(
         badgeCount: 0,
         conversation: conv,
         image: BchatGroupManager.getGroupImage(group),
-        lastMessage: null);
+        lastMessage: null,
+        mute: false);
   } catch (e) {
     return null;
   }

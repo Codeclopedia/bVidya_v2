@@ -99,7 +99,7 @@ class ContactProfileScreen extends HookConsumerWidget {
     );
   }
 
-  _updateSetting(bool mute) async {
+  Future _updateSetting(bool mute) async {
     await BChatContactManager.chageChatMuteStateFor(
         contact.userId.toString(), mute);
   }
@@ -536,7 +536,10 @@ class ContactProfileScreen extends HookConsumerWidget {
         // ref.watch(muteProvider(contact.userId.toString()));
         return InkWell(
           onTap: () async {
-            _updateSetting(!mute);
+            await _updateSetting(!mute);
+            await ref
+                .read(chatConversationProvider.notifier)
+                .updateConversationMute(contact.userId.toString(), !mute);
             ref.read(chatMuteProvider.notifier).state = !mute;
           },
           child: Padding(
@@ -555,7 +558,11 @@ class ContactProfileScreen extends HookConsumerWidget {
                 ),
                 mySwitch(mute, (value) async {
                   // ref.read(muteProvider(contact.userId.toString()).notifier)
-                  _updateSetting(value);
+                  await _updateSetting(value);
+                  await ref
+                      .read(chatConversationProvider.notifier)
+                      .updateConversationMute(contact.userId.toString(), !mute);
+
                   ref.read(chatMuteProvider.notifier).state = value;
                 })
               ],
@@ -768,7 +775,7 @@ class ContactProfileScreen extends HookConsumerWidget {
       if (contacts.isNotEmpty && AgoraConfig.autoAcceptContact) {
         openChatScreen(
           context,
-          Contacts.fromContact(contacts[0], ContactStatus.sentInvite),
+          Contacts.fromContact(contacts[0], ContactStatus.friend),
           ref,
           sendInviateMessage: true,
           message: input,

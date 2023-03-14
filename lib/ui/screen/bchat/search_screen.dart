@@ -300,7 +300,7 @@ class SearchScreen extends StatelessWidget {
           [];
       if (contacts.isNotEmpty && AgoraConfig.autoAcceptContact) {
         openChatScreen(context,
-            Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
+            Contacts.fromContact(contacts[0], ContactStatus.friend), ref,
             sendInviateMessage: true, message: input);
       } else {
         hideLoading(ref);

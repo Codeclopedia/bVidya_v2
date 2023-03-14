@@ -52,7 +52,9 @@ class GroupConversationChangeNotifier
           groupInfo: grp,
           conversation: conv,
           lastMessage: lastMessage,
-          image: BchatGroupManager.getGroupImage(grp));
+          image: BchatGroupManager.getGroupImage(grp),
+          mute: (await BchatGroupManager.fetchGroupMuteStateFor(grp.groupId) !=
+              ChatPushRemindType.NONE));
     } catch (e) {
       return null;
     }
@@ -76,7 +78,9 @@ class GroupConversationChangeNotifier
           groupInfo: grp,
           conversation: conv,
           lastMessage: lastMessage,
-          image: BchatGroupManager.getGroupImage(grp));
+          image: BchatGroupManager.getGroupImage(grp),
+          mute: (await BchatGroupManager.fetchGroupMuteStateFor(grp.groupId) !=
+              ChatPushRemindType.NONE));
     } catch (e) {
       return;
     }
@@ -97,7 +101,8 @@ class GroupConversationChangeNotifier
             groupInfo: model.groupInfo,
             conversation: model.conversation,
             lastMessage: lastMessage,
-            image: model.image);
+            image: model.image,
+            mute: model.mute);
         // model.lastMessage = (GroupConversationModel);
         _groupConversationMap.update(groupId, (v) => newModel,
             ifAbsent: () => newModel);
@@ -123,7 +128,8 @@ class GroupConversationChangeNotifier
           conversation: model.conversation,
           badgeCount: await model.conversation?.unreadCount() ?? 0,
           lastMessage: await model.conversation?.latestMessage(),
-          image: model.image);
+          image: model.image,
+          mute: model.mute);
       _groupConversationMap.update(groupId, (v) => newModel,
           ifAbsent: () => newModel);
     }
@@ -198,6 +204,24 @@ class GroupConversationChangeNotifier
   void clear() {
     _groupConversationMap.clear();
     state = [];
+  }
+
+  Future updateConversationMute(String groupId) async {
+    final model = _groupConversationMap[groupId];
+    if (model != null) {
+      final newModel = GroupConversationModel(
+          id: groupId,
+          groupInfo: model.groupInfo,
+          conversation: model.conversation,
+          badgeCount: await model.conversation?.unreadCount() ?? 0,
+          lastMessage: await model.conversation?.latestMessage(),
+          image: model.image,
+          mute: (await BchatGroupManager.fetchGroupMuteStateFor(groupId) !=
+              ChatPushRemindType.NONE));
+      _groupConversationMap.update(groupId, (v) => newModel,
+          ifAbsent: () => newModel);
+    }
+    state = _groupConversationMap.values.toList();
   }
 }
 

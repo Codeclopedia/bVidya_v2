@@ -138,6 +138,10 @@ class GroupsScreen extends HookConsumerWidget {
 
           ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
           // ref.read(callListProvider.notifier).setup();
+        } else if (result == 3) {
+          await ref
+              .read(groupConversationProvider.notifier)
+              .updateConversationMute(model.id);
         }
       },
       child: _conversationRow(model),
@@ -235,12 +239,6 @@ class GroupsScreen extends HookConsumerWidget {
                     : formatConverastionTime(
                         DateTime.fromMillisecondsSinceEpoch(
                             model.lastMessage!.serverTime)),
-                // DateFormat('h:mm a')
-                //     .format(model.lastMessage == null
-                //         ? DateTime.now()
-                //         : DateTime.fromMillisecondsSinceEpoch(
-                //             model.lastMessage!.serverTime))
-                //     .toUpperCase(),
                 style: TextStyle(
                   fontFamily: kFontFamily,
                   color: colorTimeBadge,
@@ -248,8 +246,13 @@ class GroupsScreen extends HookConsumerWidget {
                 ),
               ),
               SizedBox(height: 1.h),
-              model.badgeCount > 0
-                  ? CircleAvatar(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (model.mute) getSvgIcon('icon_mute_conv.svg', width: 4.w),
+                  if (model.mute) SizedBox(width: 1.w),
+                  if (model.badgeCount > 0)
+                    CircleAvatar(
                       radius: 3.w,
                       backgroundColor: AppColors.contactBadgeUnreadTextColor,
                       child: Text(
@@ -260,8 +263,9 @@ class GroupsScreen extends HookConsumerWidget {
                           fontSize: 9.sp,
                         ),
                       ),
-                    )
-                  : const SizedBox.shrink(),
+                    ),
+                ],
+              ),
             ],
           ),
           SizedBox(width: 2.w),

@@ -193,7 +193,9 @@ class BchatGroupManager {
             groupInfo: grp,
             conversation: conv,
             lastMessage: lastMessage,
-            image: getGroupImage(grp));
+            image: getGroupImage(grp),
+            mute: (await fetchGroupMuteStateFor(grp.groupId) !=
+                ChatPushRemindType.NONE));
       } catch (e) {
         continue;
       }

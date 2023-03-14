@@ -206,7 +206,7 @@ class BMeetHomeScreen extends StatelessWidget {
                       ref.refresh(bMeetHistoryProvider);
                       break;
                   }
-                  print(item);
+                  // print(item);
                 },
                 itemBuilder: (context) {
                   return {'Edit', 'Delete'}.map((String choice) {

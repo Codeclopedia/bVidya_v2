@@ -128,9 +128,9 @@ class ChatScreen extends HookConsumerWidget {
               : _topBar(context, ref),
           body: model.contact.status == ContactStatus.invited
               ? _buildRequest(context)
-              : model.contact.status == ContactStatus.friend
-                  ? _chatList(context)
-                  : _buildWaiting(),
+              : model.contact.status == ContactStatus.sentInvite
+                  ? _buildWaiting()
+                  : _chatList(context),
         ),
       ),
     );
