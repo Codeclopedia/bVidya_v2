@@ -1,5 +1,8 @@
 // import 'package:awesome_notifications/awesome_notifications.dart';
 
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:bvidya/ui/screens.dart';
 import 'package:smart_snackbars/enums/animate_from.dart';
 import 'package:smart_snackbars/smart_snackbars.dart';
 // import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -77,96 +80,290 @@ class NotificationController {
     }
   }
 
+  static Widget customizedSnackbar({
+    required String userName,
+    required String imageUrl,
+    required Function() onDismiss,
+    required Function() onAccept,
+    required Function() onReject,
+  }) {
+    return Container(
+      // color: Colors.transparent,
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+      child: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+            margin: EdgeInsets.only(top: 3.w, right: 1.w),
+            decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(2.w)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 4.w,
+                      backgroundColor: Colors.grey,
+                      foregroundImage: getImageProvider(imageUrl),
+                    ),
+                    SizedBox(width: 2.w),
+                    Expanded(
+                      child: Text(
+                        '$userName want to connect with you.',
+                        style: textStyleBlack.copyWith(
+                            color: Colors.white, fontSize: 10.sp),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 3.w,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      onTap: onReject,
+                      child: Text(
+                        'Decline',
+                        style: textStyleHeading.copyWith(
+                            color: Colors.white, fontSize: 12.5.sp),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 4.w,
+                    ),
+                    InkWell(
+                      onTap: onAccept,
+                      child: Text(
+                        'Accept',
+                        style: textStyleHeading.copyWith(
+                            color: Colors.white, fontSize: 12.5.sp),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: InkWell(
+              onTap: onDismiss,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 10,
+                        color: Colors.black38,
+                        spreadRadius: 1.w)
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 3.5.w,
+                  child: Icon(
+                    Icons.close,
+                    size: 4.w,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   static showNewInvitation(String userId, Contacts contact, String title,
       String content, WidgetRef ref) {
     BuildContext? context = navigatorKey.currentContext;
     if (context == null) return;
 
-    SmartSnackBars.showCustomSnackBar(
-      context: context,
-      persist: true,
-      duration: const Duration(milliseconds: 1000),
-      animationCurve: Curves.bounceOut,
-      animateFrom: AnimateFrom.fromTop,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
-        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
-        decoration: BoxDecoration(
-            color: AppColors.cardWhite,
-            borderRadius: BorderRadius.all(Radius.circular(3.w))),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: textStyleCaption,
-            ),
-            SizedBox(height: 2.w),
-            Text(
-              content,
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 8.sp,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                TextButton(
-                    style: textButtonStyle,
-                    onPressed: () {
-                      // localAnimationController?.reverse();
-                    },
-                    child: const Text('Dismiss')),
-                const Spacer(),
-                TextButton(
-                    style: textButtonStyle,
-                    onPressed: () async {
-                      // await BChatContactManager.acceptRequest(userId);
-                      await BChatContactManager.sendRequestResponse(
-                          ref,
-                          contact.userId.toString(),
-                          contact.fcmToken!,
-                          ContactAction.declineRequest);
-                      ref
-                          .read(contactListProvider.notifier)
-                          .removeContact(contact.userId);
-                      ref
-                          .read(chatConversationProvider.notifier)
-                          .removeConversation(contact.userId.toString());
+    // final sn = SnackBar(
+    //     behavior: SnackBarBehavior.floating,
+    //     duration: const Duration(seconds: 5),
+    //     margin: const EdgeInsets.only(bottom: 100.0),
+    // content: customizedSnackbar(
+    //     userName: contact.name,
+    //     imageUrl: contact.profileImage,
+    //     onDismiss: () {
+    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    //     },
+    //     onAccept: () async {
+    //       await BChatContactManager.sendRequestResponse(
+    //           ref,
+    //           contact.userId.toString(),
+    //           contact.fcmToken!,
+    //           ContactAction.acceptRequest);
+    //       final contacts = await ref
+    //           .read(contactListProvider.notifier)
+    //           .addContact(contact.userId, ContactStatus.friend);
+    //       if (contacts != null) {
+    //         await ref
+    //             .read(chatConversationProvider.notifier)
+    //             .addConversationByContact(contacts);
+    //       }
+    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    //     },
+    //     onReject: () async {
+    //       await BChatContactManager.sendRequestResponse(
+    //           ref,
+    //           contact.userId.toString(),
+    //           contact.fcmToken!,
+    //           ContactAction.acceptRequest);
+    //       final contacts = await ref
+    //           .read(contactListProvider.notifier)
+    //           .addContact(contact.userId, ContactStatus.friend);
+    //       if (contacts != null) {
+    //         await ref
+    //             .read(chatConversationProvider.notifier)
+    //             .addConversationByContact(contacts);
+    //       }
+    //       ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    //     }));
+    // ScaffoldMessenger.of(context).showSnackBar(sn);
 
-                      // localAnimationController?.reverse();
-                    },
-                    child: const Text('Decline')),
-                TextButton(
-                    style: textButtonStyle,
-                    onPressed: () async {
-                      // await BChatContactManager.declineRequest(userId);
-                      await BChatContactManager.sendRequestResponse(
-                          ref,
-                          contact.userId.toString(),
-                          contact.fcmToken!,
-                          ContactAction.acceptRequest);
-                      final contacts = await ref
-                          .read(contactListProvider.notifier)
-                          .addContact(contact.userId, ContactStatus.friend);
-                      if (contacts != null) {
-                        await ref
-                            .read(chatConversationProvider.notifier)
-                            .addConversationByContact(contacts);
-                      }
+    OverlayEntry? snackBar;
+    final child = customizedSnackbar(
+        userName: contact.name,
+        imageUrl: contact.profileImage,
+        onDismiss: () {
+          snackBar?.remove();
+          // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+        onAccept: () async {
+          snackBar?.remove();
+          showLoading(ref);
+          await BChatContactManager.sendRequestResponse(
+              ref,
+              contact.userId.toString(),
+              contact.fcmToken!,
+              ContactAction.acceptRequest);
+          final contacts = await ref
+              .read(contactListProvider.notifier)
+              .addContact(contact.userId, ContactStatus.friend);
+          if (contacts != null) {
+            await ref
+                .read(chatConversationProvider.notifier)
+                .addConversationByContact(contacts);
+          }
+          hideLoading(ref);
+          // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+        onReject: () async {
+          snackBar?.remove();
+          showLoading(ref);
+          await BChatContactManager.sendRequestResponse(
+              ref,
+              contact.userId.toString(),
+              contact.fcmToken!,
+              ContactAction.acceptRequest);
+          final contacts = await ref
+              .read(contactListProvider.notifier)
+              .addContact(contact.userId, ContactStatus.friend);
+          if (contacts != null) {
+            await ref
+                .read(chatConversationProvider.notifier)
+                .addConversationByContact(contacts);
+          }
+          hideLoading(ref);
+          // snackBar?.remove();
+          // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        });
+    snackBar = SmartSnackBars.showCustomSnackBar(
+        context: context,
+        persist: true,
+        duration: const Duration(milliseconds: 1000),
+        animationCurve: Curves.bounceOut,
+        animateFrom: AnimateFrom.fromTop,
+        child: child
+        //  Container(
+        //   margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+        //   padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 3.w),
+        //   decoration: BoxDecoration(
+        //       color: AppColors.cardWhite,
+        //       borderRadius: BorderRadius.all(Radius.circular(3.w))),
+        //   child: Column(
+        //     children: [
+        //       Text(
+        //         title,
+        //         style: textStyleCaption,
+        //       ),
+        //       SizedBox(height: 2.w),
+        //       Text(
+        //         content,
+        //         style: TextStyle(
+        //           fontFamily: kFontFamily,
+        //           color: Colors.white,
+        //           fontWeight: FontWeight.w600,
+        //           fontSize: 8.sp,
+        //         ),
+        //       ),
+        //       SizedBox(height: 2.h),
+        //       Row(
+        //         mainAxisSize: MainAxisSize.max,
+        //         children: [
+        //           TextButton(
+        //               style: textButtonStyle,
+        //               onPressed: () {
+        //                 snackBar?.remove();
+        //                 // localAnimationController?.reverse();
+        //               },
+        //               child: const Text('Dismiss')),
+        //           const Spacer(),
+        //           TextButton(
+        //               style: textButtonStyle,
+        //               onPressed: () async {
+        //                 // await BChatContactManager.acceptRequest(userId);
+        //                 await BChatContactManager.sendRequestResponse(
+        //                     ref,
+        //                     contact.userId.toString(),
+        //                     contact.fcmToken!,
+        //                     ContactAction.declineRequest);
+        //                 ref
+        //                     .read(contactListProvider.notifier)
+        //                     .removeContact(contact.userId);
+        //                 ref
+        //                     .read(chatConversationProvider.notifier)
+        //                     .removeConversation(contact.userId.toString());
+        //                 snackBar?.remove();
+        //                 // localAnimationController?.reverse();
+        //               },
+        //               child: const Text('Decline')),
+        //           TextButton(
+        //               style: textButtonStyle,
+        //               onPressed: () async {
+        //                 // await BChatContactManager.declineRequest(userId);
+        //                 await BChatContactManager.sendRequestResponse(
+        //                     ref,
+        //                     contact.userId.toString(),
+        //                     contact.fcmToken!,
+        //                     ContactAction.acceptRequest);
+        //                 final contacts = await ref
+        //                     .read(contactListProvider.notifier)
+        //                     .addContact(contact.userId, ContactStatus.friend);
+        //                 if (contacts != null) {
+        //                   await ref
+        //                       .read(chatConversationProvider.notifier)
+        //                       .addConversationByContact(contacts);
+        //                 }
+        //                 snackBar?.remove();
 
-                      // localAnimationController?.reverse();
-                    },
-                    child: const Text('Accept')),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
+        //                 // localAnimationController?.reverse();
+        //               },
+        //               child: const Text('Accept')),
+        //         ],
+        //       )
+        //     ],
+        //   ),
+        // ),
+        );
 
     // AnimationController? localAnimationController;
     // showTopSnackBar(

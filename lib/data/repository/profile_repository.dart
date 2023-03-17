@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bvidya/core/utils/local_data.dart';
+import '/core/utils/local_data.dart';
 
 import '../models/models.dart';
 import '../services/profile_api_service.dart';

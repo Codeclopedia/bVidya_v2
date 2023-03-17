@@ -106,14 +106,17 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   _loadMuteSetting(WidgetRef ref) async {
-    ChatPushRemindType remindType =
-        await BChatContactManager.fetchChatMuteStateFor(
-            contact.userId.toString());
-    if (remindType == ChatPushRemindType.NONE) {
-      ref.read(chatMuteProvider.notifier).state = false;
-    } else {
-      ref.read(chatMuteProvider.notifier).state = true;
-    }
+    bool mute = await BChatContactManager.isMuteChatMuteStateFor(
+        contact.userId.toString());
+    // ChatPushRemindType remindType =
+    //     await BChatContactManager.fetchChatMuteStateFor(
+    //         contact.userId.toString());
+    ref.read(chatMuteProvider.notifier).state = mute;
+    // if (remindType == ChatPushRemindType.NONE) {
+
+    // } else {
+    //   ref.read(chatMuteProvider.notifier).state = true;
+    // }
   }
 
   Widget _buildBody(BuildContext context) {
@@ -711,7 +714,6 @@ class ContactProfileScreen extends HookConsumerWidget {
                     await showBasicDialog(
                         context, 'Delete Contact', 'Are you sure?', 'Yes',
                         () async {
-                          
                       await BChatContactManager.sendRequestResponse(
                           ref,
                           contact.userId.toString(),

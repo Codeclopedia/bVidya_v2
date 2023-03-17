@@ -106,8 +106,11 @@ class ChatConversationChangeNotifier
               if (model != null) {
                 try {
                   if (model.conversation?.latestMessage() == null &&
-                      model.contact.status == ContactStatus.friend) return;
-                  final lastMessage = await model.conversation!.latestMessage();
+                      model.contact.status == ContactStatus.friend &&
+                      model.contact.userId != AgoraConfig.bViydaAdmitUserId) {
+                    return;
+                  }
+                  final lastMessage = await model.conversation?.latestMessage();
                   final newModel = ConversationModel(
                       id: model.id,
                       badgeCount: await model.conversation?.unreadCount() ?? 0,
@@ -180,7 +183,8 @@ class ChatConversationChangeNotifier
 
         if (conv == null) continue;
         final lastMessage = await conv.latestMessage();
-        if (lastMessage == null) continue;
+        if (lastMessage == null &&
+            contact.userId != AgoraConfig.bViydaAdmitUserId) continue;
         model = ConversationModel(
             id: contact.userId.toString(),
             badgeCount: await conv.unreadCount(),
@@ -188,9 +192,8 @@ class ChatConversationChangeNotifier
             conversation: conv,
             lastMessage: lastMessage,
             isOnline: updateStatus ? statuses[index] : null,
-            mute: (await BChatContactManager.fetchChatMuteStateFor(
-                    contact.userId.toString()) !=
-                ChatPushRemindType.NONE));
+            mute: await BChatContactManager.isMuteChatMuteStateFor(
+                contact.userId.toString()));
       } catch (e) {
         // print('error $e');
         continue;
@@ -302,9 +305,8 @@ class ChatConversationChangeNotifier
           conversation: model.conversation,
           lastMessage: lastMessage,
           isOnline: await fetchOnlineStatus(model.id),
-          mute: (await BChatContactManager.fetchChatMuteStateFor(
-                  model.id.toString()) !=
-              ChatPushRemindType.NONE),
+          mute: await BChatContactManager.isMuteChatMuteStateFor(
+              model.id.toString()),
         );
         _chatConversationMap.addAll({model.id: newModel});
       } catch (e) {
@@ -347,9 +349,8 @@ class ChatConversationChangeNotifier
           conversation: conv,
           lastMessage: lastMessage,
           isOnline: await fetchOnlineStatus(contact.userId.toString()),
-          mute: (await BChatContactManager.fetchChatMuteStateFor(
-                  contact.userId.toString()) !=
-              ChatPushRemindType.NONE),
+          mute: await BChatContactManager.isMuteChatMuteStateFor(
+              contact.userId.toString()),
         );
       } catch (e) {
         print('error $e');
@@ -380,9 +381,8 @@ class ChatConversationChangeNotifier
         conversation: conv,
         lastMessage: lastMessage,
         isOnline: await fetchOnlineStatus(contact.userId.toString()),
-        mute: (await BChatContactManager.fetchChatMuteStateFor(
-                contact.userId.toString()) !=
-            ChatPushRemindType.NONE),
+        mute: await BChatContactManager.isMuteChatMuteStateFor(
+            contact.userId.toString()),
       );
     } catch (e) {
       print('error $e');
@@ -397,7 +397,8 @@ class ChatConversationChangeNotifier
     for (var model in _chatConversationMap.values) {
       try {
         if (model.conversation?.latestMessage() == null &&
-            model.contact.status == ContactStatus.friend) continue;
+            model.contact.status == ContactStatus.friend &&
+            model.contact.userId != AgoraConfig.bViydaAdmitUserId) continue;
         final lastMessage = await model.conversation!.latestMessage();
         final newModel = ConversationModel(
           id: model.id,

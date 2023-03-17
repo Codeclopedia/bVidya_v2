@@ -74,7 +74,7 @@ class GroupChatScreen extends HookConsumerWidget {
       _myUserId = ChatClient.getInstance.currentUserId ?? '';
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       _loadMe();
-      _loadMembers(ref);
+      // _loadMembers(ref);
 
       return disposeAll;
     }, []);
@@ -133,12 +133,12 @@ class GroupChatScreen extends HookConsumerWidget {
     }
   }
 
-  _loadMembers(WidgetRef ref) async {
-    // _memberList.clear();
-    // final list =
-    //     await BchatGroupManager.loadGroupMemebers(model.groupInfo, ref);
-    // _memberList.addAll(list);
-  }
+  // _loadMembers(WidgetRef ref) async {
+  // _memberList.clear();
+  // final list =
+  //     await BchatGroupManager.loadGroupMemebers(model.groupInfo, ref);
+  // _memberList.addAll(list);
+  // }
 
   _addHandler(WidgetRef ref) async {
     registerGroupForNewMessage('group_chat_screen', (msg) {
@@ -714,7 +714,7 @@ class GroupChatScreen extends HookConsumerWidget {
               ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
             }
             BuildContext? cntx = navigatorKey.currentContext;
-            if (cntx != null) {
+            if (cntx != null && 505 != error.code) {
               AppSnackbar.instance.error(cntx, error.description);
             }
 

@@ -194,8 +194,7 @@ class BchatGroupManager {
             conversation: conv,
             lastMessage: lastMessage,
             image: getGroupImage(grp),
-            mute: (await fetchGroupMuteStateFor(grp.groupId) !=
-                ChatPushRemindType.NONE));
+            mute: await isGroupMuteStateFor(grp.groupId));
       } catch (e) {
         continue;
       }
@@ -232,21 +231,37 @@ class BchatGroupManager {
     }
   }
 
-  static Future<ChatPushRemindType> fetchGroupMuteStateFor(
-      String userId) async {
+  // static Future<ChatPushRemindType> fetchGroupMuteStateFor(
+  //     String userId) async {
+  //   try {
+  //     final result = await ChatClient.getInstance.pushManager
+  //         .fetchConversationSilentMode(
+  //             conversationId: userId, type: ChatConversationType.GroupChat);
+  //     ChatPushRemindType? remindType = result.remindType;
+  //     // print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+  //     return remindType ?? ChatPushRemindType.ALL;
+  //   } on ChatError catch (e) {
+  //     print('Error: ${e.code}- ${e.description} ');
+  //   } catch (e) {
+  //     print('Error2: ${e} ');
+  //   }
+  //   return ChatPushRemindType.ALL;
+  // }
+
+  static Future<bool> isGroupMuteStateFor(String userId) async {
     try {
       final result = await ChatClient.getInstance.pushManager
           .fetchConversationSilentMode(
               conversationId: userId, type: ChatConversationType.GroupChat);
       ChatPushRemindType? remindType = result.remindType;
-      // print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
-      return remindType ?? ChatPushRemindType.ALL;
+      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      return remindType != ChatPushRemindType.NONE;
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');
     } catch (e) {
       print('Error2: ${e} ');
     }
-    return ChatPushRemindType.ALL;
+    return false;
   }
 
   static Future deleteGroup(String groupId) async {

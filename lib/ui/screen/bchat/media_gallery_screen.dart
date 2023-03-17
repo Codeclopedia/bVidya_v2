@@ -1,21 +1,18 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/constants/colors.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '/controller/bchat_providers.dart';
-// import '/core/constants/colors.dart';
+import '/core/constants/colors.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/ui/widgets.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 
-// import '../../widget/shimmer_tile.dart';
 import '../blearn/components/common.dart';
-// import 'widgets/chat_image_body.dart';
 
 final selectedMediaIndexProvider = StateProvider.autoDispose<int>(
   (ref) {

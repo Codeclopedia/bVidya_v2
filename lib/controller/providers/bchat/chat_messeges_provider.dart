@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../../../data/models/call_message_body.dart';
+import '/data/models/call_message_body.dart';
 import '/core/helpers/extensions.dart';
 import '/core/utils/date_utils.dart';
 import '/core/utils/chat_utils.dart';

@@ -538,13 +538,14 @@ class GroupInfoScreen extends HookConsumerWidget {
   }
 
   _loadMuteSetting(WidgetRef ref) async {
-    ChatPushRemindType remindType =
-        await BchatGroupManager.fetchGroupMuteStateFor(group.groupInfo.groupId);
-    if (remindType == ChatPushRemindType.NONE) {
-      ref.read(groupMuteProvider.notifier).state = false;
-    } else {
-      ref.read(groupMuteProvider.notifier).state = true;
-    }
+    bool mute =
+        await BchatGroupManager.isGroupMuteStateFor(group.groupInfo.groupId);
+    ref.read(groupMuteProvider.notifier).state = mute;
+    // if (remindType == ChatPushRemindType.NONE) {
+    //   ref.read(groupMuteProvider.notifier).state = false;
+    // } else {
+    //   ref.read(groupMuteProvider.notifier).state = true;
+    // }
   }
 
   Widget _buildMuteSettings() {

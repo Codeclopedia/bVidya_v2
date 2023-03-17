@@ -2,8 +2,11 @@
 
 import 'dart:convert';
 
-// import 'package:bvidya/core/constants/colors.dart';
-import 'package:bvidya/core/helpers/group_member_helper.dart';
+// import '/core/constants/colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../constants/colors.dart';
+import '/core/helpers/group_member_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:smart_snackbars/enums/animate_from.dart';
 import 'package:smart_snackbars/smart_snackbars.dart';

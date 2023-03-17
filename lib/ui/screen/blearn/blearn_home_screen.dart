@@ -2,9 +2,9 @@
 // import '/co/blearntopbar.dart';
 import 'dart:convert';
 
-import 'package:bvidya/controller/profile_providers.dart';
-import 'package:bvidya/core/utils/local_data.dart';
-import 'package:bvidya/ui/widget/no_internet_connection_screen.dart';
+import '/controller/profile_providers.dart';
+import '/core/utils/local_data.dart';
+import '/ui/widget/no_internet_connection_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:lottie/lottie.dart';
 

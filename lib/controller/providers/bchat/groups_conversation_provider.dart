@@ -53,8 +53,7 @@ class GroupConversationChangeNotifier
           conversation: conv,
           lastMessage: lastMessage,
           image: BchatGroupManager.getGroupImage(grp),
-          mute: (await BchatGroupManager.fetchGroupMuteStateFor(grp.groupId) !=
-              ChatPushRemindType.NONE));
+          mute: await BchatGroupManager.isGroupMuteStateFor(grp.groupId));
     } catch (e) {
       return null;
     }
@@ -79,8 +78,7 @@ class GroupConversationChangeNotifier
           conversation: conv,
           lastMessage: lastMessage,
           image: BchatGroupManager.getGroupImage(grp),
-          mute: (await BchatGroupManager.fetchGroupMuteStateFor(grp.groupId) !=
-              ChatPushRemindType.NONE));
+          mute: await BchatGroupManager.isGroupMuteStateFor(grp.groupId));
     } catch (e) {
       return;
     }
@@ -216,8 +214,7 @@ class GroupConversationChangeNotifier
           badgeCount: await model.conversation?.unreadCount() ?? 0,
           lastMessage: await model.conversation?.latestMessage(),
           image: model.image,
-          mute: (await BchatGroupManager.fetchGroupMuteStateFor(groupId) !=
-              ChatPushRemindType.NONE));
+          mute: await BchatGroupManager.isGroupMuteStateFor(groupId));
       _groupConversationMap.update(groupId, (v) => newModel,
           ifAbsent: () => newModel);
     }

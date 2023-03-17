@@ -9,9 +9,8 @@ import '/core/ui_core.dart';
 
 Future<int?> showGroupConversationOptions(
     BuildContext context, GroupConversationModel model) async {
-  ChatPushRemindType remindType =
-      await BchatGroupManager.fetchGroupMuteStateFor(model.id);
-  bool mute = remindType != ChatPushRemindType.NONE;
+  bool mute = await BchatGroupManager.isGroupMuteStateFor(model.id);
+  // bool mute = remindType != ChatPushRemindType.NONE;
   return await showDialog(
     context: context,
     useSafeArea: true,
@@ -64,7 +63,6 @@ class GroupConversationMenuDialog extends StatelessWidget {
               await ChatClient.getInstance.chatManager.sendConversationReadAck(
                 model.id,
               );
-              
             } catch (e) {}
 
             Navigator.pop(context, 1);

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../core/utils/request_utils.dart';
+import '/core/utils/request_utils.dart';
 import '/data/models/call_message_body.dart';
 import '/firebase_options.dart';
 import 'package:dio/dio.dart';
@@ -53,7 +53,7 @@ class FCMApiService {
         'image': image,
         'has_video': hasVideo ? 'video' : 'audio'
       },
-      // 'ttl': '30s',
+      'ttl': '30s',
       'android': {'priority': 'normal'},
       'priority': 10
     };
@@ -100,7 +100,7 @@ class FCMApiService {
         'from_id': fromId,
         'grp_id': grpId,
       },
-      // 'ttl': '30s',
+      'ttl': '30s',
       'android': {'priority': 'normal'},
       'priority': 10
     };
@@ -175,7 +175,7 @@ class FCMApiService {
         'e': jsonEncode(body),
         'm': msgId
       },
-      // 'ttl': '30s',
+      'ttl': '30s',
       'android': {'priority': 'normal'},
       'priority': 10
     };
@@ -209,7 +209,7 @@ class FCMApiService {
         'g': grpId,
         'e': jsonEncode(body)
       },
-      // 'ttl': '30s',
+      'ttl': '30s',
       'android': {'priority': 'normal'},
       'priority': 10
     };

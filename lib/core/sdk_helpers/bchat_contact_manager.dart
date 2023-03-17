@@ -260,20 +260,36 @@ class BChatContactManager {
     }
   }
 
-  static Future<ChatPushRemindType> fetchChatMuteStateFor(String userId) async {
+  // static Future<ChatPushRemindType> fetchChatMuteStateFor(String userId) async {
+  //   try {
+  //     final result = await ChatClient.getInstance.pushManager
+  //         .fetchConversationSilentMode(
+  //             conversationId: userId, type: ChatConversationType.Chat);
+  //     ChatPushRemindType? remindType = result.remindType;
+  //     print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+  //     return remindType ?? ChatPushRemindType.ALL;
+  //   } on ChatError catch (e) {
+  //     print('Error: ${e.code}- ${e.description} ');
+  //   } catch (e) {
+  //     print('Error2: ${e} ');
+  //   }
+  //   return ChatPushRemindType.ALL;
+  // }
+
+  static Future<bool> isMuteChatMuteStateFor(String userId) async {
     try {
       final result = await ChatClient.getInstance.pushManager
           .fetchConversationSilentMode(
               conversationId: userId, type: ChatConversationType.Chat);
       ChatPushRemindType? remindType = result.remindType;
-      // print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
-      return remindType ?? ChatPushRemindType.ALL;
+      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      return (remindType != ChatPushRemindType.NONE);
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');
     } catch (e) {
       print('Error2: ${e} ');
     }
-    return ChatPushRemindType.ALL;
+    return false;
   }
 
   static Future<String?> blockUser(String userId) async {
@@ -389,5 +405,5 @@ class ChatMediaFile {
   final ChatMessageBody body;
   final MessageType type;
 
-  ChatMediaFile(this.msgId, this.body,this.type);
+  ChatMediaFile(this.msgId, this.body, this.type);
 }

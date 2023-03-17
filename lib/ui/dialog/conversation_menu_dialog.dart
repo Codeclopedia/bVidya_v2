@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 
 import '/core/state.dart';
 import '/core/sdk_helpers/bchat_contact_manager.dart';
@@ -14,10 +14,9 @@ Future showConversationOptions(
   // if (model.id == AgoraConfig.bViydaAdmitUserId.toString()) {
   //   return;
   // }
-  ChatPushRemindType remindType =
-      await BChatContactManager.fetchChatMuteStateFor(model.id);
+  bool mute = await BChatContactManager.isMuteChatMuteStateFor(model.id);
 
-  bool mute = remindType != ChatPushRemindType.NONE;
+  // bool mute = remindType != ChatPushRemindType.NONE;
   return await showDialog(
     context: context,
     useSafeArea: true,

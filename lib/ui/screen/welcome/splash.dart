@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
@@ -22,12 +22,16 @@ import '/core/ui_core.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/controller/providers/user_auth_provider.dart';
 
-final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
-      // "assets/icons/svgs/splash_logo_full.svg",
-      'assets/images/loader.gif',
-
-      fit: BoxFit.fitWidth,
-    ));
+final splashImageProvider = StateProvider<Widget>((ref) => Image.asset(
+          'assets/images/loader.gif',
+          fit: BoxFit.fitWidth,
+        )
+    //  SvgPicture.asset(
+    //   "assets/icons/svgs/splash_logo_full.svg",
+    //   // 'assets/images/loader.gif',
+    //   fit: BoxFit.fitWidth,
+    // ),
+    );
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -54,11 +58,12 @@ class SplashScreen extends ConsumerWidget {
           await ref.read(groupConversationProvider.notifier).setup();
           // await ref.read(callListProvider.notifier).setup();
           // final diff = DateTime.now().millisecondsSinceEpoch - startTime;
-          // print('Time taken: $diff ms');
+
           // appLoaded = true;
           // Navigator.pushReplacementNamed(context, RouteList.home);
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
-          if (diff > 3000) {
+          print('Time taken: $diff ms');
+          if (diff > 3800) {
             Navigator.pushReplacementNamed(context, RouteList.home);
             return;
           }

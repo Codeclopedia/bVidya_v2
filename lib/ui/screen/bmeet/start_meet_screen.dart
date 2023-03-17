@@ -2,8 +2,8 @@
 
 import '../../dialog/bmeet_forward_link_dialog.dart';
 import '/app.dart';
-// import 'package:bvidya/ui/dialog/forward_dialog.dart';
-// import 'package:bvidya/ui/screen/bmeet/bmeet_forward_link_dialog.dart';
+// import '/ui/dialog/forward_dialog.dart';
+// import '/ui/screen/bmeet/bmeet_forward_link_dialog.dart';
 
 import '/core/constants.dart';
 import '/core/helpers/bmeet_helper.dart';

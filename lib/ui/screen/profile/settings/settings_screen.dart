@@ -1,4 +1,4 @@
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 
 import '/core/utils.dart';
 

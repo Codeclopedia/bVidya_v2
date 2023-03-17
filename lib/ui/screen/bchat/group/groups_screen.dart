@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/bchat_providers.dart';
-import 'package:bvidya/core/helpers/group_member_helper.dart';
+import '/controller/bchat_providers.dart';
+import '/core/helpers/group_member_helper.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/core/helpers/call_helper.dart';
 import '/data/models/call_message_body.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/controller/providers/bchat/groups_conversation_provider.dart';
+import '/controller/providers/bchat/groups_conversation_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../state.dart';
 import '../ui_core.dart';
