@@ -31,7 +31,7 @@ class LoginOtpScreen extends HookWidget {
         body: SafeArea(
           child: RoundedTopBox(
               logoWidth: 80.w,
-              topPadding: 30.h,
+              topPadding: 60.w,
               child: Form(
                 key: _formKey,
                 child: Padding(

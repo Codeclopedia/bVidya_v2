@@ -109,7 +109,12 @@ class CourseDetailScreen extends StatelessWidget {
                                             // hideLoading(ref);
                                           },
                                           style: elevatedButtonStyle,
-                                          child: const Text("Start Learning"),
+                                          child: Text(
+                                            "Start Learning",
+                                            style: textStyleTitle.copyWith(
+                                                color: Colors.white,
+                                                fontSize: 15.sp),
+                                          ),
                                         ),
                                       )),
                                 ),
@@ -269,14 +274,14 @@ class CourseDetailScreen extends StatelessWidget {
                           "Views: ",
                           coursedetail?.courses?[0].views ?? "",
                           Icons.remove_red_eye_outlined),
-                      _buildDetailItem(
-                          'Duration : ', ' ${course.duration} hours', Icons.history),
+                      _buildDetailItem('Duration : ',
+                          ' ${course.duration} hours', Icons.history),
                       const Divider(
                         height: 0.5,
                         color: Color(0xFFDBDBDB),
                       ),
-                      _buildDetailItem('Lectures : ', ' ${course.numberOfLesson}',
-                          Icons.description),
+                      _buildDetailItem('Lectures : ',
+                          ' ${course.numberOfLesson}', Icons.description),
                     ],
                   ),
                 ),
@@ -339,10 +344,10 @@ class CourseDetailScreen extends StatelessWidget {
                     ),
                   ),
             SizedBox(height: 10.w),
-            const TwoColorText(
-              first: 'Related',
-              second: 'Courses',
-            ),
+            // const TwoColorText(
+            //   first: 'Related',
+            //   second: 'Courses',
+            // ),
           ],
         ),
       ),

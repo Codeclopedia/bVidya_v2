@@ -221,6 +221,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                         ? buildEmptyPlaceHolder('No Converasations')
                         : ListView.separated(
                             shrinkWrap: false,
+                            physics: const BouncingScrollPhysics(),
                             itemCount: conversationList.length,
                             separatorBuilder: (context, index) {
                               return Divider(

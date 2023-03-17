@@ -72,17 +72,17 @@ class RequestDetailScreen extends StatelessWidget {
                               customTile(
                                   title: S.current.request_class_description,
                                   data: requestdata.description ?? ""),
-                              customTile(
+                               customTile(
                                 title: S.current.preferredDate,
-                                data: DateFormat.yMEd().format(
-                                    requestdata.preferred_date_time ??
-                                        DateTime.now()),
+                                data: DateFormat.yMEd().format(DateFormat()
+                                    .parse(requestdata.preferred_date_time ??
+                                        DateTime.now().toString())),
                               ),
                               customTile(
                                 title: S.current.preferredTime,
-                                data: DateFormat.jm().format(
+                                data: DateFormat.jm().format(DateFormat().parse(
                                     requestdata.preferred_date_time ??
-                                        DateTime.now()),
+                                        DateTime.now().toString())),
                               )
                             ],
                           ),

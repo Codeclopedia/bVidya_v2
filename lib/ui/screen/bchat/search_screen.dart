@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:shimmer/shimmer.dart';
+
 import '/core/constants/agora_config.dart';
 import '/core/utils.dart';
 import '/core/utils/request_utils.dart';
@@ -80,6 +82,8 @@ class SearchScreen extends StatelessWidget {
                             ? IconButton(
                                 onPressed: () {
                                   controller.text = '';
+                                  ref.read(searchQueryProvider.notifier).state =
+                                      '';
                                 },
                                 icon: const Icon(Icons.close,
                                     color: Colors.black))
@@ -93,6 +97,8 @@ class SearchScreen extends StatelessWidget {
                       ),
                       onChanged: (value) {
                         ref.read(inputTextProvider.notifier).state =
+                            value.trim();
+                        ref.read(searchQueryProvider.notifier).state =
                             value.trim();
                       },
                       onFieldSubmitted: (value) {
@@ -122,27 +128,64 @@ class SearchScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 2.h),
+            SizedBox(height: 3.h),
             Text(
               S.current.search_contact_ppl,
               style: TextStyle(
                 fontFamily: kFontFamily,
                 color: Colors.black,
-                fontSize: 10.sp,
+                fontSize: 17.5.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Consumer(builder: (context, ref, child) {
               final result = ref.watch(searchChatContact);
+              // final result = ref.watch(inputTextProvider) == ''
+              //     ? null
+              //     : ref.watch(searchChatContactProvider(
+              //         ref.watch(inputTextProvider).trim()));
               final contacts = ref
                   .watch(contactListProvider)
                   .where((element) => element.status == ContactStatus.friend);
               final contactIds = contacts.map((e) => e.userId).toList();
+              if (ref.watch(searchQueryProvider) == "") {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 50.w),
+                    Center(
+                      child: Text(
+                        "Search any user through name, email address, phone number.",
+                        textAlign: TextAlign.center,
+                        style: textStyleBlack.copyWith(
+                            color: Colors.grey,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                  ],
+                );
+              }
               return result.when(
                   data: ((data) {
                     if (data.isEmpty) {
-                      return buildEmptyPlaceHolder('No User found');
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 50.w),
+                          Center(
+                            child: Text(
+                              "No User Found.",
+                              style: textStyleBlack.copyWith(
+                                  color: Colors.grey,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                        ],
+                      );
                     }
+
                     return ListView.builder(
                       shrinkWrap: true,
                       itemCount: data.length,
@@ -254,7 +297,36 @@ class SearchScreen extends StatelessWidget {
                     );
                   }),
                   error: (e, t) => buildEmptyPlaceHolder('No User found'),
-                  loading: () => buildLoading);
+                  loading: () => ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: 20,
+                        itemBuilder: (context, index) => Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 2.w, horizontal: 1.w),
+                          child: Row(
+                            children: [
+                              Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(0.4),
+                                highlightColor: Colors.white,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey.withOpacity(0.4),
+                                  radius: 7.w,
+                                ),
+                              ),
+                              SizedBox(width: 5.w),
+                              Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(0.5),
+                                highlightColor: Colors.white,
+                                child: Container(
+                                  height: 15.w,
+                                  width: 60.w,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ));
             }),
             // SizedBox(height: 3.h),
             // Text(
@@ -300,7 +372,7 @@ class SearchScreen extends StatelessWidget {
           [];
       if (contacts.isNotEmpty && AgoraConfig.autoAcceptContact) {
         openChatScreen(context,
-            Contacts.fromContact(contacts[0], ContactStatus.friend), ref,
+            Contacts.fromContact(contacts[0], ContactStatus.sentInvite), ref,
             sendInviateMessage: true, message: input);
       } else {
         hideLoading(ref);

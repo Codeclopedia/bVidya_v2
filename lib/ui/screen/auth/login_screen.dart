@@ -33,7 +33,7 @@ class LoginScreen extends HookWidget {
         body: SafeArea(
           child: RoundedTopBox(
             logoWidth: 80.w,
-            topPadding: 25.h,
+            topPadding: 55.w,
             child: Form(
               key: _formKey,
               child: Padding(

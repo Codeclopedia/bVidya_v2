@@ -3,9 +3,10 @@ import '/data/models/models.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 
-class RequestedClassDetailScreen extends StatelessWidget {
+class TeacherRequestedClassDetailScreen extends StatelessWidget {
   final PersonalClass requestedClass;
-  const RequestedClassDetailScreen({super.key, required this.requestedClass});
+  const TeacherRequestedClassDetailScreen(
+      {super.key, required this.requestedClass});
 
   @override
   Widget build(BuildContext context) {

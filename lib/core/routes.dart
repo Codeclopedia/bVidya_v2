@@ -59,6 +59,9 @@ class Routes {
 
     // print('opening screen $_currentScreen ');
     switch (settings.name) {
+      case RouteList.noInternetConnection:
+        screen = const NoInternetConnectionScreen();
+        break;
       // case RouteList.splash:
       //   screen = const SplashScreen();
       //   break;
@@ -222,6 +225,17 @@ class Routes {
         }
         break;
 
+      case RouteList.scheduledClassMeetingScreen:
+        if (settings.arguments is StudentScheduledClassDetails) {
+          StudentScheduledClassDetails scheduledClassData =
+              settings.arguments as StudentScheduledClassDetails;
+          screen = ScheduledClassMeetingScreen(
+            scheduledClassDetails: scheduledClassData,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
       case RouteList.classScheduledDetail:
         if (settings.arguments is InstructorScheduledClass) {
           InstructorScheduledClass scheduledClassData =
@@ -603,7 +617,7 @@ class Routes {
         //   break;
         if (settings.arguments is Profile) {
           Profile profileData = settings.arguments as Profile;
-          screen = StudentProfileDetail(
+          screen = StudentProfileEditScreen(
             profile: profileData,
           );
         } else {
@@ -620,7 +634,7 @@ class Routes {
         break;
 
       case RouteList.studentLearnings:
-        screen = const MyLearningScreen();
+        screen = const StudentLearningScreen();
         break;
       case RouteList.teacherRequestClassForm:
         if (settings.arguments is Instructor) {
@@ -635,8 +649,8 @@ class Routes {
         if (settings.arguments is PersonalClass) {
           PersonalClass personalClassDetail =
               settings.arguments as PersonalClass;
-          screen =
-              RequestedClassDetailScreen(requestedClass: personalClassDetail);
+          screen = TeacherRequestedClassDetailScreen(
+              requestedClass: personalClassDetail);
         } else {
           screen = _parameterMissing();
         }
@@ -654,7 +668,7 @@ class Routes {
         // screen =
         //     const TeacherClasses(); // at line 635 rename the class from teacherclassrequests to teacherclasses
 
-        screen = const TeacherScheduleScreen();
+        screen = const TeacherClassesScreen();
         break;
 
       case RouteList.teacherClassRequest:

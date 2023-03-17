@@ -28,6 +28,7 @@ export 'screen/bchat/group/search_group_screen.dart';
 export 'screen/bchat/group/group_call_screen.dart';
 
 export 'base_back_screen.dart';
+export 'widget/no_internet_connection_screen.dart';
 
 export 'screen/bmeet/bmeet_home_screen.dart';
 export 'screen/bmeet/start_meet_screen.dart';
@@ -58,22 +59,23 @@ export 'screen/profile/settings/contactus_screen.dart';
 export 'screen/profile/settings/report_problem_screen.dart';
 export 'screen/profile/settings/chat_setting_screen.dart';
 
-export 'screen/profile/student/profile_screen.dart';
-export 'screen/profile/student/my_learning_screen.dart';
-export 'screen/profile/student/student_profile_detail.dart';
+export 'screen/profile/student/student_profile_screen.dart';
+export 'screen/profile/student/student_learning_screen.dart';
+export 'screen/profile/student/student_profile_edit_screen.dart';
 export 'screen/profile/student/student_schdule.dart';
 export 'screen/profile/student/request_detail_screen.dart';
 export 'screen/profile/student/scheduled_class_detail.dart';
 export 'screen/profile/student/subscription_plans_screen.dart';
 export 'screen/profile/student/active_plan_detail_screen.dart';
+export 'screen/profile/student/scheduled_class_meeting_screen.dart';
 
 export 'screen/profile/teacher/teacher_dashboard_screen.dart';
-export 'screen/profile/teacher/teacher_profile.dart';
+export 'screen/profile/teacher/teacher_profile_screen.dart';
 export 'screen/profile/teacher/teacher_profile_edit.dart';
 export 'screen/profile/teacher/teachers_courses.dart';
 export 'screen/profile/teacher/teacher_classrequest.dart';
-export 'screen/profile/teacher/teacher_schedule.dart';
-export 'screen/profile/teacher/requested_class_detail.dart';
+export 'screen/profile/teacher/teacher_classes_screen.dart';
+export 'screen/profile/teacher/teacher_requested_class_detail_screen.dart';
 export 'screen/blearn/components/request_class_form.dart';
 
 export 'screen/profile/settings/webview_screen.dart';

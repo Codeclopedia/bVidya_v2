@@ -1,3 +1,5 @@
+import 'package:flutter/gestures.dart';
+
 import '/controller/profile_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
@@ -162,6 +164,15 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                           TextSpan(
                               text: S.current
                                   .subscription_term_condition_title_part2,
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  final arg = {
+                                    'url': 'https://bvidya.com/app-payment-tc'
+                                  };
+                                  Navigator.pushNamed(
+                                      context, RouteList.webview,
+                                      arguments: arg);
+                                },
                               style: textStyleDesc.copyWith(
                                   fontSize: 3.w,
                                   color: AppColors.primaryColor)),

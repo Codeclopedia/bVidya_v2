@@ -43,6 +43,10 @@ class ApiList {
   static const String liveClass = 'live-class/'; //GET
   static const String fetchLiveRtm = 'live-chatroom/token/'; //GET
 
+  //personal Class
+  static const String joinPersonalClass = 'personal-class/join/'; //GET
+  static const String startPersonalClass = 'personal-class/start/'; //GET
+  
   //LMS
   static const String lmsHome = 'v2/home'; //GET
   static const String lmsCategories = 'categories'; //GET

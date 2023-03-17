@@ -7,8 +7,8 @@ import '/core/ui_core.dart';
 
 final selectedTabTeacherCourseProvider = StateProvider<int>((ref) => 0);
 
-class CoursesTeachersUi extends ConsumerWidget {
-  const CoursesTeachersUi({Key? key}) : super(key: key);
+class TeacherAllCoursesScreen extends ConsumerWidget {
+  const TeacherAllCoursesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

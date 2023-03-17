@@ -33,7 +33,7 @@ class AddContactDialog extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textController = useTextEditingController();
+    // final textController = useTextEditingController();
     return Container(
       // alignment: Alignment.bottomCenter,
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
@@ -58,17 +58,17 @@ class AddContactDialog extends HookWidget {
         children: [
           Text('Send Request to $name', style: textStyleHeading),
           SizedBox(height: 1.w),
-          Text('Send a hi message to add contact', style: textStyleTitle),
-          SizedBox(height: 2.w),
-          TextFormField(
-            controller: textController,
-            decoration:
-                inputMultiLineStyle.copyWith(hintText: 'Enter first message'),
-            maxLines: 3,
-            onFieldSubmitted: (value) {
-              Navigator.pop(context, value.trim());
-            },
-          ),
+          // Text('Send a hi message to add contact', style: textStyleTitle),
+          // SizedBox(height: 2.w),
+          // TextFormField(
+          //   controller: textController,
+          //   decoration:
+          //       inputMultiLineStyle.copyWith(hintText: 'Enter first message'),
+          //   maxLines: 3,
+          //   onFieldSubmitted: (value) {
+          //     Navigator.pop(context, value.trim());
+          //   },
+          // ),
           Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -101,8 +101,9 @@ class AddContactDialog extends HookWidget {
                   ),
                   // style: dialogElevatedButtonStyle,
                   onPressed: () {
-                    String input = textController.text.trim();
-                    Navigator.pop(context, input);
+                    // String input = textController.text.trim();
+                    // Navigator.pop(context, input);
+                    Navigator.pop(context, 'Hi');
                   },
                   child: Text('Send'.toUpperCase()))
             ],

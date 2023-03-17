@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pip_view/pip_view.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '/controller/blive_providers.dart';
 import '/controller/providers/blive_provider.dart';
@@ -27,7 +28,9 @@ class BLiveClassScreen extends HookConsumerWidget {
       required this.userId})
       : super(key: key);
 
-  void disposeAll() {}
+  void disposeAll() {
+    Wakelock.disable();
+  }
 
   // _loadMe() async {
   //   _me = await getMeAsUser();
@@ -55,15 +58,18 @@ class BLiveClassScreen extends HookConsumerWidget {
       //   // _scrollController.addListener(() => _onScroll(_scrollController, ref));
       //   // _loadMe();
       //   // _preLoadChat(ref);
-
+      Wakelock.enable();
       return disposeAll;
     }, []);
 
     final chatVisible = ref.watch(bLiveChatVisible);
     final provider = ref.watch(bLiveCallChangeProvider);
+    print("testing broadcast: inside broadcast call page 1 ${provider}");
     provider.init(liveClass, rtmToken, userId, ref);
 
     return PIPView(builder: (context, isFloating) {
+      print(
+          "testing broadcast: inside broadcast call page 2 ${provider.isPreviewReady}");
       return Scaffold(
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset:

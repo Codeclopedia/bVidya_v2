@@ -138,6 +138,68 @@ Future _openMeetingScreen(BuildContext context, Meeting meeting,
 //   Navigator.pushNamed(context, RouteList.bMeetCall, arguments: args);
 // }
 
+Future joinScheduledClass(BuildContext context, WidgetRef ref, String meetingId,
+    bool camOff, bool micOff) async {
+  if (!await handleCameraAndMic(Permission.microphone)) {
+    if (Platform.isAndroid) {
+      AppSnackbar.instance.error(context, 'Need microphone permission');
+      return;
+    }
+  }
+  if (!await handleCameraAndMic(Permission.camera)) {
+    if (Platform.isAndroid) {
+      AppSnackbar.instance.error(context, 'Need camera permission');
+      return;
+    }
+  }
+  showLoading(ref);
+  final joinMeeting =
+      await ref.read(bMeetRepositoryProvider).joinScheduledMeeting(meetingId);
+  hideLoading(ref);
+  if (joinMeeting == null || joinMeeting.appid.isEmpty) {
+    print("1");
+    AppSnackbar.instance.error(context, 'Error joining meeting');
+  } else if (joinMeeting.status == 'streaming') {
+    // joinMeeting.role = 'audience';
+
+    Meeting smeeting = Meeting(joinMeeting.appid, joinMeeting.channel,
+        joinMeeting.token, 'audience', joinMeeting.audienceLatency);
+
+    await _openMeetingScreen(
+        context, smeeting, meetingId, -1, ref, camOff, micOff);
+  } else {
+    showOkDialog(context, 'Oops!',
+        'Oops! Broadcast is not started yet! \nPlease wait for moment.');
+  }
+}
+
+Future startScheduledClass(BuildContext context, WidgetRef ref, int meetingId,
+    int id, bool camOff, bool micOff) async {
+  if (!await handleCameraAndMic(Permission.microphone)) {
+    if (Platform.isAndroid) {
+      AppSnackbar.instance.error(context, 'Need microphone permission');
+      return;
+    }
+  }
+  if (!await handleCameraAndMic(Permission.camera)) {
+    if (Platform.isAndroid) {
+      AppSnackbar.instance.error(context, 'Need camera permission');
+      return;
+    }
+  }
+  showLoading(ref);
+  final meeting =
+      await ref.read(bMeetRepositoryProvider).startScheduledClass(meetingId);
+
+  if (meeting == null || meeting.appid.isEmpty) {
+    AppSnackbar.instance.error(context, 'Error joining meeting');
+    hideLoading(ref);
+  } else {
+    await _openMeetingScreen(
+        context, meeting, meetingId.toString(), id, ref, camOff, micOff);
+  }
+}
+
 Future<bool> handleCameraAndMic(Permission permission) async {
   final status = await permission.request();
   debugPrint(status.name);

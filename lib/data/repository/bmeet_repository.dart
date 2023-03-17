@@ -122,4 +122,22 @@ class BMeetRepository {
       return "error";
     }
   }
+
+  Future<Meeting?> startScheduledClass(int id) async {
+    final result = await _api.startScheduledClass(_authToken, id);
+    if (result.status == successfull) {
+      return result.body!.meeting;
+    } else {
+      return null;
+    }
+  }
+
+  Future<JoinMeeting?> joinScheduledMeeting(String id) async {
+    final result = await _api.joinScheduledClass(_authToken, id);
+    if (result.status == successfull && result.body?.meeting != null) {
+      return result.body!.meeting;
+    } else {
+      return null;
+    }
+  }
 }

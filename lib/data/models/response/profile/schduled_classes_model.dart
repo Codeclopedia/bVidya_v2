@@ -196,12 +196,14 @@ class ClassParticipant {
     this.userId,
     this.user,
     this.userImage,
+    this.paymentDetail,
   });
 
   int? scheduleId;
   int? userId;
   UserDetails? user;
   UserImage? userImage;
+  PaymentDetail? paymentDetail;
 
   factory ClassParticipant.fromRawJson(String str) =>
       ClassParticipant.fromJson(json.decode(str));
@@ -210,17 +212,51 @@ class ClassParticipant {
 
   factory ClassParticipant.fromJson(Map<String, dynamic> json) =>
       ClassParticipant(
-        scheduleId: json["schedule_id"],
-        userId: json["user_id"],
-        user: UserDetails.fromJson(json["user"]),
-        userImage: UserImage.fromJson(json["user_image"]),
-      );
+          scheduleId: json["schedule_id"],
+          userId: json["user_id"],
+          user: UserDetails.fromJson(json["user"]),
+          userImage: UserImage.fromJson(json["user_image"]),
+          paymentDetail: PaymentDetail.fromJson(json["payment_detail"]));
 
   Map<String, dynamic> toJson() => {
         "schedule_id": scheduleId,
         "user_id": userId,
         "user": user?.toJson(),
         "user_image": userImage?.toJson(),
+        "payment_detail": paymentDetail?.toJson(),
+      };
+}
+
+class PaymentDetail {
+  PaymentDetail({
+    this.scheduledClassId,
+    this.paymentLinkShortUrl,
+    this.razorpayPaymentLinkStatus,
+    this.status,
+  });
+
+  int? scheduledClassId;
+  String? paymentLinkShortUrl;
+  String? razorpayPaymentLinkStatus;
+  String? status;
+
+  factory PaymentDetail.fromRawJson(String str) =>
+      PaymentDetail.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory PaymentDetail.fromJson(Map<String, dynamic> json) => PaymentDetail(
+        scheduledClassId: json["scheduled_class_id"],
+        paymentLinkShortUrl: json["payment_link_short_url"],
+        razorpayPaymentLinkStatus: json["razorpay_payment_link_status"],
+        status: json["status"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "scheduled_class_id": scheduledClassId,
+        "payment_link_short_url": paymentLinkShortUrl,
+        "razorpay_payment_link_status": razorpayPaymentLinkStatus,
+        "status": status,
       };
 }
 

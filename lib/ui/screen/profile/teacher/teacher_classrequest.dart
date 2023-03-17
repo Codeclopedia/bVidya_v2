@@ -361,9 +361,10 @@ class TeacherClasses extends StatelessWidget {
   chatwithstudent(BuildContext context, int studentId) async {
     final model = await getConversationModel(studentId.toString());
     if (model != null) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, RouteList.chatScreenDirect, (route) => false,
-          arguments: model);
+      Navigator.pushNamed(context,RouteList.chatScreen,arguments: model);
+      // Navigator.pushNamedAndRemoveUntil(
+      //     context, RouteList.chatScreenDirect, (route) => false,
+      //     arguments: model);
     }
   }
 }

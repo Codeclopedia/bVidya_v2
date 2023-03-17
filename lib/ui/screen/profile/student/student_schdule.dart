@@ -1,6 +1,10 @@
 // import '/core/constants/route_list.dart';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:intl/intl.dart';
+
+import '/core/utils.dart';
+import '/ui/screens.dart';
 
 import '/core/constants.dart';
 import '/data/models/response/profile/schduled_classes_model.dart';
@@ -16,19 +20,20 @@ import '../base_settings_noscroll.dart';
 
 final scheduledClassTabIndexProvider = StateProvider<int>((ref) => 0);
 
-class StudentSchdule extends StatelessWidget {
-  const StudentSchdule({super.key});
+class StudentScheduleScreen extends StatelessWidget {
+  const StudentScheduleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseNoScrollSettings(
       bodyContent: Consumer(builder: (context, ref, child) {
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 5.w),
+              padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
               child: SlidingTab(
-                label1: "scheduled Class",
+                label1: "Scheduled Class",
                 label2: "Request sent",
                 selectedIndex: ref.watch(scheduledClassTabIndexProvider),
                 callback: (p0) {
@@ -38,55 +43,75 @@ class StudentSchdule extends StatelessWidget {
             ),
             ref.watch(scheduledClassTabIndexProvider) == 0
                 ? scheduledClasses()
-                : Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 2.w),
-                      child: ref.watch(requestedClassesProvider).when(
-                            data: (data) {
-                              // print(data);
-                              if (data == null) {
-                                return Center(
-                                  child: buildEmptyPlaceHolder(
-                                      S.current.t_no_requested_class_title),
-                                );
-                              }
-                              if (data.requestedClasses?.isEmpty ?? false) {
-                                return Center(
-                                  child: buildEmptyPlaceHolder(
-                                      S.current.t_no_requested_class_title),
-                                );
-                              }
-
-                              return ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: data.requestedClasses?.length,
-                                itemBuilder: (context, index) {
-                                  return _buildRequestRow(
-                                      data.requestedClasses?[index] ??
-                                          RequestedClass(),
-                                      context);
-                                },
-                              );
-                            },
-                            error: (error, stackTrace) =>
-                                buildEmptyPlaceHolder('Error'),
-                            loading: () => ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: 10,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 1.h),
-                                  child: CustomizableShimmerTile(
-                                      height: 20.w, width: 100.w),
-                                );
-                              },
-                            ),
-                          ),
-                    ),
-                  )
+                : requestedClasses(ref)
           ],
         );
+
+        // Column(
+        //   children: [
+        //     Padding(
+        //       padding: EdgeInsets.symmetric(vertical: 5.w),
+        //       child: SlidingTab(
+        //         label1: "scheduled Class",
+        //         label2: "Request sent",
+        //         selectedIndex: ref.watch(scheduledClassTabIndexProvider),
+        //         callback: (p0) {
+        //           ref.read(scheduledClassTabIndexProvider.notifier).state = p0;
+        //         },
+        //       ),
+        //     ),
+        //     ref.watch(scheduledClassTabIndexProvider) == 0
+        //         ? scheduledClasses()
+        //         : requestedClasses(ref)
+        //   ],
+        // );
       }),
+    );
+  }
+
+  Widget requestedClasses(WidgetRef ref) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 2.w),
+        child: ref.watch(requestedClassesProvider).when(
+              data: (data) {
+                // print(data);
+                if (data == null) {
+                  return Center(
+                    child: buildEmptyPlaceHolder(
+                        S.current.t_no_requested_class_title),
+                  );
+                }
+                if (data.requestedClasses?.isEmpty ?? false) {
+                  return Center(
+                    child: buildEmptyPlaceHolder(
+                        S.current.t_no_requested_class_title),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: data.requestedClasses?.length,
+                  itemBuilder: (context, index) {
+                    return _buildRequestRow(
+                        data.requestedClasses?[index] ?? RequestedClass(),
+                        context);
+                  },
+                );
+              },
+              error: (error, stackTrace) => buildEmptyPlaceHolder('Error'),
+              loading: () => ListView.builder(
+                shrinkWrap: true,
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 1.h),
+                    child: CustomizableShimmerTile(height: 20.w, width: 100.w),
+                  );
+                },
+              ),
+            ),
+      ),
     );
   }
 
@@ -100,10 +125,8 @@ class StudentSchdule extends StatelessWidget {
             if (data == null) {
               return const Center(child: CircularProgressIndicator.adaptive());
             }
-            if (data.scheduledRequests?.isEmpty ?? false) {
-              return Center(
-                child: buildEmptyPlaceHolder(S.current.s_no_schedule_class),
-              );
+            if (data.scheduledRequests?.isEmpty ?? true) {
+              return buildEmptyPlaceHolder(S.current.s_no_schedule_class);
             }
             return scheduledClasseslist(data.scheduledRequests ?? []);
           },
@@ -113,7 +136,7 @@ class StudentSchdule extends StatelessWidget {
           loading: () {
             return ListView.builder(
               shrinkWrap: true,
-              itemCount: 10,
+              itemCount: 20,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 1.h),
@@ -196,7 +219,7 @@ class StudentSchdule extends StatelessWidget {
   }
 
   Widget scheduledClassRow(
-      StudentScheduledClassDetails scheduledClass, BuildContext context) {
+      StudentScheduledClassDetails scheduledClassdetail, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.w),
       child: Container(
@@ -212,7 +235,7 @@ class StudentSchdule extends StatelessWidget {
               children: [
                 Text(
                   DateFormat("MMMM \n d").format(
-                      scheduledClass.scheduledClass?.scheduledAt ??
+                      scheduledClassdetail.scheduledClass?.scheduledAt ??
                           DateTime.now()),
                   textAlign: TextAlign.center,
                   style:
@@ -227,7 +250,7 @@ class StudentSchdule extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scheduledClass.scheduledClass?.title ?? "",
+                        scheduledClassdetail.scheduledClass?.title ?? "",
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -244,7 +267,8 @@ class StudentSchdule extends StatelessWidget {
                             size: 3.w,
                           ),
                           Text(
-                            scheduledClass.scheduledClass?.participants?.length
+                            scheduledClassdetail
+                                    .scheduledClass?.participants?.length
                                     .toString() ??
                                 "",
                             style: TextStyle(
@@ -258,7 +282,7 @@ class StudentSchdule extends StatelessWidget {
                           ),
                           SizedBox(width: 1.w),
                           Text(
-                            scheduledClass.type ?? "",
+                            scheduledClassdetail.type ?? "",
                             style: TextStyle(
                                 fontSize: 3.w, color: AppColors.iconGreyColor),
                           ),
@@ -278,9 +302,9 @@ class StudentSchdule extends StatelessWidget {
                             width: 2.w,
                           ),
                           Text(
-                            DateFormat('hh:mm a').format(
-                                scheduledClass.scheduledClass?.scheduledAt ??
-                                    DateTime.now()),
+                            DateFormat('hh:mm a').format(scheduledClassdetail
+                                    .scheduledClass?.scheduledAt ??
+                                DateTime.now()),
                             style: TextStyle(
                                 fontSize: 3.w, color: AppColors.iconGreyColor),
                           )
@@ -291,25 +315,53 @@ class StudentSchdule extends StatelessWidget {
                 ),
               ],
             ),
-            InkWell(
-              onTap: () {
-                // Navigator.pushNamed(
-                //               context, RouteList.teacherRequestedClassDetail,
-                //               arguments: data.personalClasses?[index] ??
-                //                   PersonalClass());
-                Navigator.pushNamed(context, RouteList.classScheduledDetail,
-                    arguments: scheduledClass);
-              },
-              child: CircleAvatar(
-                backgroundColor: AppColors.yellowAccent,
-                radius: 5.w,
-                child: Icon(
-                  Icons.adaptive.arrow_forward,
-                  size: 5.w,
-                  color: AppColors.primaryColor,
+            Consumer(builder: (context, ref, child) {
+              return InkWell(
+                onTap: () async {
+                  // Navigator.pushNamed(
+                  //               context, RouteList.teacherRequestedClassDetail,
+                  //               arguments: data.personalClasses?[index] ??
+                  //                   PersonalClass());
+
+                  showLoading(ref);
+                  final user = await getMeAsUser();
+                  if (user == null) {
+                    hideLoading(ref);
+                  }
+                  final indexOfUser = scheduledClassdetail
+                      .scheduledClass?.participants
+                      ?.indexWhere((element) => element.user?.id == user?.id);
+                  final userPaymentDetails = scheduledClassdetail.scheduledClass
+                      ?.participants?[indexOfUser ?? 0].paymentDetail;
+                  // print(
+                  //     "user details: ${userPaymentDetails?.razorpayPaymentLinkStatus}");
+                  if (userPaymentDetails?.razorpayPaymentLinkStatus == 'paid') {
+                    hideLoading(ref);
+
+                    Navigator.pushNamed(
+                        context, RouteList.scheduledClassMeetingScreen,
+                        arguments: scheduledClassdetail);
+                  } else {
+                    final arg = {
+                      'url': userPaymentDetails?.paymentLinkShortUrl
+                    };
+                    hideLoading(ref);
+                    if (arg['url'] == null) {}
+                    Navigator.pushNamed(context, RouteList.webview,
+                        arguments: arg);
+                  }
+                },
+                child: CircleAvatar(
+                  backgroundColor: AppColors.yellowAccent,
+                  radius: 5.w,
+                  child: Icon(
+                    Icons.adaptive.arrow_forward,
+                    size: 5.w,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
-              ),
-            )
+              );
+            })
           ],
         ),
       ),

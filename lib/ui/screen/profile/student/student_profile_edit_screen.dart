@@ -33,10 +33,10 @@ final isAddressEditing = StateProvider.autoDispose<bool>(
   (ref) => false,
 );
 
-class StudentProfileDetail extends HookWidget {
+class StudentProfileEditScreen extends HookWidget {
   final Profile profile;
 
-  const StudentProfileDetail({super.key, required this.profile});
+  const StudentProfileEditScreen({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {

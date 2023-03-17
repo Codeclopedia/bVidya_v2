@@ -328,12 +328,36 @@ class BChatContactManager {
       ChatConversation? conv =
           await ChatClient.getInstance.chatManager.getConversation(convId);
 
-      final list =
+      final images =
           (await conv?.loadMessagesWithMsgType(type: MessageType.IMAGE)) ?? [];
-      if (list.isNotEmpty) {
-        for (var f in list) {
-          final body = f.body as ChatImageMessageBody;
-          items.add(ChatMediaFile(f.msgId, body));
+      if (images.isNotEmpty) {
+        for (var f in images) {
+          final body = f.body;
+          items.add(ChatMediaFile(f.msgId, body, MessageType.IMAGE));
+        }
+      }
+      final videos =
+          (await conv?.loadMessagesWithMsgType(type: MessageType.VIDEO)) ?? [];
+      if (videos.isNotEmpty) {
+        for (var f in videos) {
+          final body = f.body;
+          items.add(ChatMediaFile(f.msgId, body, MessageType.VIDEO));
+        }
+      }
+      final voices =
+          (await conv?.loadMessagesWithMsgType(type: MessageType.VOICE)) ?? [];
+      if (voices.isNotEmpty) {
+        for (var f in voices) {
+          final body = f.body;
+          items.add(ChatMediaFile(f.msgId, body, MessageType.VOICE));
+        }
+      }
+      final file =
+          (await conv?.loadMessagesWithMsgType(type: MessageType.FILE)) ?? [];
+      if (file.isNotEmpty) {
+        for (var f in file) {
+          final body = f.body;
+          items.add(ChatMediaFile(f.msgId, body, MessageType.FILE));
         }
       }
     } catch (_) {}
@@ -362,7 +386,8 @@ class BChatContactManager {
 
 class ChatMediaFile {
   final String msgId;
-  final ChatImageMessageBody body;
+  final ChatMessageBody body;
+  final MessageType type;
 
-  ChatMediaFile(this.msgId, this.body);
+  ChatMediaFile(this.msgId, this.body,this.type);
 }

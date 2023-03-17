@@ -2,6 +2,7 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import '../../../app.dart';
 import '/core/utils/request_utils.dart';
 
 import '/core/utils.dart';
@@ -394,32 +395,8 @@ class ContactProfileScreen extends HookConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     separatorBuilder: (context, index) => SizedBox(width: 3.w),
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          final list = data
-                              .map((e) => getImageProviderChatImage(e.body,
-                                  loadThumbFirst: false))
-                              .toList();
-                          MultiImageProvider multiImageProvider =
-                              MultiImageProvider(list, initialIndex: index);
-                          // final body = data[index].body;
-                          showImageViewerPager(context, multiImageProvider,
-                              onPageChanged: (page) {
-                            print("page changed to $page");
-                          }, onViewerDismissed: (page) {
-                            print("dismissed while on page $page");
-                          });
-                          // showImageViewer(
-                          //     context,
-                          //     getImageProviderChatImage(data[index].body,
-                          //         loadThumbFirst: false),
-                          //     onViewerDismissed: () {
-                          //   // print("dismissed");
-                          // });
-                        },
-                        child: _rowChatImageBody(data[index],
-                            counter: data.length - 3, last: index == 2),
-                      );
+                      return _rowChatMediaBody(data[index],
+                          counter: data.length - 3, last: index == 2);
                     },
                   ),
                 );
@@ -448,6 +425,120 @@ class ContactProfileScreen extends HookConsumerWidget {
           ],
         );
       }),
+    );
+  }
+
+  Widget mediaWidget(ChatMediaFile mediaFile, BuildContext context) {
+    late Widget mediaWidget;
+    switch (mediaFile.type) {
+      case MessageType.IMAGE:
+        ChatImageMessageBody body = mediaFile.body as ChatImageMessageBody;
+        mediaWidget = Image(
+          image: getImageProviderChatImage(body),
+          fit: BoxFit.cover,
+          height: imageSize,
+          width: imageSize,
+        );
+        break;
+      case MessageType.VIDEO:
+        ChatVideoMessageBody body = mediaFile.body as ChatVideoMessageBody;
+        mediaWidget = GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.bViewVideo,
+                  arguments: body);
+            },
+            child: _videoOnly(body));
+
+        break;
+      case MessageType.VOICE:
+        ChatVoiceMessageBody body = mediaFile.body as ChatVoiceMessageBody;
+
+        mediaWidget = Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3.w),
+              color: AppColors.primaryColor),
+          padding: EdgeInsets.symmetric(vertical: 6.w, horizontal: 3.w),
+          child: getSvgIcon('Icon metro-file-audio.svg',
+              fit: BoxFit.contain,
+              width: 28.w,
+              color: AppColors.cardBackground),
+        );
+
+        break;
+      case MessageType.FILE:
+        ChatFileMessageBody body = mediaFile.body as ChatFileMessageBody;
+        mediaWidget = Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3.w),
+              color: AppColors.primaryColor),
+          padding: EdgeInsets.symmetric(vertical: 6.w, horizontal: 3.w),
+          child: getSvgIcon('icon_file_doc.svg',
+              fit: BoxFit.contain,
+              width: 28.w,
+              color: AppColors.cardBackground),
+        );
+        break;
+      case MessageType.LOCATION:
+        mediaWidget = Container();
+        break;
+      case MessageType.TXT:
+        mediaWidget = Container();
+        break;
+      case MessageType.CMD:
+        mediaWidget = Container();
+        break;
+      default:
+        mediaWidget = Container();
+    }
+    return mediaWidget;
+  }
+
+  Widget _videoOnly(ChatVideoMessageBody body) {
+    // final bool isOwnMessage = message.from == currentUser.id;
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: 30.w,
+        maxWidth: 60.w,
+        minHeight: 5.h,
+        maxHeight: 30.h,
+      ),
+      margin: EdgeInsets.only(left: 2.w),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(3.w)),
+            child: Image(
+              image: getImageProviderChatVideo(body),
+            ),
+          ),
+          // Positioned(
+          //   right: 2.w,
+          //   bottom: 1.h,
+          //   child: _buildTime(message.msg),
+          // ),
+          const Center(
+            child: Icon(
+              Icons.play_circle_outline,
+              color: Colors.white,
+            ),
+          ),
+          // if (progress > 0)
+          //   Positioned(
+          //     bottom: 0,
+          //     right: 0,
+          //     left: 0,
+          //     top: 0,
+          //     child: Center(
+          //       child: CircularProgressIndicator(
+          //         value: progress.toDouble(),
+          //         backgroundColor: Colors.transparent,
+          //         color: AppColors.primaryColor,
+          //       ),
+          //     ),
+          //   )
+          // // Center(child: CircularProgressIndicator(value: progress.toDouble()))
+        ],
+      ),
     );
   }
 
@@ -494,7 +585,7 @@ class ContactProfileScreen extends HookConsumerWidget {
           );
   }
 
-  Widget _rowChatImageBody(ChatMediaFile file,
+  Widget _rowChatMediaBody(ChatMediaFile file,
       {bool last = false, int counter = 0}) {
     return SizedBox(
       // height: imageSize + 2.w,
@@ -503,12 +594,7 @@ class ContactProfileScreen extends HookConsumerWidget {
         borderRadius: BorderRadius.all(Radius.circular(4.w)),
         child: Stack(
           children: [
-            Image(
-              image: getImageProviderChatImage(file.body),
-              fit: BoxFit.cover,
-              height: imageSize,
-              width: imageSize,
-            ),
+            mediaWidget(file, navigatorKey.currentContext!),
             if (last && counter > 0)
               Container(
                 color: Colors.black38,

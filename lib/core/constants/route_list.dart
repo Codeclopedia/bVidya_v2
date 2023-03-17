@@ -105,6 +105,8 @@ class RouteList {
 
   static const String studentProfileSchdule = '/student_schdule';
   static const String requestedClassDetail = '/requested_class_detail';
+  static const String scheduledClassMeetingScreen =
+      '/scheduled_class_meeting_screen';
 
   //*teacher
   static const String teacherProfile = '/teacher-profile';
@@ -127,6 +129,8 @@ class RouteList {
   static const String activePlan = '/subscription-details';
   static const String classScheduleDetails = '/class-schedule-details';
   static const String classScheduledDetail = '/class-schdeduled-detail';
+
+  static const String noInternetConnection = 'no-internet-screen';
   //
   // static const String bForum = '/forum';
   // static const String bDiscuss = '/discuss';

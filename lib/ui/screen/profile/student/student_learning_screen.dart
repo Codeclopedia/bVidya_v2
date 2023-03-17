@@ -12,8 +12,8 @@ import '../../../widget/courses_circularIndicator.dart';
 
 final selectedTabLearningProvider = StateProvider<int>((ref) => 0);
 
-class MyLearningScreen extends ConsumerWidget {
-  const MyLearningScreen({Key? key}) : super(key: key);
+class StudentLearningScreen extends ConsumerWidget {
+  const StudentLearningScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -37,7 +37,7 @@ class SignUpScreen extends HookWidget {
         body: SafeArea(
           child: RoundedTopBox(
             logoWidth: 65.w,
-            topPadding: 20.h,
+            topPadding: 40.w,
             child: Form(
               key: _formKey,
               child: Padding(

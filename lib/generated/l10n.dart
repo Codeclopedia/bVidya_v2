@@ -1520,6 +1520,26 @@ class S {
     );
   }
 
+  /// `Join Scheduled Class`
+  String get scheduled_class_join_title {
+    return Intl.message(
+      'Join Scheduled Class',
+      name: 'scheduled_class_join_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Click on start button to join the scheduled class`
+  String get scheduled_class_join_desc {
+    return Intl.message(
+      'Click on start button to join the scheduled class',
+      name: 'scheduled_class_join_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Start`
   String get bmeet_btn_start {
     return Intl.message(

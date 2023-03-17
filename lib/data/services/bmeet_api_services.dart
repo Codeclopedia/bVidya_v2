@@ -153,6 +153,51 @@ class BMeetApiService {
     }
   }
 
+  //
+  Future<StartMeetingResponse> startScheduledClass(
+      String authToken, int id) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = authToken;
+      final response = await _dio
+          .get(baseUrlApi + ApiList.startPersonalClass + id.toString());
+
+      if (response.statusCode == 200) {
+        // print('Loading meeting list ${jsonEncode(response.data)}');
+        return StartMeetingResponse.fromJson(response.data);
+      } else {
+        return StartMeetingResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return StartMeetingResponse(
+          status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future<JoinMeetingResponse> joinScheduledClass(
+      String authToken, String id) async {
+    try {
+      _dio.options.headers['X-Auth-Token'] = authToken;
+      print("class meeting id $id");
+      print(baseUrlApi + ApiList.joinPersonalClass + id);
+      final response =
+          await _dio.get(baseUrlApi + ApiList.joinPersonalClass + id);
+
+      if (response.statusCode == 200) {
+        // print('Join meeting ${jsonEncode(response.data)}');
+        return JoinMeetingResponse.fromJson(response.data);
+      } else {
+        return JoinMeetingResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      print(e);
+      return JoinMeetingResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
   Future<RTMUserTokenResponse?> fetchUserToken(
       String authToken, int id, String name) async {
     try {

@@ -172,7 +172,12 @@
   "bmeet_date_meeting":"{date} Meeting",
   "bmeet_no_meetings":"No scheduled Meetings.",
 
+  
   "bmeet_join_desc":"You can also clink on the link received to join directly",
+
+
+  "scheduled_class_join_title":"Join Scheduled Class",
+  "scheduled_class_join_desc":"Click on start button to join the scheduled class",
 
 
   "bmeet_btn_start":"Start",

@@ -640,6 +640,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "s_no_schedule_class":
             MessageLookupByLibrary.simpleMessage("No Schedule Class"),
+        "scheduled_class_join_desc": MessageLookupByLibrary.simpleMessage(
+            "Click on start button to join the scheduled class"),
+        "scheduled_class_join_title":
+            MessageLookupByLibrary.simpleMessage("Join Scheduled Class"),
         "search_contact_ppl": MessageLookupByLibrary.simpleMessage("People"),
         "secrityDesc":
             MessageLookupByLibrary.simpleMessage("End-to-End encrypted"),

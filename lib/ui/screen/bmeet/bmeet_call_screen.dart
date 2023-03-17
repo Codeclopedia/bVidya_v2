@@ -2,6 +2,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:pip_view/pip_view.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../../dialog/meet_participants_dialog.dart';
 import '/controller/bmeet_providers.dart';
@@ -42,6 +43,8 @@ class BMeetCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Wakelock.enable();
+
     print("the value $camoff $disableMic");
     return PIPView(builder: (context, isFloating) {
       return BaseWilPopupScreen(
@@ -49,6 +52,7 @@ class BMeetCallScreen extends StatelessWidget {
           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
           PIPView.of(context)?.presentBelow(const BMeetHomeScreen());
+
           return false;
         },
         child: Scaffold(
@@ -460,6 +464,7 @@ class BMeetCallScreen extends StatelessWidget {
   }
 
   _onCallEnd(BuildContext context) {
+    Wakelock.disable();
     Navigator.popAndPushNamed(context, RouteList.bMeet);
   }
 
@@ -1247,6 +1252,8 @@ class BMeetCallScreen extends StatelessWidget {
                                   onTap: () {
                                     setState(() {
                                       provider.sendLeaveApi();
+                                      Wakelock.disable();
+
                                       Navigator.pop(context);
                                     });
                                   }),

@@ -12,8 +12,8 @@ import '../../../base_back_screen.dart';
 import '../../../widget/calendar_view.dart';
 import '../../blearn/components/common.dart';
 
-class TeacherScheduleScreen extends StatelessWidget {
-  const TeacherScheduleScreen({Key? key}) : super(key: key);
+class TeacherClassesScreen extends StatelessWidget {
+  const TeacherClassesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

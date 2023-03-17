@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,6 +15,7 @@ import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/call_message_body.dart';
 import '/controller/bchat_providers.dart';
 import '/data/models/models.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
 import '/ui/base_back_screen.dart';
 import '../state.dart';
 import '../ui_core.dart';
@@ -89,6 +90,9 @@ markCallMessageToMissed(String tId, String msgId, CallStatus status) async {
 
 Future<ChatMessage?> makeAudioCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
+  final blocked =
+      await BChatContactManager.isUserBlocked(contact.userId.toString());
+  if (blocked) return null;
   if (activeCallId != null) {
     AppSnackbar.instance.error(context, 'Already on call');
     return null;
@@ -98,10 +102,10 @@ Future<ChatMessage?> makeAudioCall(
     return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (Platform.isAndroid) {
-      AppSnackbar.instance.error(context, 'Need microphone permission');
-      return null;
-    }
+    // if (Platform.isAndroid) {
+    AppSnackbar.instance.error(context, 'Need microphone permission');
+    return null;
+    // }
   }
   // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
 
@@ -186,6 +190,9 @@ Future<bool> receiveCall(BuildContext context, String fromId,
 
 Future<ChatMessage?> makeVideoCall(
     Contacts contact, WidgetRef ref, BuildContext context) async {
+  final blocked =
+      await BChatContactManager.isUserBlocked(contact.userId.toString());
+  if (blocked) return null;
   if (onGoingCallId != null) {
     AppSnackbar.instance.error(context, 'Already on call');
     return null;
@@ -196,16 +203,16 @@ Future<ChatMessage?> makeVideoCall(
     return null;
   }
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (Platform.isAndroid) {
-      AppSnackbar.instance.error(context, 'Need microphone permission');
-      return null;
-    }
+    // if (Platform.isAndroid) {
+    AppSnackbar.instance.error(context, 'Need microphone permission');
+    return null;
+    // }
   }
   if (!await handleCameraAndMic(Permission.camera)) {
-    if (Platform.isAndroid) {
-      AppSnackbar.instance.error(context, 'Need camera permission');
-      return null;
-    }
+    // if (Platform.isAndroid) {
+    AppSnackbar.instance.error(context, 'Need camera permission');
+    return null;
+    // }
   }
   showLoading(ref);
   // pr.Provider.of<ClassEndProvider>(context, listen: false).setCallStart();
@@ -261,7 +268,8 @@ Future<ChatMessage?> makeCall(
     AppSnackbar.instance.error(context, 'Already on call');
     return null;
   }
-
+  final blocked = await BChatContactManager.isUserBlocked(model.userId);
+  if (blocked) return null;
   showLoading(ref);
   final results = await ref.read(bChatProvider).getContactsByIds(model.userId);
   hideLoading(ref);

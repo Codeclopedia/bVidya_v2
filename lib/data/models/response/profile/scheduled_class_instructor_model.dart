@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'schduled_classes_model.dart';
+
 class InstructorScheduledClasses {
   InstructorScheduledClasses({
     this.body,
@@ -134,6 +136,7 @@ class ScheduledClassParticipantDetail {
     this.userImage,
     this.instructor,
     this.instructorImage,
+    this.paymentDetail,
   });
 
   int? id;
@@ -152,6 +155,7 @@ class ScheduledClassParticipantDetail {
   RImage? userImage;
   UserDetails? instructor;
   RImage? instructorImage;
+  PaymentDetail? paymentDetail;
 
   factory ScheduledClassParticipantDetail.fromRawJson(String str) =>
       ScheduledClassParticipantDetail.fromJson(json.decode(str));
@@ -176,6 +180,7 @@ class ScheduledClassParticipantDetail {
         userImage: RImage.fromJson(json["user_image"]),
         instructor: UserDetails.fromJson(json["instructor"]),
         instructorImage: RImage.fromJson(json["instructor_image"]),
+        paymentDetail: PaymentDetail.fromJson(json["payment_detail"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -195,6 +200,7 @@ class ScheduledClassParticipantDetail {
         "user_image": userImage?.toJson(),
         "instructor": instructor?.toJson(),
         "instructor_image": instructorImage?.toJson(),
+        "payment_detail": paymentDetail?.toJson(),
       };
 }
 

@@ -18,10 +18,10 @@ Future joinBroadcast(
   String broadcastStreamId,
 ) async {
   if (!await handleCameraAndMic(Permission.microphone)) {
-    if (Platform.isAndroid) {
+    // if (Platform.isAndroid) {
       AppSnackbar.instance.error(context, 'Need microphone permission');
       return;
-    }
+    // }
   }
   // if (!await _handleCameraAndMic(Permission.camera)) {
   //   if (defaultTargetPlatform == TargetPlatform.android) {
@@ -33,11 +33,7 @@ Future joinBroadcast(
 
   final liveClassResponse =
       await ref.read(bLiveRepositoryProvider).getLiveClass(broadcastStreamId);
-  // if (liveClassResponse == null) {
-  //   AppSnackbar.instance.error(context, 'Error fetching broadcast detail');
-  //   hideLoading(ref);
-  //   return;
-  // }
+  
 
   if (liveClassResponse.status != 'successfull' ||
       liveClassResponse.body == null) {

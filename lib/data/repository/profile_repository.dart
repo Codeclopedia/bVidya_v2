@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bvidya/core/utils/local_data.dart';
+
 import '../models/models.dart';
 import '../services/profile_api_service.dart';
 
@@ -31,7 +33,9 @@ class ProfileRepository {
   Future<SubscribedCourseBody?> getSubscribeCourses() async {
     final result = await _api.getSubscribedCourses(_authToken);
     // print("result inside repo :${result.body?.toJson()}");
+
     if (result.status == "success") {
+      saveDataLocally('subscribed_courses', result.body);
       return result.body;
     } else {
       return null;

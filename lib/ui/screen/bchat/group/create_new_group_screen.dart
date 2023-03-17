@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/constants/agora_config.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/ui/screens.dart';
 import '/controller/providers/contacts_select_notifier.dart';
@@ -245,7 +246,11 @@ class CreateNewGroupScreen extends HookWidget {
       Expanded(
         child: Consumer(
           builder: (context, ref, child) {
-            final list = ref.watch(selectedContactProvider);
+            final list = ref
+                .watch(selectedContactProvider)
+                .where((element) =>
+                    element.userId != AgoraConfig.bViydaAdmitUserId)
+                .toList();
             // final updateList = [];
             // updateList.addAll(list);
             // updateList.addAll(GroupInfoScreen.contacts);

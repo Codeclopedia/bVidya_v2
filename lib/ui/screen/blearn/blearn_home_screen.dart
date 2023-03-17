@@ -2,6 +2,7 @@
 // import '/co/blearntopbar.dart';
 import 'dart:convert';
 
+import 'package:bvidya/controller/profile_providers.dart';
 import 'package:bvidya/core/utils/local_data.dart';
 import 'package:bvidya/ui/widget/no_internet_connection_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -41,16 +42,18 @@ class BLearnHomeScreen extends StatelessWidget {
         topBar: _buildUser(),
         body: Consumer(
           builder: (context, ref, child) {
+            ref.read(profileRepositoryProvider).getSubscribeCourses();
             return ref.watch(bLearnHomeProvider).when(
                 data: (data) {
                   if (data != null) {
                     return _buildContent(context, data, ref);
                   } else {
                     return FutureBuilder(
-                      future: getLocalData(S.current.blearn_subscribed_courses),
+                      future: getLocalData('subscribed_courses'),
                       builder: (context, snapshot) {
                         if (snapshot.data == null) {
-                          return const NoInternetConnectionScreen();
+                          Navigator.pushNamed(
+                              context, RouteList.noInternetConnection);
                         }
                         final locallySavedCourses =
                             SubscribedCourseBody.fromJson(
