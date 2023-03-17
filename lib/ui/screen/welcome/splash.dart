@@ -23,7 +23,9 @@ import '/core/helpers/foreground_message_helper.dart';
 import '/controller/providers/user_auth_provider.dart';
 
 final splashImageProvider = StateProvider<Widget>((ref) => SvgPicture.asset(
-      "assets/icons/svgs/splash_logo_full.svg",
+      // "assets/icons/svgs/splash_logo_full.svg",
+      'assets/images/loader.gif',
+
       fit: BoxFit.fitWidth,
     ));
 
@@ -42,7 +44,6 @@ class SplashScreen extends ConsumerWidget {
           // print('init from splash');
           // await BChatSDKController.instance.initChatSDK(next.value!);
           if (await _handleNotificationClickScreen(context, next.value!)) {
-            final diff = DateTime.now().millisecondsSinceEpoch - startTime;
             // print('Time taken: $diff ms Notification');
             appLoaded = true;
             return;
@@ -52,11 +53,22 @@ class SplashScreen extends ConsumerWidget {
 
           await ref.read(groupConversationProvider.notifier).setup();
           // await ref.read(callListProvider.notifier).setup();
-
           // final diff = DateTime.now().millisecondsSinceEpoch - startTime;
           // print('Time taken: $diff ms');
-          appLoaded = true;
-          Navigator.pushReplacementNamed(context, RouteList.home);
+          // appLoaded = true;
+          // Navigator.pushReplacementNamed(context, RouteList.home);
+          final diff = DateTime.now().millisecondsSinceEpoch - startTime;
+          if (diff > 3000) {
+            Navigator.pushReplacementNamed(context, RouteList.home);
+            return;
+          }
+          // ref.read(splashImageProvider.notifier).state = Image.asset(
+          //   'assets/images/loader.gif',
+          //   fit: BoxFit.fitWidth,
+          // );
+          Future.delayed(Duration(milliseconds: 4000 - diff), () {
+            Navigator.pushReplacementNamed(context, RouteList.home);
+          });
         } else {
           ref.read(splashImageProvider.notifier).state = Image.asset(
             'assets/images/loader.gif',

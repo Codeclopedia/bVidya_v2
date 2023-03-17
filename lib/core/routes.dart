@@ -609,7 +609,7 @@ class Routes {
         hasDrawer = true;
         break;
       case RouteList.studentProfileSchdule:
-        screen = const StudentSchdule();
+        screen = const StudentScheduleScreen();
         break;
 
       case RouteList.studentProfileDetail:

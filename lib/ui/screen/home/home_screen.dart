@@ -8,6 +8,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:uuid/uuid.dart';
 
+import '/core/utils/callkit_utils.dart';
 import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants/agora_config.dart';
@@ -70,7 +71,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       } catch (e) {
         print('Error =>$e');
       }
-
+      appLoaded = true;
       // ref
       //     .read(chatConversationProvider.notifier)
       //     .reset(ref.read(bChatProvider));

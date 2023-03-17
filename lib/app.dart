@@ -170,6 +170,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         }
       }
     });
+    final atoken = await FirebaseMessaging.instance
+      ..getToken();
+    print('Token => $atoken');
     FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
       try {
         if (Platform.isIOS) {

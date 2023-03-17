@@ -270,9 +270,11 @@ packages:
   easy_image_viewer:
     dependency: "direct main"
     description:
-      name: easy_image_viewer
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "88130c2b6defed7df4482526c72b1600dfb1c3e3"
+      url: "https://github.com/Codeclopedia/modified_easy_image_viewer.git"
+    source: git
     version: "1.2.0"
   easy_pdf_viewer:
     dependency: "direct main"

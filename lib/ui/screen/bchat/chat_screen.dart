@@ -268,6 +268,7 @@ class ChatScreen extends HookConsumerWidget {
                         child: ElevatedButton(
                           style: elevatedButtonSecondaryStyle,
                           onPressed: () async {
+                            showLoading(ref);
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
@@ -281,7 +282,7 @@ class ChatScreen extends HookConsumerWidget {
                                 .read(chatConversationProvider.notifier)
                                 .removeConversation(
                                     model.contact.userId.toString());
-
+                            hideLoading(ref);
                             if (direct) {
                               Navigator.pushReplacementNamed(
                                   context, RouteList.homeDirect);
@@ -299,6 +300,7 @@ class ChatScreen extends HookConsumerWidget {
                           style: elevatedButtonStyle,
                           // style: dialogElevatedButtonStyle,
                           onPressed: () async {
+                            showLoading(ref);
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
@@ -312,6 +314,7 @@ class ChatScreen extends HookConsumerWidget {
                               final model = await ref
                                   .read(chatConversationProvider.notifier)
                                   .addConversationByContact(contact);
+                              hideLoading(ref);
                               if (model != null) {
                                 await Navigator.pushReplacementNamed(
                                     context,
@@ -320,6 +323,8 @@ class ChatScreen extends HookConsumerWidget {
                                         : RouteList.chatScreen,
                                     arguments: model);
                               }
+                            } else {
+                              hideLoading(ref);
                             }
                             //     if (direct) {
                             //   Navigator.pushReplacementNamed(

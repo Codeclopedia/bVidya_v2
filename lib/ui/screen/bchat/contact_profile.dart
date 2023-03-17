@@ -711,6 +711,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                     await showBasicDialog(
                         context, 'Delete Contact', 'Are you sure?', 'Yes',
                         () async {
+                          
                       await BChatContactManager.sendRequestResponse(
                           ref,
                           contact.userId.toString(),
