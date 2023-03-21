@@ -14,7 +14,6 @@ import '/core/helpers/call_helper.dart';
 import '/core/sdk_helpers/bchat_sdk_controller.dart';
 import '/core/utils/callkit_utils.dart';
 import '/data/models/models.dart';
-// import '/controller/providers/bchat/call_list_provider.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -62,7 +61,7 @@ class SplashScreen extends ConsumerWidget {
           // appLoaded = true;
           // Navigator.pushReplacementNamed(context, RouteList.home);
           final diff = DateTime.now().millisecondsSinceEpoch - startTime;
-          print('Time taken: $diff ms');
+          // print('Time taken: $diff ms');
           if (diff > 3800) {
             Navigator.pushReplacementNamed(context, RouteList.home);
             return;
