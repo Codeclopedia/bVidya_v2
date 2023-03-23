@@ -77,8 +77,6 @@ class GroupSearchScreen extends StatelessWidget {
                       onChanged: (value) {
                         ref.read(inputTextProvider.notifier).state =
                             value.trim();
-                      },
-                      onFieldSubmitted: (value) {
                         if (value.trim().isNotEmpty) {
                           ref.read(searchQueryGroupProvider.notifier).state =
                               value.trim();
@@ -86,6 +84,15 @@ class GroupSearchScreen extends StatelessWidget {
                           ref.read(searchQueryGroupProvider.notifier).state =
                               '';
                         }
+                      },
+                      onFieldSubmitted: (value) {
+                        // if (value.trim().isNotEmpty) {
+                        //   ref.read(searchQueryGroupProvider.notifier).state =
+                        //       value.trim();
+                        // } else {
+                        //   ref.read(searchQueryGroupProvider.notifier).state =
+                        //       '';
+                        // }
                       },
                     );
                   },

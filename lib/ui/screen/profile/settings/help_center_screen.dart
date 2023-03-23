@@ -45,8 +45,8 @@ class HelpCenterScreen extends StatelessWidget {
 
               Navigator.pushNamed(context, RouteList.webview, arguments: {
                 'url': user?.role == "instructor" || user?.role == "teacher"
-                    ? "https://site.bvidya.com/app-faqs"
-                    : "https://site.bvidya.com/app-faq-learner",
+                    ? "https://bvidya.com/app-faqs"
+                    : "https://bvidya.com/app-faq-learner",
               });
               // Navigator.push(
               //   context,
@@ -60,14 +60,14 @@ class HelpCenterScreen extends StatelessWidget {
             getTwoRowSettingItem(S.current.privacy_title, S.current.privacyDesc,
                 "help_privacy.svg", () {
               Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://site.bvidya.com/app-privacy",
+                'url': "https://bvidya.com/app-privacy",
               });
             }),
             getTwoRowSettingItem(
                 S.current.terms_title, S.current.termsDesc, "help_terms.svg",
                 () {
               Navigator.pushNamed(context, RouteList.webview, arguments: {
-                'url': "https://site.bvidya.com/app-tc",
+                'url': "https://bvidya.com/app-tc",
               });
             }),
             Container(

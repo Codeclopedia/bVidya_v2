@@ -51,6 +51,7 @@ final bLiveCallChangeProvider =
     ChangeNotifierProvider.autoDispose<BLiveProvider>((ref) => BLiveProvider());
 
 final bLiveChatVisible = StateProvider<bool>((ref) => true);
+final bLiveLandScapeView = StateProvider<bool>((ref) => true);
 
 // final bLiveFloatingVisible = StateProvider<bool>((ref) => false);
 

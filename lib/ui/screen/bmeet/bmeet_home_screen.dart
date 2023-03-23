@@ -195,8 +195,11 @@ class BMeetHomeScreen extends StatelessWidget {
                   switch (item) {
                     case 'Edit':
                       // return null;
-                      showTopSnackBar(Overlay.of(context)!,
-                          CustomSnackBar.info(message: S.current.coming_soon));
+                      Navigator.pushNamed(context, RouteList.bMeetEdit,
+                          arguments: meeting);
+                      
+                      // showTopSnackBar(Overlay.of(context)!,
+                      //     CustomSnackBar.info(message: S.current.coming_soon));
                       break;
                     case 'Delete':
                       // print(meeting.id);

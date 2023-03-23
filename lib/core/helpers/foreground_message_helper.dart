@@ -338,8 +338,8 @@ class ForegroundMessageHelper {
     OverlayEntry? snackBar;
     snackBar = SmartSnackBars.showCustomSnackBar(
       context: context,
-      persist: true,
-      duration: const Duration(milliseconds: 5000),
+      // persist: true,
+      holdDuration: const Duration(milliseconds: 10000),
       animationCurve: Curves.bounceOut,
       animateFrom: AnimateFrom.fromTop,
       child: customizedNewMessageContent(
@@ -595,12 +595,21 @@ class ForegroundMessageHelper {
                   SizedBox(
                     height: 3.w,
                   ),
-                  Text(
-                    message,
-                    style: textStyleBlack.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        fontSize: 8.sp),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 10.w,
+                      ),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: textStyleBlack.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                              fontSize: 9.sp),
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -609,7 +618,7 @@ class ForegroundMessageHelper {
               right: 0,
               top: 0,
               child: InkWell(
-                onTap: onDismiss,
+                onTap: () => onDismiss(),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,

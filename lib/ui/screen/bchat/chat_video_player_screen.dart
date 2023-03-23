@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:wakelock/wakelock.dart';
 import '/core/state.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
@@ -21,8 +22,10 @@ class ChatVideoPlayerScreen extends HookWidget {
             ? VideoPlayerController.network(body.remotePath!)
             : VideoPlayerController.file(File(body.localPath)),
       );
+      Wakelock.enable();
       return () {
         // print('Disponse called');
+        Wakelock.disable();
         flickManager?.dispose();
         flickManager = null;
       };

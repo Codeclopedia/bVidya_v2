@@ -219,6 +219,7 @@ class UpcomingWebinar {
   UpcomingWebinar({
     this.id,
     this.userId,
+    this.streamId,
     this.name,
     this.description,
     this.image,
@@ -228,6 +229,7 @@ class UpcomingWebinar {
 
   int? id;
   int? userId;
+  String? streamId;
   String? name;
   String? description;
   String? image;
@@ -244,6 +246,7 @@ class UpcomingWebinar {
         id: json["id"],
         userId: json["user_id"],
         name: json["name"],
+        streamId: json["stream_id"],
         description: json["description"],
         image: json["image"],
         status: json["status"],
@@ -254,6 +257,7 @@ class UpcomingWebinar {
         "id": id,
         "user_id": userId,
         "name": name,
+        "stream_id": streamId,
         "description": description,
         "image": image,
         "status": status,

@@ -1,6 +1,8 @@
 // import '/core/constants/route_list.dart';
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/ui/dialog/basic_dialog.dart';
+import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:intl/intl.dart';
 
 import '/core/utils.dart';
@@ -93,9 +95,68 @@ class StudentScheduleScreen extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: data.requestedClasses?.length,
                   itemBuilder: (context, index) {
-                    return _buildRequestRow(
-                        data.requestedClasses?[index] ?? RequestedClass(),
-                        context);
+                    return SwipeActionCell(
+                        key: ObjectKey(index),
+                        backgroundColor: Colors.white,
+                        // onTap: () async {
+                        //   makeCall(callList[index], ref, context);
+                        // },
+                        trailingActions: <SwipeAction>[
+                          SwipeAction(
+                              style: TextStyle(
+                                fontFamily: kFontFamily,
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                              ),
+                              backgroundRadius: 3.w,
+                              widthSpace: 40.w,
+                              title: S.current.menu_delete,
+                              performsFirstActionWithFullSwipe: true,
+                              onTap: (CompletionHandler handler) async {
+                                /// await handler(true) : will delete this row
+                                /// And after delete animation,setState will called to
+                                /// sync your data source with your UI
+
+                                showBasicDialog(
+                                    context,
+                                    S.current.requested_class_delete,
+                                    S.current.requested_class_delete_msg,
+                                    S.current.menu_delete, () async {
+                                  await handler(true);
+                                  await ref
+                                      .read(profileRepositoryProvider)
+                                      .deleteClassRequest(data
+                                              .requestedClasses?[index].id
+                                              .toString() ??
+                                          "");
+                                }, negativeAction: () async {
+                                  await handler(false);
+                                }, negativeButton: S.current.dltCancel);
+
+                                // list.removeAt(index);
+                                // setState(() {});
+                              },
+                              color: AppColors.redBColor),
+                          // SwipeAction(
+                          //     style: TextStyle(
+                          //       fontFamily: kFontFamily,
+                          //       color: Colors.white,
+                          //       fontSize: 12.sp,
+                          //     ),
+                          //     backgroundRadius: 3.w,
+                          //     widthSpace: 20.w,
+                          //     title: S.current.menu_call,
+                          //     onTap: (CompletionHandler handler) async {
+                          //       /// false means that you just do nothing,it will close
+                          //       /// action buttons by default
+                          //       handler(false);
+                          //       await makeCall(callList[index], ref, context);
+                          //     },
+                          //     color: AppColors.primaryColor),
+                        ],
+                        child: _buildRequestRow(
+                            data.requestedClasses?[index] ?? RequestedClass(),
+                            context));
                   },
                 );
               },

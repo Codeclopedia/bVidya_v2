@@ -216,6 +216,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bmeet_caption_title":
             MessageLookupByLibrary.simpleMessage("Meeting Title"),
         "bmeet_date_meeting": m1,
+        "bmeet_edit_heading":
+            MessageLookupByLibrary.simpleMessage("Edit meeting"),
         "bmeet_empty_date":
             MessageLookupByLibrary.simpleMessage("Enter meeting date"),
         "bmeet_empty_end":
@@ -326,10 +328,21 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Class Scheduled by"),
         "class_participants_title":
             MessageLookupByLibrary.simpleMessage("Participants"),
+        "class_request_accept": MessageLookupByLibrary.simpleMessage("Accept"),
+        "class_request_accept_remark_hint": MessageLookupByLibrary.simpleMessage(
+            "Ex: We will let you know the details related to the scheduled class..."),
+        "class_request_reject": MessageLookupByLibrary.simpleMessage("Reject"),
+        "class_request_reject_remark_hint":
+            MessageLookupByLibrary.simpleMessage(
+                "Ex: The request can\'t be accepted because..."),
+        "class_request_remark_empty_hint":
+            MessageLookupByLibrary.simpleMessage("Remark can\'t be empty"),
         "class_request_title":
             MessageLookupByLibrary.simpleMessage("Class Requested to"),
         "class_requested_title":
             MessageLookupByLibrary.simpleMessage("Class Requested by"),
+        "class_scheduled_on":
+            MessageLookupByLibrary.simpleMessage("Class Scheduled on"),
         "clearChat": MessageLookupByLibrary.simpleMessage("Clear Chat"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("Coming Soon..."),
         "confDesc": MessageLookupByLibrary.simpleMessage(
@@ -604,6 +617,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No Calls"),
         "recent_call_title": MessageLookupByLibrary.simpleMessage("Recent"),
         "refresh": MessageLookupByLibrary.simpleMessage("Refreshing..."),
+        "remark": MessageLookupByLibrary.simpleMessage("Remark"),
         "reportDesc": MessageLookupByLibrary.simpleMessage(
             "Select a feature you\'re experiencing a\nproblem with:"),
         "reportTitle": MessageLookupByLibrary.simpleMessage("Report a Problem"),
@@ -621,6 +635,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("private"),
         "request_class_request":
             MessageLookupByLibrary.simpleMessage("Request"),
+        "request_class_schedule_on":
+            MessageLookupByLibrary.simpleMessage("Schedule on"),
         "request_class_title":
             MessageLookupByLibrary.simpleMessage("Request Class"),
         "request_class_topic": MessageLookupByLibrary.simpleMessage("Topic"),
@@ -631,6 +647,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "request_class_type_hint":
             MessageLookupByLibrary.simpleMessage("Select"),
         "requestclass": MessageLookupByLibrary.simpleMessage("Request a class"),
+        "requested_class_delete":
+            MessageLookupByLibrary.simpleMessage("Delete Requested"),
+        "requested_class_delete_msg": MessageLookupByLibrary.simpleMessage(
+            "The class request will be deleted. Do you want to Continue?"),
         "resetDesc": MessageLookupByLibrary.simpleMessage(
             "Reset all notification setting"),
         "resetNoty":

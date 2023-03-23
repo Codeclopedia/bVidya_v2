@@ -26,6 +26,7 @@ class ApiList {
   static const String joinMeet = 'meeting/join/'; //GET
   static const String leaveMeet = 'meeting/leave/'; //GET
   static const String deleteMeet = 'meeting/delete/'; //GET
+  static const String updateMeet = 'meeting/update/'; //POST
 
   static const String fetchRtmMeet = 'meeting-rtm-token'; //POST
 
@@ -46,7 +47,11 @@ class ApiList {
   //personal Class
   static const String joinPersonalClass = 'personal-class/join/'; //GET
   static const String startPersonalClass = 'personal-class/start/'; //GET
-  
+  static const String updateRequestedClassRequest =
+      'personal-class-set-status'; //POST
+  static const String deleteClassRequest =
+      'delete-personal-class-request/'; //GET
+
   //LMS
   static const String lmsHome = 'v2/home'; //GET
   static const String lmsCategories = 'categories'; //GET

@@ -1,7 +1,18 @@
+import 'package:bvidya/controller/profile_providers.dart';
+import 'package:bvidya/ui/dialog/ok_dialog.dart';
+import 'package:bvidya/ui/screens.dart';
+import 'package:intl/intl.dart';
+
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
+
+final remarkTextProvider = StateProvider<String?>(
+  (ref) {
+    return null;
+  },
+);
 
 class TeacherRequestedClassDetailScreen extends StatelessWidget {
   final PersonalClass requestedClass;
@@ -59,33 +70,44 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                     fontSize: 18.sp,
                                     fontWeight: FontWeight.bold),
                               ),
-                              ListView(
-                                shrinkWrap: true,
-                                // crossAxisAlignment: CrossAxisAlignment.start,
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  customTile(
-                                      title: S.current.request_class_topic,
-                                      data: requestedClass.topic ?? ""),
-                                  customTile(
-                                      title: S.current.request_class_type,
-                                      data: requestedClass.type ?? ""),
-                                  customTile(
-                                      title:
-                                          S.current.request_class_description,
-                                      data: requestedClass.description ?? ""),
-                                  Text(requestedClass.preferred_date_time ?? "")
-                                  // customTile(
-                                  //     title: S.current.preferredDate,
-                                  //     data: DateFormat.yMEd().format(
-                                  //         requestedClass.preferred_date_time ??
-                                  //             DateTime.now())),
-                                  // customTile(
-                                  //     title: S.current.preferredTime,
-                                  //     data: DateFormat.yMEd().format(
-                                  //         requestedClass.preferred_date_time ??
-                                  //             DateTime.now()))
-                                ],
+                              Expanded(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  // crossAxisAlignment: CrossAxisAlignment.start,
+                                  // mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    customTile(
+                                        title: S.current.request_class_topic,
+                                        data: requestedClass.topic ?? ""),
+                                    customTile(
+                                        title: S.current.request_class_type,
+                                        data: requestedClass.type ?? ""),
+                                    customTile(
+                                        title:
+                                            S.current.request_class_description,
+                                        data: requestedClass.description ?? ""),
+                                    customTile(
+                                        title:
+                                            S.current.request_class_schedule_on,
+                                        data: DateFormat().format(
+                                            DateFormat('yyyy-MM-dd').parse(
+                                                requestedClass
+                                                        .preferred_date_time ??
+                                                    DateTime.now()
+                                                        .toString()))),
+
+                                    // customTile(
+                                    //     title: S.current.preferredDate,
+                                    //     data: DateFormat.yMEd().format(
+                                    //         requestedClass.preferred_date_time ??
+                                    //             DateTime.now())),
+                                    // customTile(
+                                    //     title: S.current.preferredTime,
+                                    //     data: DateFormat.yMEd().format(
+                                    //         requestedClass.preferred_date_time ??
+                                    //             DateTime.now()))
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -95,9 +117,22 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: () {},
-                                    style: elevatedButtonSecondaryStyle,
-                                    child: const Text("Accept"),
+                                    onPressed: () async {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return remarkPopUp(true);
+                                        },
+                                      );
+                                    },
+                                    style:
+                                        elevatedButtonSecondaryStyle.copyWith(
+                                            backgroundColor:
+                                                const MaterialStatePropertyAll(
+                                                    AppColors.primaryColor)),
+                                    child: Text(S.current.class_request_accept,
+                                        style: textStyleTitle.copyWith(
+                                            color: AppColors.cardWhite)),
                                   ),
                                 ),
                                 SizedBox(
@@ -105,9 +140,22 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: () {},
-                                    style: elevatedButtonPrimaryStyle,
-                                    child: const Text("Reject"),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return remarkPopUp(false);
+                                        },
+                                      );
+                                    },
+                                    style: elevatedButtonPrimaryStyle.copyWith(
+                                        backgroundColor:
+                                            const MaterialStatePropertyAll(
+                                                AppColors.cardWhite)),
+                                    child: Text(
+                                      S.current.class_request_reject,
+                                      style: textStyleTitle,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -143,6 +191,140 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
             ),
           ),
         );
+      }),
+    );
+  }
+
+  Widget remarkPopUp(bool isAccepted) {
+    final formkey = GlobalKey<FormState>();
+
+    return Center(
+      child: Consumer(builder: (context, ref, child) {
+        return Container(
+            width: 80.w,
+            height: 90.w,
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.w),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.cardWhite,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 4.w,
+                ),
+              ],
+              borderRadius: BorderRadius.circular(6.w),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                getSvgIcon(isAccepted ? 'accept.svg' : 'reject.svg',
+                    width: 20.w, fit: BoxFit.fitWidth),
+                SizedBox(height: 2.w),
+                Text(
+                  S.current.remark,
+                  style: textStyleHeading.copyWith(
+                      color: AppColors.black, fontWeight: FontWeight.w900),
+                ),
+                SizedBox(height: 2.w),
+                Form(
+                  key: formkey,
+                  child: TextFormField(
+                      minLines: 2,
+                      maxLines: 4,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      onChanged: (value) {
+                        ref.read(remarkTextProvider.notifier).state = value;
+                      },
+                      onFieldSubmitted: (value) async {
+                        if (formkey.currentState!.validate()) {
+                          showLoading(ref);
+
+                          final arg = {
+                            'classID': requestedClass.id,
+                            'accepted': true,
+                            'remark': ref.read(remarkTextProvider)
+                          };
+                          final res = await ref
+                              .read(profileRepositoryProvider)
+                              .updateClassStatus(arg);
+                          hideLoading(ref);
+
+                          if (res == "success") {
+                            showOkDialog(
+                              context,
+                              'Request Accepted',
+                              'Request accepted Notification is sent to the student.',
+                              positiveAction: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          } else {
+                            EasyLoading.showError(S.current.error);
+                          }
+
+                          if (context.debugDoingBuild) {}
+                          Navigator.pop(context);
+                        }
+                      },
+                      validator: (value) {
+                        if (value?.trim() == null || value!.isEmpty) {
+                          return S.current.class_request_remark_empty_hint;
+                        }
+
+                        return null;
+                      },
+                      decoration: inputMultiLineStyle.copyWith(
+                        hintText: isAccepted
+                            ? S.current.class_request_accept_remark_hint
+                            : S.current.class_request_reject_remark_hint,
+                      )),
+                ),
+                SizedBox(height: 4.w),
+                ElevatedButton(
+                    onPressed: () async {
+                      if (formkey.currentState!.validate()) {
+                        showLoading(ref);
+
+                        final arg = {
+                          'classID': requestedClass.id,
+                          'accepted': true,
+                          'remark': ref.read(remarkTextProvider)
+                        };
+                        final res = await ref
+                            .read(profileRepositoryProvider)
+                            .updateClassStatus(arg);
+                        hideLoading(ref);
+
+                        if (res == "success") {
+                          showOkDialog(
+                            context,
+                            'Request Accepted',
+                            'Request accepted Notification is sent to the student.',
+                            positiveAction: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        } else {
+                          EasyLoading.showError(S.current.error);
+                        }
+
+                        if (context.debugDoingBuild) {}
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: elevatedButtonStyle.copyWith(
+                        fixedSize:
+                            MaterialStatePropertyAll(Size(30.w, 12.5.w))),
+                    child: Text(
+                      S.current.submitBtn,
+                      style: textStyleTitle.copyWith(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ));
       }),
     );
   }

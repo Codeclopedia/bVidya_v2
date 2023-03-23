@@ -439,6 +439,15 @@ class Routes {
         screen = const JoinMeetScreen();
 
         break;
+      case RouteList.bMeetEdit:
+        if (settings.arguments is ScheduledMeeting) {
+          ScheduledMeeting meeting = settings.arguments as ScheduledMeeting;
+          screen = EditMeetScreen(meeting: meeting);
+        } else {
+          screen = _parameterMissing();
+        }
+
+        break;
 
       case RouteList.bMeetCall:
         if (settings.arguments is Map<String, dynamic>) {

@@ -28,7 +28,7 @@ class ProfileApiService {
 
       final response =
           await _dio.post(baseUrlApi + ApiList.reportProblem, data: data);
-      // print('response ${response.data} . ${response.realUri}');
+      print('response ${response.data} . ${response.realUri}');
       if (response.statusCode == 200) {
         return BaseResponse.fromJson(response.data);
       } else {
@@ -196,6 +196,52 @@ class ProfileApiService {
     }
   }
 
+  Future<BaseResponse> updateRequestedClassStatus(String token, Map arg) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    int classID = arg['classID'];
+    String status = arg['accepted'] == true ? 'accepted' : 'rejected';
+    String remark = arg['remark'];
+    final data = {"id": classID, 'status': status, 'remark': remark};
+
+    try {
+      final response = await _dio
+          .post(baseUrlApi + ApiList.updateRequestedClassRequest, data: data);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return BaseResponse(status: 'error');
+    }
+  }
+
+  Future<BaseResponse> deleteClassRequest(String token, String classID) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+
+    try {
+      final response =
+          await _dio.get(baseUrlApi + ApiList.deleteClassRequest + classID);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        print(response);
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print("error $e");
+      return BaseResponse(status: 'error');
+    }
+  }
+
   Future<StudentScheduledClasses> getSchduledClassesStudent(
       String token) async {
     _dio.options.headers['X-Auth-Token'] = token;
@@ -323,9 +369,9 @@ class ProfileApiService {
     }
   }
 
-  Future<PaymentDetailModel> getpaymentId(String token, String plan_id) async {
+  Future<PaymentDetailModel> getpaymentId(String token, String planID) async {
     _dio.options.headers['X-Auth-Token'] = token;
-    final data = {"plan_id": plan_id};
+    final data = {"plan_id": planID};
 
     try {
       final response =

@@ -2,11 +2,14 @@
 // import '/co/blearntopbar.dart';
 import 'dart:convert';
 
+import 'package:bvidya/ui/screens.dart';
+// import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '/controller/profile_providers.dart';
 import '/core/utils/local_data.dart';
-import '/ui/widget/no_internet_connection_screen.dart';
+// import '/ui/widget/no_internet_connection_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
 
 import '../../widget/courses_circularIndicator.dart';
 import '/core/helpers/blive_helper.dart';
@@ -17,7 +20,7 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../../widget/base_drawer_appbar_screen.dart';
 import '../../widgets.dart';
-import 'all_courses_page.dart';
+// import 'all_courses_page.dart';
 import 'components/blearntopbar.dart';
 import 'components/common.dart';
 import 'components/course_list_row.dart';
@@ -48,74 +51,7 @@ class BLearnHomeScreen extends StatelessWidget {
                   if (data != null) {
                     return _buildContent(context, data, ref);
                   } else {
-                    return FutureBuilder(
-                      future: getLocalData('subscribed_courses'),
-                      builder: (context, snapshot) {
-                        if (snapshot.data == null) {
-                          Navigator.pushNamed(
-                              context, RouteList.noInternetConnection);
-                        }
-                        final locallySavedCourses =
-                            SubscribedCourseBody.fromJson(
-                                jsonDecode(snapshot.data ?? ""));
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 3.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 3.w),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 3.w, vertical: 2.w),
-                                  decoration: BoxDecoration(
-                                      color: AppColors.primaryColor
-                                          .withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(5.w)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text("No Internet connection",
-                                          style: textStyleBlack.copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 10.sp)),
-                                      SizedBox(width: 1.w),
-                                      getLottieIcon("59204-sad-look.json",
-                                          width: 5.w)
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 3.w),
-                              Text(
-                                S.current.blearn_subscribed_courses,
-                                style: textStyleHeading,
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemCount: locallySavedCourses
-                                          .subscribedCourses?.length ??
-                                      0,
-                                  itemBuilder: (context, index) {
-                                    return rowCourse(
-                                        locallySavedCourses
-                                            .subscribedCourses?[index],
-                                        context,
-                                        ref);
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    );
+                    return noInternetWidget(ref);
                   }
                 },
                 error: (error, stackTrace) => buildEmptyPlaceHolder('$error'),
@@ -123,6 +59,67 @@ class BLearnHomeScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget noInternetWidget(WidgetRef ref) {
+    return FutureBuilder(
+      future: getLocalData('subscribed_courses'),
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          Navigator.pushNamed(context, RouteList.noInternetConnection);
+        }
+        final locallySavedCourses =
+            SubscribedCourseBody.fromJson(jsonDecode(snapshot.data ?? ""));
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 3.w),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.w),
+                  decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(5.w)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("No Internet connection",
+                          style: textStyleBlack.copyWith(
+                              fontWeight: FontWeight.w500, fontSize: 10.sp)),
+                      SizedBox(width: 1.w),
+                      getLottieIcon("59204-sad-look.json", width: 5.w)
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 3.w),
+              Text(
+                S.current.blearn_subscribed_courses,
+                style: textStyleHeading,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: locallySavedCourses.subscribedCourses?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return rowCourse(
+                        locallySavedCourses.subscribedCourses?[index],
+                        context,
+                        ref);
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -378,8 +375,16 @@ class BLearnHomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () {
-                    joinBroadcast(context, ref,
-                        broadcastData[index]?.id.toString() ?? "");
+                    showLoading(ref);
+                    if (broadcastData[index]?.status != 'scheduled') {
+                      hideLoading(ref);
+                      joinBroadcast(
+                          context, ref, broadcastData[index]?.streamId ?? "");
+                    } else {
+                      hideLoading(ref);
+                      EasyLoading.showToast('Meeting is not started yet.',
+                          toastPosition: EasyLoadingToastPosition.bottom);
+                    }
                   },
                   child:
                       WebinarDetailTile(broadcastData: broadcastData[index]!));

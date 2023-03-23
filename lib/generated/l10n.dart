@@ -1670,6 +1670,16 @@ class S {
     );
   }
 
+  /// `Edit meeting`
+  String get bmeet_edit_heading {
+    return Intl.message(
+      'Edit meeting',
+      name: 'bmeet_edit_heading',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Schedule a Meeting`
   String get bmeet_schedule_heading {
     return Intl.message(
@@ -2770,6 +2780,66 @@ class S {
     );
   }
 
+  /// `Accept`
+  String get class_request_accept {
+    return Intl.message(
+      'Accept',
+      name: 'class_request_accept',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reject`
+  String get class_request_reject {
+    return Intl.message(
+      'Reject',
+      name: 'class_request_reject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ex: We will let you know the details related to the scheduled class...`
+  String get class_request_accept_remark_hint {
+    return Intl.message(
+      'Ex: We will let you know the details related to the scheduled class...',
+      name: 'class_request_accept_remark_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ex: The request can't be accepted because...`
+  String get class_request_reject_remark_hint {
+    return Intl.message(
+      'Ex: The request can\'t be accepted because...',
+      name: 'class_request_reject_remark_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remark can't be empty`
+  String get class_request_remark_empty_hint {
+    return Intl.message(
+      'Remark can\'t be empty',
+      name: 'class_request_remark_empty_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Class Scheduled on`
+  String get class_scheduled_on {
+    return Intl.message(
+      'Class Scheduled on',
+      name: 'class_scheduled_on',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No Schedule Class`
   String get s_no_schedule_class {
     return Intl.message(
@@ -2935,6 +3005,36 @@ class S {
     return Intl.message(
       'Get Plan',
       name: 'get_plan_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remark`
+  String get remark {
+    return Intl.message(
+      'Remark',
+      name: 'remark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Requested`
+  String get requested_class_delete {
+    return Intl.message(
+      'Delete Requested',
+      name: 'requested_class_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The class request will be deleted. Do you want to Continue?`
+  String get requested_class_delete_msg {
+    return Intl.message(
+      'The class request will be deleted. Do you want to Continue?',
+      name: 'requested_class_delete_msg',
       desc: '',
       args: [],
     );
@@ -3185,6 +3285,16 @@ class S {
     return Intl.message(
       'No Class Requests.',
       name: 'empty_class_request',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Schedule on`
+  String get request_class_schedule_on {
+    return Intl.message(
+      'Schedule on',
+      name: 'request_class_schedule_on',
       desc: '',
       args: [],
     );

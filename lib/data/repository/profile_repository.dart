@@ -7,6 +7,9 @@ import '../services/profile_api_service.dart';
 
 class ProfileRepository {
   static const successfull = 'successfull';
+  static const successfully = 'successfully';
+  static const success = 'success';
+  static const error = 'error';
   final ProfileApiService _api;
   final String _authToken;
 
@@ -14,7 +17,8 @@ class ProfileRepository {
 
   Future<String?> reportProblem(String module, String message) async {
     final result = await _api.reportProblem(_authToken, module, message);
-    if (result.status == successfull) {
+
+    if (result.status == successfully) {
       return null;
     } else {
       return result.message ?? 'Unknown error';
@@ -34,7 +38,7 @@ class ProfileRepository {
     final result = await _api.getSubscribedCourses(_authToken);
     // print("result inside repo :${result.body?.toJson()}");
 
-    if (result.status == "success") {
+    if (result.status == success) {
       saveDataLocally('subscribed_courses', result.body);
       return result.body;
     } else {
@@ -44,7 +48,7 @@ class ProfileRepository {
 
   Future<List<FollowedInstructor>?> followedInstructor() async {
     final result = await _api.followedInstructor(_authToken);
-    if (result.status == 'successfully' && result.body != null) {
+    if (result.status == successfully && result.body != null) {
       return result.body!;
     } else {
       print('Error ${result.message ?? 'Error'} ');
@@ -95,16 +99,34 @@ class ProfileRepository {
 //get list of requested classes of student
   Future<RequestedClassesBody> requestedClassList() async {
     final result = await _api.getRequestedClassList(_authToken);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return RequestedClassesBody();
     }
   }
 
+  Future<String> updateClassStatus(Map arg) async {
+    final result = await _api.updateRequestedClassStatus(_authToken, arg);
+    if (result.status == success && result.body != null) {
+      return result.status ?? 'success';
+    } else {
+      return 'error';
+    }
+  }
+
+  Future<BaseResponse> deleteClassRequest(String classID) async {
+    final result = await _api.deleteClassRequest(_authToken, classID);
+    if (result.status == success && result.body != null) {
+      return result;
+    } else {
+      return BaseResponse();
+    }
+  }
+
   // Future<ScheduledClassBody> getschduledClassesAsStudent() async {
   //   final result = await _api.getSchduledClassesStudent(_authToken);
-  //   if (result.status == 'success' && result.body != null) {
+  //   if (result.status == success && result.body != null) {
   //     return result.body!;
   //   } else {
   //     return ScheduledClassBody();
@@ -114,7 +136,7 @@ class ProfileRepository {
   // //get List of schduled class As Instructor
   // Future<ScheduledClassInstructorBody> getschduledClassesAsInstructor() async {
   //   final result = await _api.getSchduledClassesInstructor(_authToken);
-  //   if (result.status == 'success' && result.body != null) {
+  //   if (result.status == success && result.body != null) {
   //     return result.body!;
   //   } else {
   //     return ScheduledClassInstructorBody();
@@ -123,7 +145,7 @@ class ProfileRepository {
 
   Future<StudentScheduledClassBody> getschduledClassesAsStudent() async {
     final result = await _api.getSchduledClassesStudent(_authToken);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return StudentScheduledClassBody();
@@ -132,7 +154,7 @@ class ProfileRepository {
 
   Future<SubscriptionPlansBody> getSubscriptionPlans() async {
     final result = await _api.getSubscriptionPlans(_authToken);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return SubscriptionPlansBody();
@@ -141,7 +163,7 @@ class ProfileRepository {
 
   Future<PaymentDetailBody> getpaymentId(String planId) async {
     final result = await _api.getpaymentId(_authToken, planId);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return PaymentDetailBody();
@@ -152,7 +174,7 @@ class ProfileRepository {
       String orderId, String paymentId, String signature) async {
     final result = await _api.getpaymentSuccessDetails(
         _authToken, orderId, paymentId, signature);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return PaymentSuccessBody();
@@ -161,7 +183,7 @@ class ProfileRepository {
 
   Future<CreditDetailBody> getCreditsHistory() async {
     final result = await _api.getCreditsDetails(_authToken);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return CreditDetailBody();
@@ -171,7 +193,7 @@ class ProfileRepository {
   //get List of schduled class As Instructor
   Future<InstructorScheduledClassBody> getschduledClassesAsInstructor() async {
     final result = await _api.getSchduledClassesInstructor(_authToken);
-    if (result.status == 'success' && result.body != null) {
+    if (result.status == success && result.body != null) {
       return result.body!;
     } else {
       return InstructorScheduledClassBody();

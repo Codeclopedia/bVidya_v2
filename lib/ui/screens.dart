@@ -35,6 +35,7 @@ export 'screen/bmeet/start_meet_screen.dart';
 export 'screen/bmeet/join_meet_screen.dart';
 export 'screen/bmeet/schedule_meet_screen.dart';
 export 'screen/bmeet/bmeet_call_screen.dart';
+export 'screen/bmeet/edit_meeting_screen.dart';
 
 export 'screen/blive/blive_home_screen.dart';
 export 'screen/blive/blive_schedule_screen.dart';

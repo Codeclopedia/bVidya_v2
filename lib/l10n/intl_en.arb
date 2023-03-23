@@ -197,6 +197,7 @@
   "bmeet_join_caption":"Meeting ID or Link",
   "bmeet_hint_join_id_link":"Enter Meeting ID or Link",
 
+  "bmeet_edit_heading":"Edit meeting",
 
   "bmeet_schedule_heading":"Schedule a Meeting",
   "bmeet_caption_title":"Meeting Title",
@@ -338,6 +339,13 @@
   "t_request_class_description_invalid":"Class Request description must contains at least 5 characters",
 
   "t_no_requested_class_title": "No Requested Class",
+  "class_request_accept":"Accept",
+  "class_request_reject":"Reject",
+  "class_request_accept_remark_hint":"Ex: We will let you know the details related to the scheduled class...",
+  "class_request_reject_remark_hint":"Ex: The request can't be accepted because...",
+  "class_request_remark_empty_hint":"Remark can't be empty",
+
+  "class_scheduled_on":"Class Scheduled on",  
 
 
   "s_no_schedule_class":"No Schedule Class",  
@@ -360,7 +368,11 @@
   "subscription_term_condition_title_part1":"By Completing your purchase you agree to these",
   "subscription_term_condition_title_part2":" terms of service.",
   "get_plan_title":"Get Plan",
+  "remark":"Remark",
   
+  
+  "requested_class_delete":"Delete Requested",
+  "requested_class_delete_msg":"The class request will be deleted. Do you want to Continue?",
   
   
 
@@ -392,6 +404,8 @@
   "request_class_description_hint":"Add Description",
   "request_class_request":"Request",
   "empty_class_request":"No Class Requests.",
+
+  "request_class_schedule_on": "Schedule on",
 
   "menu_call":"Call",
   "menu_delete":"Delete",

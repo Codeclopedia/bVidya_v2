@@ -232,6 +232,7 @@ class GroupsScreen extends HookConsumerWidget {
             ),
           ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 model.lastMessage == null

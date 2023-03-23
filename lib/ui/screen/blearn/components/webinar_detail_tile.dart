@@ -27,10 +27,22 @@ class WebinarDetailTile extends StatelessWidget {
                 height: 40.w,
                 width: 60.w,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        image: getImageProvider(broadcastData.image.toString()),
-                        fit: BoxFit.cover)),
+                  borderRadius: BorderRadius.circular(10),
+                  // image: DecorationImage(
+                  //     image: getImageProvider(broadcastData.image.toString()),
+                  //     fit: BoxFit.cover)
+                ),
+                child: Stack(
+                  children: [
+                    Image(
+                      image: getImageProvider(broadcastData.image.toString()),
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                    ),
+                    if (broadcastData.status != 'scheduled') liveBanner()
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -55,6 +67,23 @@ class WebinarDetailTile extends StatelessWidget {
               height: 2.w,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget liveBanner() {
+    return Padding(
+      padding: EdgeInsets.only(top: 1.w, right: 1.w),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(1.w),
+            color: Colors.white,
+          ),
+          padding: EdgeInsets.all(0.2.w),
+          child: getLottieIcon('99714-go-live.json', width: 10.w),
         ),
       ),
     );

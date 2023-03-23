@@ -118,7 +118,7 @@ class StartMeetScreen extends StatelessWidget {
             ),
             InkWell(
               onTap: () async {
-                await _buildshareWidget();
+                _buildshareWidget();
               },
               child: Column(
                 children: [
@@ -138,7 +138,7 @@ class StartMeetScreen extends StatelessWidget {
         ),
       );
 
-  Future<Widget> _buildshareWidget() async {
+  Future _buildshareWidget() async {
     return await showDialog(
       context: navigatorKey.currentContext!,
       builder: (context) {

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pip_view/pip_view.dart';
 import 'package:wakelock/wakelock.dart';
 
+import '../../../core/utils.dart';
 import '/controller/blive_providers.dart';
 import '/controller/providers/blive_provider.dart';
 import '/core/state.dart';
@@ -20,7 +21,7 @@ class BLiveClassScreen extends HookConsumerWidget {
   final int userId;
 
   late final ScrollController _scrollController;
-  // User? _me;
+  User? _me;
   BLiveClassScreen(
       {Key? key,
       required this.liveClass,
@@ -32,9 +33,9 @@ class BLiveClassScreen extends HookConsumerWidget {
     Wakelock.disable();
   }
 
-  // _loadMe() async {
-  //   _me = await getMeAsUser();
-  // }
+  _loadMe() async {
+    _me = await getMeAsUser();
+  }
 
   // late AnimationController _controller;
   // late Animation<double> _animation;
@@ -49,6 +50,7 @@ class BLiveClassScreen extends HookConsumerWidget {
       //   vsync: this,
       // )..repeat(reverse: true);
       // _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+      _loadMe();
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
@@ -59,22 +61,22 @@ class BLiveClassScreen extends HookConsumerWidget {
       //   // _loadMe();
       //   // _preLoadChat(ref);
       Wakelock.enable();
+      print("wakelock enabled: ${Wakelock.enabled}");
       return disposeAll;
     }, []);
 
-    final chatVisible = ref.watch(bLiveChatVisible);
+    final isLandscapeView = ref.watch(bLiveLandScapeView);
+    final isChatVisible = ref.watch(bLiveChatVisible);
     final provider = ref.watch(bLiveCallChangeProvider);
-    print("testing broadcast: inside broadcast call page 1 ${provider}");
+
     provider.init(liveClass, rtmToken, userId, ref);
 
     return PIPView(builder: (context, isFloating) {
-      print(
-          "testing broadcast: inside broadcast call page 2 ${provider.isPreviewReady}");
       return Scaffold(
         backgroundColor: Colors.black,
         resizeToAvoidBottomInset:
             !isFloating, //!ref.watch(bLiveFloatingVisible),
-        appBar: !chatVisible ? _buildAppBar(context) : null,
+        appBar: !isLandscapeView ? _buildAppBar(context) : null,
         body: provider.isPreviewReady &&
                 provider.error == null &&
                 provider.remoteUsersIds.isNotEmpty
@@ -82,19 +84,21 @@ class BLiveClassScreen extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
+                      flex: 2,
                       child: Stack(
-                    children: [
-                      !chatVisible
-                          ? _viewRows(provider)
-                          : RotatedBox(
-                              quarterTurns: 4, child: _viewRows(provider)),
-                      _controller(context, chatVisible, ref)
-                    ],
-                  )),
+                        children: [
+                          !isLandscapeView
+                              ? _viewRows(provider)
+                              : RotatedBox(
+                                  quarterTurns: 4, child: _viewRows(provider)),
+                          _controller(
+                              context, isLandscapeView, isChatVisible, ref)
+                        ],
+                      )),
                   Visibility(
-                    visible: chatVisible,
+                    visible: isChatVisible,
                     child: Expanded(
-                      flex: 3,
+                      flex: 1,
                       child: _buildChatScreen(ref),
                     ),
                   )
@@ -217,18 +221,20 @@ class BLiveClassScreen extends HookConsumerWidget {
     // ));
   }
 
-  Widget _controller(BuildContext context, bool chatVisible, WidgetRef ref) {
+  Widget _controller(BuildContext context, bool isLandscapeView,
+      bool isChatVisible, WidgetRef ref) {
     return Container(
         alignment: Alignment.bottomRight,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-                icon: const Padding(
-                  padding: EdgeInsets.all(8),
+                icon: Padding(
+                  padding: EdgeInsets.all(1.w),
                   child: Icon(
                     Icons.close_fullscreen_outlined,
                     color: Colors.white,
+                    shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
                   ),
                 ),
                 onPressed: () {
@@ -239,27 +245,47 @@ class BLiveClassScreen extends HookConsumerWidget {
                       [DeviceOrientation.portraitUp]);
                   PIPView.of(context)?.presentBelow(const BLiveHomeScreen());
                 }),
-            IconButton(
-                icon: Icon(
-                  chatVisible
-                      ? Icons.fullscreen_exit
-                      : Icons.fullscreen_outlined,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  ref.read(bLiveChatVisible.notifier).state = !chatVisible;
-                  // setState(() {
-                  //   chatvisibility = !chatvisibility;
-                  // });
+            Row(
+              children: [
+                if (isLandscapeView)
+                  IconButton(
+                    onPressed: () {
+                      ref.read(bLiveChatVisible.notifier).state =
+                          !isChatVisible;
+                    },
+                    icon: Icon(
+                      Icons.message,
+                      color: Colors.white,
+                      shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
+                    ),
+                  ),
+                IconButton(
+                    icon: Icon(
+                      isLandscapeView
+                          ? Icons.fullscreen_exit
+                          : Icons.fullscreen_outlined,
+                      shadows: <Shadow>[
+                        Shadow(color: Colors.black, blurRadius: 1.w)
+                      ],
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      ref.read(bLiveLandScapeView.notifier).state =
+                          !isLandscapeView;
+                      // setState(() {
+                      //   chatvisibility = !chatvisibility;
+                      // });
 
-                  if (!chatVisible) {
-                    SystemChrome.setPreferredOrientations(
-                        [DeviceOrientation.landscapeRight]);
-                  } else {
-                    SystemChrome.setPreferredOrientations(
-                        [DeviceOrientation.portraitUp]);
-                  }
-                })
+                      if (!isLandscapeView) {
+                        SystemChrome.setPreferredOrientations(
+                            [DeviceOrientation.landscapeRight]);
+                      } else {
+                        SystemChrome.setPreferredOrientations(
+                            [DeviceOrientation.portraitUp]);
+                      }
+                    }),
+              ],
+            )
           ],
         ));
   }
@@ -275,7 +301,9 @@ class BLiveClassScreen extends HookConsumerWidget {
   }
 
   Widget _viewRows(BLiveProvider provider) {
-    final views = provider.userList.values.toList();
+    final hostScreens = provider.userList;
+    hostScreens.removeWhere((key, value) => key == _me?.id);
+    final views = hostScreens.values.toList();
     switch (views.length) {
       case 1:
         return Column(

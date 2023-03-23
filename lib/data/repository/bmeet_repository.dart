@@ -41,6 +41,15 @@ class BMeetRepository {
     }
   }
 
+  Future<ScheduledMeeting?> updateMeeting({required Map data}) async {
+    final result = await _api.updateMeet(_authToken, data);
+    if (result.status == successfull) {
+      return result.body!;
+    } else {
+      return null;
+    }
+  }
+
   Future<String?> deleteMeeting(String id) async {
     final result = await _api.deleteMeeting(_authToken, id);
     if (result.status == successfull) {

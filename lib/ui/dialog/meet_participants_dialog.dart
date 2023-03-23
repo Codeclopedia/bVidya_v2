@@ -17,7 +17,7 @@ class MeetParticipantsDialog extends StatelessWidget {
     return Consumer(builder: (context, ref, child) {
       final provider = ref.watch(bMeetCallChangeProvider);
       return Container(
-        height: 100.h,
+        constraints: BoxConstraints(minHeight: 20.w, maxHeight: 100.w),
         margin: EdgeInsets.symmetric(horizontal: 3.w),
         padding: EdgeInsets.only(top: 1.h, bottom: 3.h, left: 4.w, right: 4.w),
         decoration: BoxDecoration(
@@ -47,7 +47,7 @@ class MeetParticipantsDialog extends StatelessWidget {
           ),
           SizedBox(height: 2.h),
           SizedBox(
-            height: 40.h,
+            height: 30.w,
             child: SingleChildScrollView(
               // constraints: BoxConstraints(minHeight: 40.h),
               child: ListView.separated(
@@ -80,7 +80,7 @@ class MeetParticipantsDialog extends StatelessWidget {
     bool isVideo = !(info?.camOff ?? true);
     bool isMute = info?.muteAudio ?? false;
     return Container(
-      height: 10.h,
+      height: 20.w,
       padding: EdgeInsets.all(2.w),
       child: Row(
         children: [

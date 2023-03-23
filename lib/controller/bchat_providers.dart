@@ -81,7 +81,9 @@ final searchTermGroupProvider =
   if (term.isNotEmpty && list.isNotEmpty) {
     final items = list.where((element) {
       if (element.groupInfo.name?.isNotEmpty == true) {
-        return element.groupInfo.name!.contains(term);
+        return element.groupInfo.name!
+            .toLowerCase()
+            .contains(term.toLowerCase());
       }
       return false;
     })

@@ -67,6 +67,7 @@ class RouteList {
   static const String bMeetJoin = '/b-meet-join';
   static const String bMeetSchedule = '/b-meet-schedule';
   static const String bMeetCall = '/b-meet-call';
+  static const String bMeetEdit = '/b-meet-edit';
 
   //BLive
   static const String bLive = '/b-live';

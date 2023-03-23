@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 // import '/controller/providers/p2p_call_provider.dart';
+import 'package:wakelock/wakelock.dart';
+
 import '/core/utils/callkit_utils.dart';
 
 import '/ui/screen/blearn/components/common.dart';
@@ -55,6 +57,7 @@ class GroupCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Wakelock.enable();
     return PIPView(builder: (context, isFloating) {
       return BaseWilPopupScreen(
         onBack: () async {
@@ -223,6 +226,7 @@ class GroupCallScreen extends StatelessWidget {
       // AppSnackbar.instance.error(context, error);
     } else {}
     setOnGoing(null);
+    Wakelock.disable();
     if (prevScreen.isNotEmpty) {
       try {
         if (_controller != null) {
