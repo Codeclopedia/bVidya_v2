@@ -28,7 +28,7 @@ dependencies:
   collection: ^1.16.0
   cupertino_icons: ^1.0.2
   custom_sliding_segmented_control: ^1.7.3
-  dio: ^4.0.6
+  dio: ^5.0.3
   dotted_border: ^2.0.0+3
   dropdown_button2: ^1.9.2
   # easy_image_viewer: ^1.2.0

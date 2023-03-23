@@ -22,9 +22,12 @@ class FCMApiService {
     );
     _dio = Dio(options);
     _dio.options.headers["Accept"] = "application/json";
-    _dio.options.connectTimeout = 150000;
-    _dio.options.sendTimeout = 100000;
-    _dio.options.receiveTimeout = 120000;
+    // _dio.options.connectTimeout = 150000;
+    // _dio.options.sendTimeout = 100000;
+    // _dio.options.receiveTimeout = 120000;
+    _dio.options.connectTimeout = const Duration(seconds: 150);
+    _dio.options.sendTimeout = const Duration(seconds: 100);
+    _dio.options.receiveTimeout = const Duration(seconds: 120);
   }
 
   Future sendCallEndPush(
