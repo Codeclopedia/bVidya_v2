@@ -227,7 +227,7 @@ class SearchScreen extends StatelessWidget {
                                   await BChatContactManager.sendRequestResponse(
                                       ref,
                                       element.userId.toString(),
-                                      element.fcmToken!,
+                                      element.fcmToken,
                                       ContactAction.deleteContact);
                                   ref
                                       .read(contactListProvider.notifier)
@@ -379,13 +379,16 @@ class SearchScreen extends StatelessWidget {
         ref.read(contactListProvider.notifier).addNewContact(
             Contacts.fromContact(contacts[0], ContactStatus.sentInvite));
         User? me = await getMeAsUser();
-        if (me != null) {
+        if (me != null && contacts[0].fcmToken != null) {
           await FCMApiService.instance.pushContactAlert(
             contacts[0].fcmToken!,
             me.id.toString(),
             item.userId.toString(),
+            // '${me.name} sent you request',
+            // input,
+            'You\'ve got a new invitation',
+            // input,
             '${me.name} sent you request',
-            input,
             ContactAction.sendRequestContact,
           );
         }

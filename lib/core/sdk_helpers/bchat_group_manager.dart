@@ -54,7 +54,7 @@ class BchatGroupManager {
 
   static Future<ChatGroup?> createNewGroup(
       String name, String? desc, List<String> ids, String image,
-      {bool public = true}) async {
+      {bool public = false}) async {
     try {
       ChatGroup group = await ChatClient.getInstance.groupManager.createGroup(
           groupName: name,
@@ -248,13 +248,13 @@ class BchatGroupManager {
   //   return ChatPushRemindType.ALL;
   // }
 
-  static Future<bool> isGroupMuteStateFor(String userId) async {
+  static Future<bool> isGroupMuteStateFor(String groupId) async {
     try {
       final result = await ChatClient.getInstance.pushManager
           .fetchConversationSilentMode(
-              conversationId: userId, type: ChatConversationType.GroupChat);
+              conversationId: groupId, type: ChatConversationType.GroupChat);
       ChatPushRemindType? remindType = result.remindType;
-      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      print('mute style of group:$groupId is ${remindType?.name ?? 'UNKNOWN'}');
       return remindType != ChatPushRemindType.NONE;
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');

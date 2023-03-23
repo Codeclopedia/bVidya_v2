@@ -71,27 +71,47 @@ final searchChatContact =
   }
 });
 
-final publicGroupList = FutureProvider<List<ChatGroupInfo>>(
-    (ref) => BchatGroupManager.fetchPublicGroups());
+// final publicGroupList = FutureProvider<List<ChatGroupInfo>>(
+//     (ref) => BchatGroupManager.fetchPublicGroups());
 
-final searchGroupProvider = FutureProvider.autoDispose<List<ChatGroup>>((ref) {
+final searchTermGroupProvider =
+    FutureProvider.autoDispose<List<GroupConversationModel>>((ref) {
   final term = ref.watch(searchQueryGroupProvider).trim();
-  final list = ref.watch(publicGroupList).valueOrNull;
-  if (term.isNotEmpty && list != null) {
-    final items = list
-        .where((element) {
-          if (element.name?.isNotEmpty == true) {
-            return element.name!.contains(term);
-          }
-          return false;
-        })
-        .map((e) => e.groupId)
+  final list = ref.watch(groupConversationProvider);
+  if (term.isNotEmpty && list.isNotEmpty) {
+    final items = list.where((element) {
+      if (element.groupInfo.name?.isNotEmpty == true) {
+        return element.groupInfo.name!.contains(term);
+      }
+      return false;
+    })
+        // .map((e) => e.id)
         .toList();
-    return BchatGroupManager.loadPublicGroupsInfo(items);
+    return items;
+    // return BchatGroupManager.loadPublicGroupsInfo(items);
   } else {
     return [];
   }
 });
+
+// final searchGroupProvider = FutureProvider.autoDispose<List<ChatGroup>>((ref) {
+//   final term = ref.watch(searchQueryGroupProvider).trim();
+//   final list = ref.watch(publicGroupList).valueOrNull;
+//   if (term.isNotEmpty && list != null) {
+//     final items = list
+//         .where((element) {
+//           if (element.name?.isNotEmpty == true) {
+//             return element.name!.contains(term);
+//           }
+//           return false;
+//         })
+//         .map((e) => e.groupId)
+//         .toList();
+//     return BchatGroupManager.loadPublicGroupsInfo(items);
+//   } else {
+//     return [];
+//   }
+// });
 
 // final myContactsList = FutureProvider<List<Contacts>>((ref) async {
 //   // final ids = await BChatContactManager.getContacts();

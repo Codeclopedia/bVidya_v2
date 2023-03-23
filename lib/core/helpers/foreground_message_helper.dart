@@ -3,8 +3,9 @@
 import 'dart:convert';
 
 // import '/core/constants/colors.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 
+// import '../constants/colors.dart';
 import '../constants/colors.dart';
 import '/core/helpers/group_member_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -125,12 +126,21 @@ class ForegroundMessageHelper {
       showForegroudNotification = !Routes.isChatScreen(from.toString());
 
       if (showForegroudNotification) {
-        showMessage(context, '$name sent you a message', contentText, () {
-          handleChatNotificationAction({
-            'type': 'chat',
-            'from': from.toString(),
-          }, context, false);
-        });
+        showNewMessage(
+            context,
+            model.contact.profileImage,
+            '$name sent you a message',
+            contentText,
+            () => handleChatNotificationAction({
+                  'type': 'chat',
+                  'from': from.toString(),
+                }, context, false));
+        // showMessage(context, '$name sent you a message', contentText, () {
+        //   handleChatNotificationAction({
+        //     'type': 'chat',
+        //     'from': from.toString(),
+        //   }, context, false);
+        // });
         // SmartSnackBars.showCustomSnackBar(
         //   context: context,
 
@@ -287,14 +297,24 @@ class ForegroundMessageHelper {
       if (showForegroudNotification) {
         String grpName = model.groupInfo.name ?? 'Group';
         String frmName = msg.attributes?['from_name'] ?? '';
-        showMessage(
-            context, '$frmName sent you a message in $grpName', contentText,
-            () {
-          handleChatNotificationAction({
-            'type': 'group_chat',
-            'from': from.toString(),
-          }, context, false);
-        });
+        showNewMessage(
+            context,
+            model.image,
+            '$frmName sent you a message in $grpName',
+            contentText,
+            () => handleChatNotificationAction({
+                  'type': 'group_chat',
+                  'from': from.toString(),
+                }, context, false));
+
+        // showMessage(
+        //     context, '$frmName sent you a message in $grpName', contentText,
+        //     () {
+        //   handleChatNotificationAction({
+        //     'type': 'group_chat',
+        //     'from': from.toString(),
+        //   }, context, false);
+        // });
         // String content = '$frmName sent you \n$contentText in $grpName';
         // showTopSnackBar(
         //   Overlay.of(context)!,
@@ -313,13 +333,37 @@ class ForegroundMessageHelper {
     }
   }
 
+  static void showNewMessage(BuildContext context, String image, String title,
+      String body, Function() onPressed) {
+    OverlayEntry? snackBar;
+    snackBar = SmartSnackBars.showCustomSnackBar(
+      context: context,
+      persist: true,
+      duration: const Duration(milliseconds: 5000),
+      animationCurve: Curves.bounceOut,
+      animateFrom: AnimateFrom.fromTop,
+      child: customizedNewMessageContent(
+        imageUrl: image,
+        title: title,
+        message: body,
+        onDismiss: () {
+          snackBar?.remove();
+        },
+        onTapped: () {
+          snackBar?.remove();
+          onPressed();
+        },
+      ),
+    );
+  }
+
   static void showMessage(
       BuildContext context, String title, String body, Function() onPressed) {
     SmartSnackBars.showCustomSnackBar(
       context: context,
-
+// persist: ,
       animateFrom: AnimateFrom.fromTop,
-      // duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 5),
       child: GestureDetector(
         onTap: () {
           onPressed();
@@ -506,5 +550,91 @@ class ForegroundMessageHelper {
       }
     } catch (e) {}
     return false;
+  }
+
+  static Widget customizedNewMessageContent({
+    required String imageUrl,
+    required String title,
+    required String message,
+    required Function() onDismiss,
+    required Function() onTapped,
+  }) {
+    return GestureDetector(
+      onTap: () => onTapped(),
+      child: Container(
+        // color: Colors.transparent,
+        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+        child: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
+              margin: EdgeInsets.only(top: 3.w, right: 1.w),
+              decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
+                  borderRadius: BorderRadius.circular(2.w)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 4.w,
+                        backgroundColor: Colors.grey,
+                        foregroundImage: getImageProvider(imageUrl),
+                      ),
+                      SizedBox(width: 2.w),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: textStyleBlack.copyWith(
+                              color: Colors.white, fontSize: 10.sp),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 3.w,
+                  ),
+                  Text(
+                    message,
+                    style: textStyleBlack.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 8.sp),
+                  )
+                ],
+              ),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              child: InkWell(
+                onTap: onDismiss,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                          blurRadius: 10,
+                          color: Colors.black38,
+                          spreadRadius: 1.w)
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 3.5.w,
+                    child: Icon(
+                      Icons.close,
+                      size: 4.w,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

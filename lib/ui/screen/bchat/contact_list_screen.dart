@@ -97,7 +97,7 @@ class ContactListScreen extends StatelessWidget {
                         await BChatContactManager.sendRequestResponse(
                             ref,
                             element.userId.toString(),
-                            element.fcmToken!,
+                            element.fcmToken,
                             ContactAction.deleteContact);
                         ref
                             .read(contactListProvider.notifier)

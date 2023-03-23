@@ -717,7 +717,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                       await BChatContactManager.sendRequestResponse(
                           ref,
                           contact.userId.toString(),
-                          contact.fcmToken!,
+                          contact.fcmToken,
                           ContactAction.deleteContact);
                       ref
                           .read(contactListProvider.notifier)
@@ -878,15 +878,15 @@ class ContactProfileScreen extends HookConsumerWidget {
               ),
             );
         User? me = await getMeAsUser();
-        if (me != null) {
+        if (me != null && contacts[0].fcmToken != null) {
           await FCMApiService.instance.pushContactAlert(
-            contacts[0].fcmToken!,
-            me.id.toString(),
-            item.userId.toString(),
-            '${me.name} sent you request',
-            input,
-            ContactAction.sendRequestContact,
-          );
+              contacts[0].fcmToken!,
+              me.id.toString(),
+              item.userId.toString(),
+              'You\'ve got a new invitation',
+              // input,
+              '${me.name} sent you request',
+              ContactAction.sendRequestContact);
         }
       }
     } else {

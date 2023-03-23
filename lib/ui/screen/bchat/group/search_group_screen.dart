@@ -1,12 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/helpers/group_member_helper.dart';
+// import '/core/helpers/group_member_helper.dart';
 
-import '/controller/providers/bchat/groups_conversation_provider.dart';
+// import '/controller/providers/bchat/groups_conversation_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/controller/bchat_providers.dart';
-import '/data/models/models.dart';
+// import '/data/models/models.dart';
 import '../../../base_back_screen.dart';
 import '../../blearn/components/common.dart';
 import '/core/constants.dart';
@@ -117,9 +117,9 @@ class GroupSearchScreen extends StatelessWidget {
               ),
             ),
             Consumer(builder: (context, ref, child) {
-              final result = ref.watch(searchGroupProvider);
-              final groups = ref.watch(groupConversationProvider);
-              final contactIds = groups.map((e) => e.id).toList();
+              final result = ref.watch(searchTermGroupProvider);
+              // final groups = ref.watch(groupConversationProvider);
+              // final groupsOf = groups.map((e) => e.id).toList();
               return result.when(
                   data: ((data) {
                     if (data.isEmpty) {
@@ -131,42 +131,44 @@ class GroupSearchScreen extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final item = data[index];
-                        bool alreadyAdded = contactIds.contains(item.groupId);
+                        // bool alreadyAdded = groupsOf.contains(item.groupId);
                         return InkWell(
                             onTap: () async {
-                              if (alreadyAdded) {
-                                final GroupConversationModel element = groups
-                                    .firstWhere((e) => e.id == item.groupId);
-                                Navigator.pushReplacementNamed(
-                                    context, RouteList.groupChatScreen,
-                                    arguments: element);
-                              } else {
-                                final userResult = data[index];
-                                final result =
-                                    await BchatGroupManager.addPublicGroup(
-                                        userResult.groupId);
+                              // if (alreadyAdded) {
+                              // final GroupConversationModel element = groups
+                              //     .firstWhere((e) => e.id == item.groupId);
+                              Navigator.pushReplacementNamed(
+                                  context, RouteList.groupChatScreen,
+                                  arguments: item);
+                              // }
+                              // else {
+                              //   final userResult = data[index];
+                              //   final result =
+                              //       await BchatGroupManager.addPublicGroup(
+                              //           userResult.groupId);
 
-                                if (result == null) {
-                                  await GroupMemberHelper.sendMemberJoinToGroup(
-                                      userResult.groupId,
-                                      userResult.name ?? '');
-                                  final grpConv = await ref
-                                      .read(groupConversationProvider.notifier)
-                                      .addConveration(item);
-                                  AppSnackbar.instance.message(context,
-                                      'Added to group ${userResult.name} successfully');
-                                  if (grpConv != null) {
-                                    Navigator.pushReplacementNamed(
-                                        context, RouteList.groupChatScreen,
-                                        arguments: grpConv);
-                                  }
-                                  // Navigator.pop(context, true);
-                                } else {
-                                  AppSnackbar.instance.error(context, result);
-                                }
-                              }
+                              //   if (result == null) {
+                              //     await GroupMemberHelper.sendMemberJoinToGroup(
+                              //         userResult.groupId,
+                              //         userResult.name ?? '');
+                              //     final grpConv = await ref
+                              //         .read(groupConversationProvider.notifier)
+                              //         .addConveration(item);
+                              //     AppSnackbar.instance.message(context,
+                              //         'Added to group ${userResult.name} successfully');
+                              //     if (grpConv != null) {
+                              //       Navigator.pushReplacementNamed(
+                              //           context, RouteList.groupChatScreen,
+                              //           arguments: grpConv);
+                              //     }
+                              //     // Navigator.pop(context, true);
+                              //   } else {
+                              //     AppSnackbar.instance.error(context, result);
+                              //   }
+                              // }
                             },
-                            child: _contactRow(data[index], alreadyAdded, ref));
+                            child:
+                                _contactRow(data[index].groupInfo, true, ref));
                       },
                     );
                   }),

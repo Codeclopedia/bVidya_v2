@@ -272,7 +272,7 @@ class ChatScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
-                                model.contact.fcmToken!,
+                                model.contact.fcmToken,
                                 ContactAction.declineRequest);
 
                             ref
@@ -304,7 +304,7 @@ class ChatScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
-                                model.contact.fcmToken!,
+                                model.contact.fcmToken,
                                 ContactAction.acceptRequest);
                             final contact = await ref
                                 .read(contactListProvider.notifier)

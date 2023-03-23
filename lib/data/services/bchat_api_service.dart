@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 
 import '/data/models/response/bchat/file_upload_response.dart';
-import 'package:dio/dio.dart';
 import '/core/constants/api_list.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';

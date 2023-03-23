@@ -19,6 +19,11 @@ class BChatContactManager {
 
   static Future<List<String>> getChatConversationsIds() async {
     try {
+      // final values =
+      //     await ChatClient.getInstance.userInfoManager.fetchUserInfoById(['3']);
+      // values.forEach((key, value) {
+      //   value.
+      // });
       var list =
           await ChatClient.getInstance.chatManager.loadAllConversations();
       return list
@@ -166,7 +171,7 @@ class BChatContactManager {
   }
 
   static Future sendRequestResponse(WidgetRef ref, String contactId,
-      String fcmToken, ContactAction action) async {
+      String? fcmToken, ContactAction action) async {
     User? me = await getMeAsUser();
     if (me != null) {
       String title;
@@ -181,21 +186,26 @@ class BChatContactManager {
         await declineRequest(contactId);
       } else if (action == ContactAction.deleteContact) {
         await BChatContactManager.deleteContact(contactId);
-        await FCMApiService.instance
-            .pushContactDeleteAlert(fcmToken, me.id.toString(), contactId);
+        if (fcmToken != null) {
+          await FCMApiService.instance
+              .pushContactDeleteAlert(fcmToken, me.id.toString(), contactId);
+        }
+
         return;
       } else {
         // title = 'Contact removed';
         return;
       }
-      await FCMApiService.instance.pushContactAlert(
-        fcmToken,
-        me.id.toString(),
-        contactId,
-        title,
-        message,
-        action,
-      );
+      if (fcmToken != null) {
+        await FCMApiService.instance.pushContactAlert(
+          fcmToken,
+          me.id.toString(),
+          contactId,
+          title,
+          message,
+          action,
+        );
+      }
     }
   }
 
@@ -282,7 +292,7 @@ class BChatContactManager {
           .fetchConversationSilentMode(
               conversationId: userId, type: ChatConversationType.Chat);
       ChatPushRemindType? remindType = result.remindType;
-      print('mute style  ${remindType?.name ?? 'UNKNOWN'}');
+      print('mute style of user:$userId is ${remindType?.name ?? 'UNKNOWN'}');
       return (remindType != ChatPushRemindType.NONE);
     } on ChatError catch (e) {
       print('Error: ${e.code}- ${e.description} ');
