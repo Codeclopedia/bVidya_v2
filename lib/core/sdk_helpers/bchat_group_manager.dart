@@ -41,6 +41,7 @@ class BchatGroupManager {
     }
     return [];
   }
+  //
 
   static Future<ChatGroup?> getGroupById(String groupId) async {
     try {
