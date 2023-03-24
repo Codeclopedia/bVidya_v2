@@ -45,6 +45,9 @@ dependencies:
     sdk: flutter
   flutter_callkit_incoming: ^1.0.3+3
   flutter_easyloading: ^3.0.5
+  flutter_facebook_sdk:
+    git:
+      url: https://github.com/abdoosaed/flutter_facebook_sdk.git  
   flutter_hooks: ^0.18.5+1
   flutter_keyboard_visibility: ^5.4.0
   flutter_localizations:

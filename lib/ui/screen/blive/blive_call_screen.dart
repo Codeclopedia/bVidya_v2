@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pip_view/pip_view.dart';
+// import 'package:pip_view/pip_view.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../../../core/utils.dart';
@@ -13,7 +13,7 @@ import '/data/models/models.dart';
 import '../../widget/chat_input_box.dart';
 import '../../widget/rtm_chat_bubble.dart';
 import '../blearn/components/common.dart';
-import 'blive_home_screen.dart';
+// import 'blive_home_screen.dart';
 
 class BLiveClassScreen extends HookConsumerWidget {
   final LiveClass liveClass;
@@ -52,9 +52,13 @@ class BLiveClassScreen extends HookConsumerWidget {
       // _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
       _loadMe();
       SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
       ]);
+      // SystemChrome.setPreferredOrientations([
+      //   DeviceOrientation.portraitUp,
+      //   DeviceOrientation.portraitDown,
+      // ]);
       //   // _myUserId = ChatClient.getInstance.currentUserId ?? '24';
       //   // _otherUserId = _myUserId == '24' ? '1' : '24';
       //   // _scrollController.addListener(() => _onScroll(_scrollController, ref));
@@ -70,12 +74,16 @@ class BLiveClassScreen extends HookConsumerWidget {
     final provider = ref.watch(bLiveCallChangeProvider);
 
     provider.init(liveClass, rtmToken, userId, ref);
-
-    return PIPView(builder: (context, isFloating) {
-      return Scaffold(
+    // return PIPView(builder: (context, isFloating) {
+    return WillPopScope(
+      onWillPop: () async {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+        Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
         backgroundColor: Colors.black,
-        resizeToAvoidBottomInset:
-            !isFloating, //!ref.watch(bLiveFloatingVisible),
+        // resizeToAvoidBottomInset: !isFloating, //!ref.watch(bLiveFloatingVisible),
         appBar: !isLandscapeView ? _buildAppBar(context) : null,
         body: provider.isPreviewReady &&
                 provider.error == null &&
@@ -108,8 +116,9 @@ class BLiveClassScreen extends HookConsumerWidget {
                 ? buildLoading
                 : buildEmptyPlaceHolder(
                     provider.error ?? 'Error while live screen')),
-      );
-    });
+      ),
+    );
+    // });
   }
 
   _buildChatScreen(WidgetRef ref) {
@@ -228,23 +237,24 @@ class BLiveClassScreen extends HookConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-                icon: Padding(
-                  padding: EdgeInsets.all(1.w),
-                  child: Icon(
-                    Icons.close_fullscreen_outlined,
-                    color: Colors.white,
-                    shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
-                  ),
-                ),
-                onPressed: () {
-                  // setState(() {
-                  //   chatvisibility = false;
-                  // });
-                  SystemChrome.setPreferredOrientations(
-                      [DeviceOrientation.portraitUp]);
-                  PIPView.of(context)?.presentBelow(const BLiveHomeScreen());
-                }),
+            // IconButton(
+            //     icon: Padding(
+            //       padding: EdgeInsets.all(1.w),
+            //       child: Icon(
+            //         Icons.close_fullscreen_outlined,
+            //         color: Colors.white,
+            //         shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       // setState(() {
+            //       //   chatvisibility = false;
+            //       // });
+            //       SystemChrome.setPreferredOrientations(
+            //           [DeviceOrientation.portraitUp]);
+
+            //       // PIPView.of(context)?.presentBelow(const BLiveHomeScreen());
+            //     }),
             Row(
               children: [
                 if (isLandscapeView)
@@ -259,31 +269,31 @@ class BLiveClassScreen extends HookConsumerWidget {
                       shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
                     ),
                   ),
-                IconButton(
-                    icon: Icon(
-                      isLandscapeView
-                          ? Icons.fullscreen_exit
-                          : Icons.fullscreen_outlined,
-                      shadows: <Shadow>[
-                        Shadow(color: Colors.black, blurRadius: 1.w)
-                      ],
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      ref.read(bLiveLandScapeView.notifier).state =
-                          !isLandscapeView;
-                      // setState(() {
-                      //   chatvisibility = !chatvisibility;
-                      // });
+                // IconButton(
+                //     icon: Icon(
+                //       isLandscapeView
+                //           ? Icons.fullscreen_exit
+                //           : Icons.fullscreen_outlined,
+                //       shadows: <Shadow>[
+                //         Shadow(color: Colors.black, blurRadius: 1.w)
+                //       ],
+                //       color: Colors.white,
+                //     ),
+                //     onPressed: () {
+                //       ref.read(bLiveLandScapeView.notifier).state =
+                //           !isLandscapeView;
+                //       // setState(() {
+                //       //   chatvisibility = !chatvisibility;
+                //       // });
 
-                      if (!isLandscapeView) {
-                        SystemChrome.setPreferredOrientations(
-                            [DeviceOrientation.landscapeRight]);
-                      } else {
-                        SystemChrome.setPreferredOrientations(
-                            [DeviceOrientation.portraitUp]);
-                      }
-                    }),
+                //       if (isLandscapeView) {
+                //         SystemChrome.setPreferredOrientations(
+                //             [DeviceOrientation.landscapeRight]);
+                //       } else {
+                //         SystemChrome.setPreferredOrientations(
+                //             [DeviceOrientation.portraitUp]);
+                //       }
+                //     }),
               ],
             )
           ],
@@ -458,6 +468,8 @@ class BLiveClassScreen extends HookConsumerWidget {
                 //Image.asset('assets/icons/svg/phone_call.png',height: 3.h,width: 3.h,color: Colors.white,)
                 ),
             onTap: () {
+              SystemChrome.setPreferredOrientations(
+                  [DeviceOrientation.portraitUp]);
               Navigator.pop(context);
             },
           )

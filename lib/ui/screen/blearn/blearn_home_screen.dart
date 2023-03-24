@@ -375,13 +375,13 @@ class BLearnHomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return GestureDetector(
                   onTap: () {
-                    showLoading(ref);
+                    // showLoading(ref);
                     if (broadcastData[index]?.status != 'scheduled') {
-                      hideLoading(ref);
+                      // hideLoading(ref);
                       joinBroadcast(
                           context, ref, broadcastData[index]?.streamId ?? "");
                     } else {
-                      hideLoading(ref);
+                      // hideLoading(ref);
                       EasyLoading.showToast('Meeting is not started yet.',
                           toastPosition: EasyLoadingToastPosition.bottom);
                     }

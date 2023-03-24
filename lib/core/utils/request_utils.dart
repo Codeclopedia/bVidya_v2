@@ -86,8 +86,8 @@ class ContactRequestHelper {
 
   static Future addNewRequest(String fId) async {
     final pref = await SharedPreferences.getInstance();
-    final list = pref.getStringList('request_ids');
-    if (list?.isNotEmpty == true && !list!.contains(fId)) {
+    final list = pref.getStringList('request_ids') ?? [];
+    if (!list.contains(fId)) {
       list.add(fId);
       await pref.setStringList('request_ids', list);
     }
@@ -110,8 +110,8 @@ class ContactRequestHelper {
 
   static Future addSentRequest(String fId) async {
     final pref = await SharedPreferences.getInstance();
-    final list = pref.getStringList('sent_request_ids');
-    if (list?.isNotEmpty == true && !list!.contains(fId)) {
+    final list = pref.getStringList('sent_request_ids') ?? [];
+    if (!list.contains(fId)) {
       list.add(fId);
       await pref.setStringList('sent_request_ids', list);
     }
@@ -156,5 +156,3 @@ ContactAction? contactActionFrom(String? name) {
   }
   return null;
 }
-
-

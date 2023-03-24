@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -19,21 +19,20 @@ Future joinBroadcast(
 ) async {
   if (!await handleCameraAndMic(Permission.microphone)) {
     // if (Platform.isAndroid) {
-      AppSnackbar.instance.error(context, 'Need microphone permission');
-      return;
+    AppSnackbar.instance.error(context, 'Need microphone permission');
+    return;
     // }
   }
-  // if (!await _handleCameraAndMic(Permission.camera)) {
-  //   if (defaultTargetPlatform == TargetPlatform.android) {
-  //     AppSnackbar.instance.error(context, 'Need camera permission');
-  //     return;
-  //   }
-  // }
+  if (!await handleCameraAndMic(Permission.camera)) {
+    // if (defaultTargetPlatform == TargetPlatform.android) {
+    AppSnackbar.instance.error(context, 'Need camera permission');
+    return;
+    // }
+  }
   showLoading(ref);
 
   final liveClassResponse =
       await ref.read(bLiveRepositoryProvider).getLiveClass(broadcastStreamId);
-  
 
   if (liveClassResponse.status != 'successfull' ||
       liveClassResponse.body == null) {

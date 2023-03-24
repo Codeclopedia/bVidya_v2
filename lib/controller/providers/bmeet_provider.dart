@@ -588,7 +588,8 @@ class BMeetProvider extends ChangeNotifier {
   // }
 
   void sendPeerMessage(String userId, String content) async {
-    AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
+    AgoraRtmMessage message = AgoraRtmMessage.fromText(content,
+        ts: DateTime.now().millisecondsSinceEpoch);
     try {
       await _rtmClient.sendMessageToPeer(userId, message, false, false);
     } catch (e) {}
@@ -736,11 +737,13 @@ class BMeetProvider extends ChangeNotifier {
   }
 
   Future sendMuteAll() async {
-    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('mute_all'));
+    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('mute_all',
+        ts: DateTime.now().millisecondsSinceEpoch));
   }
 
   Future sendRaiseHand() async {
-    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('raise_hand'));
+    _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('raise_hand',
+        ts: DateTime.now().millisecondsSinceEpoch));
 
     _timer?.cancel();
 //to stop one user spam raise hand
@@ -765,7 +768,8 @@ class BMeetProvider extends ChangeNotifier {
   // }
 
   Future sendLeaveApi() async {
-    await _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave'));
+    await _rtmChannel?.sendMessage(AgoraRtmMessage.fromText('leave',
+        ts: DateTime.now().millisecondsSinceEpoch));
   }
 
   Future _leaveApi() async {

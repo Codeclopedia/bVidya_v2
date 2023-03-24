@@ -67,9 +67,11 @@ class RTMChatMessageBubble extends StatelessWidget {
                   (!isPreviousSameAuthor || isAfterDateSeparator))
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    senderUser.userId,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  child: Flexible(
+                    child: Text(
+                      senderUser.userId,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    ),
                   ),
                 ),
               _buildTextMessage()

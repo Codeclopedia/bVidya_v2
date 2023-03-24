@@ -453,12 +453,13 @@ class BLiveProvider extends ChangeNotifier {
   // }
 
   void sendChannelMessage(String content) async {
-    AgoraRtmMessage message = AgoraRtmMessage.fromText(content);
+    AgoraRtmMessage message = AgoraRtmMessage.fromText(content,
+        ts: DateTime.now().millisecondsSinceEpoch);
     try {
       await _rtmChannel?.sendMessage(message);
       _ref.read(bLiveMessageListProvider.notifier).addChat(
           (RTMMessageModel(message, AgoraRtmMember('', _token.rtmChannel))));
-    } catch (e) {}
+    } catch (_) {}
   }
 
   void toggleVolume() async {
@@ -529,7 +530,7 @@ class BLiveProvider extends ChangeNotifier {
         rtcEngine: engine,
         canvas: VideoCanvas(
           uid: uid,
-          renderMode: RenderModeType.renderModeHidden,
+          renderMode: RenderModeType.renderModeFit,
           sourceType: VideoSourceType.videoSourceRemote,
         ),
         connection: RtcConnection(channelId: _liveClass.streamChannel),
