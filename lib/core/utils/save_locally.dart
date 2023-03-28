@@ -10,7 +10,89 @@ import '../ui_core.dart';
 
 final Dio dio = Dio();
 
-void saveFile(
+saveMultipleFiles(
+    {required List<ChatMessage> data,
+    required WidgetRef ref,
+    required MessageType filetype}) async {
+  showLoading(ref);
+  try {
+    switch (filetype) {
+      case MessageType.IMAGE:
+        for (int i = 0; i < data.length; i++) {
+          final body = data[i].body as ChatImageMessageBody;
+          await saveSingleFile(ref, body.displayName ?? "",
+              body.remotePath ?? "", MessageType.IMAGE);
+        }
+        break;
+      case MessageType.VIDEO:
+        break;
+
+      case MessageType.FILE:
+        for (int i = 0; i < data.length; i++) {
+          final body = data[i].body as ChatFileMessageBody;
+          await saveSingleFile(ref, body.displayName ?? "",
+              body.remotePath ?? "", MessageType.FILE);
+        }
+        break;
+
+      case MessageType.VOICE:
+        for (int i = 0; i < data.length; i++) {
+          final body = data[i].body as ChatVoiceMessageBody;
+          await saveSingleFile(ref, body.displayName ?? "",
+              body.remotePath ?? "", MessageType.VOICE);
+        }
+        break;
+      default:
+      // return const SizedBox.shrink();
+    }
+  } catch (e) {
+    EasyLoading.showError(S.current.error);
+  } finally {
+    hideLoading(ref);
+    EasyLoading.showToast("Download Complete",
+        toastPosition: EasyLoadingToastPosition.bottom);
+  }
+}
+
+saveSingleFile(
+    WidgetRef ref, String fileName, String url, MessageType filetype) async {
+  try {
+    // get status permission
+    final status = await Permission.storage.status;
+
+    // check status permission
+    if (status.isDenied) {
+      await Permission.storage.request();
+      return;
+    }
+
+    switch (filetype) {
+      case MessageType.IMAGE:
+        await _doSave(url, fileName, "Images");
+        break;
+      case MessageType.VIDEO:
+        break;
+
+      case MessageType.FILE:
+        await _doSave(url, fileName, "Documents");
+        break;
+
+      case MessageType.VOICE:
+        await _doSave(url, fileName, "Audios");
+        break;
+      default:
+    }
+
+    // do save
+
+  } catch (e) {
+    print(e);
+  } finally {
+    // hideLoading(ref)
+  }
+}
+
+saveFile(
     WidgetRef ref, String fileName, String url, MessageType filetype) async {
   try {
     // get status permission

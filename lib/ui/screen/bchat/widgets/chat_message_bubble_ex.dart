@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import '../../../base_back_screen.dart';
 import '/core/state.dart';
 import '/core/utils.dart';
 import '/core/utils/save_locally.dart';
@@ -131,42 +132,112 @@ class ChatMessageBubbleExt extends StatelessWidget {
 
   Widget _buildMessageBody(BuildContext context) {
     // print("inside build message body ${message.body.type}");
+    // if (this.message.isGroupMedia) {
+    //   return Container(
+    //     width: 60.w,
+    //     // height: 80.w,
+    //     decoration: _buildDecoration(),
+    //     padding: EdgeInsets.all(1.w),
+    //     child: Column(
+    //       children: [
+    //         Row(
+    //           children: [
+    //             Expanded(
+    //               child: _groupMedia(context, 0),
+    //             ),
+    //             Expanded(
+    //               child: _groupMedia(context, 1),
+    //             ),
+    //           ],
+    //         ),
+    //         SizedBox(height: 1.w),
+    //         Row(
+    //           children: [
+    //             Expanded(
+    //               child: _groupMedia(context, 2),
+    //             ),
+    //             Expanded(
+    //                 child: Stack(
+    //               // fit: StackFit.expand,
+    //               children: [
+    //                 _groupMedia(context, 3,
+    //                     count: this.message.messages.length - 4),
+    //                 // if (this.message.messages.length > 4)
+    //               ],
+    //             )),
+    //           ],
+    //         ),
+    //         // _buildTime(this.message.msg),
+    //       ],
+    //     ),
+    //   );
+    // }
     if (this.message.isGroupMedia) {
       return Container(
         width: 60.w,
-        // height: 80.w,
+        height: 65.w,
         decoration: _buildDecoration(),
         padding: EdgeInsets.all(1.w),
-        child: Column(
+        child: Stack(
           children: [
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: _groupMedia(context, 0),
-                ),
-                Expanded(
-                  child: _groupMedia(context, 1),
-                ),
-              ],
-            ),
-            SizedBox(height: 1.w),
-            Row(
-              children: [
-                Expanded(
-                  child: _groupMedia(context, 2),
-                ),
-                Expanded(
-                    child: Stack(
-                  // fit: StackFit.expand,
+                Row(
                   children: [
-                    _groupMedia(context, 3,
-                        count: this.message.messages.length - 4),
-                    // if (this.message.messages.length > 4)
+                    Expanded(
+                      child: _groupMedia(context, 0),
+                    ),
+                    Expanded(
+                      child: _groupMedia(context, 1),
+                    ),
                   ],
-                )),
+                ),
+                SizedBox(height: 1.w),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _groupMedia(context, 2),
+                    ),
+                    Expanded(
+                        child: Stack(
+                      // fit: StackFit.expand,
+                      children: [
+                        _groupMedia(context, 3,
+                            count: this.message.messages.length - 4),
+                        // if (this.message.messages.length > 4)
+                      ],
+                    )),
+                  ],
+                ),
+                // _buildTime(this.message.msg),
               ],
             ),
-            // _buildTime(this.message.msg),
+            Consumer(builder: (context, ref, child) {
+              return Align(
+                alignment: Alignment.center,
+                child: InkWell(
+                  onTap: () async {
+                    showLoading(ref);
+                    await saveMultipleFiles(
+                        data: this.message.messages,
+                        ref: ref,
+                        filetype: MessageType.IMAGE);
+                    hideLoading(ref);
+                  },
+                  child: CircleAvatar(
+                    radius: 7.w,
+                    backgroundColor: isOwnMessage
+                        ? AppColors.primaryColor
+                        : AppColors.yellowAccent,
+                    child: Icon(
+                      Icons.download_rounded,
+                      color: isOwnMessage ? Colors.white : Colors.black,
+                      size: 7.w,
+                    ),
+                  ),
+                ),
+              );
+            })
           ],
         ),
       );
@@ -834,6 +905,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
     // if (fileName.contains('.')) {
     //   size = getFileSize(body.fileSize, 1);
     // }
+    final message = this.message.msg;
     return Container(
       decoration: _buildDecoration(),
       margin: EdgeInsets.only(
@@ -842,80 +914,36 @@ class ChatMessageBubbleExt extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          VoiceMessage(
-            contactBgColor: AppColors.chatBoxBackgroundOthers,
-            meBgColor: AppColors.chatBoxBackgroundMine,
-            contactFgColor: AppColors.chatBoxMessageOthers,
-            contactPlayIconColor: Colors.white,
-            meFgColor: AppColors.chatBoxMessageMine,
-            audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
-            me: isOwnMessage,
+          Row(
+            children: [
+              VoiceMessage(
+                contactBgColor: AppColors.chatBoxBackgroundOthers,
+                meBgColor: AppColors.chatBoxBackgroundMine,
+                contactFgColor: AppColors.chatBoxMessageOthers,
+                contactPlayIconColor: Colors.white,
+                meFgColor: AppColors.chatBoxMessageMine,
+                audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
+                me: isOwnMessage,
+              ),
+              SizedBox(width: 1.w),
+              Consumer(builder: (context, ref, child) {
+                return IconButton(
+                    onPressed: () {
+                      saveFile(ref, body.displayName ?? "",
+                          body.remotePath ?? "", message.body.type);
+                    },
+                    icon: Icon(
+                      Icons.download_for_offline_rounded,
+                      color: isOwnMessage ? Colors.white : Colors.black,
+                    ));
+              })
+            ],
           ),
-          _buildTime(message.msg),
+          _buildTime(message),
           SizedBox(height: 2.w)
         ],
       ),
     );
-    // Container(
-    //   constraints: BoxConstraints(minWidth: 20.w, maxWidth: 60.w),
-    //   margin: EdgeInsets.only(
-    //       left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
-    //   decoration: _buildDecoration(),
-    //   padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       if (hasReply) _replyText(),
-
-    //       // Container(
-    //       //   // width: 33.w,
-    //       //   // height: 33.w,
-    //       //   padding: EdgeInsets.all(4.w),
-    //       //   alignment: Alignment.center,
-    //       //   decoration: BoxDecoration(
-    //       //     color: !isOwnMessage
-    //       //         ? const Color(0xFF6F3253)
-    //       //         : const Color.fromARGB(255, 248, 213, 131),
-    //       //     borderRadius: BorderRadius.circular(2.w),
-    //       //   ),
-    //       //   child: Center(child: fileWidget),
-    //       // ),
-    //       Row(
-    //         mainAxisSize: hasReply ? MainAxisSize.max : MainAxisSize.min,
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         children: [
-    //           Flexible(child: _textMessage(fileName, false)),
-    //           // Flexible(
-    //           //     child: Wrap(
-    //           //   alignment: WrapAlignment.start,
-    //           //   children: getMessage(body.content),
-    //           // )),
-    //           // const Spacer(),
-    //           SizedBox(width: 3.w)
-    //         ],
-    //       ),
-    //       SizedBox(height: 1.w),
-    //       Row(
-    //         children: [
-    //           Expanded(
-    //             child: Text(
-    //               'Size $size',
-    //               style: TextStyle(
-    //                 fontFamily: kFontFamily,
-    //                 fontSize: 8.sp,
-    //                 color: isOwnMessage
-    //                     ? AppColors.chatBoxMessageMine
-    //                     : AppColors.chatBoxMessageOthers,
-    //                 fontWeight: FontWeight.w600,
-    //               ),
-    //             ),
-    //           ),
-    //           _buildTime(),
-    //         ],
-    //       )
-    //     ],
-    //   ),
-    // );
   }
 
   Uri? _preview(String content) {

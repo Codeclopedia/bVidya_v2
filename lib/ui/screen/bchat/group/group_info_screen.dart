@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/core/helpers/group_member_helper.dart';
@@ -470,7 +471,7 @@ class GroupInfoScreen extends HookConsumerWidget {
                 children: [
                   image.startsWith('http')
                       ? Image(
-                          image: NetworkImage(image),
+                          image: CachedNetworkImageProvider(image),
                           fit: BoxFit.cover,
                           height: imageSize,
                           width: imageSize,

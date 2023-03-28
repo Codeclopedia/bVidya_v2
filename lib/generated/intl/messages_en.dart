@@ -307,8 +307,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "btn_ok": MessageLookupByLibrary.simpleMessage("OK"),
         "btn_remove": MessageLookupByLibrary.simpleMessage("Remove"),
         "btn_update": MessageLookupByLibrary.simpleMessage("Update"),
-        "btn_yes_logout":
-            MessageLookupByLibrary.simpleMessage("Sure, want to logout"),
+        "btn_yes_logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "callDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block call notifications"),
         "chatHistory": MessageLookupByLibrary.simpleMessage(
@@ -389,7 +388,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteDesc":
             MessageLookupByLibrary.simpleMessage("Delete your Account"),
         "dg_confirm_deleteAccount":
-            MessageLookupByLibrary.simpleMessage("Yes, Delete my account."),
+            MessageLookupByLibrary.simpleMessage("Delete"),
         "dg_message_DeleteAccount": MessageLookupByLibrary.simpleMessage(
             "If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind."),
         "dg_message_live_scheduled": MessageLookupByLibrary.simpleMessage(
@@ -529,6 +528,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "menu_delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "messDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block message notifications"),
+        "no_request": MessageLookupByLibrary.simpleMessage("No Requests."),
         "no_transaction_title":
             MessageLookupByLibrary.simpleMessage("No Transaction History"),
         "notiHistory": MessageLookupByLibrary.simpleMessage(
@@ -646,11 +646,15 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Class Type"),
         "request_class_type_hint":
             MessageLookupByLibrary.simpleMessage("Select"),
+        "request_recv":
+            MessageLookupByLibrary.simpleMessage("Request Received"),
+        "request_sent": MessageLookupByLibrary.simpleMessage("Request Sent"),
         "requestclass": MessageLookupByLibrary.simpleMessage("Request a class"),
         "requested_class_delete":
             MessageLookupByLibrary.simpleMessage("Delete Requested"),
         "requested_class_delete_msg": MessageLookupByLibrary.simpleMessage(
             "The class request will be deleted. Do you want to Continue?"),
+        "requests": MessageLookupByLibrary.simpleMessage("Friend Requests"),
         "resetDesc": MessageLookupByLibrary.simpleMessage(
             "Reset all notification setting"),
         "resetNoty":
@@ -770,7 +774,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "td_dash": MessageLookupByLibrary.simpleMessage("Dashboard"),
         "td_hrs": MessageLookupByLibrary.simpleMessage("Total Watch Time"),
         "td_revenue":
-            MessageLookupByLibrary.simpleMessage("Total Revnue Generated"),
+            MessageLookupByLibrary.simpleMessage("Total Revenue Generated"),
         "td_running":
             MessageLookupByLibrary.simpleMessage("Top Running Courses"),
         "td_subs": MessageLookupByLibrary.simpleMessage("Total Subscribers"),

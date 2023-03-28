@@ -1,17 +1,16 @@
+import '/ui/widget/base_drawer_setting_screen.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
-import '../../../widgets.dart';
+import '../../../widget/shimmer_tile.dart';
+import '../../blearn/components/common.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
-import '../../blearn/components/common.dart';
-// import '../components/instructor_course_row.dart';
-// import '../components/webinar_list_row.dart';
-import '../base_settings.dart';
+import 'teacher_dashboard_screen.dart';
 
-var data = [
+var dataX = [
   1.0,
   0.9,
   1.5,
@@ -28,16 +27,17 @@ var data = [
   -7.0,
 ];
 
-class TeacherDashboard extends StatelessWidget {
+class DashBoardBLiveScreen extends StatelessWidget {
   // final User user;
-  const TeacherDashboard({Key? key
+  const DashBoardBLiveScreen({Key? key
       // , required this.user
       })
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseSettings(
+    return BaseDrawerSettingScreen(
+      currentIndex: DrawerMenu.bDashboard,
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
         child: UserConsumer(builder: (context, user, ref) {
@@ -171,7 +171,7 @@ class TeacherDashboard extends StatelessWidget {
             SizedBox(height: 4.h),
             Sparkline(
                 fallbackHeight: 10.h,
-                data: data,
+                data: dataX,
                 lineColor: const Color(0xFF6E2FFF),
                 useCubicSmoothing: true,
                 cubicSmoothingFactor: 0.12,
@@ -512,95 +512,95 @@ class TeacherDashboard extends StatelessWidget {
 // }
 }
 
-class InstructorCourseRowItem extends StatelessWidget {
-  // final InstructorCourse course;
-  final Course course;
-  const InstructorCourseRowItem({Key? key, required this.course})
-      : super(key: key);
+// class InstructorCourseRowItem extends StatelessWidget {
+//   // final InstructorCourse course;
+//   final Course course;
+//   const InstructorCourseRowItem({Key? key, required this.course})
+//       : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 3.w),
-      width: 70.w,
-      height: 30.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(2.3.w)),
-        color: AppColors.cardWhite,
-        border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(2.3.w),
-                topRight: Radius.circular(2.3.w)),
-            child: Image(
-              image: getImageProvider(course.image ?? ''),
-              height: 14.h,
-              // width: 70.w,
-              width: double.infinity,
-              fit: BoxFit.fill,
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(2.w),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    course.name ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: kFontFamily,
-                        color: Colors.black),
-                  ),
-                  SizedBox(height: 0.5.h),
-                  Text(
-                    course.description ?? '',
-                    maxLines: 1,
-                    style: TextStyle(
-                        fontFamily: kFontFamily,
-                        fontSize: 9.sp,
-                        color: Colors.black),
-                  ),
-                  SizedBox(height: 0.5.h),
-                  Row(
-                    children: [
-                      Text(
-                        course.rating ?? '',
-                        style: TextStyle(
-                            color: AppColors.yellowAccent,
-                            fontSize: 12.sp,
-                            fontFamily: kFontFamily,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      buildRatingBar(double.parse(course.rating ?? '0.0')),
-                      Text(
-                        '(${course.ratingCount})',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: kFontFamily,
-                          fontSize: 9.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       // width: double.infinity,
+//       margin: EdgeInsets.symmetric(horizontal: 3.w),
+//       width: 70.w,
+//       height: 30.h,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.all(Radius.circular(2.3.w)),
+//         color: AppColors.cardWhite,
+//         border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
+//       ),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.start,
+//         mainAxisSize: MainAxisSize.max,
+//         children: [
+//           ClipRRect(
+//             borderRadius: BorderRadius.only(
+//                 topLeft: Radius.circular(2.3.w),
+//                 topRight: Radius.circular(2.3.w)),
+//             child: Image(
+//               image: getImageProvider(course.image ?? ''),
+//               height: 14.h,
+//               // width: 70.w,
+//               width: double.infinity,
+//               fit: BoxFit.fill,
+//             ),
+//           ),
+//           Expanded(
+//             child: Padding(
+//               padding: EdgeInsets.all(2.w),
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.max,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                 children: [
+//                   Text(
+//                     course.name ?? '',
+//                     maxLines: 2,
+//                     overflow: TextOverflow.ellipsis,
+//                     style: TextStyle(
+//                         fontSize: 12.sp,
+//                         fontWeight: FontWeight.bold,
+//                         fontFamily: kFontFamily,
+//                         color: Colors.black),
+//                   ),
+//                   SizedBox(height: 0.5.h),
+//                   Text(
+//                     course.description ?? '',
+//                     maxLines: 1,
+//                     style: TextStyle(
+//                         fontFamily: kFontFamily,
+//                         fontSize: 9.sp,
+//                         color: Colors.black),
+//                   ),
+//                   SizedBox(height: 0.5.h),
+//                   Row(
+//                     children: [
+//                       Text(
+//                         course.rating ?? '',
+//                         style: TextStyle(
+//                             color: AppColors.yellowAccent,
+//                             fontSize: 12.sp,
+//                             fontFamily: kFontFamily,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                       buildRatingBar(double.parse(course.rating ?? '0.0')),
+//                       Text(
+//                         '(${course.ratingCount})',
+//                         style: TextStyle(
+//                           color: Colors.black,
+//                           fontFamily: kFontFamily,
+//                           fontSize: 9.sp,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

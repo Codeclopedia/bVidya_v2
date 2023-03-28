@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '/controller/profile_providers.dart';
+import '/ui/dialog/basic_dialog.dart';
+
 import '/ui/screens.dart';
 import 'package:spring/spring.dart';
 
@@ -38,14 +41,16 @@ class CourseDetailScreen extends StatelessWidget {
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 backgroundColor: AppColors.cardBackground,
-                floatingActionButton: selectedIndex == 0
-                    ? CustomFeedbackButton(
-                        isOpen: modelSheetOpened,
-                        callback: (modelSheetState) {
-                          ref.read(isModelSheetOpened.notifier).state =
-                              modelSheetState;
-                        },
-                      )
+                floatingActionButton: data?.isSubscribed ?? false
+                    ? selectedIndex == 0
+                        ? CustomFeedbackButton(
+                            isOpen: modelSheetOpened,
+                            callback: (modelSheetState) {
+                              ref.read(isModelSheetOpened.notifier).state =
+                                  modelSheetState;
+                            },
+                          )
+                        : Container()
                     : Container(),
                 body: SafeArea(
                   child: Stack(
@@ -91,14 +96,43 @@ class CourseDetailScreen extends StatelessWidget {
                                         child: ElevatedButton(
                                           onPressed: () async {
                                             showLoading(ref);
-                                            await ref
-                                                .read(bLearnRepositoryProvider)
-                                                .subscribeCourse(
-                                                    course.id ?? 1);
-                                            ref.refresh(
-                                                bLearnCourseDetailProvider(
-                                                    course.id ?? 0));
-                                            hideLoading(ref);
+                                            final creditsData =
+                                                ref.read(creditHistoryProvider);
+                                            creditsData.whenData(
+                                              (value) async {
+                                                if (value == null) {
+                                                  return;
+                                                }
+                                                if (value
+                                                        .avilableCourseCredits! >
+                                                    0) {
+                                                  await ref
+                                                      .read(
+                                                          bLearnRepositoryProvider)
+                                                      .subscribeCourse(
+                                                          course.id ?? 1);
+                                                  ref.refresh(
+                                                      bLearnCourseDetailProvider(
+                                                          course.id ?? 0));
+                                                  hideLoading(ref);
+                                                } else {
+                                                  print("No credits");
+                                                  showBasicDialog(
+                                                    context,
+                                                    'No Credits left',
+                                                    'It seems like you have no credits left in your account. Buy credits to continue learning.',
+                                                    'Purchase credits',
+                                                    () async {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          RouteList
+                                                              .buySubscription);
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            );
+
                                             // showLoading(ref);
                                             // ref.read(
                                             //     blearnSubscribeCourseProvider(
@@ -270,10 +304,8 @@ class CourseDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildDetailItem(
-                          "Views: ",
-                          coursedetail?.courses?[0].views ?? "",
-                          Icons.remove_red_eye_outlined),
+                      _buildDetailItem("Ratings: ", course.rating ?? "0",
+                          Icons.star_border_rounded),
                       _buildDetailItem('Duration : ',
                           ' ${course.duration} hours', Icons.history),
                       const Divider(

@@ -108,7 +108,7 @@ class ScheduledClassDetailScreen extends StatelessWidget {
                                               fontFamily: kFontFamily,
                                               color: Colors.black,
                                               fontSize: 4.w,
-                                              fontWeight: FontWeight.w600),
+                                              fontWeight: FontWeight.w500),
                                         ),
                                       );
                                     },
@@ -199,14 +199,14 @@ class ScheduledClassDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: 4.w,
+          height: 5.w,
         ),
         Text(
           title,
           style: TextStyle(
               fontFamily: kFontFamily,
               color: AppColors.primaryColor,
-              fontSize: 5.w,
+              fontSize: 4.w,
               fontWeight: FontWeight.w500),
         ),
         SizedBox(
@@ -218,7 +218,7 @@ class ScheduledClassDetailScreen extends StatelessWidget {
               fontFamily: kFontFamily,
               color: Colors.black,
               fontSize: 4.w,
-              fontWeight: FontWeight.w600),
+              fontWeight: FontWeight.w500),
         ),
       ],
     );

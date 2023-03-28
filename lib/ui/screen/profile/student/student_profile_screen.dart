@@ -147,7 +147,7 @@ class StudentProfileScreen extends ConsumerWidget {
                     0) {
                   Navigator.pushReplacementNamed(context, RouteList.activePlan);
                 } else {
-                  Navigator.pushNamed(context, RouteList.subscriptionPlans);
+                  Navigator.pushNamed(context, RouteList.buySubscription);
                 }
                 // if (creditHistoryData.isLoading) {
                 //   showLoading(ref);

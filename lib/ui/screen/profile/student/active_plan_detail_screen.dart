@@ -281,7 +281,7 @@ class ActivePlanDetailScreen extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           Navigator.pushNamed(
-                              context, RouteList.subscriptionPlans);
+                              context, RouteList.buySubscription);
                         },
                         child: Row(
                           children: [

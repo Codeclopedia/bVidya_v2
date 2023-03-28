@@ -721,6 +721,25 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
               const Spacer(),
               InkWell(
                 onTap: () async {
+                  await Navigator.pushNamed(
+                      context, RouteList.friendRequestScreen);
+                  setScreen(RouteList.home);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(1.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                    color: AppColors.yellowAccent,
+                  ),
+                  child: const Icon(
+                    Icons.person_add_alt,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ),
+              SizedBox(width: 3.w),
+              InkWell(
+                onTap: () async {
                   // final result =
                   await Navigator.pushNamed(context, RouteList.searchContact);
                   // if (result == true) {

@@ -26,6 +26,7 @@ export 'screen/bchat/group/group_info_screen.dart';
 export 'screen/bchat/group/group_chat_screen.dart';
 export 'screen/bchat/group/search_group_screen.dart';
 export 'screen/bchat/group/group_call_screen.dart';
+export 'screen/bchat/friend_requests_screen.dart';
 
 export 'base_back_screen.dart';
 export 'widget/no_internet_connection_screen.dart';
@@ -78,6 +79,7 @@ export 'screen/profile/teacher/teacher_classrequest.dart';
 export 'screen/profile/teacher/teacher_classes_screen.dart';
 export 'screen/profile/teacher/teacher_requested_class_detail_screen.dart';
 export 'screen/blearn/components/request_class_form.dart';
+export 'screen/profile/teacher/my_dashboard_screen.dart';
 
 export 'screen/profile/settings/webview_screen.dart';
 export 'screen/blearn/teacher_profile_detail_screen.dart';

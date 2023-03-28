@@ -308,11 +308,11 @@
 
   "dg_title_logout":"Logout Account",
   "dg_message_logout":"Are you sure want to logout your account?",
-  "btn_yes_logout":"Sure, want to logout",
+  "btn_yes_logout":"Logout",
 
   "dg_title_DeleteAccount": "Delete Account",
   "dg_message_DeleteAccount":"If you click on Yes, your account will be permanently deleted. You have 30 days to prevent your account from being permanently deleted if you change your mind.",
-  "dg_confirm_deleteAccount":"Yes, Delete my account.",
+  "dg_confirm_deleteAccount":"Delete",
   
 
   "sp_tab_course":"Courses",
@@ -541,6 +541,10 @@
 "prof_hint_add": "Enter Your Address",
 "prof_hint_age": "Enter Your Age",
 "prof_save_btn": "Save",
+"requests":"Friend Requests",
+"request_sent":"Request Sent",
+"no_request":"No Requests.",
+"request_recv":"Request Received",
 "tp_dashboard": "My Dashboard",
 "tp_schedule": "My Schedule",
 "tp_classes": "Class Requests",
@@ -551,7 +555,7 @@
 "tpe_worked_hint": "What was the name of our previous Organzation?",
 "tpe_lang_hint": "What language do you know?",
 "td_dash": "Dashboard",
-"td_revenue": "Total Revnue Generated",
+"td_revenue": "Total Revenue Generated",
 "td_amt": "₹ 20,456",
 "td_subs": "Total Subscribers",
 "td_hrs": "Total Watch Time",

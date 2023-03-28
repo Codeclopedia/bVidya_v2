@@ -714,7 +714,9 @@ class GroupChatScreen extends HookConsumerWidget {
               ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
             }
             BuildContext? cntx = navigatorKey.currentContext;
-            if (cntx != null && 505 != error.code) {
+            if (cntx != null
+                // && 505 != error.code
+                ) {
               AppSnackbar.instance.error(cntx, error.description);
             }
 
@@ -733,7 +735,7 @@ class GroupChatScreen extends HookConsumerWidget {
         ),
       );
 
-      // msg.needGroupAck = true; //todo uncomment when pricing
+      msg.needGroupAck = true; //todo uncomment when pricing
 
       final sentMessage =
           await ChatClient.getInstance.chatManager.sendMessage(msg);

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
+import '../constants/agora_config.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 import '/core/utils.dart';
@@ -81,6 +82,9 @@ String formatSince(int lastSeen) {
 }
 
 Future<ChatPresence?> fetchOnlineStatus(String userId) async {
+  if (userId == AgoraConfig.bViydaAdmitUserId.toString()) {
+    return null;
+  }
   final list = await fetchOnlineStatuses([userId]);
   if (list.isNotEmpty) {
     return list[0];

@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '/controller/profile_providers.dart';
+import '../../../dialog/basic_dialog.dart';
 import '/core/state.dart';
 import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
@@ -12,6 +14,9 @@ class RequestDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormated = DateFormat('yyyy-MM-dd hh:mm:ss')
+        .parse(requestdata.preferred_date_time ?? DateTime.now().toString());
+
     return Scaffold(
       body: Consumer(builder: (context, ref, child) {
         return Container(
@@ -41,51 +46,83 @@ class RequestDetailScreen extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 3.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Stack(
                         children: [
-                          Text(
-                            S.current.class_requested_title,
-                            style: textStyleHeading,
-                          ),
-                          SizedBox(
-                            height: 1.w,
-                          ),
-                          Text(
-                            requestdata.instructorName ?? "",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          ListView(
-                            shrinkWrap: true,
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            // mainAxisAlignment: MainAxisAlignment.start,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              customTile(
-                                  title: S.current.request_class_topic,
-                                  data: requestdata.topic ?? ""),
-                              customTile(
-                                  title: S.current.request_class_type,
-                                  data: requestdata.type ?? ""),
-                              customTile(
-                                  title: S.current.request_class_description,
-                                  data: requestdata.description ?? ""),
-                               customTile(
-                                title: S.current.preferredDate,
-                                data: DateFormat.yMEd().format(DateFormat()
-                                    .parse(requestdata.preferred_date_time ??
-                                        DateTime.now().toString())),
+                              Text(
+                                S.current.class_requested_title,
+                                style: textStyleHeading,
                               ),
-                              customTile(
-                                title: S.current.preferredTime,
-                                data: DateFormat.jm().format(DateFormat().parse(
-                                    requestdata.preferred_date_time ??
-                                        DateTime.now().toString())),
-                              )
+                              SizedBox(
+                                height: 1.w,
+                              ),
+                              Text(
+                                requestdata.instructorName ?? "",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              ListView(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  customTile(
+                                      title: S.current.request_class_topic,
+                                      data: requestdata.topic ?? ""),
+                                  customTile(
+                                      title: S.current.request_class_type,
+                                      data: requestdata.type ?? ""),
+                                  customTile(
+                                      title:
+                                          S.current.request_class_description,
+                                      data: requestdata.description ?? ""),
+                                  customTile(
+                                    title: S.current.preferredDate,
+                                    data:
+                                        DateFormat.yMEd().format(dateFormated),
+                                  ),
+                                  customTile(
+                                    title: S.current.preferredTime,
+                                    data: DateFormat.jm().format(dateFormated),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  showBasicDialog(
+                                      context,
+                                      S.current.requested_class_delete,
+                                      S.current.requested_class_delete_msg,
+                                      S.current.menu_delete, () async {
+                                    // await handler(true);
+                                    await ref
+                                        .read(profileRepositoryProvider)
+                                        .deleteClassRequest(
+                                            requestdata.id.toString());
+                                  }, negativeAction: () async {
+                                    // await handler(false);
+                                  }, negativeButton: S.current.dltCancel);
+                                },
+                                style: elevatedButtonTextStyle.copyWith(
+                                    padding: const MaterialStatePropertyAll(
+                                        EdgeInsets.zero),
+                                    fixedSize: MaterialStatePropertyAll(
+                                        Size(100.w, 12.5.w))),
+                                child: Text(
+                                  'Delete Request',
+                                  style: textStyleBlack.copyWith(
+                                      color: Colors.white, fontSize: 12.5.sp),
+                                )),
+                          )
                         ],
                       ),
                     )),
@@ -125,13 +162,13 @@ class RequestDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: 8.w,
+          height: 5.w,
         ),
         Text(
           title,
           style: TextStyle(
               color: AppColors.primaryColor,
-              fontSize: 5.w,
+              fontSize: 4.w,
               fontWeight: FontWeight.w500),
         ),
         SizedBox(

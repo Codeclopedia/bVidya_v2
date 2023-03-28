@@ -338,8 +338,8 @@ class ForegroundMessageHelper {
     OverlayEntry? snackBar;
     snackBar = SmartSnackBars.showCustomSnackBar(
       context: context,
-      // persist: true,
-      holdDuration: const Duration(milliseconds: 10000),
+      persist: true,
+      // holdDuration: const Duration(milliseconds: 10000),
       animationCurve: Curves.bounceOut,
       animateFrom: AnimateFrom.fromTop,
       child: customizedNewMessageContent(

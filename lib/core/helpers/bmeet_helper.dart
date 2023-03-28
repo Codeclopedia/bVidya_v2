@@ -169,7 +169,7 @@ Future joinScheduledClass(BuildContext context, WidgetRef ref, String meetingId,
         context, smeeting, meetingId, -1, ref, camOff, micOff);
   } else {
     showOkDialog(context, 'Oops!',
-        'Oops! Broadcast is not started yet! \nPlease wait for moment.');
+        'Oops! Class is not started yet! \nPlease wait for moment.');
   }
 }
 

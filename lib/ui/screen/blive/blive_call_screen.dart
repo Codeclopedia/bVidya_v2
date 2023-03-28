@@ -84,7 +84,7 @@ class BLiveClassScreen extends HookConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.black,
         // resizeToAvoidBottomInset: !isFloating, //!ref.watch(bLiveFloatingVisible),
-        appBar: !isLandscapeView ? _buildAppBar(context) : null,
+        appBar: isLandscapeView ? _buildAppBar(context) : null,
         body: provider.isPreviewReady &&
                 provider.error == null &&
                 provider.remoteUsersIds.isNotEmpty

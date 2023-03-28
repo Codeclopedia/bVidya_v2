@@ -28,13 +28,12 @@ Future<void> main() async {
               ? DefaultFirebaseOptions.currentPlatformRelease
               : DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
-      print('Error init firebase $e');
+      // print('Error init firebase $e');
       // await Firebase.initializeApp();
     }
   }
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-
   // await NotificationController.initializeLocalNotifications();
   runApp(
     const ProviderScope(

@@ -3,6 +3,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 // import 'package:flutter_svg/svg.dart';
 
+import '../../data/models/models.dart';
 import '/ui/widget/drawer/curved_drawer.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -40,12 +41,12 @@ class EndDrawer extends StatelessWidget {
             width: 18.w,
             color: AppColors.drawerBackgroundColor,
             child: SafeArea(
-              child: Consumer(builder: (context, ref, child) {
+              child: UserConsumer(builder: (context, user, ref) {
                 return Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: _drawerItems(ref, context),
+                  children: _drawerItems(ref, context, user),
                 );
               }),
             ),
@@ -150,7 +151,12 @@ class EndDrawer extends StatelessWidget {
     ];
   }
 
-  List<Widget> _drawerItems(WidgetRef ref, BuildContext context) {
+  List<Widget> _drawerItems(WidgetRef ref, BuildContext context, User user) {
+    bool isUserInstructor = user.role == 'instructor' ||
+            user.role == 'admin' ||
+            user.role == 'teacher'
+        ? true
+        : false;
     return [
       _buildIconPng(S.current.drawer_setting, 'menu_settings.png',
           currentIndex == DrawerMenu.settings, () {
@@ -217,14 +223,26 @@ class EndDrawer extends StatelessWidget {
             .updatDrawerPositions(RouteList.bMeet);
         Navigator.pushReplacementNamed(context, RouteList.bMeet);
       }),
-      _buildIconPng(S.current.drawer_blearn, 'menu_blearn.png',
-          currentIndex == DrawerMenu.bLearn, () {
+      _buildIconPng(
+          isUserInstructor ? S.current.td_dash : S.current.drawer_blearn,
+          isUserInstructor ? 'menu_dashboard.png' : 'menu_blearn.png',
+          isUserInstructor
+              ? currentIndex == DrawerMenu.bDashboard
+              : currentIndex == DrawerMenu.bLearn, () {
         scaffoldKey.currentState?.closeEndDrawer();
-        if (currentIndex == DrawerMenu.bLearn) return;
-        ref
-            .read(drawerPositionNotifierProvider.notifier)
-            .updatDrawerPositions(RouteList.bLearnHome);
-        Navigator.pushReplacementNamed(context, RouteList.bLearnHome);
+        if (isUserInstructor) {
+          if (currentIndex == DrawerMenu.bDashboard) return;
+          ref
+              .read(drawerPositionNotifierProvider.notifier)
+              .updatDrawerPositions(RouteList.bDashBoard);
+          Navigator.pushReplacementNamed(context, RouteList.bDashBoard);
+        } else {
+          if (currentIndex == DrawerMenu.bLearn) return;
+          ref
+              .read(drawerPositionNotifierProvider.notifier)
+              .updatDrawerPositions(RouteList.bLearnHome);
+          Navigator.pushReplacementNamed(context, RouteList.bLearnHome);
+        }
       }),
       SizedBox(
         width: 20.w,
@@ -269,7 +287,6 @@ class EndDrawer extends StatelessWidget {
       )
     ];
   }
-
 
   Future<int> getUnreadCount() async {
     try {
@@ -324,6 +341,7 @@ class EndDrawer extends StatelessWidget {
               padding: EdgeInsets.only(top: 0.2.h),
               child: Text(
                 title,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     fontFamily: kFontFamily,
                     color: selected ? AppColors.primaryColor : Colors.white,

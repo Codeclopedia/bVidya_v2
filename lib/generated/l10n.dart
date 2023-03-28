@@ -2560,10 +2560,10 @@ class S {
     );
   }
 
-  /// `Sure, want to logout`
+  /// `Logout`
   String get btn_yes_logout {
     return Intl.message(
-      'Sure, want to logout',
+      'Logout',
       name: 'btn_yes_logout',
       desc: '',
       args: [],
@@ -2590,10 +2590,10 @@ class S {
     );
   }
 
-  /// `Yes, Delete my account.`
+  /// `Delete`
   String get dg_confirm_deleteAccount {
     return Intl.message(
-      'Yes, Delete my account.',
+      'Delete',
       name: 'dg_confirm_deleteAccount',
       desc: '',
       args: [],
@@ -4590,6 +4590,46 @@ class S {
     );
   }
 
+  /// `Friend Requests`
+  String get requests {
+    return Intl.message(
+      'Friend Requests',
+      name: 'requests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Sent`
+  String get request_sent {
+    return Intl.message(
+      'Request Sent',
+      name: 'request_sent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Requests.`
+  String get no_request {
+    return Intl.message(
+      'No Requests.',
+      name: 'no_request',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Received`
+  String get request_recv {
+    return Intl.message(
+      'Request Received',
+      name: 'request_recv',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `My Dashboard`
   String get tp_dashboard {
     return Intl.message(
@@ -4690,10 +4730,10 @@ class S {
     );
   }
 
-  /// `Total Revnue Generated`
+  /// `Total Revenue Generated`
   String get td_revenue {
     return Intl.message(
-      'Total Revnue Generated',
+      'Total Revenue Generated',
       name: 'td_revenue',
       desc: '',
       args: [],

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '/core/constants/colors.dart';
 import '/data/models/response/profile/schduled_classes_model.dart';
 
@@ -28,6 +30,7 @@ class ScheduledClassMeetingScreen extends HookWidget {
     //   controller = TextEditingController();
     //   return dipose;
     // }, []);
+    final scheduledDate = scheduledClassDetails.scheduledClass?.scheduledAt;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -39,7 +42,7 @@ class ScheduledClassMeetingScreen extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 4.h),
+              SizedBox(height: 6.w),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -48,30 +51,52 @@ class ScheduledClassMeetingScreen extends HookWidget {
                     children: [
                       Text(S.current.scheduled_class_join_title,
                           style: textStyleHeading),
-                      SizedBox(height: 5.h),
+                      SizedBox(height: 1.w),
                       Text(scheduledClassDetails.topic ?? "",
-                          style: textStyleHeading.copyWith(fontSize: 30.sp)),
+                          style: textStyleHeading.copyWith(
+                              fontSize: 30.sp, fontWeight: FontWeight.w900)),
                       Text(scheduledClassDetails.description ?? "",
                           style: textStyleHeading.copyWith(fontSize: 15.sp)),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 5.w),
                       Text(scheduledClassDetails.instructor?.name ?? "",
                           style: textStyleCaption.copyWith(
-                              color: AppColors.black, fontSize: 10.sp)),
-                      SizedBox(height: 5.h),
+                              color: AppColors.iconGreyColor, fontSize: 10.sp)),
+                      Row(
+                        children: [
+                          Text(
+                              DateFormat.yMEd()
+                                  .format(scheduledDate ?? DateTime.now()),
+                              style: textStyleCaption.copyWith(
+                                  color: AppColors.iconGreyColor,
+                                  fontSize: 10.sp)),
+                          SizedBox(
+                            width: 2.w,
+                          ),
+                          Text(
+                              DateFormat.jm()
+                                  .format(scheduledDate ?? DateTime.now()),
+                              style: textStyleCaption.copyWith(
+                                  color: AppColors.iconGreyColor,
+                                  fontSize: 10.sp))
+                        ],
+                      ),
+                      SizedBox(height: 10.w),
                       Consumer(
                         builder: (context, ref, child) {
                           bool mute = ref.watch(muteJoinSchMeetingProvider);
                           return _buildSettingRow(S.current.bmeet_mute_title,
                               S.current.bmeet_mute_desc, mute, (value) {
-                            ref.read(muteJoinSchMeetingProvider.notifier).state =
-                                value;
+                            ref
+                                .read(muteJoinSchMeetingProvider.notifier)
+                                .state = value;
                           });
                         },
                       ),
                       SizedBox(height: 3.h),
                       Consumer(
                         builder: (context, ref, child) {
-                          final camOff = ref.watch(videoOffSchJoinMeetingProvider);
+                          final camOff =
+                              ref.watch(videoOffSchJoinMeetingProvider);
                           return _buildSettingRow(
                               S.current.bmeet_videooff_title,
                               S.current.bmeet_videooff_desc,
@@ -99,7 +124,6 @@ class ScheduledClassMeetingScreen extends HookWidget {
                               .scheduledClass?.meetingId
                               .toString() ??
                           "";
-                      if (meetingId.length < 2) return;
 
                       joinScheduledClass(
                           context, ref, meetingId, camOff, micOff);

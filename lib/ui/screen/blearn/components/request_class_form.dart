@@ -338,6 +338,7 @@ class RequestClassForm extends HookWidget {
                                       Icons.keyboard_arrow_down,
                                     )),
                               ),
+                              SizedBox(height: 4.w),
                               Text(
                                 S.current.Requested_time_Note,
                                 style: TextStyle(

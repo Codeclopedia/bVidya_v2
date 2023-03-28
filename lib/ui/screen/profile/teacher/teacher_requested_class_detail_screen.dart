@@ -3,9 +3,9 @@ import 'package:bvidya/ui/dialog/ok_dialog.dart';
 import 'package:bvidya/ui/screens.dart';
 import 'package:intl/intl.dart';
 
+import '/core/constants.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
-import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 
 final remarkTextProvider = StateProvider<String?>(
@@ -22,6 +22,9 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print(requestedClass.toJson());
+
+    final preferredDate = DateFormat('yyyy-MM-dd hh:mm:ss')
+        .parse(requestedClass.preferred_date_time ?? DateTime.now().toString());
     return Scaffold(
       body: Consumer(builder: (context, ref, child) {
         return Container(
@@ -87,14 +90,17 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                             S.current.request_class_description,
                                         data: requestedClass.description ?? ""),
                                     customTile(
-                                        title:
-                                            S.current.request_class_schedule_on,
-                                        data: DateFormat().format(
-                                            DateFormat('yyyy-MM-dd').parse(
-                                                requestedClass
-                                                        .preferred_date_time ??
-                                                    DateTime.now()
-                                                        .toString()))),
+                                        title: S.current.preferredDate,
+                                        data: DateFormat.yMEd()
+                                            .format(preferredDate)),
+                                    customTile(
+                                        title: S.current.preferredTime,
+                                        data: DateFormat.jm()
+                                            .format(preferredDate)),
+                                    if (requestedClass.status != "pending")
+                                      customTile(
+                                          title: 'status',
+                                          data: requestedClass.status ?? ''),
 
                                     // customTile(
                                     //     title: S.current.preferredDate,
@@ -111,56 +117,58 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return remarkPopUp(true);
-                                        },
-                                      );
-                                    },
-                                    style:
-                                        elevatedButtonSecondaryStyle.copyWith(
-                                            backgroundColor:
-                                                const MaterialStatePropertyAll(
-                                                    AppColors.primaryColor)),
-                                    child: Text(S.current.class_request_accept,
-                                        style: textStyleTitle.copyWith(
-                                            color: AppColors.cardWhite)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 2.w,
-                                ),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return remarkPopUp(false);
-                                        },
-                                      );
-                                    },
-                                    style: elevatedButtonPrimaryStyle.copyWith(
-                                        backgroundColor:
-                                            const MaterialStatePropertyAll(
-                                                AppColors.cardWhite)),
-                                    child: Text(
-                                      S.current.class_request_reject,
-                                      style: textStyleTitle,
+                          if (requestedClass.status == "pending")
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return remarkPopUp(true);
+                                          },
+                                        );
+                                      },
+                                      style:
+                                          elevatedButtonSecondaryStyle.copyWith(
+                                              backgroundColor:
+                                                  const MaterialStatePropertyAll(
+                                                      AppColors.primaryColor)),
+                                      child: Text(
+                                          S.current.class_request_accept,
+                                          style: textStyleTitle.copyWith(
+                                              color: AppColors.cardWhite)),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
+                                  SizedBox(
+                                    width: 2.w,
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return remarkPopUp(false);
+                                          },
+                                        );
+                                      },
+                                      style: elevatedButtonPrimaryStyle.copyWith(
+                                          backgroundColor:
+                                              const MaterialStatePropertyAll(
+                                                  AppColors.cardWhite)),
+                                      child: Text(
+                                        S.current.class_request_reject,
+                                        style: textStyleTitle,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                         ],
                       ),
                     )),
@@ -251,6 +259,8 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                           hideLoading(ref);
 
                           if (res == "success") {
+                            Navigator.popUntil(context,
+                                ModalRoute.withName(RouteList.teacherSchedule));
                             showOkDialog(
                               context,
                               'Request Accepted',
@@ -295,8 +305,11 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                             .read(profileRepositoryProvider)
                             .updateClassStatus(arg);
                         hideLoading(ref);
-
+                        print(res);
                         if (res == "success") {
+                          Navigator.popUntil(context,
+                              ModalRoute.withName(RouteList.teacherSchedule));
+
                           showOkDialog(
                             context,
                             'Request Accepted',
@@ -334,14 +347,14 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: 8.w,
+          height: 5.w,
         ),
         Text(
           title,
           style: TextStyle(
               fontFamily: kFontFamily,
               color: AppColors.primaryColor,
-              fontSize: 5.w,
+              fontSize: 4.w,
               fontWeight: FontWeight.w500),
         ),
         SizedBox(

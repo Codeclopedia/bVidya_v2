@@ -5,6 +5,7 @@ class DrawerMenu {
   static const int bMeet = 3;
   static const int bLearn = 4;
   static const int bChat = 5;
+  static const int bDashboard = 6;
 }
 
 class RouteList {
@@ -30,6 +31,7 @@ class RouteList {
   static const String chatScreen = '/chat-screen';
   static const String chatScreenDirect = '/chat-screen-direct';
   static const String chatMediaGallery = '/chat-media-gallery';
+  static const String friendRequestScreen = '/friend-request-screen';
 
   static const String recentCalls = '/recent-calls';
   static const String contactList = '/contact-list';
@@ -73,6 +75,8 @@ class RouteList {
   static const String bLive = '/b-live';
   static const String bLiveSchedule = '/b-live-schedule';
   static const String bLiveClass = '/b-live-class';
+
+  static const String bDashBoard = '/b-dashboard';
 
   //BLearn
   static const String bLearnHome = '/b-learn';
@@ -126,7 +130,7 @@ class RouteList {
 
   static const String bLearnteacherProfileDetail = '/teacher-profile-details';
 
-  static const String subscriptionPlans = '/subscription-plans';
+  static const String buySubscription = '/buy-subscription';
   static const String activePlan = '/subscription-details';
   static const String classScheduleDetails = '/class-schedule-details';
   static const String classScheduledDetail = '/class-schdeduled-detail';

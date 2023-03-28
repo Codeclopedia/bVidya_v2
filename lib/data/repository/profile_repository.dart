@@ -108,7 +108,7 @@ class ProfileRepository {
 
   Future<String> updateClassStatus(Map arg) async {
     final result = await _api.updateRequestedClassStatus(_authToken, arg);
-    if (result.status == success && result.body != null) {
+    if (result.status == success) {
       return result.status ?? 'success';
     } else {
       return 'error';

@@ -232,6 +232,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
 
   if (callId == null) {
     clearCall();
+    // await FlutterCallkitIncoming.endCall("id");
     await FlutterCallkitIncoming.endAllCalls();
     return;
   }
@@ -243,6 +244,9 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   clearCall();
   _lastCallId = callId;
   _lastCallTime = remoteMessage.sentTime;
+  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callId);
+
+  await FlutterCallkitIncoming.endCall(uid);
 
   final fromId = remoteMessage.data['from_id'];
   final name = remoteMessage.data['name'];
@@ -255,9 +259,6 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
     avImage = null;
   }
   // print('from ID $fromId');
-  final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callId);
-
-  await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
     appName: 'bVidya',
     avatar: avImage,

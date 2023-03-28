@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import '../../../app.dart';
 import '/core/utils/request_utils.dart';
@@ -557,7 +558,7 @@ class ContactProfileScreen extends HookConsumerWidget {
                 children: [
                   image.startsWith('http')
                       ? Image(
-                          image: NetworkImage(image),
+                          image: CachedNetworkImageProvider(image),
                           fit: BoxFit.cover,
                           height: imageSize,
                           width: imageSize,

@@ -30,30 +30,36 @@ class TeacherClasses extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseNoScrollSettings(
         showName: false,
-        bodyContent: Padding(
-          padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h),
-          child: Consumer(builder: (context, ref, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
-                  child: SlidingTab(
-                    label1: "Scheduled Class",
-                    label2: S.current.tp_classes,
-                    selectedIndex: ref.watch(teacherClassesTabProvider),
-                    callback: (p0) {
-                      ref.read(teacherClassesTabProvider.notifier).state = p0;
-                    },
+        bodyContent: Consumer(builder: (context, ref, child) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.refresh(scheduledClassesAsInstructor);
+              ref.refresh(bmeetClassesProvider);
+            },
+            child: Padding(
+              padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
+                    child: SlidingTab(
+                      label1: "Scheduled Class",
+                      label2: S.current.tp_classes,
+                      selectedIndex: ref.watch(teacherClassesTabProvider),
+                      callback: (p0) {
+                        ref.read(teacherClassesTabProvider.notifier).state = p0;
+                      },
+                    ),
                   ),
-                ),
-                ref.watch(teacherClassesTabProvider) == 0
-                    ? scheduledClassWidget()
-                    : classRequestWidget()
-              ],
-            );
-          }),
-        ));
+                  ref.watch(teacherClassesTabProvider) == 0
+                      ? scheduledClassWidget()
+                      : classRequestWidget()
+                ],
+              ),
+            ),
+          );
+        }));
   }
 
   Widget scheduledClassWidget() {
@@ -127,16 +133,8 @@ class TeacherClasses extends StatelessWidget {
                     separatorBuilder: (context, index) =>
                         const Divider(color: AppColors.dividerCall),
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, RouteList.teacherRequestedClassDetail,
-                              arguments: data.personalClasses?[index] ??
-                                  PersonalClass());
-                        },
-                        child: _buildRequestRow(context,
-                            data.personalClasses?[index] ?? PersonalClass()),
-                      );
+                      return _buildRequestRow(context,
+                          data.personalClasses?[index] ?? PersonalClass());
                     },
                   );
                 },
@@ -309,34 +307,60 @@ class TeacherClasses extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
       child: Row(
         children: [
-          getCicleAvatar(data.studentName ?? 'A', data.studentImage ?? '',
-              radius: 3.h),
-          SizedBox(width: 5.w),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.studentName ?? "",
-                  style: TextStyle(
-                      fontSize: 12.sp,
-                      fontFamily: kFontFamily,
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w400),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 0.3.h),
-                  child: Text(
-                    data.type ?? "",
-                    style: TextStyle(
-                        fontSize: 8.sp,
-                        color: AppColors.descTextColor,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w300),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(
+                    context, RouteList.teacherRequestedClassDetail,
+                    arguments: data);
+              },
+              child: Row(
+                children: [
+                  getCicleAvatar(
+                      data.studentName ?? 'A', data.studentImage ?? '',
+                      radius: 3.h),
+                  SizedBox(width: 5.w),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.studentName ?? "",
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: kFontFamily,
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 0.3.h),
+                          child: Row(
+                            children: [
+                              Text(
+                                data.type ?? "",
+                                style: TextStyle(
+                                    fontSize: 8.sp,
+                                    color: AppColors.descTextColor,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                              Text(
+                                " || ${DateFormat.yMEd().format(DateFormat('yyyy-mm-dd hh:mm:ss').parse(data.preferred_date_time ?? DateTime.now().toString()))}",
+                                style: TextStyle(
+                                    fontSize: 8.sp,
+                                    color: AppColors.descTextColor,
+                                    fontFamily: kFontFamily,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                )
-              ],
+                ],
+              ),
             ),
           ),
           InkWell(
@@ -348,7 +372,7 @@ class TeacherClasses extends StatelessWidget {
             },
             child: getSvgIcon(
               'icon_req_chat.svg',
-              width: 4.5.w,
+              width: 6.w,
               fit: BoxFit.fitWidth,
             ),
           ),
@@ -361,7 +385,7 @@ class TeacherClasses extends StatelessWidget {
   chatwithstudent(BuildContext context, int studentId) async {
     final model = await getConversationModel(studentId.toString());
     if (model != null) {
-      Navigator.pushNamed(context,RouteList.chatScreen,arguments: model);
+      Navigator.pushNamed(context, RouteList.chatScreen, arguments: model);
       // Navigator.pushNamedAndRemoveUntil(
       //     context, RouteList.chatScreenDirect, (route) => false,
       //     arguments: model);

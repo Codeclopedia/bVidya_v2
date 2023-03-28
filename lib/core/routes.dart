@@ -421,10 +421,16 @@ class Routes {
       case RouteList.searchContact:
         screen = SearchScreen();
         break;
+
+      case RouteList.friendRequestScreen:
+        screen = const FriendRequestsScreen();
+
+        break;
       case RouteList.bMeet:
         screen = const BMeetHomeScreen();
         hasDrawer = true;
         break;
+
       case RouteList.bMeetStart:
         if (settings.arguments is ScheduledMeeting) {
           ScheduledMeeting meeting = settings.arguments as ScheduledMeeting;
@@ -494,6 +500,11 @@ class Routes {
       case RouteList.bLiveSchedule:
         screen = ScheduleBLiveScreen();
         break;
+      case RouteList.bDashBoard:
+        screen = const DashBoardBLiveScreen();
+        hasDrawer = true;
+        break;
+
       case RouteList.bLiveClass:
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
@@ -665,7 +676,7 @@ class Routes {
         }
         break;
 
-      case RouteList.subscriptionPlans:
+      case RouteList.buySubscription:
         screen = const SubscriptionPlansScreen();
         break;
       case RouteList.activePlan:
