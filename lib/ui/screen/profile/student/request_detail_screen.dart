@@ -52,7 +52,7 @@ class RequestDetailScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                S.current.class_requested_title,
+                                S.current.class_request_title,
                                 style: textStyleHeading,
                               ),
                               SizedBox(
@@ -90,39 +90,52 @@ class RequestDetailScreen extends StatelessWidget {
                                     title: S.current.preferredTime,
                                     data: DateFormat.jm().format(dateFormated),
                                   ),
+                                  if (requestdata.status != 'pending')
+                                    customTile(
+                                        title: 'status',
+                                        data: requestdata.status ?? ''),
                                 ],
                               ),
                             ],
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  showBasicDialog(
-                                      context,
-                                      S.current.requested_class_delete,
-                                      S.current.requested_class_delete_msg,
-                                      S.current.menu_delete, () async {
-                                    // await handler(true);
-                                    await ref
-                                        .read(profileRepositoryProvider)
-                                        .deleteClassRequest(
-                                            requestdata.id.toString());
-                                  }, negativeAction: () async {
-                                    // await handler(false);
-                                  }, negativeButton: S.current.dltCancel);
-                                },
-                                style: elevatedButtonTextStyle.copyWith(
-                                    padding: const MaterialStatePropertyAll(
-                                        EdgeInsets.zero),
-                                    fixedSize: MaterialStatePropertyAll(
-                                        Size(100.w, 12.5.w))),
-                                child: Text(
-                                  'Delete Request',
-                                  style: textStyleBlack.copyWith(
-                                      color: Colors.white, fontSize: 12.5.sp),
-                                )),
-                          )
+                          if (requestdata.status == 'pending')
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    showBasicDialog(
+                                        context,
+                                        S.current.requested_class_delete,
+                                        S.current.requested_class_delete_msg,
+                                        S.current.menu_delete, () async {
+                                      // await handler(true);
+                                      final res = await ref
+                                          .read(profileRepositoryProvider)
+                                          .deleteClassRequest(
+                                              requestdata.id.toString());
+                                      if (res.status == 'success') {
+                                        EasyLoading.showInfo(res.message ??
+                                            'Request deleted successfully');
+                                      } else {
+                                        AppSnackbar.instance.error(context,
+                                            res.message ?? S.current.error);
+                                      }
+                                      Navigator.pop(context);
+                                    }, negativeAction: () async {
+                                      // await handler(false);
+                                    }, negativeButton: S.current.dltCancel);
+                                  },
+                                  style: elevatedButtonTextStyle.copyWith(
+                                      padding: const MaterialStatePropertyAll(
+                                          EdgeInsets.zero),
+                                      fixedSize: MaterialStatePropertyAll(
+                                          Size(100.w, 12.5.w))),
+                                  child: Text(
+                                    'Delete Request',
+                                    style: textStyleBlack.copyWith(
+                                        color: Colors.white, fontSize: 12.5.sp),
+                                  )),
+                            )
                         ],
                       ),
                     )),

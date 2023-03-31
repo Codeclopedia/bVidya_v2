@@ -61,26 +61,26 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   setupCallKit();
   // await NotificationController.initializeLocalNotifications();
   try {
+    final String? action = message.data['action'];
     if (message.data['type'] == NotiConstants.typeCall) {
-      final String? action = message.data['action'];
       if (action == NotiConstants.actionCallStart) {
         BackgroundHelper.showCallingNotification(message, true);
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingCall(message);
       }
     } else if (message.data['type'] == NotiConstants.typeGroupCall) {
-      final String? action = message.data['action'];
+      // final String? action = message.data['action'];
       if (action == NotiConstants.actionCallStart) {
         BackgroundHelper.showGroupCallingNotification(message, true);
       } else if (action == NotiConstants.actionCallEnd) {
         closeIncomingGroupCall(message);
       }
     } else if (message.data['type'] == NotiConstants.typeContact) {
-      ContactAction? action = contactActionFrom(message.data['action']);
+      ContactAction? cAction = contactActionFrom(action);
       final String? fromId = message.data['f'];
-      if (action != null && fromId != null) {
+      if (cAction != null && fromId != null) {
         ContactRequestHelper.handleNotification(
-            message.notification, action, fromId, false);
+            message.notification, cAction, fromId, false);
       } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
         // final String? fromId = message.data['f'];
         // final String? grpId = message.data['g'];

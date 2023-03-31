@@ -126,6 +126,8 @@ class ForgetPasswordScreen extends HookConsumerWidget {
       Navigator.pushReplacementNamed(context, RouteList.login);
     } else {
       hideLoading(ref);
+      AppSnackbar.instance.message(context,
+          'Reset password email sent to your registered email address.');
       Navigator.pushReplacementNamed(context, RouteList.login);
     }
   }

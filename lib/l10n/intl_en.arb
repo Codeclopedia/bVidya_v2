@@ -51,6 +51,7 @@
   "signup_confirm_password_hint":"Enter Your Confirm Password",
   "signup_confirm_password_empty":"Confirm Password can't be empty",
   "signup_confirm_password_invalid":"Confirm Password Mismatch",
+  "signup_accept_terms_msg":"Accept Terms and Conditions to get started.",
   
   "signup_otp_caption":"Enter OTP",
   "signup_error_otp_empty":"Enter the OTP",
@@ -83,6 +84,7 @@
   "home_welcome":"Hello,",
   "home_btx_recent_calls":"Recent Calls",
   "home_btx_new_message":"New Message",
+  "home_btx_my_contacts":"My Contacts",
   "home_btx_new_group":"New Group",
   "home_btx_groups":"Groups",
   "grp_caption_participation":"Participants",
@@ -159,8 +161,10 @@
 
 
   "blearn_subscribed_courses":"Subscribed Courses",
-
-
+  "blearn_search_courses":"Embark on a journey of discovery through our extensive catalog of 100's of courses, and unlock a world of knowledge waiting to be explored!",
+  "blearn_search_instructor":"Discover the perfect guide to elevate your learning experience, with our comprehensive search tool to help you find the ideal instructor for your educational journey!",
+"blearn_course_subscribed_title":"Course Subscribed",
+"blearn_course_subscribed_msg":"Congratulations,you're now subsribed to {course_name} . Explore it to your full potential and achieving your goals with the help of this online course.",
   "bmeet_txt_schedule":"Scheduled Meetings",
   "bmmet_txt_start_title":"Start Instant Meeting",
   "bmeet_txt_start_desc":"Generate your meeting link to begin.",
@@ -414,7 +418,7 @@
 
 "Account": "Account",
 "settingsNoti": "Notifications",
-"settingShare": "Share bVidya App",
+"settingShare": "Share bvidya App",
 "settingRate": "Rate App",
 "settingChat": "Chats",
 "clearChat": "Clear Chat",
@@ -435,6 +439,7 @@
 "NoCourses":"No Courses Uploaded yet",
 "preferredDate":"Preferred Date",
 "preferredTime":"Preferred Time",
+"requested_date_title":"Request received on",
 "Requested_time_Note":"Note: The entered Date and time will be considered as preferred Date and time. Scheduled Class Date and Time will be set according to the Instructor preferrence.",
 "instructor_notApproved_note":"NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com",
 

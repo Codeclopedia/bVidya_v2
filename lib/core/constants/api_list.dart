@@ -26,7 +26,7 @@ class ApiList {
   static const String joinMeet = 'meeting/join/'; //GET
   static const String leaveMeet = 'meeting/leave/'; //GET
   static const String deleteMeet = 'meeting/delete/'; //GET
-  static const String updateMeet = 'meeting/update/'; //POST
+  static const String updateMeet = 'meeting/update'; //POST
 
   static const String fetchRtmMeet = 'meeting-rtm-token'; //POST
 

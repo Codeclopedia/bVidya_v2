@@ -47,11 +47,19 @@ class EditMeetScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     useEffect(() {
+      final startDate =
+          DateFormat('yyyy-MM-dd hh:mm:ss').parse(meeting.startsAt);
+      final endDate = DateFormat('yyyy-MM-dd hh:mm:ss').parse(meeting.endsAt);
       _formKey = GlobalKey<FormState>();
       _titlecontroller = TextEditingController(text: meeting.name);
-      _dateController = TextEditingController(text: meeting.updatedAt);
-      _startController = TextEditingController(text: meeting.startsAt);
-      _endController = TextEditingController(text: meeting.endsAt);
+      _dateController = TextEditingController(
+          text: DateFormat('dd-MM-yyyy').format(startDate));
+      _startController =
+          TextEditingController(text: DateFormat.jm().format(startDate));
+
+      _endController =
+          TextEditingController(text: DateFormat.jm().format(endDate));
+
       _subjectController = TextEditingController(text: meeting.description);
       _titleFocus = FocusNode();
       _dateFocus = FocusNode();
@@ -78,56 +86,6 @@ class EditMeetScreen extends HookWidget {
       ),
     );
   }
-
-  // Widget buildScreen(BuildContext context) {
-  //   return Consumer(
-  //     builder: (context, ref, child) {
-  //       if (user == null) return const SizedBox.expand();
-  //       return Container(
-  //         decoration: const BoxDecoration(
-  //           gradient: LinearGradient(
-  //             begin: Alignment.topCenter,
-  //             end: Alignment.bottomCenter,
-  //             colors: [
-  //               AppColors.gradientTopColor,
-  //               AppColors.gradientLiveBottomColor,
-  //             ],
-  //           ),
-  //         ),
-  //         child: SafeArea(
-  //           child: Stack(
-  //             children: [
-  //               Container(
-  //                 margin: EdgeInsets.only(top: 9.h),
-  //                 padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-  //                 decoration: BoxDecoration(
-  //                   color: Colors.white,
-  //                   borderRadius: BorderRadius.all(Radius.circular(4.w)),
-  //                 ),
-  //                 child: _buildBody(context),
-  //               ),
-  //               IconButton(
-  //                   onPressed: () {
-  //                     Navigator.pop(context);
-  //                   },
-  //                   icon: getSvgIcon('arrow_back.svg')),
-  //               Container(
-  //                 alignment: Alignment.topCenter,
-  //                 margin: EdgeInsets.only(top: 4.h),
-  //                 child: Column(
-  //                   children: [
-  //                     getRectFAvatar(size: 22.w, user.name, user.image),
-  //                     Text(user.name, style: textStyleBlack),
-  //                   ],
-  //                 ),
-  //               )
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
@@ -371,14 +329,24 @@ class EditMeetScreen extends HookWidget {
     showLoading(ref);
     final mute = ref.watch(muteSchdeuleEditMeetingProvider);
     final camOff = ref.watch(videoOffSchdeuleEditMeetingProvider);
-    final result = await ref.read(bMeetRepositoryProvider).createMeeting(
-        title: _titlecontroller.text,
-        subject: _subjectController.text,
-        date: _selectedDate!,
-        startAt: _startTime!,
-        endAt: _endTime!,
-        noAudio: mute,
-        noVideo: camOff);
+    final date =
+        DateFormat('yyyy-MM-dd').format(_selectedDate ?? DateTime.now());
+    final startTime = DateFormat('H:mm').format(_startTime ?? DateTime.now());
+    final endTime = DateFormat('H:mm').format(_endTime ?? DateTime.now());
+
+    Map data = {
+      'id': meeting.id,
+      'name': _titlecontroller.text,
+      'description': _subjectController.text,
+      'date': date,
+      'start_time': startTime,
+      'end_time': endTime,
+      'repeatable': '0',
+      'disable_video': mute,
+      'disable_audio': camOff,
+    };
+    final result =
+        await ref.read(bMeetRepositoryProvider).updateMeeting(data: data);
     hideLoading(ref);
     if (result != null) {
       // AppSnackbar.instance.message(context, 'Meeting scheduled successfully!!');

@@ -181,7 +181,7 @@ class BChatContactManager {
         message = 'Start talking with ${me.name}';
         await acceptRequest(contactId);
       } else if (action == ContactAction.declineRequest) {
-        title = 'bVidya';
+        title = 'bvidya';
         message = '${me.name} declined your request';
         await declineRequest(contactId);
       } else if (action == ContactAction.deleteContact) {
@@ -215,11 +215,11 @@ class BChatContactManager {
   ) async {
     try {
       if (!AgoraConfig.autoAcceptContact) {
-        List<String> sentRequestList =
-            await ContactRequestHelper.getSendRequestList();
-        if (sentRequestList.contains(contactId)) {
-          return 'Already sent request';
-        }
+        // List<String> sentRequestList =
+        //     await ContactRequestHelper.getSendRequestList();
+        // if (sentRequestList.contains(contactId)) {
+        //   return 'Already sent request';
+        // }
       }
 
       List<String> list = await getContactList(fromServer: false);
@@ -253,7 +253,7 @@ class BChatContactManager {
     }
   }
 
-  static Future chageChatMuteStateFor(String userId, bool mute) async {
+  static Future changeChatMuteStateFor(String userId, bool mute) async {
     try {
       final chatparam = ChatSilentModeParam.remindType(
           mute ? ChatPushRemindType.ALL : ChatPushRemindType.NONE);

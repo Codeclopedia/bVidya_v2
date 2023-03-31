@@ -20,21 +20,24 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(date) => "${date} Broadcast";
+  static String m0(course_name) =>
+      "Congratulations,you\'re now subsribed to ${course_name} . Explore it to your full potential and achieving your goals with the help of this online course.";
 
-  static String m1(date) => "${date} Meeting";
+  static String m1(date) => "${date} Broadcast";
 
-  static String m2(name, time) => "Missed call from ${name} at ${time}";
+  static String m2(date) => "${date} Meeting";
 
-  static String m3(name, time) => "Missed video call from ${name} at ${time}";
+  static String m3(name, time) => "Missed call from ${name} at ${time}";
 
-  static String m4(name) => "Replying to ${name}";
+  static String m4(name, time) => "Missed video call from ${name} at ${time}";
 
-  static String m5(count) => "${count} Memebers";
+  static String m5(name) => "Replying to ${name}";
 
-  static String m6(time) => "Resend OTP in ${time} seconds";
+  static String m6(count) => "${count} Memebers";
 
-  static String m7(year) => "${year} Years of Experience";
+  static String m7(time) => "Resend OTP in ${time} seconds";
+
+  static String m8(year) => "${year} Years of Experience";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -101,6 +104,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "blearn_byus": MessageLookupByLibrary.simpleMessage("By Us"),
         "blearn_complementry":
             MessageLookupByLibrary.simpleMessage("Complementary"),
+        "blearn_course_subscribed_msg": m0,
+        "blearn_course_subscribed_title":
+            MessageLookupByLibrary.simpleMessage("Course Subscribed"),
         "blearn_courses": MessageLookupByLibrary.simpleMessage("Courses"),
         "blearn_explore": MessageLookupByLibrary.simpleMessage("Explore"),
         "blearn_instructors":
@@ -109,6 +115,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "blearn_recently": MessageLookupByLibrary.simpleMessage("Recently"),
         "blearn_recommended":
             MessageLookupByLibrary.simpleMessage("Recommended"),
+        "blearn_search_courses": MessageLookupByLibrary.simpleMessage(
+            "Embark on a journey of discovery through our extensive catalog of 100\'s of courses, and unlock a world of knowledge waiting to be explored!"),
+        "blearn_search_instructor": MessageLookupByLibrary.simpleMessage(
+            "Discover the perfect guide to elevate your learning experience, with our comprehensive search tool to help you find the ideal instructor for your educational journey!"),
         "blearn_subscribed_courses":
             MessageLookupByLibrary.simpleMessage("Subscribed Courses"),
         "blearn_testimonial":
@@ -127,7 +137,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Broadcast Time"),
         "blive_caption_title":
             MessageLookupByLibrary.simpleMessage("Broadcast title"),
-        "blive_date_meeting": m0,
+        "blive_date_meeting": m1,
         "blive_empty_date":
             MessageLookupByLibrary.simpleMessage("Enter meeting date"),
         "blive_empty_desc": MessageLookupByLibrary.simpleMessage(
@@ -215,7 +225,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Meeting Subject"),
         "bmeet_caption_title":
             MessageLookupByLibrary.simpleMessage("Meeting Title"),
-        "bmeet_date_meeting": m1,
+        "bmeet_date_meeting": m2,
         "bmeet_edit_heading":
             MessageLookupByLibrary.simpleMessage("Edit meeting"),
         "bmeet_empty_date":
@@ -319,9 +329,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "chat_menu_forward": MessageLookupByLibrary.simpleMessage("Forward"),
         "chat_menu_reply": MessageLookupByLibrary.simpleMessage("Reply"),
         "chat_menu_title": MessageLookupByLibrary.simpleMessage("Options"),
-        "chat_missed_call": m2,
-        "chat_missed_call_video": m3,
-        "chat_replying": m4,
+        "chat_missed_call": m3,
+        "chat_missed_call_video": m4,
+        "chat_replying": m5,
         "chat_yourself": MessageLookupByLibrary.simpleMessage("Yourself"),
         "class_Scheduled_title":
             MessageLookupByLibrary.simpleMessage("Class Scheduled by"),
@@ -469,12 +479,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "grp_btx_report": MessageLookupByLibrary.simpleMessage("Report Group"),
         "grp_caption_participation":
             MessageLookupByLibrary.simpleMessage("Participants"),
-        "grp_chat_members": m5,
+        "grp_chat_members": m6,
         "grp_txt_add_participant":
             MessageLookupByLibrary.simpleMessage("Add Participants"),
         "helpCenter": MessageLookupByLibrary.simpleMessage(
             "Help Center, Report Problem, Privacy Policy"),
         "home_btx_groups": MessageLookupByLibrary.simpleMessage("Groups"),
+        "home_btx_my_contacts":
+            MessageLookupByLibrary.simpleMessage("My Contacts"),
         "home_btx_new_group": MessageLookupByLibrary.simpleMessage("New Group"),
         "home_btx_new_message":
             MessageLookupByLibrary.simpleMessage("New Message"),
@@ -559,7 +571,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter OTP"),
         "otp_login_txt_in_second":
             MessageLookupByLibrary.simpleMessage("Resend OTP in 59 seconds"),
-        "otp_login_txt_in_seconds": m6,
+        "otp_login_txt_in_seconds": m7,
         "passReset": MessageLookupByLibrary.simpleMessage(
             "Reset Password, Delete Account"),
         "pr_btx_all": MessageLookupByLibrary.simpleMessage("View All"),
@@ -654,6 +666,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Delete Requested"),
         "requested_class_delete_msg": MessageLookupByLibrary.simpleMessage(
             "The class request will be deleted. Do you want to Continue?"),
+        "requested_date_title":
+            MessageLookupByLibrary.simpleMessage("Request received on"),
         "requests": MessageLookupByLibrary.simpleMessage("Friend Requests"),
         "resetDesc": MessageLookupByLibrary.simpleMessage(
             "Reset all notification setting"),
@@ -675,10 +689,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingHelp": MessageLookupByLibrary.simpleMessage("Help"),
         "settingRate": MessageLookupByLibrary.simpleMessage("Rate App"),
         "settingShare":
-            MessageLookupByLibrary.simpleMessage("Share bVidya App"),
+            MessageLookupByLibrary.simpleMessage("Share bvidya App"),
         "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingsNoti": MessageLookupByLibrary.simpleMessage("Notifications"),
         "showNoty": MessageLookupByLibrary.simpleMessage("Show Notifications"),
+        "signup_accept_terms_msg": MessageLookupByLibrary.simpleMessage(
+            "Accept Terms and Conditions to get started."),
         "signup_btn_send_otp": MessageLookupByLibrary.simpleMessage("Send OTP"),
         "signup_btn_submit": MessageLookupByLibrary.simpleMessage("Sign Up"),
         "signup_confirm_password_caption":
@@ -785,7 +801,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("All Courses"),
         "teacher_exp":
             MessageLookupByLibrary.simpleMessage("7 Years of Experience"),
-        "teacher_exp_value": m7,
+        "teacher_exp_value": m8,
         "teacher_follow": MessageLookupByLibrary.simpleMessage("Follow"),
         "teacher_followed": MessageLookupByLibrary.simpleMessage("Followed"),
         "teacher_followers": MessageLookupByLibrary.simpleMessage("Followers"),

@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '/core/utils/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
@@ -165,6 +167,8 @@ class SignUpScreen extends HookWidget {
                       Consumer(
                         builder: (context, ref, child) {
                           final otpSent = ref.watch(signUpOTPGeneratedProvider);
+                          final termsAccepted =
+                              ref.watch(isTermAcceptedProvider);
                           return TextFormField(
                             controller: mobileTextController,
                             textInputAction: TextInputAction.done,
@@ -175,13 +179,19 @@ class SignUpScreen extends HookWidget {
                                   _sendOtp(
                                       context, ref, mobileTextController.text);
                                 } else {
-                                  _doRegistration(
+                                  if (termsAccepted) {
+                                    _doRegistration(
                                       context,
                                       ref,
                                       fullNameTextController.text,
                                       emailTextController.text,
                                       passwordTextController.text,
-                                      confirmPasswordTextController.text);
+                                      confirmPasswordTextController.text,
+                                    );
+                                  } else {
+                                    AppSnackbar.instance.error(context,
+                                        S.current.signup_accept_terms_msg);
+                                  }
                                 }
                               }
                             },
@@ -210,11 +220,53 @@ class SignUpScreen extends HookWidget {
                         },
                       ),
                       SizedBox(height: 2.h),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Consumer(builder: (context, ref, child) {
+                            final termsAccepted =
+                                ref.watch(isTermAcceptedProvider);
+                            return Checkbox(
+                              activeColor: AppColors.primaryColor,
+                              value: termsAccepted,
+                              onChanged: (value) {
+                                ref
+                                    .read(isTermAcceptedProvider.notifier)
+                                    .state = value ?? false;
+                              },
+                            );
+                          }),
+                          Expanded(
+                            child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                      text: "I hereby accept the",
+                                      style: textStyleBlack.copyWith(
+                                          fontSize: 10.sp)),
+                                  TextSpan(
+                                      text: " terms and conditions.",
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => Navigator.pushNamed(
+                                                context, RouteList.webview,
+                                                arguments: {
+                                                  'url':
+                                                      "https://bvidya.com/app-tc",
+                                                }),
+                                      style: textStyleBlack.copyWith(
+                                          fontSize: 10.sp,
+                                          color: AppColors.primaryColor))
+                                ])),
+                          )
+                        ],
+                      ),
                       _buildOtpBox(),
                       SizedBox(height: 2.h),
                       Consumer(
                         builder: (context, ref, child) {
                           final otpSent = ref.watch(signUpOTPGeneratedProvider);
+                          final termsAccepted =
+                              ref.watch(isTermAcceptedProvider);
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -225,14 +277,19 @@ class SignUpScreen extends HookWidget {
                                     _sendOtp(context, ref,
                                         mobileTextController.text);
                                   } else {
-                                    _doRegistration(
-                                      context,
-                                      ref,
-                                      fullNameTextController.text,
-                                      emailTextController.text,
-                                      passwordTextController.text,
-                                      confirmPasswordTextController.text,
-                                    );
+                                    if (termsAccepted) {
+                                      _doRegistration(
+                                        context,
+                                        ref,
+                                        fullNameTextController.text,
+                                        emailTextController.text,
+                                        passwordTextController.text,
+                                        confirmPasswordTextController.text,
+                                      );
+                                    } else {
+                                      AppSnackbar.instance.error(context,
+                                          S.current.signup_accept_terms_msg);
+                                    }
                                   }
                                 }
                               },

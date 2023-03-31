@@ -236,12 +236,22 @@ class Routes {
           screen = _parameterMissing();
         }
         break;
+      case RouteList.studentScheduledClassDetail:
+        if (settings.arguments is StudentScheduledClassDetails) {
+          StudentScheduledClassDetails scheduledClassData =
+              settings.arguments as StudentScheduledClassDetails;
+          screen = StudentScheduledClassDetailScreen(
+              scheduledClass: scheduledClassData);
+        } else {
+          screen = _parameterMissing();
+        }
+        break;
       case RouteList.classScheduledDetail:
         if (settings.arguments is InstructorScheduledClass) {
           InstructorScheduledClass scheduledClassData =
               settings.arguments as InstructorScheduledClass;
-          screen =
-              ScheduledClassDetailScreen(scheduledClass: scheduledClassData);
+          screen = InstructorScheduledClassDetailScreen(
+              scheduledClass: scheduledClassData);
         } else {
           screen = _parameterMissing();
         }
@@ -718,9 +728,9 @@ class Routes {
         if (settings.arguments is Map<String, dynamic>) {
           final args = settings.arguments as Map<String, dynamic>;
           String url = args['url'];
-          String title = 'bVidya';
+          String title = 'bvidya';
           if (args.containsKey('title')) {
-            title = args['title'] ?? 'bVidya';
+            title = args['title'] ?? 'bvidya';
           }
           screen = WebViewScreen(url: url, title: title);
         } else {

@@ -1,14 +1,18 @@
 // import '/data/models/response/profile/scheduled_class_instructor_model.dart';
+import '/ui/screen/profile/teacher/scheduled_class_start_meeting_screen.dart';
 import 'package:intl/intl.dart';
 
+import '/core/constants.dart';
+import '/core/helpers/bmeet_helper.dart';
+import '../../../screens.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
-import '/core/constants/colors.dart';
 import '/core/ui_core.dart';
 
-class ScheduledClassDetailScreen extends StatelessWidget {
+class InstructorScheduledClassDetailScreen extends StatelessWidget {
   final InstructorScheduledClass scheduledClass;
-  const ScheduledClassDetailScreen({super.key, required this.scheduledClass});
+  const InstructorScheduledClassDetailScreen(
+      {super.key, required this.scheduledClass});
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +95,9 @@ class ScheduledClassDetailScreen extends StatelessWidget {
                                         fontSize: 5.w,
                                         fontWeight: FontWeight.w500),
                                   ),
+                                  SizedBox(
+                                    height: 2.w,
+                                  ),
                                   ListView.builder(
                                     shrinkWrap: true,
                                     itemCount:
@@ -102,61 +109,68 @@ class ScheduledClassDetailScreen extends StatelessWidget {
                                       return Padding(
                                         padding:
                                             EdgeInsets.symmetric(vertical: 1.w),
-                                        child: Text(
-                                          "${index + 1}. ${scheduledClass.participants?[index].user?.name ?? ""}",
-                                          style: TextStyle(
-                                              fontFamily: kFontFamily,
-                                              color: Colors.black,
-                                              fontSize: 4.w,
-                                              fontWeight: FontWeight.w500),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "${index + 1}. ${scheduledClass.participants?[index].user?.name ?? ""}",
+                                              style: TextStyle(
+                                                  fontFamily: kFontFamily,
+                                                  color: Colors.black,
+                                                  fontSize: 4.w,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            Text(
+                                              scheduledClass
+                                                      .participants?[index]
+                                                      .paymentDetail
+                                                      ?.razorpayPaymentLinkStatus ??
+                                                  "",
+                                              style: TextStyle(
+                                                  fontFamily: kFontFamily,
+                                                  color: Colors.black,
+                                                  fontSize: 4.w,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
                                         ),
                                       );
                                     },
                                   )
-                                  // customTile(
-                                  //     title: S.current.class_participants_title,
-                                  //     data: DateFormat.yMMMEd().format(
-                                  //         scheduledClass.scheduledAt ??
-                                  //             DateTime.now())),
-
-                                  // customTile(
-                                  //     title: S.current.preferredDate,
-                                  //     data: DateFormat.yMEd().format(
-                                  //         scheduledClass.preferred_date_time ??
-                                  //             DateTime.now())),
-                                  // customTile(
-                                  //     title: S.current.preferredTime,
-                                  //     data: DateFormat.yMEd().format(
-                                  //         scheduledClass.preferred_date_time ??
-                                  //             DateTime.now()))
                                 ],
                               ),
                             ],
                           ),
-                          // Align(
-                          //   alignment: Alignment.bottomCenter,
-                          //   child: Row(
-                          //     children: [
-                          //       Expanded(
-                          //         child: ElevatedButton(
-                          //           onPressed: () {},
-                          //           style: elevatedButtonSecondaryStyle,
-                          //           child: const Text("Accept"),
-                          //         ),
-                          //       ),
-                          //       SizedBox(
-                          //         width: 2.w,
-                          //       ),
-                          //       Expanded(
-                          //         child: ElevatedButton(
-                          //           onPressed: () {},
-                          //           style: elevatedButtonPrimaryStyle,
-                          //           child: const Text("Reject"),
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ),
-                          // )
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: UserConsumer(
+                              builder: (context, user, ref) {
+                                return Padding(
+                                  padding: EdgeInsets.all(0.4.w),
+                                  child: ElevatedButton(
+                                      style: elevatedButtonTextStyle.copyWith(
+                                          fixedSize: MaterialStatePropertyAll(
+                                              Size(100.w, 15.w))),
+                                      onPressed: () async {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ScheduledInstructorClassMeetingScreen(
+                                                        scheduledClassDetails:
+                                                            scheduledClass)));
+                                      },
+                                      child: Text(
+                                        S.current.bmeet_btn_start,
+                                        style: textStyleBlack.copyWith(
+                                            color: AppColors.cardWhite,
+                                            fontSize: 15.sp),
+                                      )),
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     )),
@@ -222,5 +236,13 @@ class ScheduledClassDetailScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  paymentforClass(String paymentShortUrl, WidgetRef ref, BuildContext context) {
+    showLoading(ref);
+    final arg = {'url': paymentShortUrl};
+    hideLoading(ref);
+    if (arg['url'] == null) {}
+    Navigator.pushNamed(context, RouteList.webview, arguments: arg);
   }
 }

@@ -79,6 +79,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
 
     initLoading();
     _firebase();
+    registerForContact();
 
     // NotificationController.startListeningNotificationEvents();
   }
@@ -277,6 +278,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   void dispose() {
     debugPrint('Hello I m here dispose');
     try {
+      unregisterForContact();
       unregisterForNewMessage('bVidyaApp');
       BChatSDKController.instance.destroyed();
       // ChatClient.getInstance.logout(false);
@@ -284,6 +286,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     } catch (e) {
       print('object $e');
     }
+
     WidgetsBinding.instance.removeObserver(this);
 
     super.dispose();

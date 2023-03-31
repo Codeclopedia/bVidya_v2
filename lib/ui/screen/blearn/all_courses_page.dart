@@ -140,13 +140,31 @@ class AllCoursesPage extends StatelessWidget {
                 ),
               ),
               Consumer(builder: (context, ref, child) {
+                if (ref.watch(inputTextProvider) == '' ||
+                    ref.watch(inputTextProvider).isEmpty) {
+                  return Center(
+                      child: Column(
+                    children: [
+                      SizedBox(height: 50.w),
+                      getSvgIcon('no_course.svg', width: 15.w),
+                      SizedBox(height: 1.w),
+                      Text(
+                        S.current.blearn_search_courses,
+                        textAlign: TextAlign.center,
+                        style: textStyleBlack.copyWith(
+                            fontSize: 6.sp, color: AppColors.inputHintText),
+                      )
+                    ],
+                  ));
+                }
+
                 return ref
                     .watch(bLearnSearchCoursesProvider(
                         ref.watch(inputTextProvider)))
                     .when(
                         data: ((data) {
                           if (data == null) {
-                            return buildEmptyPlaceHolder('No Courses found');
+                            return buildEmptyPlaceHolder('No Course found');
                           }
 
                           return GridView.builder(
@@ -203,12 +221,29 @@ class AllCoursesPage extends StatelessWidget {
                 ),
               ),
               Consumer(builder: (context, ref, child) {
+                if (ref.watch(inputTextProvider) == '' ||
+                    ref.watch(inputTextProvider).isEmpty) {
+                  return Center(
+                      child: Column(
+                    children: [
+                      SizedBox(height: 50.w),
+                      getSvgIcon('professor.svg', width: 15.w),
+                      SizedBox(height: 1.w),
+                      Text(
+                        S.current.blearn_search_instructor,
+                        textAlign: TextAlign.center,
+                        style: textStyleBlack.copyWith(
+                            fontSize: 6.sp, color: AppColors.inputHintText),
+                      )
+                    ],
+                  ));
+                }
                 return ref
                     .watch(bLearnSearchCoursesProvider(
                         ref.watch(inputTextProvider)))
                     .when(
                         data: ((data) {
-                          if (data?.instructors?.length == 0) {
+                          if (data?.instructors?.isEmpty ?? false) {
                             return buildEmptyPlaceHolder('No Instructor found');
                           }
 

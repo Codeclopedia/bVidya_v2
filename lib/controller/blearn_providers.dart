@@ -44,7 +44,11 @@ final bLearnsetCourseProgressProvider =
 
 final bLearnSearchCoursesProvider =
     FutureProvider.family<SearchResults?, String>((ref, term) {
-  return ref.read(bLearnRepositoryProvider).getSearchedCourses(term);
+  if (term == "" || term.isEmpty) {
+    return null;
+  } else {
+    return ref.read(bLearnRepositoryProvider).getSearchedCourses(term);
+  }
 });
 
 final bLearnAllCoursesProvider = FutureProvider<Courses?>((ref) {

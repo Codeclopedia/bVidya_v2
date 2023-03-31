@@ -1,7 +1,7 @@
 // import '/core/constants/route_list.dart';
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/ui/dialog/basic_dialog.dart';
+import '/ui/dialog/basic_dialog.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:intl/intl.dart';
 
@@ -45,33 +45,14 @@ class StudentScheduleScreen extends StatelessWidget {
             ),
             ref.watch(scheduledClassTabIndexProvider) == 0
                 ? scheduledClasses()
-                : requestedClasses(ref)
+                : classRequest(ref)
           ],
         );
-
-        // Column(
-        //   children: [
-        //     Padding(
-        //       padding: EdgeInsets.symmetric(vertical: 5.w),
-        //       child: SlidingTab(
-        //         label1: "scheduled Class",
-        //         label2: "Request sent",
-        //         selectedIndex: ref.watch(scheduledClassTabIndexProvider),
-        //         callback: (p0) {
-        //           ref.read(scheduledClassTabIndexProvider.notifier).state = p0;
-        //         },
-        //       ),
-        //     ),
-        //     ref.watch(scheduledClassTabIndexProvider) == 0
-        //         ? scheduledClasses()
-        //         : requestedClasses(ref)
-        //   ],
-        // );
       }),
     );
   }
 
-  Widget requestedClasses(WidgetRef ref) {
+  Widget classRequest(WidgetRef ref) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 2.w),
@@ -84,23 +65,30 @@ class StudentScheduleScreen extends StatelessWidget {
                         S.current.t_no_requested_class_title),
                   );
                 }
-                if (data.requestedClasses?.isEmpty ?? false) {
+                if (data.requestedClasses?.isEmpty ??
+                    false || data.requestedClasses == null) {
                   return Center(
                     child: buildEmptyPlaceHolder(
                         S.current.t_no_requested_class_title),
                   );
                 }
+                final requestedClassList = data.requestedClasses;
+                if (requestedClassList!.length > 1) {
+                  requestedClassList.sort(
+                    (a, b) {
+                      return b.createdAt!
+                          .compareTo(a.createdAt ?? DateTime.now());
+                    },
+                  );
+                }
 
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: data.requestedClasses?.length,
+                  itemCount: requestedClassList.length,
                   itemBuilder: (context, index) {
                     return SwipeActionCell(
                         key: ObjectKey(index),
                         backgroundColor: Colors.white,
-                        // onTap: () async {
-                        //   makeCall(callList[index], ref, context);
-                        // },
                         trailingActions: <SwipeAction>[
                           SwipeAction(
                               style: TextStyle(
@@ -113,11 +101,7 @@ class StudentScheduleScreen extends StatelessWidget {
                               title: S.current.menu_delete,
                               performsFirstActionWithFullSwipe: true,
                               onTap: (CompletionHandler handler) async {
-                                /// await handler(true) : will delete this row
-                                /// And after delete animation,setState will called to
-                                /// sync your data source with your UI
-
-                                showBasicDialog(
+                                return showBasicDialog(
                                     context,
                                     S.current.requested_class_delete,
                                     S.current.requested_class_delete_msg,
@@ -137,26 +121,9 @@ class StudentScheduleScreen extends StatelessWidget {
                                 // setState(() {});
                               },
                               color: AppColors.redBColor),
-                          // SwipeAction(
-                          //     style: TextStyle(
-                          //       fontFamily: kFontFamily,
-                          //       color: Colors.white,
-                          //       fontSize: 12.sp,
-                          //     ),
-                          //     backgroundRadius: 3.w,
-                          //     widthSpace: 20.w,
-                          //     title: S.current.menu_call,
-                          //     onTap: (CompletionHandler handler) async {
-                          //       /// false means that you just do nothing,it will close
-                          //       /// action buttons by default
-                          //       handler(false);
-                          //       await makeCall(callList[index], ref, context);
-                          //     },
-                          //     color: AppColors.primaryColor),
                         ],
                         child: _buildRequestRow(
-                            data.requestedClasses?[index] ?? RequestedClass(),
-                            context));
+                            requestedClassList[index], context));
                   },
                 );
               },
@@ -189,7 +156,16 @@ class StudentScheduleScreen extends StatelessWidget {
             if (data.scheduledRequests?.isEmpty ?? true) {
               return buildEmptyPlaceHolder(S.current.s_no_schedule_class);
             }
-            return scheduledClasseslist(data.scheduledRequests ?? []);
+            final scheduledClassList = data.scheduledRequests;
+            if (scheduledClassList!.length > 1) {
+              scheduledClassList.sort(
+                (a, b) {
+                  return a.scheduledClass!.scheduledAt!.compareTo(
+                      b.scheduledClass!.scheduledAt ?? DateTime.now());
+                },
+              );
+            }
+            return scheduledClasseslist(scheduledClassList);
           },
           error: (error, stackTrace) {
             return buildEmptyPlaceHolder(S.current.error);
@@ -223,6 +199,8 @@ class StudentScheduleScreen extends StatelessWidget {
   }
 
   Widget _buildRequestRow(RequestedClass data, BuildContext context) {
+    final requestedDate =
+        DateFormat.yMEd().format(data.createdAt ?? DateTime.now());
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.2.h),
       child: InkWell(
@@ -266,6 +244,14 @@ class StudentScheduleScreen extends StatelessWidget {
                               fontFamily: kFontFamily,
                               fontWeight: FontWeight.w300),
                         ),
+                      ),
+                      Text(
+                        " | $requestedDate",
+                        style: TextStyle(
+                            fontSize: 8.sp,
+                            color: AppColors.descTextColor,
+                            fontFamily: kFontFamily,
+                            fontWeight: FontWeight.w300),
                       ),
                     ],
                   )
@@ -379,38 +365,9 @@ class StudentScheduleScreen extends StatelessWidget {
             Consumer(builder: (context, ref, child) {
               return InkWell(
                 onTap: () async {
-                  // Navigator.pushNamed(
-                  //               context, RouteList.teacherRequestedClassDetail,
-                  //               arguments: data.personalClasses?[index] ??
-                  //                   PersonalClass());
-
-                  showLoading(ref);
-                  final user = await getMeAsUser();
-                  if (user == null) {
-                    hideLoading(ref);
-                  }
-                  final indexOfUser = scheduledClassdetail
-                      .scheduledClass?.participants
-                      ?.indexWhere((element) => element.user?.id == user?.id);
-                  final userPaymentDetails = scheduledClassdetail.scheduledClass
-                      ?.participants?[indexOfUser ?? 0].paymentDetail;
-                  // print(
-                  //     "user details: ${userPaymentDetails?.razorpayPaymentLinkStatus}");
-                  if (userPaymentDetails?.razorpayPaymentLinkStatus == 'paid') {
-                    hideLoading(ref);
-
-                    Navigator.pushNamed(
-                        context, RouteList.scheduledClassMeetingScreen,
-                        arguments: scheduledClassdetail);
-                  } else {
-                    final arg = {
-                      'url': userPaymentDetails?.paymentLinkShortUrl
-                    };
-                    hideLoading(ref);
-                    if (arg['url'] == null) {}
-                    Navigator.pushNamed(context, RouteList.webview,
-                        arguments: arg);
-                  }
+                  Navigator.pushNamed(
+                      context, RouteList.studentScheduledClassDetail,
+                      arguments: scheduledClassdetail);
                 },
                 child: CircleAvatar(
                   backgroundColor: AppColors.yellowAccent,

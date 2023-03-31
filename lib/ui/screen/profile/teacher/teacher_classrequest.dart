@@ -75,7 +75,16 @@ class TeacherClasses extends StatelessWidget {
             if (data.scheduledClasses?.isEmpty ?? true) {
               return buildEmptyPlaceHolder('No scheduled class.');
             }
-            return scheduledClasseslist(data.scheduledClasses ?? [], context);
+            final scheduledClassList = data.scheduledClasses;
+            if (scheduledClassList!.length > 1) {
+              scheduledClassList.sort(
+                (a, b) {
+                  return a.scheduledAt!
+                      .compareTo(b.scheduledAt ?? DateTime.now());
+                },
+              );
+            }
+            return scheduledClasseslist(scheduledClassList, context);
           },
           error: (error, stackTrace) {
             return buildEmptyPlaceHolder(S.current.error);
@@ -102,17 +111,6 @@ class TeacherClasses extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SizedBox(
-          //   height: 2.w,
-          // ),
-          // Text(
-          //   S.current.tp_classes,
-          //   style: TextStyle(
-          //       fontFamily: kFontFamily,
-          //       color: AppColors.primaryColor,
-          //       fontSize: 5.5.w,
-          //       fontWeight: FontWeight.w500),
-          // ),
           SizedBox(height: 1.h),
           Expanded(
             child: Consumer(builder: (context, ref, child) {
@@ -124,17 +122,26 @@ class TeacherClasses extends StatelessWidget {
                   if (data.personalClasses?.isEmpty ?? false) {
                     return buildEmptyPlaceHolder(S.current.empty_class_request);
                   }
+                  final requestedClassList = data.personalClasses;
+                  if (requestedClassList!.length > 1) {
+                    requestedClassList.sort(
+                      (a, b) {
+                        return b.createdAt!
+                            .compareTo(a.createdAt ?? DateTime.now());
+                      },
+                    );
+                  }
 
                   return ListView.separated(
                     shrinkWrap: true,
-                    itemCount: data.personalClasses?.length ?? 0,
+                    itemCount: requestedClassList.length,
                     scrollDirection: Axis.vertical,
                     physics: const BouncingScrollPhysics(),
                     separatorBuilder: (context, index) =>
                         const Divider(color: AppColors.dividerCall),
                     itemBuilder: (context, index) {
-                      return _buildRequestRow(context,
-                          data.personalClasses?[index] ?? PersonalClass());
+                      return _buildRequestRow(
+                          context, requestedClassList[index]);
                     },
                   );
                 },
@@ -346,7 +353,7 @@ class TeacherClasses extends StatelessWidget {
                                     fontWeight: FontWeight.w300),
                               ),
                               Text(
-                                " || ${DateFormat.yMEd().format(DateFormat('yyyy-mm-dd hh:mm:ss').parse(data.preferred_date_time ?? DateTime.now().toString()))}",
+                                " || ${DateFormat.yMEd().format(data.createdAt ?? DateTime.now())}",
                                 style: TextStyle(
                                     fontSize: 8.sp,
                                     color: AppColors.descTextColor,

@@ -106,12 +106,12 @@ class ProfileRepository {
     }
   }
 
-  Future<String> updateClassStatus(Map arg) async {
+  Future<BaseResponse> updateClassStatus(Map arg) async {
     final result = await _api.updateRequestedClassStatus(_authToken, arg);
     if (result.status == success) {
-      return result.status ?? 'success';
+      return result;
     } else {
-      return 'error';
+      return result;
     }
   }
 

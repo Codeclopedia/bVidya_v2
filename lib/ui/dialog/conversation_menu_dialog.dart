@@ -110,7 +110,7 @@ class ConversationMenuDialog extends StatelessWidget {
           return _buildOption(
               muted ? S.current.bchat_conv_unmute : S.current.bchat_conv_mute,
               muted ? 'icon_unmute_conv.svg' : 'icon_mute_conv.svg', () async {
-            await BChatContactManager.chageChatMuteStateFor(model.id, !muted);
+            await BChatContactManager.changeChatMuteStateFor(model.id, !muted);
             ref
                 .read(chatConversationProvider.notifier)
                 .updateConversationMute(model.id, !muted);

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '../../dialog/ok_dialog.dart';
 import '/controller/profile_providers.dart';
 import '/ui/dialog/basic_dialog.dart';
 
@@ -61,6 +62,7 @@ class CourseDetailScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             _topImage(context),
+
                             _subjectDetail(data, ref),
                             SlidingTab(
                               label1: 'Description',
@@ -95,52 +97,8 @@ class CourseDetailScreen extends StatelessWidget {
                                         height: 12.w,
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            showLoading(ref);
-                                            final creditsData =
-                                                ref.read(creditHistoryProvider);
-                                            creditsData.whenData(
-                                              (value) async {
-                                                if (value == null) {
-                                                  return;
-                                                }
-                                                if (value
-                                                        .avilableCourseCredits! >
-                                                    0) {
-                                                  await ref
-                                                      .read(
-                                                          bLearnRepositoryProvider)
-                                                      .subscribeCourse(
-                                                          course.id ?? 1);
-                                                  ref.refresh(
-                                                      bLearnCourseDetailProvider(
-                                                          course.id ?? 0));
-                                                  hideLoading(ref);
-                                                } else {
-                                                  print("No credits");
-                                                  showBasicDialog(
-                                                    context,
-                                                    'No Credits left',
-                                                    'It seems like you have no credits left in your account. Buy credits to continue learning.',
-                                                    'Purchase credits',
-                                                    () async {
-                                                      Navigator.pushNamed(
-                                                          context,
-                                                          RouteList
-                                                              .buySubscription);
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                            );
-
-                                            // showLoading(ref);
-                                            // ref.read(
-                                            //     blearnSubscribeCourseProvider(
-                                            //         course.id ?? 0));
-                                            // ref.refresh(
-                                            //     bLearnCourseDetailProvider(
-                                            //         course.id ?? 0));
-                                            // hideLoading(ref);
+                                            await useCredits(
+                                                ref, context, course);
                                           },
                                           style: elevatedButtonStyle,
                                           child: Text(
@@ -178,6 +136,52 @@ class CourseDetailScreen extends StatelessWidget {
           error: ((error, stackTrace) => buildEmptyPlaceHolder('Error')),
           loading: () => customLoadingView());
     });
+  }
+
+  Future useCredits(WidgetRef ref, BuildContext context, Course course) async {
+    final creditsData =
+        await ref.read(profileRepositoryProvider).getCreditsHistory();
+
+    if (creditsData.avilableCourseCredits! > 0) {
+      showLoading(ref);
+      await ref.read(bLearnRepositoryProvider).subscribeCourse(course.id ?? 1);
+      hideLoading(ref);
+      showOkDialog(
+        context,
+        S.current.blearn_course_subscribed_title,
+        S.current.blearn_course_subscribed_msg(course.name ?? ""),
+        type: true,
+        positiveButton: S.current.btn_continue,
+        positiveAction: () {
+          Navigator.pop(context, true);
+        },
+      );
+      ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+      ref.refresh(creditHistoryProvider);
+    } else {
+      showBasicImageDialog(
+        context,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            getPngIcon('coin.png', width: 8.w),
+            SizedBox(width: 1.w),
+            Text(
+              'No Credits left',
+              style: textStyleBlack.copyWith(
+                  color: AppColors.primaryColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        'It seems like you have no credits left in your account. Buy credits to continue learning.',
+        'Buy credits',
+        () async {
+          Navigator.pushReplacementNamed(context, RouteList.buySubscription);
+        },
+      );
+    }
   }
 
   Widget customLoadingView() {

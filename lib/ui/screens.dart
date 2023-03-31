@@ -66,7 +66,8 @@ export 'screen/profile/student/student_learning_screen.dart';
 export 'screen/profile/student/student_profile_edit_screen.dart';
 export 'screen/profile/student/student_schdule.dart';
 export 'screen/profile/student/request_detail_screen.dart';
-export 'screen/profile/student/scheduled_class_detail.dart';
+export 'screen/profile/student/student_scheduled_class_detail_screen.dart';
+// export 'screen/profile/student/scheduled_class_detail.dart';
 export 'screen/profile/student/subscription_plans_screen.dart';
 export 'screen/profile/student/active_plan_detail_screen.dart';
 export 'screen/profile/student/scheduled_class_meeting_screen.dart';
@@ -80,6 +81,8 @@ export 'screen/profile/teacher/teacher_classes_screen.dart';
 export 'screen/profile/teacher/teacher_requested_class_detail_screen.dart';
 export 'screen/blearn/components/request_class_form.dart';
 export 'screen/profile/teacher/my_dashboard_screen.dart';
+export 'screen/profile/teacher/scheduled_class_detail.dart';
+export 'screen/profile/teacher/scheduled_class_start_meeting_screen.dart';
 
 export 'screen/profile/settings/webview_screen.dart';
 export 'screen/blearn/teacher_profile_detail_screen.dart';

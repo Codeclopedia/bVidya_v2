@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
 // import '../utils/request_utils.dart';
 // import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
@@ -163,6 +164,24 @@ import '/core/sdk_helpers/typing_helper.dart';
 //     ChatClient.getInstance.contactManager.removeEventHandler(key);
 //   } catch (_) {}
 // }
+
+registerForContact() {
+  try {
+    ChatClient.getInstance.contactManager.addEventHandler('contact_key',
+        ContactEventHandler(
+      onContactAdded: (userId) async {
+        await BChatContactManager.changeChatMuteStateFor(userId, false);
+      },
+    ));
+  } catch (_) {}
+}
+
+unregisterForContact() {
+  try {
+    // print('unregistering $key');
+    ChatClient.getInstance.contactManager.removeEventHandler('contact_key');
+  } catch (_) {}
+}
 
 registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
   try {

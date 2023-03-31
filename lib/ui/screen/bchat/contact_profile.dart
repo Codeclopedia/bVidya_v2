@@ -102,7 +102,7 @@ class ContactProfileScreen extends HookConsumerWidget {
   }
 
   Future _updateSetting(bool mute) async {
-    await BChatContactManager.chageChatMuteStateFor(
+    await BChatContactManager.changeChatMuteStateFor(
         contact.userId.toString(), mute);
   }
 

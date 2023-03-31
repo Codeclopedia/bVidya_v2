@@ -192,7 +192,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
 
   await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: name,
@@ -260,7 +260,7 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   }
   // print('from ID $fromId');
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: name,
@@ -323,7 +323,7 @@ showIncomingCallScreen(
   // print('valid call Call Called => active: $_activeCallId last:$_lastCallId');
   bool hasVideo = body.callType == CallType.video;
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: body.fromName,
@@ -394,7 +394,7 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
 
   // print('valid group Call Called => active: $_activeCallId last:$_lastCallId');
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: callBody.fromName,
@@ -563,7 +563,7 @@ onDeclineGrpCallBusy(
   bool hasVideo = body.callType == CallType.video;
   // await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: body.fromName,
@@ -665,7 +665,7 @@ onDeclineCallBusy(
 
   // await FlutterCallkitIncoming.endCall(uid);
   final kitParam = CallKitParams(
-    appName: 'bVidya',
+    appName: 'bvidya',
     avatar: avImage,
     id: uid,
     nameCaller: callMessegeBody.fromName,

@@ -49,6 +49,13 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                   S.current.Select_subscription_title,
                   style: textStyleBlack,
                 ),
+                SizedBox(
+                  height: 2.w,
+                ),
+                Text(
+                  'Limited time offers',
+                  style: textStyleBlack.copyWith(color: AppColors.redBColor),
+                ),
                 subscriptionPlansData.when(
                   data: (data) {
                     if (data == null) {

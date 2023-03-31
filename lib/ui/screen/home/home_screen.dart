@@ -498,7 +498,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _newMessageButton(context),
+        _myContactseButton(context),
         Consumer(builder: (context, ref, child) {
           return Row(
             mainAxisSize: MainAxisSize.min,
@@ -550,7 +550,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _newMessageButton(BuildContext context) {
+  Widget _myContactseButton(BuildContext context) {
     // return Consumer(builder: (context, ref, child) {
     return TextButton(
       style: TextButton.styleFrom(
@@ -565,7 +565,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         // _loadConversations(ref);
       },
       child: Text(
-        S.current.home_btx_new_message,
+        S.current.home_btx_my_contacts,
         style: TextStyle(
           fontFamily: kFontFamily,
           color: AppColors.primaryColor,

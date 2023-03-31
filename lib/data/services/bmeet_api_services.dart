@@ -133,34 +133,36 @@ class BMeetApiService {
     }
   }
 
-  Future<BaseResponse> updateMeet(String authToken, Map arg) async {
+  Future<ScheduleResponse> updateMeet(String authToken, Map arg) async {
     try {
       _dio.options.headers['X-Auth-Token'] = authToken;
       final data = {
         'id': arg['id'],
         'name': arg['name'],
         'description': arg['description'],
-        'date': arg['date'],
-        'start_time': arg['start_time'],
-        'end_time': arg['end_time'],
+        'date': arg['date'].toString(),
+        'start_time': arg['start_time'].toString(),
+        'end_time': arg['end_time'].toString(),
         'repeatable': arg['repeatable'],
         'disable_video': arg['disable_video'],
         'disable_audio': arg['disable_audio']
       };
 
-      final response = await _dio
-          .post(baseUrlApi + ApiList.updateMeet + arg['id'], data: data);
+      final response =
+          await _dio.post(baseUrlApi + ApiList.updateMeet, data: data);
+      print(response);
 
       if (response.statusCode == 200) {
-        // print('Join meeting ${jsonEncode(response.data)}');
-        return BaseResponse.fromJson(response.data);
+        print('update meeting ${jsonEncode(response.data)}');
+        return ScheduleResponse.fromJson(response.data);
       } else {
-        return BaseResponse(
+        return ScheduleResponse(
             status: 'error',
             message: '${response.statusCode}- ${response.statusMessage}');
       }
     } catch (e) {
-      return BaseResponse(status: 'error', message: 'Unknown error -$e');
+      print(e);
+      return ScheduleResponse(status: 'error', message: 'Unknown error -$e');
     }
   }
 

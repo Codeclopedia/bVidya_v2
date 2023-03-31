@@ -47,7 +47,7 @@ Future<bool?> shareApp() async {
     url = 'https://app.bvidya.com';
   }
   return await FlutterShare.share(
-      title: 'bVidya App',
+      title: 'bvidya App',
       text: 'Let’s connect on bvidya!\n'
           'A fast, secure, and user-friendly app for everyone to use. '
           'Especially beneficial for students and teachers.\n'

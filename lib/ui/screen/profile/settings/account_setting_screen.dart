@@ -32,8 +32,8 @@ class AccountSettingScreen extends StatelessWidget {
                   //     builder: (context) => const ResetPasswordScreen()),
                   );
             }),
-            getTwoRowSettingItem(S.current.accnt_security,
-                S.current.secrityDesc, "accnt_security.svg", () {}),
+            // getTwoRowSettingItem(S.current.accnt_security,
+            //     S.current.secrityDesc, "accnt_security.svg", () {}),
             Consumer(builder: (context, ref, child) {
               return getTwoRowSettingItem(
                   S.current.deleteAcc, S.current.deleteDesc, "accnt_dlt.svg",

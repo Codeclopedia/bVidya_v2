@@ -1,8 +1,11 @@
-import 'package:bvidya/controller/profile_providers.dart';
-import 'package:bvidya/ui/dialog/ok_dialog.dart';
-import 'package:bvidya/ui/screens.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:intl/intl.dart';
 
+import '/controller/profile_providers.dart';
+import '/ui/dialog/ok_dialog.dart';
+import '/ui/screens.dart';
+import '/controller/bmeet_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
@@ -97,6 +100,11 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                         title: S.current.preferredTime,
                                         data: DateFormat.jm()
                                             .format(preferredDate)),
+                                    customTile(
+                                        title: S.current.requested_date_title,
+                                        data: DateFormat.yMEd().format(
+                                            requestedClass.createdAt ??
+                                                DateTime.now())),
                                     if (requestedClass.status != "pending")
                                       customTile(
                                           title: 'status',
@@ -125,12 +133,42 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () async {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return remarkPopUp(true);
-                                          },
-                                        );
+                                        // showDialog(
+                                        //   context: context,
+                                        //   builder: (context) {
+                                        //     return remarkPopUp(true);
+                                        //   },
+                                        // );
+
+                                        showLoading(ref);
+
+                                        final arg = {
+                                          'classID': requestedClass.id,
+                                          'accepted': true,
+                                          'remark': 'null'
+                                        };
+                                        final res = await ref
+                                            .read(profileRepositoryProvider)
+                                            .updateClassStatus(arg);
+                                        hideLoading(ref);
+                                        print(res.status);
+                                        if (res.status == "success") {
+                                          ref.refresh(bmeetClassesProvider);
+                                          return showOkDialog(
+                                            context,
+                                            'Class Request Accepted',
+                                            'The following class request has been accepted and students has been informed regarding the same.',
+                                            positiveAction: () {
+                                              Navigator.pop(context);
+                                            },
+                                          );
+                                        } else {
+                                          AppSnackbar.instance.error(context,
+                                              res.message ?? S.current.error);
+                                        }
+
+                                        if (context.debugDoingBuild) {}
+                                        Navigator.pop(context);
                                       },
                                       style:
                                           elevatedButtonSecondaryStyle.copyWith(

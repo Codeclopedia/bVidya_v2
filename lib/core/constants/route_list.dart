@@ -134,6 +134,7 @@ class RouteList {
   static const String activePlan = '/subscription-details';
   static const String classScheduleDetails = '/class-schedule-details';
   static const String classScheduledDetail = '/class-schdeduled-detail';
+  static const String studentScheduledClassDetail = '/student-scheduled-class';
 
   static const String noInternetConnection = 'no-internet-screen';
   //

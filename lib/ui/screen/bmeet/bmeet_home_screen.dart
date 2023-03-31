@@ -182,44 +182,45 @@ class BMeetHomeScreen extends StatelessWidget {
                         ? AppColors.iconGreyColor
                         : AppColors.black,
                   )),
-              PopupMenuButton(
-                padding: EdgeInsets.zero,
+              if (condition != 1)
+                PopupMenuButton(
+                  padding: EdgeInsets.zero,
 
-                // color: condition == 1 ? AppColors.iconGreyColor : Colors.black,
-                icon: Icon(
-                  Icons.more_vert,
-                  color:
-                      condition == 1 ? AppColors.iconGreyColor : Colors.black,
-                ),
-                onSelected: (item) async {
-                  switch (item) {
-                    case 'Edit':
-                      // return null;
-                      Navigator.pushNamed(context, RouteList.bMeetEdit,
-                          arguments: meeting);
-                      
-                      // showTopSnackBar(Overlay.of(context)!,
-                      //     CustomSnackBar.info(message: S.current.coming_soon));
-                      break;
-                    case 'Delete':
-                      // print(meeting.id);
-                      await ref
-                          .read(bMeetRepositoryProvider)
-                          .deleteMeeting(meeting.id.toString());
-                      ref.refresh(bMeetHistoryProvider);
-                      break;
-                  }
-                  // print(item);
-                },
-                itemBuilder: (context) {
-                  return {'Edit', 'Delete'}.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              )
+                  // color: condition == 1 ? AppColors.iconGreyColor : Colors.black,
+                  icon: Icon(
+                    Icons.more_vert,
+                    color:
+                        condition == 1 ? AppColors.iconGreyColor : Colors.black,
+                  ),
+                  onSelected: (item) async {
+                    switch (item) {
+                      case 'Edit':
+                        // return null;
+                        Navigator.pushNamed(context, RouteList.bMeetEdit,
+                            arguments: meeting);
+
+                        // showTopSnackBar(Overlay.of(context)!,
+                        //     CustomSnackBar.info(message: S.current.coming_soon));
+                        break;
+                      case 'Delete':
+                        // print(meeting.id);
+                        await ref
+                            .read(bMeetRepositoryProvider)
+                            .deleteMeeting(meeting.id.toString());
+                        ref.refresh(bMeetHistoryProvider);
+                        break;
+                    }
+                    // print(item);
+                  },
+                  itemBuilder: (context) {
+                    return {'Edit', 'Delete'}.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                )
             ],
           ),
           SizedBox(height: 1.w),

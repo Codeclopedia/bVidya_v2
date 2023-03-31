@@ -67,6 +67,10 @@ final loadingStateProvider = StateProvider.autoDispose<bool>(
   (_) => false,
 );
 
+//terms and Conditions
+final isTermAcceptedProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
 // //Drawer
 // final drawerOpenProvider = StateProvider.autoDispose<bool>(
 //   (_) => false,

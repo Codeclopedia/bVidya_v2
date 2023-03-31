@@ -46,22 +46,19 @@ class MeetParticipantsDialog extends StatelessWidget {
             ],
           ),
           SizedBox(height: 2.h),
-          SizedBox(
-            height: 30.w,
-            child: SingleChildScrollView(
-              // constraints: BoxConstraints(minHeight: 40.h),
-              child: ListView.separated(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                separatorBuilder: (context, index) =>
-                    const Divider(color: Colors.grey),
-                itemCount: provider.memberList.length,
-                itemBuilder: (context, index) {
-                  return _buildMember(
-                      context, provider, provider.memberList[index]);
-                },
-              ),
+          SingleChildScrollView(
+            // constraints: BoxConstraints(minHeight: 40.h),
+            child: ListView.separated(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (context, index) =>
+                  const Divider(color: Colors.grey),
+              itemCount: provider.memberList.length,
+              itemBuilder: (context, index) {
+                return _buildMember(
+                    context, provider, provider.memberList[index]);
+              },
             ),
           ),
         ]),

@@ -520,6 +520,16 @@ class S {
     );
   }
 
+  /// `Accept Terms and Conditions to get started.`
+  String get signup_accept_terms_msg {
+    return Intl.message(
+      'Accept Terms and Conditions to get started.',
+      name: 'signup_accept_terms_msg',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enter OTP`
   String get signup_otp_caption {
     return Intl.message(
@@ -775,6 +785,16 @@ class S {
     return Intl.message(
       'New Message',
       name: 'home_btx_new_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Contacts`
+  String get home_btx_my_contacts {
+    return Intl.message(
+      'My Contacts',
+      name: 'home_btx_my_contacts',
       desc: '',
       args: [],
     );
@@ -1407,6 +1427,46 @@ class S {
       name: 'blearn_subscribed_courses',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Embark on a journey of discovery through our extensive catalog of 100's of courses, and unlock a world of knowledge waiting to be explored!`
+  String get blearn_search_courses {
+    return Intl.message(
+      'Embark on a journey of discovery through our extensive catalog of 100\'s of courses, and unlock a world of knowledge waiting to be explored!',
+      name: 'blearn_search_courses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Discover the perfect guide to elevate your learning experience, with our comprehensive search tool to help you find the ideal instructor for your educational journey!`
+  String get blearn_search_instructor {
+    return Intl.message(
+      'Discover the perfect guide to elevate your learning experience, with our comprehensive search tool to help you find the ideal instructor for your educational journey!',
+      name: 'blearn_search_instructor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course Subscribed`
+  String get blearn_course_subscribed_title {
+    return Intl.message(
+      'Course Subscribed',
+      name: 'blearn_course_subscribed_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Congratulations,you're now subsribed to {course_name} . Explore it to your full potential and achieving your goals with the help of this online course.`
+  String blearn_course_subscribed_msg(Object course_name) {
+    return Intl.message(
+      'Congratulations,you\'re now subsribed to $course_name . Explore it to your full potential and achieving your goals with the help of this online course.',
+      name: 'blearn_course_subscribed_msg',
+      desc: '',
+      args: [course_name],
     );
   }
 
@@ -3340,10 +3400,10 @@ class S {
     );
   }
 
-  /// `Share bVidya App`
+  /// `Share bvidya App`
   String get settingShare {
     return Intl.message(
-      'Share bVidya App',
+      'Share bvidya App',
       name: 'settingShare',
       desc: '',
       args: [],
@@ -3545,6 +3605,16 @@ class S {
     return Intl.message(
       'Preferred Time',
       name: 'preferredTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request received on`
+  String get requested_date_title {
+    return Intl.message(
+      'Request received on',
+      name: 'requested_date_title',
       desc: '',
       args: [],
     );
