@@ -215,12 +215,12 @@ class BchatGroupManager {
     return image ?? '';
   }
 
-  static Future chageGroupMuteStateFor(String userId, bool mute) async {
+  static Future chageGroupMuteStateFor(String groupId, bool mute) async {
     try {
       final chatparam = ChatSilentModeParam.remindType(
           mute ? ChatPushRemindType.ALL : ChatPushRemindType.NONE);
       await ChatClient.getInstance.pushManager.setConversationSilentMode(
-        conversationId: userId,
+        conversationId: groupId,
         param: chatparam,
         type: ChatConversationType.GroupChat,
       );

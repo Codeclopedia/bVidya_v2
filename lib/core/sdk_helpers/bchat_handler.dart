@@ -2,6 +2,7 @@
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
+import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
 // import '../utils/request_utils.dart';
 // import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
@@ -174,12 +175,26 @@ registerForContact() {
       },
     ));
   } catch (_) {}
+  try {
+    ChatClient.getInstance.groupManager.addEventHandler('group_key',
+        ChatGroupEventHandler(
+      onMemberJoinedFromGroup: (groupId, member) async {
+        if (member == ChatClient.getInstance.currentUserId) {
+          await BchatGroupManager.chageGroupMuteStateFor(groupId, false);
+        }
+      },
+    ));
+  } catch (_) {}
 }
 
 unregisterForContact() {
   try {
     // print('unregistering $key');
     ChatClient.getInstance.contactManager.removeEventHandler('contact_key');
+  } catch (_) {}
+  try {
+    // print('unregistering $key');
+    ChatClient.getInstance.groupManager.removeEventHandler('group_key');
   } catch (_) {}
 }
 

@@ -191,7 +191,10 @@ class ChatConversationChangeNotifier
             contact: contact,
             conversation: conv,
             lastMessage: lastMessage,
-            isOnline: updateStatus ? statuses[index] : null,
+            isOnline: (updateStatus &&
+                    contact.userId != AgoraConfig.bViydaAdmitUserId)
+                ? statuses[index]
+                : null,
             mute: await BChatContactManager.isMuteChatMuteStateFor(
                 contact.userId.toString()));
       } catch (e) {
