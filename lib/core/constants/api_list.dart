@@ -76,6 +76,7 @@ class ApiList {
   static const String getpaymentId = 'payment-order'; //POST
   static const String getpaymentRecord = 'payment-record'; //POST
   static const String purchasedCreditDetails = 'purchased-plans-detail';
+  static const String purchasePromotionalsCredits = 'promotional-order'; //POST
 
   //Settings
   static const String reportProblem = 'report'; //POST

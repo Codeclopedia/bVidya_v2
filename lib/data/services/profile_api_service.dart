@@ -391,6 +391,25 @@ class ProfileApiService {
     }
   }
 
+  Future<BaseResponse> purchasePromotionalOffer(
+      String token, String planId) async {
+    _dio.options.headers['X-Auth-Token'] = token;
+    final data = {"plan_id": planId};
+
+    try {
+      final response = await _dio
+          .post(baseUrlApi + ApiList.purchasePromotionalsCredits, data: data);
+      // print('response ${response.data} . ${response.realUri}');
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      } else {
+        return BaseResponse(status: 'error', message: response.statusMessage);
+      }
+    } catch (e) {
+      print("error $e");
+      return BaseResponse(status: 'error');
+    }
+  }
   // Future<InstructorScheduledClasses> getSchduledClassesInstructor(
   //     String token) async {
   //   _dio.options.headers['X-Auth-Token'] = token;

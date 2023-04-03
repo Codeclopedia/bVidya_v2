@@ -197,49 +197,41 @@ class DashBoardBLiveScreen extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 10.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(2.w),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 3.w, top: 2.h),
-                            child: Text(
-                              S.current.td_subs,
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: kFontFamily,
-                                  color: AppColors.primaryColor),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
-                            child: Text(
-                              (followers ?? 0).toString(),
-                              // S.current.td_total_subs,
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontFamily: kFontFamily,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primaryColor),
-                            ),
-                          ),
-                        ],
+                    height: 10.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(2.w),
                       ),
-                      SizedBox(width: 5.w),
-                    ],
-                  ),
-                ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 3.w, top: 2.h),
+                          child: Text(
+                            S.current.td_subs,
+                            style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: kFontFamily,
+                                color: AppColors.primaryColor),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 3.w, top: 0.4.h),
+                          child: Text(
+                            (followers ?? 0).toString(),
+                            // S.current.td_total_subs,
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                fontFamily: kFontFamily,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primaryColor),
+                          ),
+                        ),
+                      ],
+                    )),
               ),
               Positioned(
                 right: 0,

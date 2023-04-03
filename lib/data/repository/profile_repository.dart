@@ -124,6 +124,15 @@ class ProfileRepository {
     }
   }
 
+  Future<BaseResponse> purchasePromotionalOffer(String planId) async {
+    final result = await _api.purchasePromotionalOffer(_authToken, planId);
+    if (result.status == success && result.body != null) {
+      return result;
+    } else {
+      return result;
+    }
+  }
+
   // Future<ScheduledClassBody> getschduledClassesAsStudent() async {
   //   final result = await _api.getSchduledClassesStudent(_authToken);
   //   if (result.status == success && result.body != null) {

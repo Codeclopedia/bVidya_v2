@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -64,6 +65,8 @@ class ChatScreen extends HookConsumerWidget {
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
   late Contacts _me;
+
+  final videoInfo = FlutterVideoInfo();
 
   // User? _me;
 
@@ -384,13 +387,30 @@ class ChatScreen extends HookConsumerWidget {
       );
       content = 'Photo';
     } else if (attFile.messageType == MessageType.VIDEO) {
-      msg = ChatMessage.createVideoSendMessage(
-        targetId: model.contact.userId.toString(),
-        filePath: attFile.file.path,
-        thumbnailLocalPath: attFile.file.thumbPath,
-        displayName: displayName,
-        fileSize: attFile.file.size.toInt(),
-      );
+      var info = await videoInfo.getVideoInfo(attFile.file.path);
+      if (info != null) {
+        print(
+            'Video Info=> d:${info.duration}, w:${info.width}, h:${info.height} ${attFile.file.path}');
+        msg = ChatMessage.createVideoSendMessage(
+          targetId: model.contact.userId.toString(),
+          filePath: attFile.file.path,
+          thumbnailLocalPath: attFile.file.thumbPath,
+          displayName: displayName,
+          fileSize: info.filesize ?? attFile.file.size.toInt(),
+          duration: (info.duration ?? 0) ~/ 1000,
+          width: (info.width ?? 0).toDouble(),
+          height: (info.height ?? 0).toDouble(),
+        );
+      } else {
+        msg = ChatMessage.createVideoSendMessage(
+            targetId: model.contact.userId.toString(),
+            filePath: attFile.file.path,
+            thumbnailLocalPath: attFile.file.thumbPath,
+            displayName: displayName,
+            fileSize: attFile.file.size.toInt()
+            // ,
+            );
+      }
       content = 'Video';
     } else if (attFile.messageType == MessageType.VOICE) {
       msg = ChatMessage.createVoiceSendMessage(

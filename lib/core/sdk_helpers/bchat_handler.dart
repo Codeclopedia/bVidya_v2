@@ -230,10 +230,10 @@ registerGroupForNewMessage(
             onCmdMessage(bodies);
           },
           onGroupMessageRead: (groupMessageAcks) {
-            for (var m in groupMessageAcks) {
-              print('m:${m.ackId}, ${m.from} , ${m.messageId} ${m.readCount}');
-            }
-            // onUpdate();
+            // for (var m in groupMessageAcks) {
+            //   print('m:${m.ackId}, ${m.from} , ${m.messageId} ${m.readCount}');
+            // }
+            onUpdate();
           },
           onReadAckForGroupMessageUpdated: () {
             onUpdate();

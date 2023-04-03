@@ -1,5 +1,8 @@
+import 'package:bvidya/data/models/response/base_response.dart';
+import 'package:bvidya/ui/dialog/ok_dialog.dart';
 import 'package:flutter/gestures.dart';
 
+import '../../../dialog/basic_dialog.dart';
 import '/controller/profile_providers.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
@@ -35,6 +38,7 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
     return BaseNoScrollSettings(
         bodyContent: Consumer(builder: (context, ref, child) {
       final subscriptionPlansData = ref.watch(subscriptionPlansProvider);
+      final selectedPlanIndex = ref.watch(selectedSubscriptionIndex);
       return Stack(
         children: [
           Padding(
@@ -69,8 +73,15 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            ref.read(selectedSubscriptionIndex.notifier).state =
-                                index;
+                            if (ref.read(selectedSubscriptionIndex) == index) {
+                              ref
+                                  .read(selectedSubscriptionIndex.notifier)
+                                  .state = -1;
+                            } else {
+                              ref
+                                  .read(selectedSubscriptionIndex.notifier)
+                                  .state = index;
+                            }
                           },
                           child: subscriptionPlantile(
                             planName: "${data.plans?[index].name} Plan",
@@ -142,7 +153,9 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                             subscriptionPlansData.when(
                               data: (data) {
                                 return Text(
-                                  "₹ ${data?.plans?[ref.watch(selectedSubscriptionIndex)].price}",
+                                  data?.plans?[selectedPlanIndex].price == 0
+                                      ? 'Free'
+                                      : "₹ ${data?.plans?[selectedPlanIndex].price}",
                                   style: textStyleHeading,
                                 );
                               },
@@ -188,18 +201,52 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                         ElevatedButton(
                           onPressed: () async {
                             showLoading(ref);
+                            final subscriptionPlanData = await ref
+                                .read(profileRepositoryProvider)
+                                .getSubscriptionPlans();
+                            final paymentPrice = subscriptionPlanData
+                                    .plans?[selectedPlanIndex].price ??
+                                1;
+                            final BaseResponse res;
                             try {
-                              await paymentProcess(
-                                  _razorpay,
-                                  ref,
-                                  subscriptionPlansData
-                                          .value
-                                          ?.plans?[ref
-                                              .read(selectedSubscriptionIndex)]
-                                          .id
-                                          .toString() ??
-                                      "");
+                              if (paymentPrice == 0) {
+                                res = await ref
+                                    .read(profileRepositoryProvider)
+                                    .purchasePromotionalOffer(
+                                        subscriptionPlanData
+                                                .plans?[selectedPlanIndex].id
+                                                .toString() ??
+                                            "0");
+                                hideLoading(ref);
+                                if (res.status == 'success') {
+                                  // ignore: use_build_context_synchronously
+                                  return showOkDialog(
+                                    context,
+                                    "Purchase Completed",
+                                    'Credits are successfully added to your account.',
+                                    positiveAction: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                } else {
+                                  AppSnackbar.instance.error(
+                                      context, res.message ?? S.current.error);
+                                }
+                              } else {
+                                res = await paymentProcess(
+                                    _razorpay,
+                                    ref,
+                                    subscriptionPlansData
+                                            .value
+                                            ?.plans?[ref.read(
+                                                selectedSubscriptionIndex)]
+                                            .id
+                                            .toString() ??
+                                        "");
+                              }
+
                               ref.refresh(creditHistoryProvider);
+                              ref.refresh(subscriptionPlansProvider);
                             } catch (e) {
                               hideLoading(ref);
                               EasyLoading.showError(S.current.error);
@@ -359,7 +406,8 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 3.w, horizontal: 4.w),
         decoration: BoxDecoration(
-            color: AppColors.cardWhite,
+            color:
+                price == '₹ 0' ? AppColors.yellowAccent : AppColors.cardWhite,
             boxShadow: ref.watch(selectedSubscriptionIndex) == index
                 ? [
                     BoxShadow(
@@ -396,8 +444,9 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
                     SizedBox(
                       width: 2.w,
                     ),
-                    SizedBox(
-                      width: 25.w,
+                    ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minWidth: 20.w, maxWidth: 35.w),
                       child: Text(
                         planName,
                         style: textStyleBlack,
@@ -437,7 +486,7 @@ class SubscriptionPlansScreen extends HookConsumerWidget {
               ],
             ),
             Text(
-              price,
+              price == "₹ 0" ? 'Free' : price,
               style: textStyleHeading,
             )
           ],
