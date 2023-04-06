@@ -176,6 +176,7 @@ class CreateNewGroupScreen extends HookWidget {
                       Consumer(builder: (context, ref, child) {
                         return TextField(
                           controller: _controller,
+                          maxLength: 128,
                           onSubmitted: (value) {
                             createGroup(context, value, ref);
                           },

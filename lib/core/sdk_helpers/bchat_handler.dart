@@ -3,8 +3,10 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
 import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
+import 'package:bvidya/core/ui_core.dart';
 // import '../utils/request_utils.dart';
 // import '/controller/providers/bchat/chat_conversation_list_provider.dart';
+import '../state.dart';
 import '/controller/providers/bchat/chat_messeges_provider.dart';
 import '/core/sdk_helpers/typing_helper.dart';
 // import '/data/models/models.dart';
@@ -209,6 +211,7 @@ registerForNewMessage(String key, Function(List<ChatMessage>) onNewMessages) {
 
 registerGroupForNewMessage(
     String key,
+    String target,
     Function(List<ChatMessage>) onNewMessages,
     Function() onUpdate,
     Function(List<ChatCmdMessageBody>) onCmdMessage) {
@@ -220,9 +223,11 @@ registerGroupForNewMessage(
           onMessagesReceived: (msgs) => onNewMessages(msgs),
           onCmdMessagesReceived: (messages) {
             List<ChatCmdMessageBody> bodies = [];
+
             for (var msg in messages) {
               if (msg.chatType == ChatType.GroupChat &&
-                  msg.body.type == MessageType.CMD) {
+                  msg.body.type == MessageType.CMD &&
+                  msg.to == target) {
                 ChatCmdMessageBody body = msg.body as ChatCmdMessageBody;
                 bodies.add(body);
               }

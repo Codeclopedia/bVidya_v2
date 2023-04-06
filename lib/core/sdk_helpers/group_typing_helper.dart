@@ -51,6 +51,7 @@ class GroupTypingHelper extends StateNotifier<List<GroupTypingUser>> {
   void onReceiveCommandMessage(List<ChatCmdMessageBody> chats) {
     final users = [];
     for (var msg in chats) {
+      
       if (msg.action.isNotEmpty) {
         final map = jsonDecode(msg.action);
         // print('user=> ${map}');

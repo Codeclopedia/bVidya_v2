@@ -141,7 +141,34 @@ class GroupChatScreen extends HookConsumerWidget {
   // }
 
   _addHandler(WidgetRef ref) async {
-    registerGroupForNewMessage('group_chat_screen', (msg) {
+    try {
+      ChatClient.getInstance.chatManager.addMessageEvent(
+          "group_chat_callback",
+          ChatMessageEvent(
+            onSuccess: (msgId, msg) {
+              ref.read(sendingGroupFileProgress(msgId).notifier).state = 0;
+              // _addLogToConsole("send message succeed");
+            },
+            onProgress: (msgId, progress) {
+              ref.read(sendingGroupFileProgress(msgId).notifier).state =
+                  progress;
+              // _addLogToConsole("send message succeed");
+            },
+            onError: (msgId, msg, error) {
+              ref.read(sendingGroupFileProgress(msgId).notifier).state = 0;
+              BuildContext? cntx = navigatorKey.currentContext;
+              if (cntx != null
+                  // && 505 != error.code
+                  ) {
+                AppSnackbar.instance.error(cntx, error.description);
+              }
+              // _addLogToConsole(
+              //   "send message failed, code: ${error.code}, desc: ${error.description}",
+              // );
+            },
+          ));
+    } catch (_) {}
+    registerGroupForNewMessage('group_chat_screen', model.id, (msg) {
       // print('msg  message=> ${msg.length}');
       onMessagesReceived(msg, ref);
     }, () {
@@ -154,6 +181,10 @@ class GroupChatScreen extends HookConsumerWidget {
   }
 
   void disposeAll() {
+    try {
+      ChatClient.getInstance.chatManager
+          .removeMessageEvent("group_chat_callback");
+    } catch (_) {}
     unregisterForNewMessage('group_chat_screen');
     // ChatClient.getInstance.chatManager.removeEventHandler('group_chat_screen');
   }
@@ -695,45 +726,46 @@ class GroupChatScreen extends HookConsumerWidget {
         msg.attributes?.addAll({'reply_of': replyOf.toJson()});
         ref.read(chatModelProvider).clearReplyBox();
       }
-      msg.setMessageStatusCallBack(
-        MessageStatusCallBack(
-          onSuccess: () {
-            if (isFile) {
-              ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
-            }
-            // hideLoading(ref);
 
-            // FCMApiService.instance.sendChatPush(
-            //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
-            // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
-          },
-          onError: (error) {
-            // hideLoading(ref);
-            print('Error :${error.code} -> ${error.description}');
-            if (isFile) {
-              ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
-            }
-            BuildContext? cntx = navigatorKey.currentContext;
-            if (cntx != null
-                // && 505 != error.code
-                ) {
-              AppSnackbar.instance.error(cntx, error.description);
-            }
+      // msg.setMessageStatusCallBack(
+      //   MessageStatusCallBack(
+      //     onSuccess: () {
+      //       if (isFile) {
+      //         ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
+      //       }
+      //       // hideLoading(ref);
 
-            // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
-          },
-          onProgress: (progress) {
-            // hideLoading(ref);
-            if (isFile) {
-              ref.read(sendingGroupFileProgress(msg.msgId).notifier).state =
-                  progress;
-            }
-            // ref.read(sendingGroupFileProgress.notifier).state = progress;
-            // print('progress=> $progress');
-            // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
-          },
-        ),
-      );
+      //       // FCMApiService.instance.sendChatPush(
+      //       //     msg, 'toToken', _myUserId, _me!.name, NotificationType.chat);
+      //       // Occurs when the message sending succeeds. You can update the message and add other operations in this callback.
+      //     },
+      //     onError: (error) {
+      //       // hideLoading(ref);
+      //       print('Error :${error.code} -> ${error.description}');
+      //       if (isFile) {
+      //         ref.read(sendingGroupFileProgress(msg.msgId).notifier).state = 0;
+      //       }
+      //       BuildContext? cntx = navigatorKey.currentContext;
+      //       if (cntx != null
+      //           // && 505 != error.code
+      //           ) {
+      //         AppSnackbar.instance.error(cntx, error.description);
+      //       }
+
+      //       // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
+      //     },
+      //     onProgress: (progress) {
+      //       // hideLoading(ref);
+      //       if (isFile) {
+      //         ref.read(sendingGroupFileProgress(msg.msgId).notifier).state =
+      //             progress;
+      //       }
+      //       // ref.read(sendingGroupFileProgress.notifier).state = progress;
+      //       // print('progress=> $progress');
+      //       // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
+      //     },
+      //   ),
+      // );
 
       msg.needGroupAck = true; //todo uncomment when pricing
 

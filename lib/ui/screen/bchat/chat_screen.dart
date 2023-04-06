@@ -83,6 +83,7 @@ class ChatScreen extends HookConsumerWidget {
       final f = ref.read(bChatMessagesProvider(model).notifier);
       f.init(ref);
       _loadMe();
+      addHandler(ref);
       _scrollController.addListener(() => _onScroll(_scrollController, ref));
       registerChatCallback('chat_screen', f, (msgs) {
         onMessagesReceived(msgs, ref);
@@ -95,6 +96,11 @@ class ChatScreen extends HookConsumerWidget {
         }
       });
       return () {
+        try {
+          ChatClient.getInstance.chatManager
+              .removeMessageEvent("_chat_callback");
+        } catch (_) {}
+
         unregisterChatCallback('chat_screen');
         _scrollController.dispose();
       };
@@ -153,6 +159,35 @@ class ChatScreen extends HookConsumerWidget {
       // _myChatPeerUserId =
       //     ChatClient.getInstance.currentUserId ?? user.id.toString();
     }
+  }
+
+  addHandler(WidgetRef ref) {
+    try {
+      ChatClient.getInstance.chatManager.addMessageEvent(
+          "_chat_callback",
+          ChatMessageEvent(
+            onSuccess: (msgId, msg) {
+              ref.read(sendingFileProgress(msgId).notifier).state = 0;
+              // _addLogToConsole("send message succeed");
+            },
+            onProgress: (msgId, progress) {
+              ref.read(sendingFileProgress(msgId).notifier).state = progress;
+              // _addLogToConsole("send message succeed");
+            },
+            onError: (msgId, msg, error) {
+              ref.read(sendingFileProgress(msgId).notifier).state = 0;
+              BuildContext? cntx = navigatorKey.currentContext;
+              if (cntx != null
+                  // && 505 != error.code
+                  ) {
+                AppSnackbar.instance.error(cntx, error.description);
+              }
+              // _addLogToConsole(
+              //   "send message failed, code: ${error.code}, desc: ${error.description}",
+              // );
+            },
+          ));
+    } catch (_) {}
   }
 
   Widget _chatList(BuildContext context) {
@@ -391,6 +426,7 @@ class ChatScreen extends HookConsumerWidget {
       if (info != null) {
         print(
             'Video Info=> d:${info.duration}, w:${info.width}, h:${info.height} ${attFile.file.path}');
+        print('Video FILEPATH=> ${attFile.file.path}');
         msg = ChatMessage.createVideoSendMessage(
           targetId: model.contact.userId.toString(),
           filePath: attFile.file.path,
@@ -733,35 +769,35 @@ class ChatScreen extends HookConsumerWidget {
       }
 
       // print('pre:msgId ${msg.msgId}');
-      msg.setMessageStatusCallBack(
-        MessageStatusCallBack(
-          onSuccess: () {
-            if (isFile) {
-              ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
-            }
-          },
-          onError: (error) {
-            if (isFile) {
-              // hideLoading(ref);
-              ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
-            }
-            BuildContext? cntx = navigatorKey.currentContext;
-            if (cntx != null) {
-              AppSnackbar.instance.error(cntx, error.description);
-            }
-            // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
-          },
-          onProgress: (progress) {
-            if (isFile) {
-              // showLoading(ref);
-              ref.read(sendingFileProgress(msg.msgId).notifier).state =
-                  progress;
-            }
+      // msg.setMessageStatusCallBack(
+      //   MessageStatusCallBack(
+      //     onSuccess: () {
+      //       if (isFile) {
+      //         ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
+      //       }
+      //     },
+      //     onError: (error) {
+      //       if (isFile) {
+      //         // hideLoading(ref);
+      //         ref.read(sendingFileProgress(msg.msgId).notifier).state = 0;
+      //       }
+      //       BuildContext? cntx = navigatorKey.currentContext;
+      //       if (cntx != null) {
+      //         AppSnackbar.instance.error(cntx, error.description);
+      //       }
+      //       // Occurs when the message sending fails. You can update the message status and add other operations in this callback.
+      //     },
+      //     onProgress: (progress) {
+      //       if (isFile) {
+      //         // showLoading(ref);
+      //         ref.read(sendingFileProgress(msg.msgId).notifier).state =
+      //             progress;
+      //       }
 
-            // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
-          },
-        ),
-      );
+      //       // For attachment messages such as image, voice, file, and video, you can get a progress value for uploading or downloading them in this callback.
+      //     },
+      //   ),
+      // );
       // final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
       final chat = await ref
           .read(bChatMessagesProvider(model).notifier)
@@ -996,7 +1032,7 @@ class ChatScreen extends HookConsumerWidget {
                 IconButton(
                   onPressed: () async {
                     ChatMessage message = selectedItems.first;
-                    bool isOwnMessage = message.from != model.id;
+                    // bool isOwnMessage = message.from != model.id;
                     ref
                         .read(chatModelProvider.notifier)
                         .setReplyOn(message, model.contact.name);
@@ -1178,7 +1214,9 @@ class ChatScreen extends HookConsumerWidget {
 
   void _markRead(ChatMessage message) async {
     try {
-      await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+      if (!message.hasReadAck) {
+        await ChatClient.getInstance.chatManager.sendMessageReadAck(message);
+      }
       await model.conversation?.markMessageAsRead(message.msgId);
     } catch (_) {}
   }
