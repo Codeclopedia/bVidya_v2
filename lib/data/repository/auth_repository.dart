@@ -3,6 +3,7 @@ import 'dart:convert';
 // import '/controller/providers/user_auth_provider.dart';
 // import '/core/state.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:linkable/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/models.dart';
@@ -69,8 +70,8 @@ class AuthRepository {
   }
 
 //Sign up -1
-  Future<String?> generateRegistrationOtp(String phone) async {
-    final result = await api.generateRegistrationOtp(phone);
+  Future<String?> generateRegistrationOtp(String phone, String email) async {
+    final result = await api.generateRegistrationOtp(phone, email);
     if (result.status != null && result.status == successfull) {
       _mobileNumber = phone;
       return null;
@@ -79,12 +80,13 @@ class AuthRepository {
     return result.message ?? 'Unknown error occurred!!';
   }
 
-  Future<String?> reSendRegistrationOtp() async {
-    if (_mobileNumber == null) {
+  Future<String?> reSendRegistrationOtp(
+      String mobileNumber, String email) async {
+    if (mobileNumber == null) {
       return 'Please enter valid mobile number';
     }
 
-    final result = await api.generateRegistrationOtp(_mobileNumber!);
+    final result = await api.generateRegistrationOtp(mobileNumber, email);
     if (result.status != null &&
         result.status != null &&
         result.status == successfull) {

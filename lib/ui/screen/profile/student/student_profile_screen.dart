@@ -2,6 +2,8 @@
 
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:spring/spring.dart';
+
 import '/core/utils.dart';
 import '/core/utils/common.dart';
 
@@ -38,22 +40,6 @@ class StudentProfileScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // SizedBox(height: 0.4.h),
-              // Center(
-              //   child: Consumer(
-              //     builder: (context, ref, child) {
-              //       return Text(
-              //         user?.email ?? '',
-              //         style: TextStyle(
-              //           fontSize: 8.sp,
-              //           fontWeight: FontWeight.w600,
-              //           color: AppColors.primaryColor,
-              //           fontFamily: kFontFamily,
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
               creditHistoryData.when(
                 data: (data) {
                   if (data == null) {
@@ -74,6 +60,21 @@ class StudentProfileScreen extends ConsumerWidget {
                             "You have ${data.avilableCourseCredits ?? 0} Credits",
                             style: textStyleBlack.copyWith(fontSize: 10.sp),
                           ),
+                          SizedBox(
+                            width: 3.w,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              ref.refresh(creditHistoryProvider);
+                            },
+                            child: Spring.rotate(
+                              child: Icon(
+                                Icons.replay_circle_filled_sharp,
+                                size: 4.w,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ],

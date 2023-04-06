@@ -1,7 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
-
 import '/core/utils/common.dart';
 import 'package:flutter/gestures.dart';
 import 'package:pinput/pinput.dart';
@@ -63,6 +59,9 @@ class SignUpScreen extends HookWidget {
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.name,
                         validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return S.current.signup_fullname_empty;
+                          }
                           return null;
                         },
                         decoration: inputDirectionStyle.copyWith(
@@ -159,10 +158,33 @@ class SignUpScreen extends HookWidget {
                         ),
                       ),
                       SizedBox(height: 2.h),
-                      Text(
-                        S.current.signup_mobile_caption,
-                        style: inputBoxCaptionStyle(context),
-                      ),
+                      Consumer(builder: (context, ref, child) {
+                        final otpSent = ref.watch(signUpOTPGeneratedProvider);
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              S.current.signup_mobile_caption,
+                              style: inputBoxCaptionStyle(context),
+                            ),
+                            const Spacer(),
+                            if (otpSent)
+                              InkWell(
+                                onTap: () {
+                                  ref
+                                      .read(signUpOTPGeneratedProvider.notifier)
+                                      .state = !otpSent;
+                                },
+                                child: Text(
+                                  S.current.signup_field_edit,
+                                  style: textStyleHeading.copyWith(
+                                      fontSize: 11.sp),
+                                ),
+                              )
+                          ],
+                        );
+                      }),
                       SizedBox(height: 1.h),
                       Consumer(
                         builder: (context, ref, child) {
@@ -177,7 +199,10 @@ class SignUpScreen extends HookWidget {
                               if (_formKey.currentState?.validate() == true) {
                                 if (!otpSent) {
                                   _sendOtp(
-                                      context, ref, mobileTextController.text);
+                                      context,
+                                      ref,
+                                      mobileTextController.text,
+                                      emailTextController.text);
                                 } else {
                                   if (termsAccepted) {
                                     _doRegistration(
@@ -220,6 +245,8 @@ class SignUpScreen extends HookWidget {
                         },
                       ),
                       SizedBox(height: 2.h),
+                      _buildOtpBox(
+                          mobileTextController.text, emailTextController.text),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -255,12 +282,14 @@ class SignUpScreen extends HookWidget {
                                                 }),
                                       style: textStyleBlack.copyWith(
                                           fontSize: 10.sp,
+                                          decoration: TextDecoration.underline,
+                                          decorationStyle:
+                                              TextDecorationStyle.solid,
                                           color: AppColors.primaryColor))
                                 ])),
                           )
                         ],
                       ),
-                      _buildOtpBox(),
                       SizedBox(height: 2.h),
                       Consumer(
                         builder: (context, ref, child) {
@@ -274,8 +303,11 @@ class SignUpScreen extends HookWidget {
                               onPressed: () async {
                                 if (_formKey.currentState?.validate() == true) {
                                   if (!otpSent) {
-                                    _sendOtp(context, ref,
-                                        mobileTextController.text);
+                                    _sendOtp(
+                                        context,
+                                        ref,
+                                        mobileTextController.text,
+                                        emailTextController.text);
                                   } else {
                                     if (termsAccepted) {
                                       _doRegistration(
@@ -336,10 +368,12 @@ class SignUpScreen extends HookWidget {
     );
   }
 
-  void _sendOtp(BuildContext context, WidgetRef ref, String mobile) async {
+  void _sendOtp(
+      BuildContext context, WidgetRef ref, String mobile, String email) async {
     showLoading(ref);
-    final result =
-        await ref.read(loginRepositoryProvider).generateRegistrationOtp(mobile);
+    final result = await ref
+        .read(loginRepositoryProvider)
+        .generateRegistrationOtp(mobile, email);
     hideLoading(ref);
     if (result != null) {
       AppSnackbar.instance.error(context, result);
@@ -378,7 +412,7 @@ class SignUpScreen extends HookWidget {
     }
   }
 
-  _buildOtpBox() {
+  _buildOtpBox(String phoneNumber, String email) {
     return Consumer(
       builder: (context, ref, child) {
         final timerRunning = ref.watch(signUpTimerProvider).running;
@@ -423,7 +457,8 @@ class SignUpScreen extends HookWidget {
                                   showLoading(ref);
                                   final result = await ref
                                       .read(loginRepositoryProvider)
-                                      .reSendRegistrationOtp();
+                                      .reSendRegistrationOtp(
+                                          phoneNumber, email);
                                   hideLoading(ref);
                                   if (result != null) {
                                     AppSnackbar.instance.error(context, result);

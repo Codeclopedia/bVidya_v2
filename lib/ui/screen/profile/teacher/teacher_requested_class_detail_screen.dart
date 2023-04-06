@@ -145,13 +145,13 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                                         final arg = {
                                           'classID': requestedClass.id,
                                           'accepted': true,
-                                          'remark': 'null'
+                                          'remark': 'Accepted'
                                         };
                                         final res = await ref
                                             .read(profileRepositoryProvider)
                                             .updateClassStatus(arg);
                                         hideLoading(ref);
-                                        print(res.status);
+
                                         if (res.status == "success") {
                                           ref.refresh(bmeetClassesProvider);
                                           return showOkDialog(
@@ -343,8 +343,8 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                             .read(profileRepositoryProvider)
                             .updateClassStatus(arg);
                         hideLoading(ref);
-                        print(res);
-                        if (res == "success") {
+
+                        if (res.status == "success") {
                           Navigator.popUntil(context,
                               ModalRoute.withName(RouteList.teacherSchedule));
 

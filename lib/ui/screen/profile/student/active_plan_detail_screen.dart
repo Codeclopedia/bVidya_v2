@@ -220,8 +220,10 @@ class ActivePlanDetailScreen extends StatelessWidget {
                                                   false)
                                                 Text(
                                                   "Credits Transaction",
-                                                  style: textStyleBlack
-                                                      .copyWith(fontSize: 3.w),
+                                                  style:
+                                                      textStyleBlack.copyWith(
+                                                          fontSize: 3.w,
+                                                          color: Colors.grey),
                                                 ),
                                               SizedBox(height: 2.w),
                                               ListView.builder(
@@ -342,37 +344,52 @@ class ActivePlanDetailScreen extends StatelessWidget {
   // }
 
   Widget creditUsedTile(String courseName, DateTime date, int creditUsed) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              courseName,
-              style: textStyleBlack.copyWith(fontSize: 4.w),
-            ),
-            Text(
-              DateFormat.yMMMEd().format(date),
-              style: textStyleBlack.copyWith(
-                  fontSize: 2.w,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500),
-            )
-          ],
-        ),
-        Row(
-          children: [
-            getPngIcon('coin.png', width: 2.w),
-            SizedBox(width: 1.w),
-            Text(
-              creditUsed.toString(),
-              style: textStyleCaption.copyWith(fontSize: 4.w),
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2.w),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 80.w,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      courseName,
+                      style: textStyleBlack.copyWith(fontSize: 4.w),
+                    ),
+                    Text(
+                      DateFormat.yMMMEd().format(date),
+                      style: textStyleBlack.copyWith(
+                          fontSize: 2.w,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 10.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    getPngIcon('coin.png', width: 4.w),
+                    SizedBox(width: 1.w),
+                    Text(
+                      creditUsed.toString(),
+                      style: textStyleCaption.copyWith(fontSize: 4.w),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+        ],
+      ),
     );
   }
 

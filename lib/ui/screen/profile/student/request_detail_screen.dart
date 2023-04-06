@@ -53,17 +53,17 @@ class RequestDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 S.current.class_request_title,
-                                style: textStyleHeading,
+                                style: textStyleHeading.copyWith(
+                                    fontSize: 12.5.sp),
                               ),
                               SizedBox(
                                 height: 1.w,
                               ),
                               Text(
                                 requestdata.instructorName ?? "",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold),
+                                style: textStyleBlack.copyWith(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w700),
                               ),
                               ListView(
                                 shrinkWrap: true,
@@ -113,6 +113,7 @@ class RequestDetailScreen extends StatelessWidget {
                                           .read(profileRepositoryProvider)
                                           .deleteClassRequest(
                                               requestdata.id.toString());
+
                                       if (res.status == 'success') {
                                         EasyLoading.showInfo(res.message ??
                                             'Request deleted successfully');
@@ -120,6 +121,7 @@ class RequestDetailScreen extends StatelessWidget {
                                         AppSnackbar.instance.error(context,
                                             res.message ?? S.current.error);
                                       }
+                                      ref.refresh(requestedClassesProvider);
                                       Navigator.pop(context);
                                     }, negativeAction: () async {
                                       // await handler(false);

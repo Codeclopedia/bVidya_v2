@@ -99,9 +99,11 @@ class ApiAuthService {
   }
 
 //Sign up -1
-  Future<LoginResponse> generateRegistrationOtp(String mobileNumber) async {
+  Future<LoginResponse> generateRegistrationOtp(
+      String mobileNumber, String email) async {
     dynamic data = {
       'phone': mobileNumber,
+      'email': email,
     };
     try {
       final response = await _dio.post(

@@ -313,33 +313,39 @@ class BLearnHomeScreen extends StatelessWidget {
 
   Widget _buildContent(
       BuildContext context, BlearnHomeBody body, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 2.h),
-          _buildOngoing(body.banners),
-          _buildExploreCaption(context),
-          _buildCourses(body.homeCategories),
-          _buildRecommended(),
-          _buildCriteriaCaption(),
-          _buildCriteriaList(
-              trendingcourses: body.trendingCourses,
-              mostViewedcourses: body.mostViewedCourses,
-              topcourses: body.topCourses),
-          _buildWebinarTitle(),
-          _buildWebinarContent(body.upcomingWebinars, ref),
-          _buildLearnCaption(context, ref),
-          _buildLearnList(body.bestInstructors),
-          // _buildComplementary(),
-          // _buildComplementaryList(),
-          _buildEnroll(context),
-          _buildRecentCaption(context, ref),
-          _buildRecentList(body.recentlyAddedCourses),
-          _buildTestimonialCaption(),
-          _buildTestimonialList(body.testimonials),
-          SizedBox(height: 2.h),
-        ],
+    return RefreshIndicator(
+      onRefresh: () {
+        ref.refresh(bLearnHomeProvider);
+        return Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 2.h),
+            _buildOngoing(body.banners),
+            _buildExploreCaption(context),
+            _buildCourses(body.homeCategories),
+            _buildRecommended(),
+            _buildCriteriaCaption(),
+            _buildCriteriaList(
+                trendingcourses: body.trendingCourses,
+                mostViewedcourses: body.mostViewedCourses,
+                topcourses: body.topCourses),
+            _buildWebinarTitle(),
+            _buildWebinarContent(body.upcomingWebinars, ref),
+            _buildLearnCaption(context, ref),
+            _buildLearnList(body.bestInstructors),
+            // _buildComplementary(),
+            // _buildComplementaryList(),
+            _buildEnroll(context),
+            _buildRecentCaption(context, ref),
+            _buildRecentList(body.recentlyAddedCourses),
+            _buildTestimonialCaption(),
+            _buildTestimonialList(body.testimonials),
+            SizedBox(height: 2.h),
+          ],
+        ),
       ),
     );
   }

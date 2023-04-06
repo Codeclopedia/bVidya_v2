@@ -219,7 +219,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 return loading && conversationList.isEmpty
                     ? buildLoading
                     : conversationList.isEmpty
-                        ? buildEmptyPlaceHolder('No Converasations')
+                        ? Center(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 30.w),
+                                getLottieIcon('21559-no-message.json',
+                                    height: 40.w,
+                                    width: 40.w,
+                                    fit: BoxFit.contain),
+                                Text(
+                                  'No Conversations',
+                                  style: TextStyle(
+                                    fontFamily: kFontFamily,
+                                    color: Colors.grey,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
                         : ListView.separated(
                             shrinkWrap: false,
                             physics: const BouncingScrollPhysics(),

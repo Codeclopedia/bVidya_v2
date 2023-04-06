@@ -36,13 +36,13 @@ class ScheduledClassMeetingScreen extends HookWidget {
       resizeToAvoidBottomInset: false,
       body: BaseNoScrollSettings(
           bodyContent: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+        padding: EdgeInsets.symmetric(horizontal: 6.w),
         child: Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 6.w),
+              SizedBox(height: 10.w),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -50,13 +50,12 @@ class ScheduledClassMeetingScreen extends HookWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(S.current.scheduled_class_join_title,
-                          style: textStyleHeading),
-                      SizedBox(height: 1.w),
+                          style: textStyleHeading.copyWith(fontSize: 10.sp)),
                       Text(scheduledClassDetails.topic ?? "",
                           style: textStyleHeading.copyWith(
-                              fontSize: 30.sp, fontWeight: FontWeight.w900)),
-                      Text(scheduledClassDetails.description ?? "",
-                          style: textStyleHeading.copyWith(fontSize: 15.sp)),
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.inputHintText)),
                       SizedBox(height: 5.w),
                       Text(scheduledClassDetails.instructor?.name ?? "",
                           style: textStyleCaption.copyWith(
@@ -116,7 +115,8 @@ class ScheduledClassMeetingScreen extends HookWidget {
               Consumer(
                 builder: (context, ref, child) {
                   return ElevatedButton(
-                    style: elevatedButtonTextStyle,
+                    style: elevatedButtonTextStyle.copyWith(
+                        fixedSize: MaterialStatePropertyAll(Size(100.w, 14.w))),
                     onPressed: () {
                       final camOff = ref.watch(videoOffSchJoinMeetingProvider);
                       final micOff = ref.watch(muteJoinSchMeetingProvider);
@@ -128,11 +128,15 @@ class ScheduledClassMeetingScreen extends HookWidget {
                       joinScheduledClass(
                           context, ref, meetingId, camOff, micOff);
                     },
-                    child: Text(S.current.bmeet_btn_join),
+                    child: Text(
+                      S.current.bmeet_btn_join,
+                      style: textStyleBlack.copyWith(
+                          color: AppColors.cardWhite, fontSize: 12.sp),
+                    ),
                   );
                 },
               ),
-              SizedBox(height: 2.h),
+              SizedBox(height: 2.w),
             ]),
       )),
     );

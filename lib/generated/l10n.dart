@@ -480,6 +480,16 @@ class S {
     );
   }
 
+  /// `Edit`
+  String get signup_field_edit {
+    return Intl.message(
+      'Edit',
+      name: 'signup_field_edit',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enter Confirm Password`
   String get signup_confirm_password_caption {
     return Intl.message(
@@ -2910,11 +2920,41 @@ class S {
     );
   }
 
-  /// `Class Timing`
-  String get Class_timing_title {
+  /// `Date & Time`
+  String get dateAndtime {
     return Intl.message(
-      'Class Timing',
-      name: 'Class_timing_title',
+      'Date & Time',
+      name: 'dateAndtime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join Class`
+  String get class_scheduled_join_title {
+    return Intl.message(
+      'Join Class',
+      name: 'class_scheduled_join_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Class`
+  String get class_scheduled_start_title {
+    return Intl.message(
+      'Start Class',
+      name: 'class_scheduled_start_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay for Class`
+  String get class_scheduled_pay {
+    return Intl.message(
+      'Pay for Class',
+      name: 'class_scheduled_pay',
       desc: '',
       args: [],
     );
@@ -3785,6 +3825,16 @@ class S {
     return Intl.message(
       'Reset Password',
       name: 'resetTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset password link sent to your registered email id`
+  String get resetPasswordEmail {
+    return Intl.message(
+      'Reset password link sent to your registered email id',
+      name: 'resetPasswordEmail',
       desc: '',
       args: [],
     );
@@ -4755,6 +4805,16 @@ class S {
     return Intl.message(
       'Worked At',
       name: 'tpe_worked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Occupation`
+  String get tpe_occupation {
+    return Intl.message(
+      'Occupation',
+      name: 'tpe_occupation',
       desc: '',
       args: [],
     );

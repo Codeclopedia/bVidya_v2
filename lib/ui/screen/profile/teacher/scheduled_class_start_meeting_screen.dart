@@ -49,15 +49,13 @@ class ScheduledInstructorClassMeetingScreen extends HookWidget {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Start Class', style: textStyleHeading),
-                      SizedBox(height: 1.w),
+                      Text('Start Class',
+                          style: textStyleHeading.copyWith(fontSize: 12.5.sp)),
                       Text(scheduledClassDetails.participants?[0].topic ?? "",
                           style: textStyleHeading.copyWith(
-                              fontSize: 30.sp, fontWeight: FontWeight.w900)),
-                      Text(
-                          scheduledClassDetails.participants?[0].description ??
-                              "",
-                          style: textStyleHeading.copyWith(fontSize: 15.sp)),
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.darkChatColor)),
                       SizedBox(height: 5.w),
                       Text(
                           scheduledClassDetails
@@ -154,11 +152,10 @@ class ScheduledInstructorClassMeetingScreen extends HookWidget {
                           camOff,
                           micOff);
                     },
-                    child: Text(S.current.bmeet_btn_join),
+                    child: Text(S.current.bmeet_btn_start),
                   );
                 },
               ),
-              SizedBox(height: 2.h),
             ]),
       )),
     );

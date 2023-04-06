@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bvidya/core/constants/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:pip_view/pip_view.dart';
@@ -14,6 +17,10 @@ import '../../widget/chat_input_box.dart';
 import '../../widget/rtm_chat_bubble.dart';
 import '../blearn/components/common.dart';
 // import 'blive_home_screen.dart';
+
+final isDrawerAccessed = StateProvider.autoDispose((ref) {
+  return true;
+});
 
 class BLiveClassScreen extends HookConsumerWidget {
   final LiveClass liveClass;
@@ -42,28 +49,15 @@ class BLiveClassScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // _scrollController = useScrollController();
     useEffect(() {
       _scrollController = ScrollController();
-      //   _controller = AnimationController(
-      //   duration: const Duration(seconds: 3),
-      //   vsync: this,
-      // )..repeat(reverse: true);
-      // _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
       _loadMe();
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ]);
-      // SystemChrome.setPreferredOrientations([
-      //   DeviceOrientation.portraitUp,
-      //   DeviceOrientation.portraitDown,
-      // ]);
-      //   // _myUserId = ChatClient.getInstance.currentUserId ?? '24';
-      //   // _otherUserId = _myUserId == '24' ? '1' : '24';
-      //   // _scrollController.addListener(() => _onScroll(_scrollController, ref));
-      //   // _loadMe();
-      //   // _preLoadChat(ref);
+
       Wakelock.enable();
       print("wakelock enabled: ${Wakelock.enabled}");
       return disposeAll;
@@ -74,7 +68,11 @@ class BLiveClassScreen extends HookConsumerWidget {
     final provider = ref.watch(bLiveCallChangeProvider);
 
     provider.init(liveClass, rtmToken, userId, ref);
-    // return PIPView(builder: (context, isFloating) {
+    if (ref.watch(isDrawerAccessed)) {
+      Timer(const Duration(seconds: 5), () {
+        ref.read(isDrawerAccessed.notifier).state = false;
+      });
+    }
     return WillPopScope(
       onWillPop: () async {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -83,34 +81,58 @@ class BLiveClassScreen extends HookConsumerWidget {
       },
       child: Scaffold(
         backgroundColor: Colors.black,
-        // resizeToAvoidBottomInset: !isFloating, //!ref.watch(bLiveFloatingVisible),
-        appBar: isLandscapeView ? _buildAppBar(context) : null,
         body: provider.isPreviewReady &&
                 provider.error == null &&
                 provider.remoteUsersIds.isNotEmpty
-            ? Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Stack(
-                        children: [
-                          !isLandscapeView
-                              ? _viewRows(provider)
-                              : RotatedBox(
-                                  quarterTurns: 4, child: _viewRows(provider)),
-                          _controller(
-                              context, isLandscapeView, isChatVisible, ref)
-                        ],
-                      )),
-                  Visibility(
-                    visible: isChatVisible,
-                    child: Expanded(
-                      flex: 1,
-                      child: _buildChatScreen(ref),
+            ? SafeArea(
+                child: Stack(
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              if (ref.read(isDrawerAccessed)) {
+                              } else {
+                                ref.read(isDrawerAccessed.notifier).state =
+                                    true;
+                              }
+                            },
+                            child: SizedBox(
+                              width: 100.w,
+                              height: 100.h,
+                              child: Stack(
+                                children: [
+                                  // !isLandscapeView
+                                  //     ? _viewRows(provider)
+                                  //     :
+                                  RotatedBox(
+                                      quarterTurns: 4,
+                                      child: _viewRows(provider)),
+                                  _controller(context, isLandscapeView,
+                                      isChatVisible, ref)
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Visibility(
+                        //   visible: isChatVisible,
+                        // child:
+                        if (isChatVisible)
+                          Expanded(
+                            flex: 1,
+                            child: _buildChatScreen(ref),
+                          ),
+                        // )
+                      ],
                     ),
-                  )
-                ],
+                    if (ref.watch(isDrawerAccessed)) _buildAppBar(context)
+                  ],
+                ),
               )
             : (!provider.isPreviewReady
                 ? buildLoading
@@ -174,12 +196,6 @@ class BLiveClassScreen extends HookConsumerWidget {
                   style: const TextStyle(color: Colors.grey),
                 ),
               ),
-            // SwipeTo(
-            //   onRightSwipe: () {
-            //     ref.read(chatModelProvider).setReplyOn(message, otherUser);
-            //     print('open replyBox');
-            //   },
-            //   child:
             GestureDetector(
               onLongPress: () {
                 // _showMessageOption(message);
@@ -310,6 +326,24 @@ class BLiveClassScreen extends HookConsumerWidget {
     );
   }
 
+  Widget _singleViewWindow(List<Widget> views) {
+    final wrappedViews = views.map(_videoView).toList();
+    return Container(
+      height: 25.w,
+      width: 30.w,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(0.4.w),
+          border: Border.all(width: 1.w, color: AppColors.darkChatColor),
+          color: AppColors.black.withOpacity(0.5)),
+      child: wrappedViews.first,
+    );
+  }
+
+  Widget _singleView(List<Widget> views) {
+    final wrappedViews = views.map(_videoView).toList();
+    return wrappedViews.first;
+  }
+
   Widget _viewRows(BLiveProvider provider) {
     final hostScreens = provider.userList;
     hostScreens.removeWhere((key, value) => key == _me?.id);
@@ -318,69 +352,75 @@ class BLiveClassScreen extends HookConsumerWidget {
       case 1:
         return Column(
           children: <Widget>[
-            // _videoView(views[0], members[0])
             _expandedVideoRow([views[0]]),
           ],
         );
       case 2:
-        return Column(
-          children: [
-            _expandedVideoRow([views[0]]),
-            _expandedVideoRow([views[1]])
-          ],
+        return SizedBox(
+          width: 100.h,
+          height: 100.w,
+          child: Stack(
+            children: [
+              // _singleView([views[1]]),
+              views[1],
+              Align(
+                  alignment: Alignment.bottomRight,
+                  child: _singleViewWindow([views[0]])),
+            ],
+          ),
         );
 
-      case 3:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 3))
-          ],
-        );
+      // case 3:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 3))
+      //     ],
+      //   );
 
-      case 4:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4)),
-          ],
-        );
+      // case 4:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 4)),
+      //     ],
+      //   );
 
-      case 5:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4)),
-            _expandedVideoRow(views.sublist(4, 5)),
-          ],
-        );
+      // case 5:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 4)),
+      //       _expandedVideoRow(views.sublist(4, 5)),
+      //     ],
+      //   );
 
-      case 6:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4)),
-            _expandedVideoRow(views.sublist(4, 6))
-          ],
-        );
-      case 7:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4)),
-            _expandedVideoRow(views.sublist(4, 6)),
-            _expandedVideoRow(views.sublist(6, 7))
-          ],
-        );
-      case 8:
-        return Column(
-          children: [
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4)),
-            _expandedVideoRow(views.sublist(4, 6)),
-            _expandedVideoRow(views.sublist(6, 8))
-          ],
-        );
+      // case 6:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 4)),
+      //       _expandedVideoRow(views.sublist(4, 6))
+      //     ],
+      //   );
+      // case 7:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 4)),
+      //       _expandedVideoRow(views.sublist(4, 6)),
+      //       _expandedVideoRow(views.sublist(6, 7))
+      //     ],
+      //   );
+      // case 8:
+      //   return Column(
+      //     children: [
+      //       _expandedVideoRow(views.sublist(0, 2)),
+      //       _expandedVideoRow(views.sublist(2, 4)),
+      //       _expandedVideoRow(views.sublist(4, 6)),
+      //       _expandedVideoRow(views.sublist(6, 8))
+      //     ],
+      //   );
       // case 9:
       //   return _buildGridVideoView(provider);
       default:
@@ -390,6 +430,7 @@ class BLiveClassScreen extends HookConsumerWidget {
 
   Widget _buildChatInputBox(WidgetRef ref) {
     return ChatInputBox(
+      smallTextFeild: true,
       onSend: (input) async {
         ref.read(bLiveCallChangeProvider).sendChannelMessage(input);
         _scrollController.animateTo(
@@ -404,16 +445,28 @@ class BLiveClassScreen extends HookConsumerWidget {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.black,
-      elevation: 0.0,
-      centerTitle: true,
-      title: Row(
+  _buildAppBar(BuildContext context) {
+    return Container(
+      height: 15.w,
+      decoration: const BoxDecoration(
+        color: Colors.black,
+      ),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 6.w,
+                  color: AppColors.cardWhite,
+                ),
+              ),
+              SizedBox(width: 4.h),
               Consumer(
                 builder: (context, ref, child) {
                   final provider = ref.watch(bLiveCallChangeProvider);
@@ -435,43 +488,44 @@ class BLiveClassScreen extends HookConsumerWidget {
                   );
                 },
               ),
-              SizedBox(width: 4.h)
             ],
           ),
-          GestureDetector(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildBText('Live'),
-                const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  size: 24,
-                ),
-              ],
-            ),
-            onTap: () {},
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildBText('Live'),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 24,
+                color: AppColors.cardBackground,
+              ),
+            ],
           ),
-          GestureDetector(
-            child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: const Color(0xffca2424),
-                    borderRadius: BorderRadius.circular(5)),
-                padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: .5.h),
-                child: Text(
-                  "Leave",
-                  style: TextStyle(
-                      fontSize: 10.sp,
-                      letterSpacing: .5,
-                      fontWeight: FontWeight.w500),
-                )
-                //Image.asset('assets/icons/svg/phone_call.png',height: 3.h,width: 3.h,color: Colors.white,)
-                ),
-            onTap: () {
-              SystemChrome.setPreferredOrientations(
-                  [DeviceOrientation.portraitUp]);
-              Navigator.pop(context);
-            },
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 3.w),
+            child: GestureDetector(
+              child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: const Color(0xffca2424),
+                      borderRadius: BorderRadius.circular(5)),
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.w),
+                  child: Text(
+                    "Leave",
+                    style: TextStyle(
+                        fontSize: 10.sp,
+                        letterSpacing: .5,
+                        color: AppColors.cardWhite,
+                        fontWeight: FontWeight.w500),
+                  )
+                  //Image.asset('assets/icons/svg/phone_call.png',height: 3.h,width: 3.h,color: Colors.white,)
+                  ),
+              onTap: () {
+                SystemChrome.setPreferredOrientations(
+                    [DeviceOrientation.portraitUp]);
+                Navigator.pop(context);
+              },
+            ),
           )
         ],
       ),

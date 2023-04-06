@@ -92,7 +92,7 @@ class ResetPasswordScreen extends StatelessWidget {
     if (result != null) {
       AppSnackbar.instance.error(context, result);
     } else {
-      AppSnackbar.instance.message(context, 'Password sent to your email id');
+      AppSnackbar.instance.message(context, S.current.resetPasswordEmail);
       Navigator.pop(context);
     }
   }

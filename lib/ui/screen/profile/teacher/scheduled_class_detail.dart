@@ -1,13 +1,12 @@
 // import '/data/models/response/profile/scheduled_class_instructor_model.dart';
-import '/ui/screen/profile/teacher/scheduled_class_start_meeting_screen.dart';
 import 'package:intl/intl.dart';
 
 import '/core/constants.dart';
-import '/core/helpers/bmeet_helper.dart';
 import '../../../screens.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/core/ui_core.dart';
+import '/core/helpers/extensions.dart';
 
 class InstructorScheduledClassDetailScreen extends StatelessWidget {
   final InstructorScheduledClass scheduledClass;
@@ -53,7 +52,8 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 S.current.class_Scheduled_title,
-                                style: textStyleHeading,
+                                style:
+                                    textStyleHeading.copyWith(fontSize: 10.sp),
                               ),
                               SizedBox(
                                 height: 1.w,
@@ -80,64 +80,19 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
                                       title: S.current.request_class_type,
                                       data: scheduledClass.type ?? ""),
                                   customTile(
-                                      title: S.current.Class_timing_title,
-                                      data: DateFormat.yMMMEd().format(
-                                          scheduledClass.scheduledAt ??
-                                              DateTime.now())),
+                                      title: S.current.dateAndtime,
+                                      data:
+                                          "${DateFormat.yMMMd().format(scheduledClass.scheduledAt ?? DateTime.now())}, ${DateFormat.jm().format(scheduledClass.scheduledAt ?? DateTime.now())}"),
+                                  customTile(
+                                      title:
+                                          S.current.request_class_description,
+                                      data: scheduledClass
+                                              .participants?[0].description ??
+                                          ""),
                                   SizedBox(
                                     height: 6.w,
                                   ),
-                                  Text(
-                                    S.current.class_participants_title,
-                                    style: TextStyle(
-                                        fontFamily: kFontFamily,
-                                        color: AppColors.primaryColor,
-                                        fontSize: 5.w,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  SizedBox(
-                                    height: 2.w,
-                                  ),
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        scheduledClass.participants?.length ??
-                                            0,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 1.w),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "${index + 1}. ${scheduledClass.participants?[index].user?.name ?? ""}",
-                                              style: TextStyle(
-                                                  fontFamily: kFontFamily,
-                                                  color: Colors.black,
-                                                  fontSize: 4.w,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                            Text(
-                                              scheduledClass
-                                                      .participants?[index]
-                                                      .paymentDetail
-                                                      ?.razorpayPaymentLinkStatus ??
-                                                  "",
-                                              style: TextStyle(
-                                                  fontFamily: kFontFamily,
-                                                  color: Colors.black,
-                                                  fontSize: 4.w,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  )
+                                  participantBox()
                                 ],
                               ),
                             ],
@@ -150,8 +105,11 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
                                   padding: EdgeInsets.all(0.4.w),
                                   child: ElevatedButton(
                                       style: elevatedButtonTextStyle.copyWith(
+                                          padding:
+                                              const MaterialStatePropertyAll(
+                                                  EdgeInsets.zero),
                                           fixedSize: MaterialStatePropertyAll(
-                                              Size(100.w, 15.w))),
+                                              Size(100.w, 12.5.w))),
                                       onPressed: () async {
                                         Navigator.push(
                                             context,
@@ -162,10 +120,11 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
                                                             scheduledClass)));
                                       },
                                       child: Text(
-                                        S.current.bmeet_btn_start,
+                                        S.current.class_scheduled_start_title,
                                         style: textStyleBlack.copyWith(
                                             color: AppColors.cardWhite,
-                                            fontSize: 15.sp),
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500),
                                       )),
                                 );
                               },
@@ -208,6 +167,87 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
     );
   }
 
+  Widget participantBox() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "${S.current.class_participants_title} (${scheduledClass.participants?.length})",
+          style: TextStyle(
+              fontFamily: kFontFamily,
+              color: AppColors.primaryColor,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600),
+        ),
+        SizedBox(
+          height: 4.w,
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: scheduledClass.participants?.length ?? 0,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final participant = scheduledClass.participants?[index];
+            return participantTile(
+                participant ?? ScheduledClassParticipantDetail());
+          },
+        )
+      ],
+    );
+  }
+
+  Widget participantTile(ScheduledClassParticipantDetail participant) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 1.w, horizontal: 1.w),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  getCicleAvatar("", participant.userImage?.image ?? "",
+                      radius: 4.w),
+                  SizedBox(width: 2.w),
+                  Text(
+                    participant.user?.name?.toTitleCase() ?? "",
+                    style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: Colors.black,
+                        fontSize: 4.w,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  getSvgIcon(
+                      participant.paymentDetail?.razorpayPaymentLinkStatus ==
+                              "paid"
+                          ? 'Paid.svg'
+                          : 'Unpaid.svg',
+                      width: 4.w),
+                  SizedBox(width: 2.w),
+                  Text(
+                    participant.paymentDetail?.razorpayPaymentLinkStatus
+                            ?.toCapitalized() ??
+                        "",
+                    style: TextStyle(
+                        fontFamily: kFontFamily,
+                        color: Colors.black,
+                        fontSize: 4.w,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+
   Widget customTile({required String title, required String data}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,8 +260,8 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
           style: TextStyle(
               fontFamily: kFontFamily,
               color: AppColors.primaryColor,
-              fontSize: 4.w,
-              fontWeight: FontWeight.w500),
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600),
         ),
         SizedBox(
           height: 2.w,
@@ -230,8 +270,8 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
           data,
           style: TextStyle(
               fontFamily: kFontFamily,
-              color: Colors.black,
-              fontSize: 4.w,
+              color: AppColors.inputHintText,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w500),
         ),
       ],

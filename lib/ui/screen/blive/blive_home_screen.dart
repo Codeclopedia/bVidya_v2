@@ -56,27 +56,29 @@ class BLiveHomeScreen extends HookWidget {
             ),
           ),
         ),
-        overlayBody: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(7.w),
-                  bottomRight: Radius.circular(7.w),
+        overlayBody: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(7.w),
+                    bottomRight: Radius.circular(7.w),
+                  ),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.gradientTopColor,
+                      AppColors.gradientLiveBottomColor,
+                    ],
+                  ),
                 ),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.gradientTopColor,
-                    AppColors.gradientLiveBottomColor,
-                  ],
-                ),
+                child: _buildCalendar(context, controller),
               ),
-              child: _buildCalendar(context, controller),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -205,25 +207,6 @@ class BLiveHomeScreen extends HookWidget {
                           },
                           child: Text(S.current.bmeet_btn_start));
                     })
-                    // Consumer(
-                    //   builder: (context, ref, child) {
-                    //     return user?.role.toLowerCase() != 'teacher'
-                    //         ? InkWell(
-                    //             onTap: () {
-                    //               Navigator.pushNamed(
-                    //                   context, RouteList.bLiveSchedule);
-                    //             },
-                    //             child: CircleAvatar(
-                    //               backgroundColor: AppColors.yellowAccent,
-                    //               radius: 5.w,
-                    //               child: const Icon(Icons.add,
-                    //                   color: AppColors.primaryColor),
-                    //               // getSvgIcon('icon_next.svg', width: 4.5.w)
-                    //             ),
-                    //           )
-                    //         : const SizedBox.shrink();
-                    //   },
-                    // ),
                   ],
                 ),
                 SizedBox(height: 2.h),

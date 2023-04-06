@@ -82,17 +82,6 @@ class DashBoardBLiveScreen extends StatelessWidget {
     );
   }
 
-  // Widget _buildTitle() {
-  //   return Text(
-  //     S.current.td_dash,
-  //     style: TextStyle(
-  //         fontSize: 16.sp,
-  //         color: AppColors.primaryColor,
-  //         fontFamily: kFontFamily,
-  //         fontWeight: FontWeight.bold),
-  //   );
-  // }
-
   Widget buildDashboardloading() {
     return Column(
       mainAxisSize: MainAxisSize.max,

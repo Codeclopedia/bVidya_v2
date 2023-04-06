@@ -47,8 +47,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Yes, Backup the chat"),
         "ChatBackupMessage": MessageLookupByLibrary.simpleMessage(
             "Do you want Backup the chat?"),
-        "Class_timing_title":
-            MessageLookupByLibrary.simpleMessage("Class Timing"),
         "ClearChatConfirm":
             MessageLookupByLibrary.simpleMessage("Yes, Clear chats"),
         "ClearChatMessage": MessageLookupByLibrary.simpleMessage(
@@ -350,8 +348,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Class Requested to"),
         "class_requested_title":
             MessageLookupByLibrary.simpleMessage("Class Requested by"),
+        "class_scheduled_join_title":
+            MessageLookupByLibrary.simpleMessage("Join Class"),
         "class_scheduled_on":
             MessageLookupByLibrary.simpleMessage("Class Scheduled on"),
+        "class_scheduled_pay":
+            MessageLookupByLibrary.simpleMessage("Pay for Class"),
+        "class_scheduled_start_title":
+            MessageLookupByLibrary.simpleMessage("Start Class"),
         "clearChat": MessageLookupByLibrary.simpleMessage("Clear Chat"),
         "coming_soon": MessageLookupByLibrary.simpleMessage("Coming Soon..."),
         "confDesc": MessageLookupByLibrary.simpleMessage(
@@ -394,6 +398,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "credit_description": MessageLookupByLibrary.simpleMessage(
             "The bCoin balance shows the number of coins available for you under the plan you have choosen. You can use these coins to subscribe to 3 different courses of your choice."),
         "credits_title": MessageLookupByLibrary.simpleMessage("Credit"),
+        "dateAndtime": MessageLookupByLibrary.simpleMessage("Date & Time"),
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
             MessageLookupByLibrary.simpleMessage("Delete your Account"),
@@ -675,6 +680,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Reset Notification Setting"),
         "resetPassDesc":
             MessageLookupByLibrary.simpleMessage("Reset your Password"),
+        "resetPasswordEmail": MessageLookupByLibrary.simpleMessage(
+            "Reset password link sent to your registered email id"),
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "s_no_schedule_class":
             MessageLookupByLibrary.simpleMessage("No Schedule Class"),
@@ -717,6 +724,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter the OTP"),
         "signup_error_otp_invalid":
             MessageLookupByLibrary.simpleMessage("Invalid OTP entered"),
+        "signup_field_edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "signup_footer_btx_login":
             MessageLookupByLibrary.simpleMessage(" Login "),
         "signup_footer_have_account_":
@@ -833,6 +841,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tpe_lang": MessageLookupByLibrary.simpleMessage("Language Known"),
         "tpe_lang_hint":
             MessageLookupByLibrary.simpleMessage("What language do you know?"),
+        "tpe_occupation": MessageLookupByLibrary.simpleMessage("Occupation"),
         "tpe_worked": MessageLookupByLibrary.simpleMessage("Worked At"),
         "tpe_worked_hint": MessageLookupByLibrary.simpleMessage(
             "What was the name of our previous Organzation?"),

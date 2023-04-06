@@ -40,21 +40,6 @@ class RTMChatMessageBubble extends StatelessWidget {
         mainAxisAlignment:
             isOwnMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          // if (!isOwnMessage && (!isPreviousSameAuthor || isBeforeDateSeparator))
-          // getCicleAvatar(
-          //     radius: 6.w,
-          //     senderUser.nickName ?? senderUser.userId,
-          //     senderUser.avatarUrl ?? ''),
-          // Opacity(
-          //   opacity: !isOwnMessage &&
-          //           (!isPreviousSameAuthor || isBeforeDateSeparator)
-          //       ? 1
-          //       : 0,
-          //   child: getCicleAvatar(
-          //       radius: 6.w,
-          //       senderUser.userId,
-          //       senderUser.avatarUrl ?? ''),
-          // ),
           Column(
             crossAxisAlignment: isOwnMessage
                 ? CrossAxisAlignment.end
@@ -67,28 +52,14 @@ class RTMChatMessageBubble extends StatelessWidget {
                   (!isPreviousSameAuthor || isAfterDateSeparator))
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Flexible(
-                    child: Text(
-                      senderUser.userId,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
-                    ),
+                  child: Text(
+                    senderUser.userId,
+                    style: TextStyle(fontSize: 6.sp, color: Colors.grey),
                   ),
                 ),
               _buildTextMessage()
             ],
           ),
-          // if (isOwnMessage && !isPreviousSameAuthor)
-          // getCicleAvatar(
-          //     radius: 6.w,
-          //     senderUser.nickName ?? senderUser.userId,
-          //     senderUser.avatarUrl ?? '')
-          // Opacity(
-          //   opacity: isOwnMessage && !isPreviousSameAuthor ? 1 : 0,
-          //   child: getCicleAvatar(
-          //       radius: 6.w,
-          //       senderUser.nickName ?? senderUser.userId,
-          //       senderUser.avatarUrl ?? ''),
-          // ),
         ],
       ),
     );
@@ -108,25 +79,6 @@ class RTMChatMessageBubble extends StatelessWidget {
           bottomRight: Radius.circular(5.w),
         ));
   }
-
-  // textBubbleDecoration() => BoxDecoration(
-  //       color: mine
-  //           ? AppColors.chatBoxBackgroundMine
-  //           : AppColors.chatBoxBackgroundOthers,
-  //       borderRadius: BorderRadius.only(
-  //         bottomLeft: Radius.circular(5.w),
-  //         bottomRight: Radius.circular(5.w),
-  //         topRight: mine ? Radius.zero : Radius.circular(5.w),
-  //         topLeft: mine ? Radius.circular(5.w) : Radius.zero,
-  //       ),
-  //     );
-
-  // replyTextBubbleDecoration() => BoxDecoration(
-  //       color: mine
-  //           ? AppColors.chatBoxBackgroundOthers
-  //           : AppColors.chatBoxBackgroundMine,
-  //       borderRadius: BorderRadius.all(Radius.circular(5.w)),
-  //     );
 
   Widget _buildTextMessage() {
     return Container(
@@ -150,7 +102,7 @@ class RTMChatMessageBubble extends StatelessWidget {
               //   children: getMessage(body.content),
               // ),
               _textMessage(message.text),
-              SizedBox(width: 8.w)
+              SizedBox(width: 1.w)
               // Expanded(
               //   //   // child: _textMessage(body.content),
               //   child: Wrap(
@@ -195,7 +147,7 @@ class RTMChatMessageBubble extends StatelessWidget {
         content,
         style: TextStyle(
           fontFamily: kFontFamily,
-          fontSize: 10.sp,
+          fontSize: 8.sp,
           color: isOwnMessage
               ? AppColors.chatBoxMessageMine
               : AppColors.chatBoxMessageOthers,

@@ -151,7 +151,7 @@ class CourseDetailScreen extends StatelessWidget {
             getPngIcon('coin.png', width: 8.w),
             SizedBox(width: 1.w),
             Text(
-              '1 Credits',
+              '1 bCoin',
               style: textStyleBlack.copyWith(
                   color: AppColors.primaryColor,
                   fontSize: 15.sp,
@@ -159,28 +159,50 @@ class CourseDetailScreen extends StatelessWidget {
             ),
           ],
         ),
-        'This course ${course.name} cost 1 bvidya coin. And Will be automatically detected from your account.',
+        'This course ${course.name} cost 1 bCoin. And Will be automatically detected from your account.',
         'Sure', () async {
-      showLoading(ref);
-      final res = await ref
-          .read(bLearnRepositoryProvider)
-          .subscribeCourse(course.id ?? 1);
-      hideLoading(ref);
-      showOkDialog(
-        context,
-        S.current.blearn_course_subscribed_title,
-        S.current.blearn_course_subscribed_msg(course.name ?? ""),
-        type: true,
-        positiveButton: S.current.btn_continue,
-        positiveAction: () {
-          Navigator.pop(context, true);
-        },
-      );
-      ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
-      ref.refresh(creditHistoryProvider);
+      if (creditsData.avilableCourseCredits! > 0) {
+        showLoading(ref);
+        final res = await ref
+            .read(bLearnRepositoryProvider)
+            .subscribeCourse(course.id ?? 1);
+        hideLoading(ref);
+        showOkDialog(
+          context,
+          S.current.blearn_course_subscribed_title,
+          S.current.blearn_course_subscribed_msg(course.name ?? ""),
+          type: true,
+          positiveButton: S.current.btn_continue,
+          positiveAction: () {},
+        );
+        ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+        ref.refresh(creditHistoryProvider);
+      } else {
+        showBasicImageDialog(
+          context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              getPngIcon('coin.png', width: 8.w),
+              SizedBox(width: 1.w),
+              Text(
+                'No Credits left',
+                style: textStyleBlack.copyWith(
+                    color: AppColors.primaryColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          'It seems like you have no credits left in your account. Buy credits to continue learning.',
+          'Buy credits',
+          () async {
+            Navigator.pushReplacementNamed(context, RouteList.buySubscription);
+          },
+        );
+      }
     }, negativeAction: () async {
       hideLoading(ref);
-      Navigator.pop(context);
     }, negativeButton: S.current.dltCancel);
 
     // if (creditsData.avilableCourseCredits! > 0) {
@@ -200,28 +222,28 @@ class CourseDetailScreen extends StatelessWidget {
     //   ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
     //   ref.refresh(creditHistoryProvider);
     // } else {
-    //   showBasicImageDialog(
-    //     context,
-    //     Row(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: [
-    //         getPngIcon('coin.png', width: 8.w),
-    //         SizedBox(width: 1.w),
-    //         Text(
-    //           'No Credits left',
-    //           style: textStyleBlack.copyWith(
-    //               color: AppColors.primaryColor,
-    //               fontSize: 15.sp,
-    //               fontWeight: FontWeight.bold),
-    //         ),
-    //       ],
-    //     ),
-    //     'It seems like you have no credits left in your account. Buy credits to continue learning.',
-    //     'Buy credits',
-    //     () async {
-    //       Navigator.pushReplacementNamed(context, RouteList.buySubscription);
-    //     },
-    //   );
+    // showBasicImageDialog(
+    //   context,
+    //   Row(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: [
+    //       getPngIcon('coin.png', width: 8.w),
+    //       SizedBox(width: 1.w),
+    //       Text(
+    //         'No Credits left',
+    //         style: textStyleBlack.copyWith(
+    //             color: AppColors.primaryColor,
+    //             fontSize: 15.sp,
+    //             fontWeight: FontWeight.bold),
+    //       ),
+    //     ],
+    //   ),
+    //   'It seems like you have no credits left in your account. Buy credits to continue learning.',
+    //   'Buy credits',
+    //   () async {
+    //     Navigator.pushReplacementNamed(context, RouteList.buySubscription);
+    //   },
+    // );
     // }
   }
 
@@ -667,7 +689,7 @@ class CourseDetailScreen extends StatelessWidget {
               _buildIntructor(),
               const Spacer(),
               _buildMeta(
-                  'Launguage', course.language ?? '', 'icon_language.svg'),
+                  'Language', course.language ?? '', 'icon_language.svg'),
               const Spacer(),
               _buildMeta('Category', coursedata?.courses?[0].categoryName ?? "",
                   'icon_category.svg'),

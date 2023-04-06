@@ -15,7 +15,7 @@ final isBioEditing = StateProvider.autoDispose<bool>(
   (ref) => false,
 );
 
-final isworkedatEditing = StateProvider.autoDispose<bool>(
+final isoccupationEditing = StateProvider.autoDispose<bool>(
   (ref) => false,
 );
 
@@ -34,7 +34,7 @@ class TeacherProfileEdit extends HookWidget {
     final phoneController = useTextEditingController(text: profile.phone);
     final ageController = useTextEditingController(text: profile.age);
     final addressController = useTextEditingController(text: profile.address);
-    final workedAtController =
+    final occupationController =
         useTextEditingController(text: profile.occupation);
     final languageController = useTextEditingController(text: profile.language);
     final bioController = useTextEditingController(text: profile.bio);
@@ -44,7 +44,7 @@ class TeacherProfileEdit extends HookWidget {
     final phoneFocusNode = useFocusNode();
     final ageFocusNode = useFocusNode();
     final addressFocusNode = useFocusNode();
-    final workedAtFocusNode = useFocusNode();
+    final occupationFocusNode = useFocusNode();
     final languageFocusNode = useFocusNode();
     final bioFocusNode = useFocusNode();
     final formKey = GlobalKey<FormState>();
@@ -230,25 +230,28 @@ class TeacherProfileEdit extends HookWidget {
                                               .state = true;
                                         },
                                         child: const Icon(Icons.edit_sharp)))),
-                            _buildCaption(S.current.tpe_worked),
+                            _buildCaption(S.current.tpe_occupation),
                             SizedBox(height: 0.5.h),
                             TextFormField(
-                                controller: workedAtController,
+                                controller: occupationController,
                                 textInputAction: TextInputAction.next,
-                                readOnly:
-                                    ref.watch(isworkedatEditing) ? false : true,
-                                showCursor:
-                                    ref.watch(isworkedatEditing) ? true : false,
+                                readOnly: ref.watch(isoccupationEditing)
+                                    ? false
+                                    : true,
+                                showCursor: ref.watch(isoccupationEditing)
+                                    ? true
+                                    : false,
                                 validator: (value) {
                                   return null;
                                 },
-                                focusNode: workedAtFocusNode,
+                                focusNode: occupationFocusNode,
                                 decoration: inputEditProfileStyle.copyWith(
                                     hintText: S.current.tpe_worked_hint,
                                     suffixIcon: InkWell(
                                         onTap: () {
                                           ref
-                                              .read(isworkedatEditing.notifier)
+                                              .read(
+                                                  isoccupationEditing.notifier)
                                               .state = true;
                                         },
                                         child: const Icon(Icons.edit_sharp)))),
@@ -306,7 +309,7 @@ class TeacherProfileEdit extends HookWidget {
                                     ref.watch(isPhoneNumberEditing) ||
                                     ref.watch(isAgeEditing) ||
                                     ref.watch(isBioEditing) ||
-                                    ref.watch(isworkedatEditing) ||
+                                    ref.watch(isoccupationEditing) ||
                                     ref.watch(islanguageEditing)
                                 ? Consumer(builder: (context, ref, child) {
                                     return _buildButton(() async {
@@ -324,7 +327,8 @@ class TeacherProfileEdit extends HookWidget {
                                                 ageController.text.trim(),
                                                 bioController.text.trim(),
                                                 languageController.text.trim(),
-                                                workedAtController.text.trim(),
+                                                occupationController.text
+                                                    .trim(),
                                                 "",
                                                 "",
                                                 "India");

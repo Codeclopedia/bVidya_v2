@@ -60,7 +60,7 @@ class WebinarDetailTile extends StatelessWidget {
               height: 0.5.h,
             ),
             Text(
-                "Schduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",
+                "Scheduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",
                 style:
                     TextStyle(fontSize: 6.sp, color: AppColors.primaryColor)),
             SizedBox(

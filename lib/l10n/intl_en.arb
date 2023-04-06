@@ -46,6 +46,7 @@
   "signup_password_hint":"Enter Your Password",
   "signup_password_empty":"Password can't be empty",
   "signup_password_invalid":"Invalid Password",
+  "signup_field_edit":"Edit",
 
   "signup_confirm_password_caption":"Enter Confirm Password",
   "signup_confirm_password_hint":"Enter Your Confirm Password",
@@ -353,7 +354,10 @@
 
 
   "s_no_schedule_class":"No Schedule Class",  
-  "Class_timing_title":"Class Timing",
+  "dateAndtime":"Date & Time",
+  "class_scheduled_join_title":"Join Class",
+  "class_scheduled_start_title":"Start Class",
+  "class_scheduled_pay":"Pay for Class",
   "class_Scheduled_title":"Class Scheduled by",
   "class_participants_title": "Participants",
   
@@ -458,6 +462,7 @@
 "contactQuery": "Write us your query and we'll get back to you soon!",
 "emailHint": "Enter Your Email Address",
 "resetTitle": "Reset Password",
+"resetPasswordEmail":"Reset password link sent to your registered email id",
 "submitBtn": "Submit",
 "contactHint": "Tell us how can we help you.",
 "blive": "bLive",
@@ -556,6 +561,7 @@
 "tpe_lang": "Language Known",
 "tpe_bio": "Bio",
 "tpe_worked": "Worked At",
+"tpe_occupation": "Occupation",
 "tpe_bio_hint": "Enter your bio",
 "tpe_worked_hint": "What was the name of our previous Organzation?",
 "tpe_lang_hint": "What language do you know?",

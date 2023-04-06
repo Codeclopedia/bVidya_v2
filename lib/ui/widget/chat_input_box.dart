@@ -11,7 +11,7 @@ import '/core/ui_core.dart';
 import '../widgets.dart';
 
 final emojiVisibleProvider = StateProvider.autoDispose<bool>((ref) => false);
-final textInputStateProvider = StateProvider.autoDispose<bool>((ref) => true);
+final textInputStateProvider = StateProvider.autoDispose<bool>((rexf) => true);
 
 class ChatInputBox extends ConsumerStatefulWidget {
   final Future<String?> Function(String) onSend;
@@ -21,11 +21,13 @@ class ChatInputBox extends ConsumerStatefulWidget {
   // final Function(AttachType type)? onAttach;
   final bool showAttach;
   final bool showCamera;
+  final bool smallTextFeild;
   // final Function()? onCamera;
   final Function()? onTextChange;
   const ChatInputBox(
       {Key? key,
       required this.onSend,
+      this.smallTextFeild = false,
       this.showAttach = false,
       this.showCamera = false,
       // this.onAttach,
@@ -117,7 +119,7 @@ class _ChatInputBoxState extends ConsumerState<ChatInputBox>
                           //   widget.onTextChange!();
                           // }
                         },
-                        maxLines: 6,
+                        maxLines: widget.smallTextFeild ? 3 : 6,
                         minLines: 1,
                         keyboardType: TextInputType.multiline,
                         decoration: chatInputDirectionStyle.copyWith(
