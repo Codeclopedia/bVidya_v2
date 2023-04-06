@@ -84,12 +84,12 @@ class RTMChatMessageBubble extends StatelessWidget {
     return Container(
       constraints: BoxConstraints(
         minWidth: 20.w,
-        maxWidth: 50.w,
+        maxWidth: 35.w,
       ),
       margin: EdgeInsets.only(
           left: isOwnMessage ? 0 : 2.w, right: isOwnMessage ? 2.w : 0),
       decoration: _buildDecoration(), //textBubbleDecoration(),
-      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 0.5.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -101,7 +101,7 @@ class RTMChatMessageBubble extends StatelessWidget {
               //   // alignment: WrapAlignment.start,
               //   children: getMessage(body.content),
               // ),
-              _textMessage(message.text),
+              _textMessage(message.text.trim()),
               SizedBox(width: 1.w)
               // Expanded(
               //   //   // child: _textMessage(body.content),

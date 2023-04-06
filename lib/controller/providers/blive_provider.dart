@@ -457,8 +457,8 @@ class BLiveProvider extends ChangeNotifier {
         ts: DateTime.now().millisecondsSinceEpoch);
     try {
       await _rtmChannel?.sendMessage(message);
-      _ref.read(bLiveMessageListProvider.notifier).addChat(
-          (RTMMessageModel(message, AgoraRtmMember('', _token.rtmChannel))));
+      _ref.read(bLiveMessageListProvider.notifier).addChat((RTMMessageModel(
+          message, AgoraRtmMember(_localUid.toString(), _token.rtmChannel))));
     } catch (_) {}
   }
 

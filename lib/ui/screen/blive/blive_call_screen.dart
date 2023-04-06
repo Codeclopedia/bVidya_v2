@@ -101,21 +101,36 @@ class BLiveClassScreen extends HookConsumerWidget {
                                     true;
                               }
                             },
-                            child: SizedBox(
-                              width: 100.w,
-                              height: 100.h,
-                              child: Stack(
-                                children: [
-                                  // !isLandscapeView
-                                  //     ? _viewRows(provider)
-                                  //     :
-                                  RotatedBox(
-                                      quarterTurns: 4,
-                                      child: _viewRows(provider)),
-                                  _controller(context, isLandscapeView,
-                                      isChatVisible, ref)
-                                ],
-                              ),
+                            child: Stack(
+                              children: [
+                                ..._viewRows1(provider),
+                                // !isLandscapeView
+                                //     ? _viewRows(provider)
+                                //     :
+                                // _viewRows(provider),
+                                // RotatedBox(
+                                //     quarterTurns: 4,
+                                //     child: _viewRows(provider)),
+                                // if (provider.userList.values.length == 2)
+                                //   Align(
+                                //       alignment: Alignment.bottomRight,
+                                //       child: SizedBox(
+                                //         height: 25.w,
+                                //         width: 30.w,
+                                //         child: provider.userList.values.first,
+                                //       )
+                                //       // _singleViewWindow(
+                                //       //     [provider.userList.values.first]
+                                //       // ),
+                                //       ),
+                                // Positioned(
+                                //   left: 0,
+                                //   bottom: 0,
+                                //   child: ,
+                                // )
+                                _controller(context, isLandscapeView,
+                                    isChatVisible, ref)
+                              ],
                             ),
                           ),
                         ),
@@ -147,6 +162,7 @@ class BLiveClassScreen extends HookConsumerWidget {
     return Column(
       children: [
         Expanded(child: _buildMessageList(ref)),
+        SizedBox(height: 0.5.h),
         _buildChatInputBox(ref),
       ],
     );
@@ -248,7 +264,7 @@ class BLiveClassScreen extends HookConsumerWidget {
 
   Widget _controller(BuildContext context, bool isLandscapeView,
       bool isChatVisible, WidgetRef ref) {
-    return Container(
+    return Align(
         alignment: Alignment.bottomRight,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -339,9 +355,50 @@ class BLiveClassScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _singleView(List<Widget> views) {
-    final wrappedViews = views.map(_videoView).toList();
-    return wrappedViews.first;
+  // Widget _singleView(List<Widget> views) {
+  //   final wrappedViews = views.map(_videoView).toList();
+  //   return wrappedViews.first;
+  // }
+
+  List<Widget> _viewRows1(BLiveProvider provider) {
+    final hostScreens = provider.userList;
+    hostScreens.removeWhere((key, value) => key == _me?.id);
+    final views = hostScreens.values.toList();
+    switch (views.length) {
+      case 1:
+        return [
+          Column(
+            children: <Widget>[
+              _expandedVideoRow([views[0]]),
+            ],
+          )
+        ];
+      case 2:
+        return [
+          Column(
+            children: <Widget>[
+              _expandedVideoRow([views[1]]),
+            ],
+          ),
+          Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                height: 25.w,
+                width: 30.w,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(0.4.w),
+                    border:
+                        Border.all(width: 1.w, color: AppColors.darkChatColor),
+                    color: AppColors.black.withOpacity(0.5)),
+                child: views[0],
+              )
+              // _singleViewWindow(
+              //     [provider.userList.values.first]
+              // ),
+              )
+        ];
+    }
+    return [];
   }
 
   Widget _viewRows(BLiveProvider provider) {
@@ -356,19 +413,31 @@ class BLiveClassScreen extends HookConsumerWidget {
           ],
         );
       case 2:
-        return SizedBox(
-          width: 100.h,
-          height: 100.w,
-          child: Stack(
-            children: [
-              // _singleView([views[1]]),
-              views[1],
-              Align(
-                  alignment: Alignment.bottomRight,
-                  child: _singleViewWindow([views[0]])),
-            ],
-          ),
+        return Column(
+          children: <Widget>[
+            _expandedVideoRow([views[1]]),
+          ],
         );
+      // return SizedBox(
+      //   width: 100.h,
+      //   height: 100.w,
+      //   child: Stack(
+      //     children: [
+      //       // _singleView([views[1]]),
+      //       views[1],
+      //       // Column(
+      //       //   mainAxisSize: MainAxisSize.max,
+      //       //   children: <Widget>[
+      //       //     _expandedVideoRow([views[1]]),
+      //       //   ],
+      //       // ),
+      //       // _expandedVideoRow([views[1]]),
+      //       Align(
+      //           alignment: Alignment.bottomRight,
+      //           child: _singleViewWindow([views[0]])),
+      //     ],
+      //   ),
+      // );
 
       // case 3:
       //   return Column(
