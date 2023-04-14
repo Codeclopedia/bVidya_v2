@@ -79,7 +79,11 @@ class ChatMessageBubble extends StatelessWidget {
                   ? 1
                   : 0,
               child: getCicleAvatar(
-                  radius: 6.w, senderUser.name, senderUser.profileImage),
+                  radius: 6.w,
+                  senderUser.name,
+                  senderUser.profileImage,
+                  cacheWidth: (75.w * devicePixelRatio).round(),
+                  cacheHeight: (75.w * devicePixelRatio).round()),
             ),
           Column(
             crossAxisAlignment: isOwnMessage

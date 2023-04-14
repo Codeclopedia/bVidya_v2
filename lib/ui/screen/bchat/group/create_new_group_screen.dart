@@ -86,7 +86,7 @@ class CreateNewGroupScreen extends HookWidget {
             ],
           ),
           SizedBox(
-            height: 12.h,
+            // height: 12.h,
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -176,7 +176,7 @@ class CreateNewGroupScreen extends HookWidget {
                       Consumer(builder: (context, ref, child) {
                         return TextField(
                           controller: _controller,
-                          maxLength: 128,
+                          maxLength: 50,
                           onSubmitted: (value) {
                             createGroup(context, value, ref);
                           },
@@ -417,7 +417,9 @@ class CreateNewGroupScreen extends HookWidget {
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name, contact.profileImage),
+          getCicleAvatar(contact.name, contact.profileImage,
+              cacheWidth: (100.w * devicePixelRatio).round(),
+              cacheHeight: (100.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
             child: Text(
@@ -439,7 +441,9 @@ class CreateNewGroupScreen extends HookWidget {
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name, contact.profileImage),
+          getCicleAvatar(contact.name, contact.profileImage,
+              cacheWidth: (75.w * devicePixelRatio).round(),
+              cacheHeight: (75.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
             child: Text(

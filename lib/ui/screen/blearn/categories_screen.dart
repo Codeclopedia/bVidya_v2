@@ -51,6 +51,8 @@ class CategoriesScreen extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       itemCount: categories.length,
+      padding: EdgeInsets.symmetric(vertical: 4.w),
+      physics: const BouncingScrollPhysics(),
       separatorBuilder: (context, index) {
         return Container(
           height: 0.5,
@@ -65,16 +67,17 @@ class CategoriesScreen extends StatelessWidget {
                 arguments: category);
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.5.h),
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 5.w),
             child: Row(
               children: [
                 SizedBox(
                   width: 18.w,
                   child: Image(
-                     image: getImageProvider(
+                    image: getImageProvider(
                         category.icon == "" || category.icon == null
                             ? category.image ?? ""
                             : category.icon ?? ""),
+                    height: 10.w,
                     // image: getImageProvider(category.image ?? ''),
                   ),
                 ),

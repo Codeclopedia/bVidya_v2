@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '../../../dialog/ok_dialog.dart';
 import '/core/utils.dart';
 import '/core/state.dart';
 import '/ui/base_back_screen.dart';
@@ -92,8 +93,15 @@ class ResetPasswordScreen extends StatelessWidget {
     if (result != null) {
       AppSnackbar.instance.error(context, result);
     } else {
-      AppSnackbar.instance.message(context, S.current.resetPasswordEmail);
-      Navigator.pop(context);
+      // AppSnackbar.instance.message(context, S.current.resetPasswordEmail);
+      showOkDialog(
+        context,
+        'Email Sent',
+        S.current.resetPasswordEmail,
+        positiveAction: () {
+          Navigator.pop(context);
+        },
+      );
     }
   }
 

@@ -325,7 +325,9 @@ class TeacherClasses extends StatelessWidget {
                 children: [
                   getCicleAvatar(
                       data.studentName ?? 'A', data.studentImage ?? '',
-                      radius: 3.h),
+                      radius: 3.h,
+                      cacheWidth: (85.w * devicePixelRatio).round(),
+                      cacheHeight: (85.w * devicePixelRatio).round()),
                   SizedBox(width: 5.w),
                   Expanded(
                     child: Column(

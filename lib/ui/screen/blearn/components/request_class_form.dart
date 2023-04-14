@@ -1,3 +1,4 @@
+import 'package:bvidya/ui/dialog/ok_dialog.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -84,7 +85,7 @@ class RequestClassForm extends HookWidget {
                             children: [
                               Text(S.current.request_class_title,
                                   style: textStyleHeading),
-                              SizedBox(height: 10.w),
+                              SizedBox(height: 5.w),
                               Text(S.current.request_class_topic,
                                   style: textStyleCaption),
                               SizedBox(
@@ -124,16 +125,11 @@ class RequestClassForm extends HookWidget {
                                   hintText: S.current.t_request_class_type_hint,
                                 ),
                                 isExpanded: true,
-                                // hint: const Text(
-                                //   "Select Class type",
-                                //   style: TextStyle(fontSize: 14),
-                                // ),
                                 icon: const Icon(
                                   Icons.arrow_drop_down,
                                   color: Colors.black45,
                                 ),
                                 iconSize: 10.w,
-
                                 dropdownDecoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
@@ -184,40 +180,6 @@ class RequestClassForm extends HookWidget {
                                   }
                                 },
                               ),
-                              // TextFormField(
-                              //   controller: classTypeController,
-                              //   autofocus: false,
-                              //   readOnly: true,
-                              //   showCursor: false,
-                              //   keyboardType: TextInputType.none,
-                              //   validator: (value) {
-                              //     if (value == null ||
-                              //         value.isEmpty == true ||
-                              //         _startTime == null) {
-                              //       return S.current.bmeet_empty_start;
-                              //     }
-                              //     if (_startTime
-                              //             ?.isBefore(DateTime.now()) ==
-                              //         true) {
-                              //       return S
-                              //           .current.bmeet_invalid_start;
-                              //     }
-                              //     return null;
-                              //   },
-                              //   onTap: () {
-                              //     final returndata =
-                              //         _pickType(context, ref);
-
-                              //   },
-                              //   onFieldSubmitted: (value) {},
-                              //   // focusNode: _startFocus,
-                              //   decoration: inputMeetStyle.copyWith(
-                              //       hintText:
-                              //           S.current.bmeet_hint_start,
-                              //       suffixIcon: const Icon(
-                              //         Icons.keyboard_arrow_down,
-                              //       )),
-                              // ),
                               SizedBox(
                                 height: 5.w,
                               ),
@@ -267,10 +229,12 @@ class RequestClassForm extends HookWidget {
                                       ),
                                       constraints:
                                           BoxConstraints(maxHeight: 30.w))),
-                              SizedBox(height: 3.h),
+                              SizedBox(height: 6.w),
                               Text(S.current.bmeet_caption_date,
                                   style: textStyleCaption),
-                              SizedBox(height: 3.h),
+                              SizedBox(
+                                height: 2.w,
+                              ),
                               TextFormField(
                                 controller: dateController,
                                 autofocus: false,
@@ -301,10 +265,12 @@ class RequestClassForm extends HookWidget {
                                     suffixIcon:
                                         const Icon(Icons.edit_calendar)),
                               ),
-                              SizedBox(height: 3.h),
+                              SizedBox(height: 6.w),
                               Text(S.current.bmeet_caption_starttime,
                                   style: textStyleCaption),
-                              SizedBox(height: 3.h),
+                              SizedBox(
+                                height: 2.w,
+                              ),
                               TextFormField(
                                 controller: timeController,
                                 autofocus: false,
@@ -370,18 +336,27 @@ class RequestClassForm extends HookWidget {
                                             time: _startTime ?? DateTime.now(),
                                             instructorid: instructor.id ?? 0);
                                     response == "error"
-                                        ? showTopSnackBar(
-                                            Overlay.of(context)!,
-                                            CustomSnackBar.error(
-                                                message: S.current.error),
-                                          )
-                                        : showTopSnackBar(
-                                            Overlay.of(context)!,
-                                            CustomSnackBar.success(
-                                                message: response),
-                                          );
-                                    hideLoading(ref);
-                                    Navigator.pop(context);
+                                        ? {
+                                            hideLoading(ref),
+                                            showTopSnackBar(
+                                              Overlay.of(context)!,
+                                              CustomSnackBar.error(
+                                                  message: S.current.error),
+                                            ),
+                                            Navigator.pop(context),
+                                          }
+                                        : {
+                                            hideLoading(ref),
+                                            showOkDialog(
+                                              context,
+                                              S.current.class_request_sent,
+                                              response,
+                                              type: true,
+                                              positiveAction: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          };
                                   }
                                 },
                                 child: Text(S.current.request_class_request
@@ -415,7 +390,11 @@ class RequestClassForm extends HookWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
-                                image: getImageProvider(instructor.image ?? ''),
+                                image: getImageProvider(instructor.image ?? '',
+                                    maxHeight:
+                                        (40.w * devicePixelRatio).round(),
+                                    maxWidth:
+                                        (40.w * devicePixelRatio).round()),
                                 fit: BoxFit.cover)),
                       ),
                       Text(

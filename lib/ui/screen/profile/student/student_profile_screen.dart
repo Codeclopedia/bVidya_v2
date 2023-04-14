@@ -96,7 +96,7 @@ class StudentProfileScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: 1.h),
-              _buildContent(S.current.profile_details, "profile_user.svg",
+              _buildContent(S.current.profile_detail, "profile_user.svg",
                   () async {
                 showLoading(ref);
                 final profile =

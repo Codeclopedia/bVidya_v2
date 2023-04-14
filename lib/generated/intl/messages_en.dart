@@ -21,7 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   static String m0(course_name) =>
-      "Congratulations,you\'re now subsribed to ${course_name} . Explore it to your full potential and achieving your goals with the help of this online course.";
+      "Congratulations, you\'re now subscribed to ${course_name}. Explore it to your full potential and achieving your goals with the help of this online course.";
 
   static String m1(date) => "${date} Broadcast";
 
@@ -91,6 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unpin Conversation"),
         "bchat_conv_unpinned":
             MessageLookupByLibrary.simpleMessage("Unpinned Conversation"),
+        "bharat": MessageLookupByLibrary.simpleMessage("Bharat"),
         "blearn": MessageLookupByLibrary.simpleMessage("bLearn"),
         "blearn_added": MessageLookupByLibrary.simpleMessage("Added"),
         "blearn_btx_mostviewed":
@@ -344,6 +345,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Ex: The request can\'t be accepted because..."),
         "class_request_remark_empty_hint":
             MessageLookupByLibrary.simpleMessage("Remark can\'t be empty"),
+        "class_request_sent":
+            MessageLookupByLibrary.simpleMessage("Request Sent"),
         "class_request_title":
             MessageLookupByLibrary.simpleMessage("Class Requested to"),
         "class_requested_title":
@@ -401,7 +404,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dateAndtime": MessageLookupByLibrary.simpleMessage("Date & Time"),
         "deleteAcc": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteDesc":
-            MessageLookupByLibrary.simpleMessage("Delete your Account"),
+            MessageLookupByLibrary.simpleMessage("Delete your account"),
         "dg_confirm_deleteAccount":
             MessageLookupByLibrary.simpleMessage("Delete"),
         "dg_message_DeleteAccount": MessageLookupByLibrary.simpleMessage(
@@ -443,6 +446,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "faqDesc":
             MessageLookupByLibrary.simpleMessage("Find your answers here"),
         "faq_title": MessageLookupByLibrary.simpleMessage("FAQ"),
+        "forgetPasswordEmail": MessageLookupByLibrary.simpleMessage(
+            "We have received your request about you forgetting your password. A Email with link to set new your password will be sent to your registered email address."),
         "fp_btn_submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "fp_btx_login_back":
             MessageLookupByLibrary.simpleMessage("Back to Login"),
@@ -503,7 +508,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "im_picker_gallery_desc":
             MessageLookupByLibrary.simpleMessage("Pick an image from Gallery"),
         "instructor_notApproved_note": MessageLookupByLibrary.simpleMessage(
-            "NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com"),
+            "NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at Support@bvidya.com"),
         "internet_error": MessageLookupByLibrary.simpleMessage(
             "There was an error Connecting. Please check your connection and try again"),
         "issueDescriptionError": MessageLookupByLibrary.simpleMessage(
@@ -538,6 +543,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter Password"),
         "login_password_invalid": MessageLookupByLibrary.simpleMessage(
             "Password must be at least 8 characters."),
+        "made_in": MessageLookupByLibrary.simpleMessage("Made In "),
         "meetingDesc": MessageLookupByLibrary.simpleMessage(
             "Toggle to receive or block meeting reminder notifications"),
         "meetingRem": MessageLookupByLibrary.simpleMessage("Meeting Reminder"),
@@ -617,8 +623,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "prof_hint_no":
             MessageLookupByLibrary.simpleMessage("Enter Your Phone Number"),
         "prof_save_btn": MessageLookupByLibrary.simpleMessage("Save"),
-        "profile_details":
-            MessageLookupByLibrary.simpleMessage("Profile Details"),
+        "profile_detail":
+            MessageLookupByLibrary.simpleMessage("Profile Detail"),
         "profile_gmail":
             MessageLookupByLibrary.simpleMessage("userid@gmail.com"),
         "profile_instr":
@@ -658,7 +664,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Request Class"),
         "request_class_topic": MessageLookupByLibrary.simpleMessage("Topic"),
         "request_class_topic_hint": MessageLookupByLibrary.simpleMessage(
-            "Enter class topic or subject"),
+            "Enter Class Topic or Subject"),
         "request_class_type":
             MessageLookupByLibrary.simpleMessage("Class Type"),
         "request_class_type_hint":
@@ -679,12 +685,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetNoty":
             MessageLookupByLibrary.simpleMessage("Reset Notification Setting"),
         "resetPassDesc":
-            MessageLookupByLibrary.simpleMessage("Reset your Password"),
+            MessageLookupByLibrary.simpleMessage("Reset your password"),
         "resetPasswordEmail": MessageLookupByLibrary.simpleMessage(
-            "Reset password link sent to your registered email id"),
+            "We have received your request to reset your password. A Email with link to reset your password will be sent to your registered email address."),
         "resetTitle": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "s_no_schedule_class":
-            MessageLookupByLibrary.simpleMessage("No Schedule Class"),
+            MessageLookupByLibrary.simpleMessage("No Scheduled Class"),
         "scheduled_class_join_desc": MessageLookupByLibrary.simpleMessage(
             "Click on start button to join the scheduled class"),
         "scheduled_class_join_title":
@@ -782,13 +788,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "t_request_class_topic_invalid": MessageLookupByLibrary.simpleMessage(
             "Class topic must contains at least 5 characters"),
         "t_request_class_type_hint":
-            MessageLookupByLibrary.simpleMessage("Select Class type"),
+            MessageLookupByLibrary.simpleMessage("Select Class Type"),
         "t_schedule_caption":
             MessageLookupByLibrary.simpleMessage("Upcoming classes"),
         "t_schedule_class":
             MessageLookupByLibrary.simpleMessage("Schedule a Class"),
         "t_schedule_class_msg": MessageLookupByLibrary.simpleMessage(
-            "Send Request for group or personal class"),
+            "Send request for group or personal class"),
         "t_schedule_no_class":
             MessageLookupByLibrary.simpleMessage("No Upcoming class"),
         "t_scheduled_header":

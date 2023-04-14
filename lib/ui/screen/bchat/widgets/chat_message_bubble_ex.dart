@@ -11,7 +11,6 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 // import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 // import 'package:flutter_file_preview/flutter_file_preview.dart';
 import 'package:linkfy_text/linkfy_text.dart';
-import 'package:linkfy_text/src/utils/regex.dart';
 
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +29,7 @@ import '/ui/widgets.dart';
 import '/core/constants.dart';
 import '/core/ui_core.dart';
 import '../dash/models/mention.dart';
-import 'chat_image_list.dart';
+import 'chat_media_list.dart';
 
 const String urlPattern =
     r"(https?|http)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:‌​,.;]*)?";
@@ -67,12 +66,14 @@ class ChatMessageBubbleExt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "message detail ${message.isGroupMedia} ${message.msg} ${message.messages}");
     return Padding(
       padding: EdgeInsets.only(
           left: isOwnMessage ? 0 : 4.w,
           right: isOwnMessage ? 4.w : 0,
-          top: isPreviousSameAuthor ? 2 : 1.h,
-          bottom: 2),
+          top: isPreviousSameAuthor ? 2.h : 1.h,
+          bottom: 2.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -91,7 +92,11 @@ class ChatMessageBubbleExt extends StatelessWidget {
                   ? 1
                   : 0,
               child: getCicleAvatar(
-                  radius: 6.w, senderUser.name, senderUser.profileImage),
+                  radius: 6.w,
+                  senderUser.name,
+                  senderUser.profileImage,
+                  cacheWidth: (75.w * devicePixelRatio).round(),
+                  cacheHeight: (75.w * devicePixelRatio).round()),
             ),
           Column(
             crossAxisAlignment: isOwnMessage
@@ -172,6 +177,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
     //     ),
     //   );
     // }
+
     if (this.message.isGroupMedia) {
       return Container(
         width: 60.w,
@@ -219,9 +225,9 @@ class ChatMessageBubbleExt extends StatelessWidget {
                   onTap: () async {
                     showLoading(ref);
                     await saveMultipleFiles(
-                        data: this.message.messages,
-                        ref: ref,
-                        filetype: MessageType.IMAGE);
+                      data: this.message.messages,
+                      ref: ref,
+                    );
                     hideLoading(ref);
                   },
                   child: CircleAvatar(
@@ -263,8 +269,9 @@ class ChatMessageBubbleExt extends StatelessWidget {
                             body.remotePath ?? "", message.body.type);
                       },
                       getImageProviderChatImage(
-                          message.body as ChatImageMessageBody,
-                          loadThumbFirst: false),
+                        message.body as ChatImageMessageBody,
+                        loadThumbFirst: false,
+                      ),
                       onViewerDismissed: () {
                         // print("dismissed");
                       });
@@ -275,12 +282,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
       case MessageType.VIDEO:
         {
           ChatVideoMessageBody body = message.body as ChatVideoMessageBody;
-          return GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, RouteList.bViewVideo,
-                    arguments: message.body as ChatVideoMessageBody);
-              },
-              child: _videoOnly(body));
+          return _videoOnly(body, context);
         }
       case MessageType.CUSTOM:
         if (message.chatType == ChatType.Chat) {
@@ -392,7 +394,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChatImageList(
+          builder: (context) => ChatMediaList(
             message: this.message,
             index: index,
           ),
@@ -410,9 +412,13 @@ class ChatMessageBubbleExt extends StatelessWidget {
               child: Image(
                 image: message.body.type == MessageType.IMAGE
                     ? getImageProviderChatImage(
-                        message.body as ChatImageMessageBody)
+                        message.body as ChatImageMessageBody,
+                        maxHeight: (216 * devicePixelRatio).round(),
+                        maxWidth: (201 * devicePixelRatio).round())
                     : getImageProviderChatVideo(
-                        message.body as ChatVideoMessageBody),
+                        message.body as ChatVideoMessageBody,
+                        maxHeight: (216 * devicePixelRatio).round(),
+                        maxWidth: (201 * devicePixelRatio).round()),
                 fit: BoxFit.cover,
               ),
             ),
@@ -421,7 +427,19 @@ class ChatMessageBubbleExt extends StatelessWidget {
               bottom: 1.h,
               child: _buildTimeGroupMedia(message),
             ),
-            if (count > 0) Center(child: Text('+ $count'))
+            if (count > 0)
+              Center(
+                  child: Text(
+                '+ $count',
+                style: textStyleBlack
+                    .copyWith(color: Colors.white, fontSize: 12.sp, shadows: [
+                  Shadow(
+                    offset: Offset(1.w, 0.5.w),
+                    blurRadius: 1.w,
+                    color: Colors.black,
+                  ),
+                ]),
+              ))
           ],
         ),
       ),
@@ -444,7 +462,9 @@ class ChatMessageBubbleExt extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
-              image: getImageProviderChatImage(body),
+              image: getImageProviderChatImage(body,
+                  maxHeight: (480 * devicePixelRatio).round(),
+                  maxWidth: (360 * devicePixelRatio).round()),
             ),
           ),
           Positioned(
@@ -472,14 +492,14 @@ class ChatMessageBubbleExt extends StatelessWidget {
     );
   }
 
-  Widget _videoOnly(ChatVideoMessageBody body) {
+  Widget _videoOnly(ChatVideoMessageBody body, BuildContext context) {
     // final bool isOwnMessage = message.from == currentUser.id;
     return Container(
       constraints: BoxConstraints(
-        minWidth: 30.w,
-        maxWidth: 60.w,
+        minWidth: 20.w,
+        maxWidth: 40.w,
         minHeight: 5.h,
-        maxHeight: 30.h,
+        maxHeight: 20.h,
       ),
       margin: isOwnMessage
           ? EdgeInsets.only(right: 2.w)
@@ -489,7 +509,12 @@ class ChatMessageBubbleExt extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
-              image: getImageProviderChatVideo(body),
+              image: getImageProviderChatVideo(body,
+                  maxHeight: (480 * devicePixelRatio).round(),
+                  maxWidth: (360 * devicePixelRatio).round()),
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
           Positioned(
@@ -497,12 +522,38 @@ class ChatMessageBubbleExt extends StatelessWidget {
             bottom: 1.h,
             child: _buildTime(message.msg),
           ),
-          const Center(
-            child: Icon(
-              Icons.play_circle_outline,
-              color: Colors.white,
+          Center(
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, RouteList.bViewVideo,
+                    arguments: message.msg.body as ChatVideoMessageBody);
+              },
+              child: Icon(
+                Icons.play_circle_outline,
+                color: Colors.white,
+                size: 10.w,
+              ),
             ),
           ),
+
+          Consumer(builder: (context, ref, child) {
+            return Align(
+              alignment: Alignment.bottomLeft,
+              child: InkWell(
+                onTap: () async {
+                  showLoading(ref);
+                  await saveFile(ref, body.displayName ?? "",
+                      body.remotePath ?? "", message.msg.body.type);
+                  hideLoading(ref);
+                },
+                child: Icon(
+                  Icons.download_for_offline_outlined,
+                  color: Colors.white,
+                  size: 6.w,
+                ),
+              ),
+            );
+          }),
           if (progress > 0)
             Positioned(
               bottom: 0,
@@ -946,33 +997,33 @@ class ChatMessageBubbleExt extends StatelessWidget {
     );
   }
 
-  Uri? _preview(String content) {
-    final regx = constructRegExpFromLinkType([LinkType.url, LinkType.email]);
-    Uri? url;
-    if (regx.hasMatch(content)) {
-      for (var match in regx.allMatches(content)) {
-        String link = match.input.substring(match.start, match.end);
+  // Uri? _preview(String content) {
+  //   final regx = constructRegExpFromLinkType([LinkType.url, LinkType.email]);
+  //   Uri? url;
+  //   if (regx.hasMatch(content)) {
+  //     for (var match in regx.allMatches(content)) {
+  //       String link = match.input.substring(match.start, match.end);
 
-        if (isValidEmail(link)) {
-          continue;
-        }
-        url = Uri.tryParse(link);
-        print('matches->$url');
-      }
-      // final match = regx.firstMatch(content);
-      // if (match != null) {
-      //   url = Uri.tryParse(match.input.substring(match.start, match.end));
-      //   if (isValidEmail(url.toString())) {
-      //     return null;
-      //   }
-      //   print('matches->$content - - ${url}');
-      // }
-      //   }
-      //   return '${e.input} ${e.start} -${e.end}';
-      // })}');
-    }
-    return url;
-  }
+  //       if (isValidEmail(link)) {
+  //         continue;
+  //       }
+  //       url = Uri.tryParse(link);
+  //       print('matches->$url');
+  //     }
+  //     // final match = regx.firstMatch(content);
+  //     // if (match != null) {
+  //     //   url = Uri.tryParse(match.input.substring(match.start, match.end));
+  //     //   if (isValidEmail(url.toString())) {
+  //     //     return null;
+  //     //   }
+  //     //   print('matches->$content - - ${url}');
+  //     // }
+  //     //   }
+  //     //   return '${e.input} ${e.start} -${e.end}';
+  //     // })}');
+  //   }
+  //   return url;
+  // }
 
   Widget _textMessage(String content, bool isOnlyEmoji) {
     // final bool isOwnMessage = message.from == currentUser.id;
@@ -1019,16 +1070,19 @@ class ChatMessageBubbleExt extends StatelessWidget {
       onTap: (link) {
         print('Tap ${link.type} -> ${link.value}');
         if (link.type == LinkType.url && link.value?.isNotEmpty == true) {
-          // print('Link ${link.value}');
           if (isValidEmail(link.value ?? '')) {
-            launchUrl(Uri.parse('mailto:${link.value}'));
+            launchUrl(
+              Uri.parse('mailto:${link.value}'),
+              mode: LaunchMode.platformDefault,
+            );
           } else {
             launchUrl(Uri.parse(link.value ?? ''));
           }
         } else if (link.type == LinkType.email &&
             link.value?.isNotEmpty == true) {
           print('Value ${link.value}');
-          launchUrl(Uri.parse('mailto:${link.value}'));
+          launchUrl(Uri.parse('mailto:${link.value}'),
+              mode: LaunchMode.platformDefault);
         } else {}
       },
       textStyle: TextStyle(

@@ -48,6 +48,9 @@ final InputDecoration searchInputDirectionStyle = InputDecoration(
     padding: EdgeInsets.all(3.w),
     child: getSvgIcon('icon_pr_search.svg', color: Colors.black),
   ),
+  prefixIconConstraints: BoxConstraints(
+    maxWidth: 10.5.w,
+  ),
   contentPadding: const EdgeInsets.all(2.0),
   fillColor: AppColors.inputBoxFill,
   filled: true,

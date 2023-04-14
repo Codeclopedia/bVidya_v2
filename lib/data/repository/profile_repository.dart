@@ -117,7 +117,7 @@ class ProfileRepository {
 
   Future<BaseResponse> deleteClassRequest(String classID) async {
     final result = await _api.deleteClassRequest(_authToken, classID);
-    if (result.status == success && result.body != null) {
+    if (result.status == success) {
       return result;
     } else {
       return BaseResponse();

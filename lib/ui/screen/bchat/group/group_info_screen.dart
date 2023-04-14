@@ -274,7 +274,10 @@ class GroupInfoScreen extends HookConsumerWidget {
         padding: EdgeInsets.symmetric(horizontal: 4.w),
         child: Row(
           children: [
-            getCicleAvatar(contact.name, contact.profileImage, radius: 6.w),
+            getCicleAvatar(contact.name, contact.profileImage,
+                radius: 6.w,
+                cacheWidth: (100.w * devicePixelRatio).round(),
+                cacheHeight: (100.w * devicePixelRatio).round()),
             SizedBox(width: 3.w),
             Expanded(
               child: Text(
@@ -662,8 +665,23 @@ class GroupInfoScreen extends HookConsumerWidget {
                     SizedBox(
                       height: 2.h,
                     ),
-                    getRectFAvatar(group.groupInfo.name ?? '', group.image,
-                        size: 20.w),
+                    InkWell(
+                      onTap: () async {
+                        await showImageViewer(
+                            context,
+                            getImageProvider(group.image,
+                                maxHeight: (200.w * devicePixelRatio).round(),
+                                maxWidth: (200.w * devicePixelRatio).round()),
+                            doubleTapZoomable: true, onViewerDismissed: () {
+                          // print("dismissed");
+                        });
+                      },
+                      child: getRectFAvatar(
+                          group.groupInfo.name ?? '', group.image,
+                          size: 20.w,
+                          cacheHeight: (50.w * devicePixelRatio).round(),
+                          cacheWidth: (50.w * devicePixelRatio).round()),
+                    ),
                     SizedBox(
                       height: 0.7.h,
                     ),

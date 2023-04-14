@@ -269,7 +269,7 @@ class ScheduleMeetScreen extends HookWidget {
                           hintText: S.current.bmeet_hint_start,
                           isDense: true,
                           errorStyle: const TextStyle(height: 0),
-                          errorMaxLines: 3,
+                          errorMaxLines: 4,
                           suffixIcon: const Icon(
                             Icons.keyboard_arrow_down,
                           )),
@@ -307,7 +307,7 @@ class ScheduleMeetScreen extends HookWidget {
                       onEditingComplete: () {},
                       decoration: inputMeetStyle.copyWith(
                           hintText: S.current.bmeet_hint_end,
-                          errorMaxLines: 2,
+                          errorMaxLines: 4,
                           isDense: true,
                           suffixIcon: const Icon(
                             Icons.keyboard_arrow_down,

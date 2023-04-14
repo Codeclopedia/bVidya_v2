@@ -47,8 +47,9 @@ class SubCategoriesScreen extends StatelessWidget {
         scrollDirection: Axis.vertical,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 5.0,
-          mainAxisSpacing: 1.w,
+          crossAxisSpacing: 2.w,
+          mainAxisSpacing: 4.w,
+          childAspectRatio: 0.295.w,
         ),
         itemBuilder: (context, index) {
           SubCategory item = subCategories[index];
@@ -71,15 +72,21 @@ class SubCategoriesScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 3.w),
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(
-              color: AppColors.chatInputBackground,
-              borderRadius: BorderRadius.circular(15)),
+              color: AppColors.cardWhite,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: AppColors.inputHintText.withOpacity(0.07),
+                    blurRadius: 1.w,
+                    spreadRadius: 1.w, //New
+                    offset: Offset(0, 1.w))
+              ]),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // SizedBox(width: 18.w),
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(5.w)),
+                borderRadius: BorderRadius.all(Radius.circular(2.w)),
                 child: SizedBox(
                   height: 32.5.w,
                   width: 40.w,
@@ -87,9 +94,14 @@ class SubCategoriesScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                     child: Image(
                         image: getImageProvider(
-                            item.image ?? 'assets/images/dummy_profile.png')),
+                            item.image ?? 'assets/images/dummy_profile.png',
+                            maxHeight: (60.w * devicePixelRatio).round(),
+                            maxWidth: (60.w * devicePixelRatio).round())),
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 1.w,
               ),
               Expanded(
                 child: Padding(
@@ -97,7 +109,7 @@ class SubCategoriesScreen extends StatelessWidget {
                   child: Text(
                     item.name ?? '',
                     textAlign: TextAlign.start,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: kFontFamily,

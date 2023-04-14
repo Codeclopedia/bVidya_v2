@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bvidya/data/services/auth_api_service.dart';
+
 import '../../dialog/ok_dialog.dart';
 import '/controller/profile_providers.dart';
 import '/ui/dialog/basic_dialog.dart';
@@ -63,7 +65,7 @@ class CourseDetailScreen extends StatelessWidget {
                           children: [
                             _topImage(context),
 
-                            _subjectDetail(data, ref),
+                            _subjectDetail(data, ref, context),
                             SlidingTab(
                               label1: 'Description',
                               label2: 'Curriculum',
@@ -143,6 +145,7 @@ class CourseDetailScreen extends StatelessWidget {
     final creditsData =
         await ref.read(profileRepositoryProvider).getCreditsHistory();
     hideLoading(ref);
+
     showBasicImageDialog(
         context,
         Row(
@@ -438,7 +441,7 @@ class CourseDetailScreen extends StatelessWidget {
                     height: 20.w,
                     alignment: Alignment.center,
                     child: const Text(
-                      "No feedback yet. \n Add the first one.",
+                      "No feedback yet. \nAdd the first one.",
                       style: TextStyle(color: AppColors.iconGreyColor),
                     ),
                   ),
@@ -474,14 +477,14 @@ class CourseDetailScreen extends StatelessWidget {
       height: 22.h,
       child: ListView.builder(
         shrinkWrap: true,
-        padding: EdgeInsets.all(0.5.h),
+        // padding: EdgeInsets.all(0.5.h),
         itemCount: feedbackList.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           final feedback = feedbackList[index];
           return Container(
             width: 70.w,
-            margin: EdgeInsets.only(right: 3.w, left: 2.w),
+            margin: EdgeInsets.only(right: 2.w, left: 1.w),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.all(Radius.circular(5.w)),
@@ -495,7 +498,9 @@ class CourseDetailScreen extends StatelessWidget {
                 Row(
                   children: [
                     getCicleAvatar(feedback.name ?? 'AA', feedback.image ?? '',
-                        radius: 8.w),
+                        radius: 8.w,
+                        cacheWidth: (35.w * devicePixelRatio).round(),
+                        cacheHeight: (35.w * devicePixelRatio).round()),
                     SizedBox(width: 4.w),
                     Expanded(
                       child: Column(
@@ -620,7 +625,8 @@ class CourseDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _subjectDetail(CourseDetailBody? coursedata, WidgetRef ref) {
+  Widget _subjectDetail(
+      CourseDetailBody? coursedata, WidgetRef ref, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
       child: Column(
@@ -628,6 +634,7 @@ class CourseDetailScreen extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(
@@ -686,7 +693,26 @@ class CourseDetailScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildIntructor(),
+              InkWell(
+                  onTap: () async {
+                    showLoading(ref);
+                    final profileDetail = await ref
+                        .read(bLearnRepositoryProvider)
+                        .getProfileDetail(
+                            coursedata?.courses?[0].userId.toString() ?? '1');
+                    final profile = profileDetail?.profile;
+                    hideLoading(ref);
+                    Navigator.pushNamed(
+                        context, RouteList.bLearnteacherProfileDetail,
+                        arguments: Instructor(
+                            id: coursedata?.courses?[0].userId ?? 1,
+                            experience: profile?.experience,
+                            image: profile?.image,
+                            name: profile?.name,
+                            occupation: profile?.occupation,
+                            specialization: profile?.specialization));
+                  },
+                  child: _buildIntructor()),
               const Spacer(),
               _buildMeta(
                   'Language', course.language ?? '', 'icon_language.svg'),
@@ -708,7 +734,9 @@ class CourseDetailScreen extends StatelessWidget {
       children: [
         getCicleAvatar(
             course.instructorName ?? '', course.instructorImage ?? '',
-            radius: 4.w),
+            radius: 4.w,
+            cacheWidth: (20.w * devicePixelRatio).round(),
+            cacheHeight: (20.w * devicePixelRatio).round()),
         SizedBox(width: 1.w),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -783,7 +811,9 @@ class CourseDetailScreen extends StatelessWidget {
             child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(2.w)),
                 child: Image(
-                  image: getImageProvider(course.image ?? ''),
+                  image: getImageProvider(course.image ?? '',
+                      maxHeight: (90.w * devicePixelRatio).round(),
+                      maxWidth: (90.w * devicePixelRatio).round()),
                   fit: BoxFit.cover,
                 )),
           ),

@@ -5,8 +5,8 @@ import '/ui/dialog/basic_dialog.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:intl/intl.dart';
 
-import '/core/utils.dart';
-import '/ui/screens.dart';
+// import '/core/utils.dart';
+// import '/ui/screens.dart';
 
 import '/core/constants.dart';
 import '/data/models/response/profile/schduled_classes_model.dart';
@@ -36,7 +36,7 @@ class StudentScheduleScreen extends StatelessWidget {
               padding: EdgeInsets.only(top: 3.w, bottom: 3.w),
               child: SlidingTab(
                 label1: "Scheduled Class",
-                label2: "Request sent",
+                label2: "Request Sent",
                 selectedIndex: ref.watch(scheduledClassTabIndexProvider),
                 callback: (p0) {
                   ref.read(scheduledClassTabIndexProvider.notifier).state = p0;
@@ -212,7 +212,9 @@ class StudentScheduleScreen extends StatelessWidget {
           children: [
             getCicleAvatar(
                 data.instructorName ?? 'U', data.instructorImage ?? '',
-                radius: 3.h),
+                radius: 3.h,
+                cacheWidth: (150.w * devicePixelRatio).round(),
+                cacheHeight: (150.w * devicePixelRatio).round()),
             SizedBox(width: 5.w),
             Expanded(
               child: Column(

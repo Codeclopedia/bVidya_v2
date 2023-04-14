@@ -336,7 +336,10 @@ class EndDrawer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            getPngIcon(icon, width: 8.w),
+            getPngIcon(icon,
+                width: 8.w,
+                cacheHeight: (10.w * devicePixelRatio).round(),
+                cacheWidth: (10.w * devicePixelRatio).round()),
             Padding(
               padding: EdgeInsets.only(top: 0.2.h),
               child: Text(

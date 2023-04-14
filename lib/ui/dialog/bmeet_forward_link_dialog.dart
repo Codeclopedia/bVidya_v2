@@ -185,7 +185,12 @@ class ForwardContactListBmeetDialog extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
           child: Row(
             children: [
-              getCicleAvatar(radius: 5.w, model.name, model.image),
+              getCicleAvatar(
+                  radius: 5.w,
+                  model.name,
+                  model.image,
+                  cacheWidth: (75.w * devicePixelRatio).round(),
+                  cacheHeight: (75.w * devicePixelRatio).round()),
               SizedBox(width: 3.w),
               Expanded(
                 child: Text(

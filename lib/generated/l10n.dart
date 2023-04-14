@@ -1470,10 +1470,10 @@ class S {
     );
   }
 
-  /// `Congratulations,you're now subsribed to {course_name} . Explore it to your full potential and achieving your goals with the help of this online course.`
+  /// `Congratulations, you're now subscribed to {course_name}. Explore it to your full potential and achieving your goals with the help of this online course.`
   String blearn_course_subscribed_msg(Object course_name) {
     return Intl.message(
-      'Congratulations,you\'re now subsribed to $course_name . Explore it to your full potential and achieving your goals with the help of this online course.',
+      'Congratulations, you\'re now subscribed to $course_name. Explore it to your full potential and achieving your goals with the help of this online course.',
       name: 'blearn_course_subscribed_msg',
       desc: '',
       args: [course_name],
@@ -2710,10 +2710,10 @@ class S {
     );
   }
 
-  /// `Send Request for group or personal class`
+  /// `Send request for group or personal class`
   String get t_schedule_class_msg {
     return Intl.message(
-      'Send Request for group or personal class',
+      'Send request for group or personal class',
       name: 't_schedule_class_msg',
       desc: '',
       args: [],
@@ -2800,10 +2800,10 @@ class S {
     );
   }
 
-  /// `Select Class type`
+  /// `Select Class Type`
   String get t_request_class_type_hint {
     return Intl.message(
-      'Select Class type',
+      'Select Class Type',
       name: 't_request_class_type_hint',
       desc: '',
       args: [],
@@ -2845,6 +2845,16 @@ class S {
     return Intl.message(
       'No Requested Class',
       name: 't_no_requested_class_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request Sent`
+  String get class_request_sent {
+    return Intl.message(
+      'Request Sent',
+      name: 'class_request_sent',
       desc: '',
       args: [],
     );
@@ -2910,10 +2920,10 @@ class S {
     );
   }
 
-  /// `No Schedule Class`
+  /// `No Scheduled Class`
   String get s_no_schedule_class {
     return Intl.message(
-      'No Schedule Class',
+      'No Scheduled Class',
       name: 's_no_schedule_class',
       desc: '',
       args: [],
@@ -3300,10 +3310,10 @@ class S {
     );
   }
 
-  /// `Enter class topic or subject`
+  /// `Enter Class Topic or Subject`
   String get request_class_topic_hint {
     return Intl.message(
-      'Enter class topic or subject',
+      'Enter Class Topic or Subject',
       name: 'request_class_topic_hint',
       desc: '',
       args: [],
@@ -3670,10 +3680,10 @@ class S {
     );
   }
 
-  /// `NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com`
+  /// `NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at Support@bvidya.com`
   String get instructor_notApproved_note {
     return Intl.message(
-      'NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at info@bvidya.com',
+      'NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at Support@bvidya.com',
       name: 'instructor_notApproved_note',
       desc: '',
       args: [],
@@ -3735,6 +3745,26 @@ class S {
     return Intl.message(
       'Find your answers here',
       name: 'faqDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Made In `
+  String get made_in {
+    return Intl.message(
+      'Made In ',
+      name: 'made_in',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bharat`
+  String get bharat {
+    return Intl.message(
+      'Bharat',
+      name: 'bharat',
       desc: '',
       args: [],
     );
@@ -3830,11 +3860,21 @@ class S {
     );
   }
 
-  /// `Reset password link sent to your registered email id`
+  /// `We have received your request to reset your password. A Email with link to reset your password will be sent to your registered email address.`
   String get resetPasswordEmail {
     return Intl.message(
-      'Reset password link sent to your registered email id',
+      'We have received your request to reset your password. A Email with link to reset your password will be sent to your registered email address.',
       name: 'resetPasswordEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We have received your request about you forgetting your password. A Email with link to set new your password will be sent to your registered email address.`
+  String get forgetPasswordEmail {
+    return Intl.message(
+      'We have received your request about you forgetting your password. A Email with link to set new your password will be sent to your registered email address.',
+      name: 'forgetPasswordEmail',
       desc: '',
       args: [],
     );
@@ -4130,10 +4170,10 @@ class S {
     );
   }
 
-  /// `Reset your Password`
+  /// `Reset your password`
   String get resetPassDesc {
     return Intl.message(
-      'Reset your Password',
+      'Reset your password',
       name: 'resetPassDesc',
       desc: '',
       args: [],
@@ -4170,10 +4210,10 @@ class S {
     );
   }
 
-  /// `Delete your Account`
+  /// `Delete your account`
   String get deleteDesc {
     return Intl.message(
-      'Delete your Account',
+      'Delete your account',
       name: 'deleteDesc',
       desc: '',
       args: [],
@@ -4270,11 +4310,11 @@ class S {
     );
   }
 
-  /// `Profile Details`
-  String get profile_details {
+  /// `Profile Detail`
+  String get profile_detail {
     return Intl.message(
-      'Profile Details',
-      name: 'profile_details',
+      'Profile Detail',
+      name: 'profile_detail',
       desc: '',
       args: [],
     );

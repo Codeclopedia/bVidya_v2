@@ -91,7 +91,12 @@ class BaseNoScrollSettings extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          getRectFAvatar(size: 22.w, user?.name ?? '', user?.image ?? ''),
+          getRectFAvatar(
+              size: 22.w,
+              user?.name ?? '',
+              user?.image ?? '',
+              cacheHeight: (40.w * devicePixelRatio).round(),
+              cacheWidth: (40.w * devicePixelRatio).round()),
           if (showName)
             Text(
               user?.name ?? '',

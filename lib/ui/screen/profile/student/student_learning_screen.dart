@@ -286,7 +286,9 @@ class StudentLearningScreen extends ConsumerWidget {
           children: [
             getCicleAvatar(followedInstructor.instructorName ?? '',
                 followedInstructor.image ?? '',
-                radius: 3.h),
+                radius: 3.h,
+                cacheWidth: (30.w * devicePixelRatio).round(),
+                cacheHeight: (30.w * devicePixelRatio).round()),
             // CircleAvatar(
             //   radius: 7.w,
             //   backgroundImage:

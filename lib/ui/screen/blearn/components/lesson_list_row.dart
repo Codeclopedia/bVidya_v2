@@ -67,7 +67,7 @@ class LessonListRow extends StatelessWidget {
             },
             child: isSubscribed
                 ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Row(
@@ -105,7 +105,7 @@ class LessonListRow extends StatelessWidget {
                   )
                 : index == 0
                     ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Row(
@@ -225,16 +225,21 @@ class LessonListRow extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.play_circle_outline_sharp,
-                          color: index == 0 && playlistindex < 2 || isSubscribed
-                              ? Colors.black
-                              : Colors.grey,
+                        Column(
+                          children: [
+                            SizedBox(height: 2.w),
+                            getSvgIcon("Icon material-slow-motion-video.svg",
+                                color: index == 0 && playlistindex < 2 ||
+                                        isSubscribed
+                                    ? Colors.black
+                                    : Colors.grey,
+                                width: 5.w),
+                          ],
                         ),
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                                left: 1.w, right: 1.w, top: 1.w),
+                                left: 3.w, right: 1.w, top: 1.w),
                             child: Text(
                               lesson.playlist?[playlistindex]?.title ?? '',
                               style: TextStyle(

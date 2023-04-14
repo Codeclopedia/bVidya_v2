@@ -46,6 +46,7 @@ class Profile {
   final String? instagramUrl;
   final String? youtubeUrl;
   final String? websiteUrl;
+  final String? joinedOn;
 
   Profile(
       {this.name,
@@ -69,7 +70,8 @@ class Profile {
       this.facebookUrl,
       this.instagramUrl,
       this.youtubeUrl,
-      this.websiteUrl});
+      this.websiteUrl,
+      this.joinedOn});
 
   Profile.fromJson(Map<String, dynamic> json)
       : name = json['name'],
@@ -93,7 +95,8 @@ class Profile {
         facebookUrl = json['facebook_url'],
         instagramUrl = json['instagram_url'],
         youtubeUrl = json['youtube_url'],
-        websiteUrl = json['website_url'];
+        websiteUrl = json['website_url'],
+        joinedOn = json['created_at'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
@@ -119,6 +122,7 @@ class Profile {
     data['instagram_url'] = instagramUrl;
     data['youtube_url'] = youtubeUrl;
     data['website_url'] = websiteUrl;
+    data['created_at'] = joinedOn;
     return data;
   }
 }

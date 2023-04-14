@@ -283,7 +283,12 @@ class GroupChatScreen extends HookConsumerWidget {
                     .map(
                       (e) => Padding(
                         padding: EdgeInsets.only(right: 1.w),
-                        child: getCicleAvatar(radius: 3.w, e.name, e.profile),
+                        child: getCicleAvatar(
+                            radius: 3.w,
+                            e.name,
+                            e.profile,
+                            cacheWidth: (75.w * devicePixelRatio).round(),
+                            cacheHeight: (75.w * devicePixelRatio).round()),
                       ),
                     )
                     .toList(),
@@ -1006,10 +1011,9 @@ class GroupChatScreen extends HookConsumerWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.w),
-            child: getRectFAvatar(
-              model.groupInfo.name ?? '',
-              model.image,
-            ),
+            child: getRectFAvatar(model.groupInfo.name ?? '', model.image,
+                cacheHeight: (30.w * devicePixelRatio).round(),
+                cacheWidth: (30.w * devicePixelRatio).round()),
           ),
           Expanded(
             child: InkWell(

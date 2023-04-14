@@ -374,10 +374,17 @@ class BLiveClassScreen extends HookConsumerWidget {
           )
         ];
       case 2:
+        int cIndex = provider.cIndex;
         return [
           Column(
             children: <Widget>[
-              _expandedVideoRow([views[1]]),
+              _expandedVideoRow([
+                GestureDetector(
+                    onTap: () {
+                      provider.setCIndex(cIndex == 0 ? 1 : 0);
+                    },
+                    child: views[cIndex == 0 ? 0 : 1])
+              ]),
             ],
           ),
           Align(
@@ -390,7 +397,11 @@ class BLiveClassScreen extends HookConsumerWidget {
                     border:
                         Border.all(width: 1.w, color: AppColors.darkChatColor),
                     color: AppColors.black.withOpacity(0.5)),
-                child: views[0],
+                child: GestureDetector(
+                    onTap: () {
+                      provider.setCIndex(cIndex == 0 ? 1 : 0);
+                    },
+                    child: views[cIndex == 0 ? 0 : 1]),
               )
               // _singleViewWindow(
               //     [provider.userList.values.first]

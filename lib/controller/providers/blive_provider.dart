@@ -27,6 +27,14 @@ class BLiveProvider extends ChangeNotifier {
   bool _allMuted = true;
   bool get allMuted => _allMuted;
 
+  int _cIndex = 0;
+  int get cIndex => _cIndex;
+
+  setCIndex(int index) {
+    _cIndex = index;
+    notifyListeners();
+  }
+
 //
   bool _hostCamera = false;
   bool get hostCamera => _hostCamera;

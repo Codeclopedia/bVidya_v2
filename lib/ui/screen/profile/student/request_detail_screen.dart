@@ -1,5 +1,7 @@
+import 'package:bvidya/app.dart';
 import 'package:intl/intl.dart';
 
+import '../../../dialog/ok_dialog.dart';
 import '/controller/profile_providers.dart';
 import '../../../dialog/basic_dialog.dart';
 import '/core/state.dart';
@@ -115,14 +117,33 @@ class RequestDetailScreen extends StatelessWidget {
                                               requestdata.id.toString());
 
                                       if (res.status == 'success') {
-                                        EasyLoading.showInfo(res.message ??
-                                            'Request deleted successfully');
+                                        if (navigatorKey
+                                            .currentContext!.debugDoingBuild) {}
+                                        showOkDialog(
+                                          context,
+                                          S.current.requested_class_delete,
+                                          S.current.requested_class_delete_msg,
+                                          type: true,
+                                          positiveAction: () async {
+                                            await ref
+                                                .read(profileRepositoryProvider)
+                                                .deleteClassRequest(
+                                                    requestdata.id.toString());
+                                            if (navigatorKey.currentContext!
+                                                .debugDoingBuild) {}
+                                            Navigator.pop(context);
+                                          },
+                                        );
                                       } else {
+                                        if (navigatorKey
+                                            .currentContext!.debugDoingBuild) {}
                                         AppSnackbar.instance.error(context,
                                             res.message ?? S.current.error);
+                                        if (navigatorKey
+                                            .currentContext!.debugDoingBuild) {}
+                                        Navigator.pop(context);
                                       }
                                       ref.refresh(requestedClassesProvider);
-                                      Navigator.pop(context);
                                     }, negativeAction: () async {
                                       // await handler(false);
                                     }, negativeButton: S.current.dltCancel);

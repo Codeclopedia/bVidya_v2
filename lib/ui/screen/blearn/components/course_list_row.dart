@@ -24,10 +24,12 @@ class CourseListRow extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(3.w),
               child: Image(
-                image: getImageProvider(course.image ?? ''),
+                image: getImageProvider(course.image ?? '',
+                    maxHeight: (30.w * devicePixelRatio).round(),
+                    maxWidth: (30.w * devicePixelRatio).round()),
                 height: 7.5.h,
                 width: 7.5.h,
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
               ),
             ),
             SizedBox(width: 3.w),

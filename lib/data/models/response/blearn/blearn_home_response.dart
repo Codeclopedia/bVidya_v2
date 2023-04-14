@@ -44,6 +44,7 @@ class BlearnHomeBody {
     this.bestInstructors,
     this.upcomingWebinars,
     this.testimonials,
+    this.footerbanner,
   });
 
   List<BlearnBanner?>? banners;
@@ -55,6 +56,7 @@ class BlearnHomeBody {
   List<Instructor?>? bestInstructors;
   List<UpcomingWebinar?>? upcomingWebinars;
   List<CourseFeedback?>? testimonials;
+  List<BlearnBanner?>? footerbanner;
 
   factory BlearnHomeBody.fromRawJson(String str) =>
       BlearnHomeBody.fromJson(json.decode(str));
@@ -98,6 +100,10 @@ class BlearnHomeBody {
             ? []
             : List<CourseFeedback?>.from(
                 json["testimonials"]!.map((x) => CourseFeedback.fromJson(x))),
+        footerbanner: json["footer_banner"] == null
+            ? []
+            : List<BlearnBanner?>.from(
+                json["footer_banner"]!.map((x) => BlearnBanner.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -128,6 +134,9 @@ class BlearnHomeBody {
         "testimonials": testimonials == null
             ? []
             : List<dynamic>.from(testimonials!.map((x) => x!.toJson())),
+        "footer_banner": footerbanner == null
+            ? []
+            : List<dynamic>.from(footerbanner!.map((x) => x!.toJson())),
       };
 }
 

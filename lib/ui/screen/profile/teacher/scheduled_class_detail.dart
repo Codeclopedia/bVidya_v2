@@ -207,7 +207,9 @@ class InstructorScheduledClassDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   getCicleAvatar("", participant.userImage?.image ?? "",
-                      radius: 4.w),
+                      radius: 4.w,
+                      cacheWidth: (100.w * devicePixelRatio).round(),
+                      cacheHeight: (100.w * devicePixelRatio).round()),
                   SizedBox(width: 2.w),
                   Text(
                     participant.user?.name?.toTitleCase() ?? "",

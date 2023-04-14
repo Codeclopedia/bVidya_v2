@@ -93,7 +93,9 @@ class FriendRequestsScreen extends HookConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        getCicleAvatar(user.name, user.profileImage),
+                        getCicleAvatar(user.name, user.profileImage,
+                            cacheWidth: (75.w * devicePixelRatio).round(),
+                            cacheHeight: (75.w * devicePixelRatio).round()),
                         SizedBox(width: 2.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +164,9 @@ class FriendRequestsScreen extends HookConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        getCicleAvatar(user.name, user.profileImage),
+                        getCicleAvatar(user.name, user.profileImage,
+                            cacheWidth: (75.w * devicePixelRatio).round(),
+                            cacheHeight: (75.w * devicePixelRatio).round()),
                         SizedBox(width: 2.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

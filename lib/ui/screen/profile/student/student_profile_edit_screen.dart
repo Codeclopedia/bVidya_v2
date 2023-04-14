@@ -276,8 +276,12 @@ class StudentProfileEditScreen extends HookWidget {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
                                   image: DecorationImage(
-                                      image:
-                                          getImageProvider(profile.image ?? ''),
+                                      image: getImageProvider(
+                                          profile.image ?? '',
+                                          maxHeight:
+                                              (50.w * devicePixelRatio).round(),
+                                          maxWidth: (50.w * devicePixelRatio)
+                                              .round()),
                                       fit: BoxFit.cover)),
                             ),
                             Positioned(

@@ -6,10 +6,13 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_smartlook/flutter_smartlook.dart';
 
 import 'controller/bchat_providers.dart';
+import 'core/constants/agora_config.dart';
 import 'core/helpers/group_member_helper.dart';
 import 'core/utils/request_utils.dart';
+// import 'secret/keys.dart';
 import 'ui/base_back_screen.dart';
 import 'core/helpers/foreground_message_helper.dart';
 import 'core/sdk_helpers/bchat_sdk_controller.dart';
@@ -28,6 +31,7 @@ import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
 // import 'core/utils/notification_controller.dart';
+//TODO: init and dispose your smartlook
 import 'ui/screen/welcome/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -61,6 +65,31 @@ initLoading() {
     ..dismissOnTap = false;
 }
 
+Future<void> disposeSmartlook({required Smartlook smartlook}) async {
+  await smartlook.stop();
+}
+
+Future<void> initSmartlook({required Smartlook smartlook}) async {
+  // await smartlook.log.enableLogging();
+  await smartlook.preferences.setProjectKey(smartlookKey);
+  await smartlook.start();
+  // smartlook.registerIntegrationListener(CustomIntegrationListener());
+  // await smartlook.preferences.setWebViewEnabled(true);
+  smartlook.state.getRecordingStatus().then(
+    (value) {
+      print('the status of the recording is $value');
+    },
+  );
+
+  // smartlook.changeNativeClassSensitivity([
+  //   SensitivityTuple(
+  //       classType: SmartlookNativeClassSensitivity.WebView, isSensitive: true),
+  //   SensitivityTuple(
+  //       classType: SmartlookNativeClassSensitivity.WKWebView,
+  //       isSensitive: true),
+  // ]);
+}
+
 class BVidyaApp extends ConsumerStatefulWidget {
   const BVidyaApp({Key? key}) : super(key: key);
 
@@ -70,13 +99,15 @@ class BVidyaApp extends ConsumerStatefulWidget {
 
 class _BVidyaAppState extends ConsumerState<BVidyaApp>
     with WidgetsBindingObserver {
+  final Smartlook smartlook = Smartlook.instance;
+
   @override
   void initState() {
     super.initState();
     appLoaded = false;
     WidgetsBinding.instance.addObserver(this);
     setupCallKit();
-
+    initSmartlook(smartlook: smartlook);
     initLoading();
     _firebase();
     registerForContact();
@@ -98,6 +129,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }
     if (state == AppLifecycleState.detached) {
       debugPrint('Hello I m here in termination');
+      disposeSmartlook(smartlook: smartlook);
     }
   }
 
@@ -255,7 +287,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
       }
     });
 
+    // debugInvertOversizedImages = true;
     return MaterialApp(
+      navigatorObservers: [SmartlookObserver()],
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeLight,
       darkTheme: AppTheme.themeDark,

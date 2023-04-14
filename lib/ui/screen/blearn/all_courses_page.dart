@@ -130,33 +130,24 @@ class AllCoursesPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 2.h),
-              Text(
-                S.current.blearn_courses,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  color: Colors.black,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               Consumer(builder: (context, ref, child) {
-                if (ref.watch(inputTextProvider) == '' ||
-                    ref.watch(inputTextProvider).isEmpty) {
-                  return Center(
-                      child: Column(
-                    children: [
-                      SizedBox(height: 50.w),
-                      getSvgIcon('no_course.svg', width: 15.w),
-                      SizedBox(height: 1.w),
-                      Text(
-                        S.current.blearn_search_courses,
-                        textAlign: TextAlign.center,
-                        style: textStyleBlack.copyWith(
-                            fontSize: 6.sp, color: AppColors.inputHintText),
-                      )
-                    ],
-                  ));
-                }
+                // if (ref.watch(inputTextProvider) == '' ||
+                //     ref.watch(inputTextProvider).isEmpty) {
+                //   return Center(
+                //       child: Column(
+                //     children: [
+                //       SizedBox(height: 50.w),
+                //       getSvgIcon('no_course.svg', width: 15.w),
+                //       SizedBox(height: 1.w),
+                //       Text(
+                //         S.current.blearn_search_courses,
+                //         textAlign: TextAlign.center,
+                //         style: textStyleBlack.copyWith(
+                //             fontSize: 6.sp, color: AppColors.inputHintText),
+                //       )
+                //     ],
+                //   ));
+                // }
 
                 return ref
                     .watch(bLearnSearchCoursesProvider(
@@ -205,39 +196,30 @@ class AllCoursesPage extends StatelessWidget {
   Widget _buildInstructorView() {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(left: 5.w, right: 5.w),
+        padding: EdgeInsets.only(left: 10.w, right: 10.w),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 2.h),
-              Text(
-                S.current.blearn_instructors,
-                style: TextStyle(
-                  fontFamily: kFontFamily,
-                  color: Colors.black,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               Consumer(builder: (context, ref, child) {
-                if (ref.watch(inputTextProvider) == '' ||
-                    ref.watch(inputTextProvider).isEmpty) {
-                  return Center(
-                      child: Column(
-                    children: [
-                      SizedBox(height: 50.w),
-                      getSvgIcon('professor.svg', width: 15.w),
-                      SizedBox(height: 1.w),
-                      Text(
-                        S.current.blearn_search_instructor,
-                        textAlign: TextAlign.center,
-                        style: textStyleBlack.copyWith(
-                            fontSize: 6.sp, color: AppColors.inputHintText),
-                      )
-                    ],
-                  ));
-                }
+                // if (ref.watch(inputTextProvider) == '' ||
+                //     ref.watch(inputTextProvider).isEmpty) {
+                //   return Center(
+                //       child: Column(
+                //     children: [
+                //       SizedBox(height: 50.w),
+                //       getSvgIcon('professor.svg', width: 15.w),
+                //       SizedBox(height: 1.w),
+                //       Text(
+                //         S.current.blearn_search_instructor,
+                //         textAlign: TextAlign.center,
+                //         style: textStyleBlack.copyWith(
+                //             fontSize: 6.sp, color: AppColors.inputHintText),
+                //       )
+                //     ],
+                //   ));
+                // }
                 return ref
                     .watch(bLearnSearchCoursesProvider(
                         ref.watch(inputTextProvider)))

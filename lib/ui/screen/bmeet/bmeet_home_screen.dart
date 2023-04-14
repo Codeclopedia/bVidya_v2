@@ -370,7 +370,12 @@ class BMeetHomeScreen extends StatelessWidget {
             builder: (context, user, ref) {
               return Column(
                 children: [
-                  getRectFAvatar(size: 22.w, user.name, user.image),
+                  getRectFAvatar(
+                      size: 22.w,
+                      user.name,
+                      user.image,
+                      cacheHeight: (60.w * devicePixelRatio).round(),
+                      cacheWidth: (60.w * devicePixelRatio).round()),
                   SizedBox(height: 0.5.h),
                   Text(user.name, style: textStyleBlack),
                 ],

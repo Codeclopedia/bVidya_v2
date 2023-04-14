@@ -71,7 +71,7 @@ class TeacherProfile extends StatelessWidget {
               _buildProfile(),
               Consumer(builder: (context, ref, child) {
                 return _buildContent(
-                    S.current.profile_details, 'profile_user.svg', () async {
+                    S.current.profile_detail, 'profile_user.svg', () async {
                   // final user = await getMeAsUser();
                   final profile = ref.read(profileUserProvider).valueOrNull;
                   // showLoading(ref);

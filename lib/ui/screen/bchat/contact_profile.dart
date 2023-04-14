@@ -284,7 +284,9 @@ class ContactProfileScreen extends HookConsumerWidget {
       child: Row(
         children: [
           getCicleAvatar(
-              contact.name ?? '', BchatGroupManager.getGroupImage(contact)),
+              contact.name ?? '', BchatGroupManager.getGroupImage(contact),
+              cacheWidth: (100.w * devicePixelRatio).round(),
+              cacheHeight: (100.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
             child: Text(
@@ -438,7 +440,9 @@ class ContactProfileScreen extends HookConsumerWidget {
       case MessageType.IMAGE:
         ChatImageMessageBody body = mediaFile.body as ChatImageMessageBody;
         mediaWidget = Image(
-          image: getImageProviderChatImage(body),
+          image: getImageProviderChatImage(body,
+              maxHeight: (100.w * devicePixelRatio).round(),
+              maxWidth: (100.w * devicePixelRatio).round()),
           fit: BoxFit.cover,
           height: imageSize,
           width: imageSize,
@@ -512,7 +516,9 @@ class ContactProfileScreen extends HookConsumerWidget {
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(3.w)),
             child: Image(
-              image: getImageProviderChatVideo(body),
+              image: getImageProviderChatVideo(body,
+                  maxHeight: (100.w * devicePixelRatio).round(),
+                  maxWidth: (100.w * devicePixelRatio).round()),
             ),
           ),
           // Positioned(
@@ -598,7 +604,10 @@ class ContactProfileScreen extends HookConsumerWidget {
         borderRadius: BorderRadius.all(Radius.circular(4.w)),
         child: Stack(
           children: [
-            mediaWidget(file, navigatorKey.currentContext!),
+            mediaWidget(
+              file,
+              navigatorKey.currentContext!,
+            ),
             if (last && counter > 0)
               Container(
                 color: Colors.black38,
@@ -752,13 +761,18 @@ class ContactProfileScreen extends HookConsumerWidget {
                   InkWell(
                     onTap: () async {
                       await showImageViewer(
-                          context, getImageProvider(contact.profileImage),
+                          context,
+                          getImageProvider(contact.profileImage,
+                              maxHeight: (100.w * devicePixelRatio).round(),
+                              maxWidth: (100.w * devicePixelRatio).round()),
                           doubleTapZoomable: true, onViewerDismissed: () {
                         // print("dismissed");
                       });
                     },
                     child: getRectFAvatar(contact.name, contact.profileImage,
-                        size: 20.w),
+                        size: 20.w,
+                        cacheHeight: (100.w * devicePixelRatio).round(),
+                        cacheWidth: (100.w * devicePixelRatio).round()),
                   ),
                   SizedBox(
                     height: 0.7.h,

@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:bvidya/ui/screens.dart';
 // import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-import '/controller/profile_providers.dart';
 import '/core/utils/local_data.dart';
 // import '/ui/widget/no_internet_connection_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -45,7 +44,7 @@ class BLearnHomeScreen extends StatelessWidget {
         topBar: _buildUser(),
         body: Consumer(
           builder: (context, ref, child) {
-            ref.read(profileRepositoryProvider).getSubscribeCourses();
+            // ref.read(profileRepositoryProvider).getSubscribeCourses();
             return ref.watch(bLearnHomeProvider).when(
                 data: (data) {
                   if (data != null) {
@@ -338,7 +337,7 @@ class BLearnHomeScreen extends StatelessWidget {
             _buildLearnList(body.bestInstructors),
             // _buildComplementary(),
             // _buildComplementaryList(),
-            _buildEnroll(context),
+            _buildEnroll(body.footerbanner ?? [BlearnBanner()], context),
             _buildRecentCaption(context, ref),
             _buildRecentList(body.recentlyAddedCourses),
             _buildTestimonialCaption(),
@@ -372,7 +371,7 @@ class BLearnHomeScreen extends StatelessWidget {
     return Padding(
         padding: EdgeInsets.symmetric(vertical: 1.h),
         child: SizedBox(
-          height: 58.w,
+          height: 61.w,
           child: ListView.builder(
             itemCount: broadcastData.length,
             shrinkWrap: true,
@@ -413,10 +412,12 @@ class BLearnHomeScreen extends StatelessWidget {
           aspectRatio: 18 / 8,
           viewportFraction: 1,
           initialPage: 0,
-          enableInfiniteScroll: true,
+          enableInfiniteScroll: bannerlist?.length == 1 ? false : true,
           reverse: false,
           autoPlay: true,
-          autoPlayInterval: const Duration(seconds: 5),
+          autoPlayInterval: bannerlist?.length == 1
+              ? const Duration(minutes: 5)
+              : const Duration(seconds: 5),
           autoPlayAnimationDuration: const Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           enlargeCenterPage: true,
@@ -428,6 +429,7 @@ class BLearnHomeScreen extends StatelessWidget {
           final bannerData = bannerlist?[itemIndex];
           return GestureDetector(
             onTap: () {
+              print('${bannerData?.actionWeb}');
               Navigator.pushNamed(context, RouteList.webview, arguments: {
                 'url': bannerData?.actionWeb ?? "",
               });
@@ -439,7 +441,9 @@ class BLearnHomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(5.w)),
                 image: DecorationImage(
-                    image: getImageProvider(bannerData?.image ?? ""),
+                    image: getImageProvider(bannerData?.image ?? "",
+                        maxHeight: (200.w * devicePixelRatio).round(),
+                        maxWidth: (200.w * devicePixelRatio).round()),
                     fit: BoxFit.cover),
                 boxShadow: const [
                   BoxShadow(
@@ -523,7 +527,9 @@ class BLearnHomeScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.w),
                     image: DecorationImage(
-                      image: getImageProvider(category?.image ?? ''),
+                      image: getImageProvider(category?.image ?? '',
+                          maxWidth: (100.w * devicePixelRatio).round(),
+                          maxHeight: (100.w * devicePixelRatio).round()),
                       fit: BoxFit.cover,
                     ),
                   )),
@@ -710,17 +716,19 @@ class BLearnHomeScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildEnroll(BuildContext context) {
+  Widget _buildEnroll(List<BlearnBanner?> footerBanner, BuildContext context) {
     return GestureDetector(
       onTap: () async {
         Navigator.pushNamed(context, RouteList.webview, arguments: {
-          'url': "https://www.app.bvidya.com/",
+          'url': footerBanner[0]?.actionWeb,
         });
       },
       child: Padding(
         padding: EdgeInsets.only(top: 2.h),
-        child: const Image(
-          image: AssetImage('assets/images/Become-instructor.png'),
+        child: Image(
+          image: getImageProvider(footerBanner[0]?.image ?? "",
+              maxHeight: (100.w * devicePixelRatio).round(),
+              maxWidth: (100.w * devicePixelRatio).round()),
           fit: BoxFit.fitWidth,
         ),
       ),
@@ -888,7 +896,7 @@ class BLearnHomeScreen extends StatelessWidget {
               },
               child: Container(
                 // width: 45.w,
-                margin: EdgeInsets.only(right: 3.w, left: 2.w),
+                margin: EdgeInsets.only(right: 1.w, left: 2.w),
                 child: CourseRowItem(course: course),
               ),
             );
@@ -926,7 +934,7 @@ class BLearnHomeScreen extends StatelessWidget {
           final testimonial = testimonials[index];
           return Container(
             width: 70.w,
-            margin: EdgeInsets.only(right: 3.w, left: 2.w),
+            margin: EdgeInsets.only(right: 2.w, left: 2.w),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.all(Radius.circular(5.w)),
@@ -941,7 +949,9 @@ class BLearnHomeScreen extends StatelessWidget {
                   children: [
                     getCicleAvatar(
                         testimonial?.name ?? 'AA', testimonial?.image ?? '',
-                        radius: 8.w),
+                        radius: 8.w,
+                        cacheHeight: (30.w * devicePixelRatio).round(),
+                        cacheWidth: (30.w * devicePixelRatio).round()),
                     SizedBox(width: 4.w),
                     Expanded(
                       child: Column(

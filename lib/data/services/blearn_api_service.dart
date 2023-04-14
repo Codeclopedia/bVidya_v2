@@ -1,4 +1,8 @@
 // import 'dart:convert';
+import 'dart:convert';
+
+import 'package:bvidya/core/state.dart';
+import 'package:bvidya/data/models/response/blearn/base_response_watch_time.dart';
 import 'package:dio/dio.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
@@ -26,6 +30,7 @@ class BLearnApiService {
         );
       }
     } catch (e) {
+      print("blearn check $e");
       return BlearnHomeResponse(
         status: 'error',
       );
@@ -389,24 +394,29 @@ class BLearnApiService {
     }
   }
 
-  Future recordVideoPlayback(
-      String authToken, String userId, String videoId) async {
+  Future<BaseResponseWatchTime> recordVideoPlayback(
+      String authToken, int userId, int videoId) async {
     try {
       _dio.options.headers['X-Auth-Token'] = authToken;
+
       final data = {
         'user_id': userId,
         'video_id': videoId,
       };
       final response = await _dio
           .post('$baseUrlApi${ApiList.lmsRecordVideoPlayback}', data: data);
-      // print('${jsonEncode(response.data)}');
+      print("hitted one minute counter $response");
       if (response.statusCode == 200) {
-        return response.data;
+        return BaseResponseWatchTime.fromJson(response.data);
       } else {
-        return null;
+        return BaseResponseWatchTime.fromJson(response.data);
       }
     } catch (e) {
-      return null;
+      print("hitted one minute counter error $e");
+      return BaseResponseWatchTime(
+        message: 'error',
+        status: 'error',
+      );
     }
   }
 

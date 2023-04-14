@@ -839,7 +839,11 @@ class ChatScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           getCicleAvatar(
-              radius: 4.w, model.contact.name, model.contact.profileImage),
+              radius: 4.w,
+              model.contact.name,
+              model.contact.profileImage,
+              cacheWidth: (50.w * devicePixelRatio).round(),
+              cacheHeight: (50.w * devicePixelRatio).round()),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 2.w),
             decoration: BoxDecoration(
@@ -1127,9 +1131,9 @@ class ChatScreen extends HookConsumerWidget {
                     children: [
                       // SizedBox(width: 2.w),
                       getRectFAvatar(
-                        model.contact.name,
-                        model.contact.profileImage,
-                      ),
+                          model.contact.name, model.contact.profileImage,
+                          cacheHeight: (40.w * devicePixelRatio).round(),
+                          cacheWidth: (40.w * devicePixelRatio).round()),
                       SizedBox(width: 2.w),
                       Expanded(
                         child: Column(

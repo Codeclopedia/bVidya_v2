@@ -9,3 +9,5 @@ class AgoraConfig {
   static const bool autoAcceptContact = false;
   static const int bViydaAdmitUserId = 184;
 }
+
+String smartlookKey = 'f098a36f5ef79b910d8aa086e83519f36557c1ce';

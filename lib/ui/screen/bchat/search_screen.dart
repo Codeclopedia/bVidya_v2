@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:ui';
+
+import 'package:bvidya/ui/screen/bchat/widgets/teacher_batch.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '/core/constants/agora_config.dart';
@@ -24,6 +27,7 @@ import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import '../../widget/coloured_box_bar.dart';
+import '/core/helpers/extensions.dart';
 
 class SearchScreen extends StatelessWidget {
   final _key = GlobalKey<FormState>();
@@ -64,7 +68,7 @@ class SearchScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             IconButton(
-              icon: getSvgIcon('arrow_back.svg'),
+              icon: getSvgIcon('arrow_back.svg', width: 6.w),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -149,21 +153,24 @@ class SearchScreen extends StatelessWidget {
                   .where((element) => element.status == ContactStatus.friend);
               final contactIds = contacts.map((e) => e.userId).toList();
               if (ref.watch(searchQueryProvider) == "") {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 50.w),
-                    Center(
-                      child: Text(
-                        "Search any user through name, email address, phone number.",
-                        textAlign: TextAlign.center,
-                        style: textStyleBlack.copyWith(
-                            color: Colors.grey,
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.normal),
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 1.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 50.w),
+                      Center(
+                        child: Text(
+                          "Search any user through name, email address, phone number.",
+                          textAlign: TextAlign.center,
+                          style: textStyleBlack.copyWith(
+                              color: Colors.grey,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.normal),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               }
               return result.when(
@@ -197,6 +204,7 @@ class SearchScreen extends StatelessWidget {
                             onLongPress: () async {
                               final value = await showSearchMenu(
                                   context, item, alreadyAdded);
+
                               if (value == 0) {
                                 _addContactSendRequest(ref, context, item);
                               } else if (value == 1) {
@@ -400,20 +408,45 @@ class SearchScreen extends StatelessWidget {
   }
 
   Widget _contactRow(SearchContactResult contact, bool added, WidgetRef ref) {
+    final bool isteacher =
+        contact.role == 'teacher' || contact.role == 'instructor';
     return Container(
       margin: EdgeInsets.symmetric(vertical: 1.h),
       child: Row(
         children: [
-          getCicleAvatar(contact.name ?? '', contact.image ?? ''),
+          getCicleAvatar(contact.name ?? '', contact.image ?? '',
+              cacheWidth: (100.w * devicePixelRatio).round(),
+              cacheHeight: (100.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
-            child: Text(
-              contact.name ?? '',
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: AppColors.contactNameTextColor,
-                fontSize: 11.sp,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      contact.name ?? '',
+                      style: TextStyle(
+                          fontFamily: kFontFamily,
+                          color: AppColors.contactNameTextColor,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 2.w),
+                    if (contact.userId == AgoraConfig.bViydaAdmitUserId)
+                      getPngImage('check.png', width: 4.5.w),
+                    if (isteacher) teacherBatch(),
+                  ],
+                ),
+                Text(
+                  contact.occupation?.toCapitalized() ?? '',
+                  style: TextStyle(
+                    fontFamily: kFontFamily,
+                    color: AppColors.inputHintText,
+                    fontSize: 8.sp,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -144,7 +144,9 @@ class NewGroupContactsScreen extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
         child: Row(
           children: [
-            getCicleAvatar(contact.name, contact.profileImage),
+            getCicleAvatar(contact.name, contact.profileImage,
+                cacheWidth: (75.w * devicePixelRatio).round(),
+                cacheHeight: (75.w * devicePixelRatio).round()),
             SizedBox(width: 3.w),
             Expanded(
                 child: Text(

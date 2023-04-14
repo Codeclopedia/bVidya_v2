@@ -1,13 +1,16 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:upgrader/upgrader.dart';
 // import 'package:uuid/uuid.dart';
 
+import '../bchat/widgets/teacher_batch.dart';
 import '/core/utils/callkit_utils.dart';
 import '../blearn/components/common.dart';
 import '/controller/bchat_providers.dart';
@@ -118,11 +121,21 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDrawerAppBarScreen(
-      currentIndex: DrawerMenu.bChat,
-      routeName: RouteList.home,
-      topBar: _userAppBar(context),
-      body: _chatListScreen(context),
+    return UpgradeAlert(
+      upgrader: Upgrader(
+          minAppVersion: '2.0.0',
+          canDismissDialog: true,
+          countryCode: 'IN',
+          shouldPopScope: () => true,
+          dialogStyle: Platform.isIOS
+              ? UpgradeDialogStyle.cupertino
+              : UpgradeDialogStyle.material),
+      child: BaseDrawerAppBarScreen(
+        currentIndex: DrawerMenu.bChat,
+        routeName: RouteList.home,
+        topBar: _userAppBar(context),
+        body: _chatListScreen(context),
+      ),
     );
   }
 
@@ -395,7 +408,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       getPngImage('check.png', width: 4.5.w),
                     if (model.contact.role == "instructor" ||
                         model.contact.role == "Teacher")
-                      getSvgIcon('Badge.svg', width: 3.w),
+                      teacherBatch(),
                   ],
                 ),
                 // Text(
@@ -484,7 +497,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget getOnlineStatusCircle(ConversationModel model) => Stack(
         children: [
-          getCicleAvatar(model.contact.name, model.contact.profileImage),
+          getCicleAvatar(model.contact.name, model.contact.profileImage,
+              cacheHeight: (100 * devicePixelRatio).round(),
+              cacheWidth: (100 * devicePixelRatio).round()),
           if (isOnline(model.isOnline))
             Positioned(
               bottom: 0,
@@ -710,7 +725,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 // onTap: (() => Navigator.pushNamed(
                 //     context, RouteList.contactProfile,
                 //     arguments: user)),
-                child: getRectFAvatar(user.name, user.image),
+                child: getRectFAvatar(user.name, user.image,
+                    cacheHeight: (100 * devicePixelRatio).round(),
+                    cacheWidth: (100 * devicePixelRatio).round()),
               ),
               SizedBox(width: 3.w),
               Column(

@@ -17,6 +17,7 @@ class WebinarDetailTile extends StatelessWidget {
             color: AppColors.cardWhite,
             borderRadius: BorderRadius.circular(15)),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
@@ -27,18 +28,23 @@ class WebinarDetailTile extends StatelessWidget {
                 height: 40.w,
                 width: 60.w,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(2.w),
                   // image: DecorationImage(
                   //     image: getImageProvider(broadcastData.image.toString()),
                   //     fit: BoxFit.cover)
                 ),
                 child: Stack(
                   children: [
-                    Image(
-                      image: getImageProvider(broadcastData.image.toString()),
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(2.w),
+                      child: Image(
+                        image: getImageProvider(broadcastData.image.toString(),
+                            maxHeight: (200.w * devicePixelRatio).round(),
+                            maxWidth: (200.w * devicePixelRatio).round()),
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                      ),
                     ),
                     if (broadcastData.status != 'scheduled') liveBanner()
                   ],
@@ -46,18 +52,16 @@ class WebinarDetailTile extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 1.h,
+              height: 2.w,
             ),
-            Expanded(
-              child: Text(
-                broadcastData.name.toString(),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600),
-              ),
+            Text(
+              broadcastData.name.toString(),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600),
             ),
             SizedBox(
-              height: 0.5.h,
+              height: 1.w,
             ),
             Text(
                 "Scheduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",

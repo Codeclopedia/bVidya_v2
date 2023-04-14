@@ -232,6 +232,8 @@ class ChatReplyBodyContent extends StatelessWidget {
         Flexible(
           child: Text(
             body.content,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: kFontFamily,
               fontSize: 10.sp,

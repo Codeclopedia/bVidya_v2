@@ -91,6 +91,7 @@ class ForwardContactListDialog extends StatelessWidget {
                                         () async {
                                       bool sent = false;
                                       for (var message in messages) {
+                                        print("value of messages ${messages}");
                                         final msg = await _sendMessage(
                                             element, message);
                                         if (msg != null) {
@@ -183,7 +184,12 @@ class ForwardContactListDialog extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
           child: Row(
             children: [
-              getCicleAvatar(radius: 5.w, model.name, model.image),
+              getCicleAvatar(
+                  radius: 5.w,
+                  model.name,
+                  model.image,
+                  cacheWidth: (75.w * devicePixelRatio).round(),
+                  cacheHeight: (75.w * devicePixelRatio).round()),
               SizedBox(width: 3.w),
               Expanded(
                 child: Text(

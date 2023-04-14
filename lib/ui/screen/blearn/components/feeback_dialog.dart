@@ -114,16 +114,16 @@ class FeedbackPopup extends HookWidget {
                   ),
                 ),
                 const Divider(),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Tell us what can be improved?",
-                    style: TextStyle(
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 10.sp),
-                  ),
-                ),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     "Tell us what can be improved?",
+                //     style: TextStyle(
+                //         fontFamily: kFontFamily,
+                //         fontWeight: FontWeight.w500,
+                //         fontSize: 10.sp),
+                //   ),
+                // ),
                 SizedBox(height: 1.w),
                 TextField(
                   controller: feedbackMessageController,

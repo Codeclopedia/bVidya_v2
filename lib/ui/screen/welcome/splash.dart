@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 
 // import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:bvidya/ui/widgets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:spring/spring.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/helpers/group_call_helper.dart';
@@ -98,8 +100,33 @@ class SplashScreen extends ConsumerWidget {
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(color: AppColors.loginBgColor),
-          child: Center(
-            child: widget,
+          child: Stack(
+            children: [
+              Center(
+                child: Image.asset(
+                  'assets/images/loader.gif',
+                  fit: BoxFit.fitWidth,
+                  cacheHeight: (60.w * devicePixelRatio).round(),
+                  cacheWidth: (60.w * devicePixelRatio).round(),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Spring.fadeIn(
+                  delay: const Duration(seconds: 4),
+                  child: RichText(
+                      text: TextSpan(children: [
+                    TextSpan(
+                        text: S.current.made_in,
+                        style: textStyleBlack.copyWith(fontSize: 15.sp)),
+                    TextSpan(
+                        text: S.current.bharat,
+                        style: textStyleBlack.copyWith(
+                            color: const Color(0xFFd80000), fontSize: 15.sp))
+                  ])),
+                ),
+              ),
+            ],
           ),
         ),
       ),

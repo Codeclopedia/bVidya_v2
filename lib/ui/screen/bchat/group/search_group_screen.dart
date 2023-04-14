@@ -194,7 +194,9 @@ class GroupSearchScreen extends StatelessWidget {
       child: Row(
         children: [
           getCicleAvatar(
-              group.name ?? '', BchatGroupManager.getGroupImage(group)),
+              group.name ?? '', BchatGroupManager.getGroupImage(group),
+              cacheWidth: (100.w * devicePixelRatio).round(),
+              cacheHeight: (100.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
             child: Text(

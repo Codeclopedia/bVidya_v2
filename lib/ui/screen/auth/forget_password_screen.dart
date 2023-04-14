@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import '../../dialog/ok_dialog.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -126,7 +127,8 @@ class ForgetPasswordScreen extends HookConsumerWidget {
       Navigator.pushReplacementNamed(context, RouteList.login);
     } else {
       hideLoading(ref);
-      AppSnackbar.instance.message(context, S.current.resetPasswordEmail);
+      // AppSnackbar.instance.message(context, S.current.resetPasswordEmail);
+      showOkDialog(context, 'Email Sent', S.current.forgetPasswordEmail);
       Navigator.pushReplacementNamed(context, RouteList.login);
     }
   }

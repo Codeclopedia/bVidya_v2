@@ -46,16 +46,26 @@ class SearchContactResult {
   final String? phone;
   final String? email;
   final String? image;
+  final String? role;
+  final String? occupation;
 
   SearchContactResult(
-      {this.userId, this.name, this.phone, this.email, this.image});
+      {this.userId,
+      this.name,
+      this.phone,
+      this.email,
+      this.image,
+      this.role,
+      this.occupation});
 
   SearchContactResult.fromJson(Map<String, dynamic> json)
       : userId = json["user_id"],
         name = json["name"],
         phone = json["phone"],
         email = json["email"],
-        image = json["profile_image"];
+        image = json["profile_image"],
+        role = json["role"],
+        occupation = json["occupation"];
 
   Map<String, dynamic> toJson() => {
         "user_id": userId,
@@ -63,5 +73,7 @@ class SearchContactResult {
         "phone": phone,
         "email": email,
         "profile_image": image,
+        "role": role,
+        "occupation": occupation
       };
 }

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:avatars/avatars.dart';
+import 'package:bvidya/app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -32,6 +34,9 @@ import '../ui_core.dart';
 //         )),
 //   ]));
 // }
+
+final devicePixelRatio =
+    MediaQuery.of(navigatorKey.currentContext!).devicePixelRatio;
 
 Widget buildBText(String text, {bool chat = false}) {
   return RichText(
@@ -72,34 +77,37 @@ Widget buildRatingBar(double rating) => RatingBar.builder(
       },
     );
 
-ImageProvider getImageProvider(String url) {
+ImageProvider getImageProvider(String url,
+    {int maxWidth = 100, int maxHeight = 100}) {
   if (url.startsWith('http')) {
-    return CachedNetworkImageProvider(url);
+    return CachedNetworkImageProvider(url,
+        maxHeight: maxHeight, maxWidth: maxWidth);
   } else if (url.startsWith('assets')) {
     return AssetImage(url);
   } else {
     // print('$url');
-    return CachedNetworkImageProvider('$baseImageApi$url');
+    return CachedNetworkImageProvider('$baseImageApi$url',
+        maxHeight: maxHeight, maxWidth: maxWidth);
     // return FileImage(
     //   File(url),
     // );
   }
 }
 
-ImageProvider getImageProviderFile(String url) {
+ImageProvider getImageProviderFile(String url,
+    {int maxHeight = 100, int maxWidth = 100}) {
   if (url.startsWith('http')) {
-    return CachedNetworkImageProvider(url);
+    return CachedNetworkImageProvider(url,
+        maxHeight: maxHeight, maxWidth: maxWidth);
   } else if (url.startsWith('assets')) {
     return AssetImage(url);
   } else {
-    return FileImage(
-      File(url),
-    );
+    return FileImage(File(url));
   }
 }
 
 ImageProvider getImageProviderChatImage(ChatImageMessageBody body,
-    {bool loadThumbFirst = true}) {
+    {bool loadThumbFirst = true, int maxHeight = 100, int maxWidth = 100}) {
   // print('thumbnailLocalPath:${body.thumbnailLocalPath}');
   // print('localPath:${body.localPath}');
   // print('thumbnailRemotePath:${body.thumbnailRemotePath}');
@@ -117,18 +125,23 @@ ImageProvider getImageProviderChatImage(ChatImageMessageBody body,
     }
   }
   if (body.thumbnailRemotePath?.isNotEmpty == true && loadThumbFirst) {
-    return CachedNetworkImageProvider(body.thumbnailRemotePath!);
+    return CachedNetworkImageProvider(body.thumbnailRemotePath!,
+        maxHeight: maxHeight, maxWidth: maxWidth);
   }
   if (body.remotePath?.isNotEmpty == true) {
-    return CachedNetworkImageProvider(body.remotePath!);
+    return CachedNetworkImageProvider(body.remotePath!,
+        maxHeight: maxHeight, maxWidth: maxWidth);
   }
   // return CachedNetworkImageProvider(body.remotePath!);
 
-  return const CachedNetworkImageProvider(
-      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg');
+  return CachedNetworkImageProvider(
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg',
+      maxHeight: maxHeight,
+      maxWidth: maxWidth);
 }
 
-ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body) {
+ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body,
+    {int maxHeight = 663, int maxWidth = 633}) {
   if (body.thumbnailLocalPath?.isNotEmpty == true) {
     return FileImage(
       File(body.thumbnailLocalPath!),
@@ -140,10 +153,13 @@ ImageProvider getImageProviderChatVideo(ChatVideoMessageBody body) {
   //   );
   // }
   if (body.thumbnailRemotePath?.isNotEmpty == true) {
-    return CachedNetworkImageProvider(body.thumbnailRemotePath!);
+    return CachedNetworkImageProvider(body.thumbnailRemotePath!,
+        maxHeight: maxHeight, maxWidth: maxWidth);
   }
-  return const CachedNetworkImageProvider(
-      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg');
+  return CachedNetworkImageProvider(
+      'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg',
+      maxHeight: maxHeight,
+      maxWidth: maxWidth);
   // final lo
   // if (url.startsWith('http')) {
   //   return CachedNetworkImageProvider(url);
@@ -169,11 +185,17 @@ SvgPicture getSvgIcon(String name,
     );
 
 Image getPngIcon(String name,
-        {double? width = 24.0, Color? color, double height = 24.0}) =>
+        {double? width = 24.0,
+        Color? color,
+        double height = 24.0,
+        int cacheWidth = 57,
+        int cacheHeight = 57}) =>
     Image.asset(
       'assets/icons/png/$name',
       width: width,
       color: color,
+      cacheHeight: (cacheHeight * devicePixelRatio).round(),
+      cacheWidth: (cacheWidth * devicePixelRatio).round(),
       fit: BoxFit.fitWidth,
     );
 
@@ -181,26 +203,34 @@ Image getPngImage(String name,
         {double? width = 24.0,
         Color? color,
         double height = 24.0,
-        BoxFit fit = BoxFit.fitWidth}) =>
+        BoxFit fit = BoxFit.fitWidth,
+        int cacheWidth = 100,
+        int cacheHeight = 100}) =>
     Image.asset(
       'assets/images/$name',
       width: width,
       color: color,
       fit: fit,
+      cacheHeight: (cacheHeight * devicePixelRatio).round(),
+      cacheWidth: (cacheWidth * devicePixelRatio).round(),
     );
 
-Widget getLottieIcon(String name,
-        {double? width = 24.0,
-        Color? color,
-        double height = 24.0,
-        BoxFit fit = BoxFit.fitWidth}) =>
+Widget getLottieIcon(
+  String name, {
+  double? width = 24.0,
+  Color? color,
+  double height = 24.0,
+  BoxFit fit = BoxFit.fitWidth,
+}) =>
     LottieBuilder.asset(
       'assets/icons/lottie/$name',
       width: width,
       fit: fit,
     );
 
-Widget getRectFAvatar(String name, String image, {double? size}) => Avatar(
+Widget getRectFAvatar(String name, String image,
+        {double? size, int cacheWidth = 57, int cacheHeight = 57}) =>
+    Avatar(
       shape: AvatarShape.rectangle(
         size ?? 14.w,
         size ?? 14.w,
@@ -218,7 +248,9 @@ Widget getRectFAvatar(String name, String image, {double? size}) => Avatar(
         if (image.isNotEmpty && !image.startsWith("asset"))
           GenericSource(
             getImageProvider(
-                image.startsWith('http') ? image : '$baseImageApi$image'),
+                image.startsWith('http') ? image : '$baseImageApi$image',
+                maxHeight: cacheHeight,
+                maxWidth: cacheWidth),
           ),
         // NetworkSource(Hi
         //   image.startsWith('http') ? image : '$baseImageApi$image',
@@ -230,7 +262,9 @@ Widget getRectFAvatar(String name, String image, {double? size}) => Avatar(
       ],
     );
 
-Widget getCicleAvatar(String name, String image, {double? radius}) => Avatar(
+Widget getCicleAvatar(String name, String image,
+        {double? radius, int cacheWidth = 57, int cacheHeight = 57}) =>
+    Avatar(
       shape: AvatarShape.circle(radius ?? 7.w),
       backgroundColor: const Color(0xFFF5F5F5),
       name: name,
@@ -243,7 +277,9 @@ Widget getCicleAvatar(String name, String image, {double? radius}) => Avatar(
         if (image.isNotEmpty && !image.startsWith("asset"))
           GenericSource(
             getImageProvider(
-                image.startsWith('http') ? image : '$baseImageApi$image'),
+                image.startsWith('http') ? image : '$baseImageApi$image',
+                maxHeight: cacheHeight,
+                maxWidth: cacheWidth),
           ),
 
         // if (image.isNotEmpty && !image.startsWith("asset"))

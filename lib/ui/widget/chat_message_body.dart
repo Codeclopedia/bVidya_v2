@@ -135,8 +135,6 @@ class ChatMessageBodyWidget extends StatelessWidget {
     // return message.body.type == MessageType.TXT ? _onlyText() : _imageOnly(me);
   }
 
-  
-
   Widget _buildTextMessage(ChatTextMessageBody body) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -154,6 +152,8 @@ class ChatMessageBodyWidget extends StatelessWidget {
     // final bool isOwnMessage = message.from == currentUser.id;
     return Text(
       content,
+      maxLines: 4,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontFamily: kFontFamily,
         fontSize: 10.sp,

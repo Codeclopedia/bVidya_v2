@@ -14,7 +14,7 @@ class CustomFeedbackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       backgroundColor: AppColors.primaryColor,
-      radius: 7.w,
+      radius: 6.w,
       child: isOpen
           ? Spring.rotate(
               startAngle: 90,

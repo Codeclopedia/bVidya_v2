@@ -375,8 +375,12 @@ class TeacherProfileEdit extends HookWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.all(2.w),
-                          child:
-                              getRectFAvatar(size: 22.w, user.name, user.image),
+                          child: getRectFAvatar(
+                              size: 22.w,
+                              user.name,
+                              user.image,
+                              cacheHeight: (50.w * devicePixelRatio).round(),
+                              cacheWidth: (50.w * devicePixelRatio).round()),
                         ),
                         Positioned(
                             bottom: 0,
@@ -506,7 +510,7 @@ class TeacherProfileEdit extends HookWidget {
 
   Widget _buildTitle() {
     return Text(
-      S.current.profile_details,
+      S.current.profile_detail,
       style: textStyleSettingHeading,
     );
   }

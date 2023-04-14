@@ -27,7 +27,9 @@ class CourseRowItem extends StatelessWidget {
                 topLeft: Radius.circular(2.3.h),
                 topRight: Radius.circular(2.3.h)),
             child: Image(
-              image: getImageProvider(course.image ?? ''),
+              image: getImageProvider(course.image ?? '',
+                  maxHeight: (60.w * devicePixelRatio).round(),
+                  maxWidth: (50.w * devicePixelRatio).round()),
               height: 30.w,
               width: double.infinity,
               fit: BoxFit.cover,

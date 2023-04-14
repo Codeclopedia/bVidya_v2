@@ -80,7 +80,9 @@ class MeetParticipantsDialog extends StatelessWidget {
       padding: EdgeInsets.all(2.w),
       child: Row(
         children: [
-          getCicleAvatar(info?.name ?? name, ''),
+          getCicleAvatar(info?.name ?? name, '',
+              cacheWidth: (100.w * devicePixelRatio).round(),
+              cacheHeight: (100.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

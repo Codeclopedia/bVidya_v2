@@ -141,7 +141,9 @@ class RecentCallScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          getCicleAvatar(model.name, model.image),
+          getCicleAvatar(model.name, model.image,
+              cacheWidth: (75.w * devicePixelRatio).round(),
+              cacheHeight: (75.w * devicePixelRatio).round()),
           SizedBox(width: 3.w),
           Expanded(
             child: Column(

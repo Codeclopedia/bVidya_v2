@@ -64,7 +64,11 @@ class BlearnVideoPlayer extends HookConsumerWidget {
       setcontrollervalue(ref);
       timer = PausableTimer(const Duration(minutes: 1), () async {
         timer?.reset();
-        isSubscribed ? await sendVideoPlayback(ref, instructorId) : null;
+        final res =
+            isSubscribed ? await sendVideoPlayback(ref, instructorId) : null;
+        if (res?.stop ?? true) {
+          timer?.pause();
+        }
       });
 
       return () {

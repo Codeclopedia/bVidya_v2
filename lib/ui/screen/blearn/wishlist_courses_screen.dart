@@ -1,3 +1,7 @@
+import 'package:bvidya/app.dart';
+
+import '../../../core/constants.dart';
+import '../../../data/models/models.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -34,6 +38,145 @@ class WishlistCourses extends StatelessWidget {
     ));
   }
 
+  Widget wishListTile(WishlistedCourse wishlistedCourse, WidgetRef ref) {
+    return Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () async {
+              showLoading(ref);
+              final courseDetail = await ref
+                  .read(bLearnRepositoryProvider)
+                  .getCourseDetail(wishlistedCourse.id ?? 0);
+              hideLoading(ref);
+              if (courseDetail != null) {
+                Navigator.pushNamed(
+                    navigatorKey.currentContext!, RouteList.bLearnCourseDetail,
+                    arguments: Course.fromJson(
+                        courseDetail.courses?[0].toJson() ?? {}));
+              }
+            },
+            child: Container(
+              height: 20.w,
+              width: 20.w,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: getImageProvider(
+                        wishlistedCourse.image ?? "",
+                        maxHeight: (50.w * devicePixelRatio).round(),
+                        maxWidth: (50.w * devicePixelRatio).round(),
+                      ),
+                      fit: BoxFit.cover)),
+            ),
+          ),
+          GestureDetector(
+            onTap: () async {
+              showLoading(ref);
+              final courseDetail = await ref
+                  .read(bLearnRepositoryProvider)
+                  .getCourseDetail(wishlistedCourse.id ?? 0);
+              hideLoading(ref);
+              if (courseDetail != null) {
+                Navigator.pushNamed(
+                    navigatorKey.currentContext!, RouteList.bLearnCourseDetail,
+                    arguments: Course.fromJson(
+                        courseDetail.courses?[0].toJson() ?? {}));
+              }
+            },
+            child: SizedBox(
+              width: 40.w,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    wishlistedCourse.name ?? "",
+                    overflow: TextOverflow.fade,
+                    maxLines: 2,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 2.5.w,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Duration: ",
+                        overflow: TextOverflow.fade,
+                        maxLines: 2,
+                        style: TextStyle(
+                            fontSize: 3.w, fontWeight: FontWeight.w400),
+                      ),
+                      Text("${wishlistedCourse.duration} hours",
+                          style: TextStyle(
+                              fontSize: 3.w, fontWeight: FontWeight.w600))
+                    ],
+                  ),
+                  SizedBox(
+                    height: 1.5.w,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        wishlistedCourse.rating ?? '',
+                        style: TextStyle(
+                            color: AppColors.yellowAccent,
+                            fontSize: 10.sp,
+                            fontFamily: kFontFamily,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      buildRatingBar(
+                          double.parse(wishlistedCourse.rating ?? '0.0')),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 1.5.w,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Lesson: ",
+                        overflow: TextOverflow.fade,
+                        maxLines: 2,
+                        style: TextStyle(
+                            fontSize: 3.w, fontWeight: FontWeight.w400),
+                      ),
+                      Text("${wishlistedCourse.numberOfLesson}",
+                          style: TextStyle(
+                              fontSize: 3.w, fontWeight: FontWeight.w600))
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                showLoading(ref);
+                // ref.watch(blearnAddorRemoveinWishlistProvider(
+                //     wishlistedCourses?[index]?.id ?? 0));
+                await ref
+                    .read(bLearnRepositoryProvider)
+                    .changeinWishlist(wishlistedCourse.id ?? 0);
+
+                ref.refresh(blearnWishlistCoursesProvider);
+                hideLoading(ref);
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.yellowAccent),
+              child: const Text(
+                "Remove",
+                style: TextStyle(color: AppColors.primaryColor),
+              ))
+        ],
+      ),
+      const Divider(),
+    ]);
+  }
+
   Widget _buildUI(WidgetRef ref, List<WishlistedCourse?>? wishlistedCourses) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w),
@@ -55,120 +198,8 @@ class WishlistCourses extends StatelessWidget {
               itemCount: wishlistedCourses?.length ?? 0,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 20.w,
-                          width: 20.w,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: getImageProvider(
-                                      wishlistedCourses?[index]?.image ?? ""),
-                                  fit: BoxFit.cover)),
-                        ),
-                        SizedBox(
-                          width: 40.w,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                wishlistedCourses?[index]?.name ?? "",
-                                overflow: TextOverflow.fade,
-                                maxLines: 2,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 2.5.w,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Duration: ",
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                        fontSize: 3.w,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  Text(
-                                      "${wishlistedCourses?[index]?.duration} hours",
-                                      style: TextStyle(
-                                          fontSize: 3.w,
-                                          fontWeight: FontWeight.w600))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 2.5.w,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    wishlistedCourses?[index]?.rating ?? '',
-                                    style: TextStyle(
-                                        color: AppColors.yellowAccent,
-                                        fontSize: 10.sp,
-                                        fontFamily: kFontFamily,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  buildRatingBar(double.parse(
-                                      wishlistedCourses?[index]?.rating ??
-                                          '0.0')),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 2.5.w,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "lesson: ",
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                        fontSize: 3.w,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  Text(
-                                      "${wishlistedCourses?[index]?.numberOfLesson}",
-                                      style: TextStyle(
-                                          fontSize: 3.w,
-                                          fontWeight: FontWeight.w600))
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              showLoading(ref);
-                              // ref.watch(blearnAddorRemoveinWishlistProvider(
-                              //     wishlistedCourses?[index]?.id ?? 0));
-                              await ref
-                                  .read(bLearnRepositoryProvider)
-                                  .changeinWishlist(
-                                      wishlistedCourses?[index]?.id ?? 0);
-
-                              ref.refresh(blearnWishlistCoursesProvider);
-                              hideLoading(ref);
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.yellowAccent),
-                            child: const Text(
-                              "Remove",
-                              style: TextStyle(color: AppColors.primaryColor),
-                            ))
-                      ],
-                    ),
-                    const Divider(),
-                  ],
-                );
+                return wishListTile(
+                    wishlistedCourses?[index] ?? WishlistedCourse(), ref);
               },
             ),
           ),

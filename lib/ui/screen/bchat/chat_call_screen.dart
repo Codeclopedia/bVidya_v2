@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:wakelock/wakelock.dart';
 import '/data/models/call_message_body.dart';
 // import '/core/utils/connectycubekit.dart';
 import '/core/utils/callkit_utils.dart';
@@ -88,7 +89,11 @@ class ChatCallScreen extends HookConsumerWidget {
       ref
           .read(audioCallChangeProvider.notifier)
           .init(callInfo, callDirection, callType, msgId, otherUserId);
-      return () {};
+      Wakelock.enable();
+
+      return () {
+        Wakelock.disable();
+      };
     }, []);
     final provider = ref.watch(audioCallChangeProvider);
     // useEffect(() {
@@ -150,7 +155,10 @@ class ChatCallScreen extends HookConsumerWidget {
                     alignment: Alignment.topCenter,
                     child: Column(
                       children: [
-                        getCicleAvatar(name, image, radius: 20.w),
+                        getCicleAvatar(name, image,
+                            radius: 20.w,
+                            cacheWidth: (200.w * devicePixelRatio).round(),
+                            cacheHeight: (200.w * devicePixelRatio).round()),
                         Text(
                           status,
                           style: TextStyle(
@@ -306,9 +314,8 @@ class ChatCallScreen extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Visibility(
-              visible: provider.updateCallType == CallType.video,
-              child: GestureDetector(
+            if (provider.updateCallType == CallType.video)
+              GestureDetector(
                 onTap: () {
                   provider.switchCamera();
                 },
@@ -319,7 +326,6 @@ class ChatCallScreen extends HookConsumerWidget {
                 // ),
                 child: getSvgIcon(width: 8.w, 'vc_camera_flip.svg'),
               ),
-            ),
             GestureDetector(
               onTap: () {
                 provider.toggleMute();
@@ -333,9 +339,8 @@ class ChatCallScreen extends HookConsumerWidget {
               //     width: 8.w,
               //     provider.mute ? 'vc_mic_off.svg' : 'vc_mic_on.svg'),
             ),
-            Visibility(
-              visible: provider.updateCallType == CallType.video,
-              child: GestureDetector(
+            if (provider.updateCallType == CallType.video)
+              GestureDetector(
                 onTap: () {
                   //
                   provider.toggleVideo(context);
@@ -351,10 +356,8 @@ class ChatCallScreen extends HookConsumerWidget {
                 //     width: 8.w,
                 //     provider.videoOn ? 'vc_video_off.svg' : 'vc_video_on.svg'),
               ),
-            ),
-            Visibility(
-              visible: provider.updateCallType == CallType.audio,
-              child: GestureDetector(
+            if (provider.updateCallType == CallType.audio)
+              GestureDetector(
                 onTap: () {
                   provider.toggleSpeaker();
                 },
@@ -366,7 +369,6 @@ class ChatCallScreen extends HookConsumerWidget {
                   size: 10.w,
                 ),
               ),
-            ),
             InkWell(
               onTap: () async {
                 if (provider.status == CallConnectionStatus.Ringing ||

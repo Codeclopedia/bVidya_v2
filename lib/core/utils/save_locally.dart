@@ -10,40 +10,40 @@ import '../ui_core.dart';
 
 final Dio dio = Dio();
 
-saveMultipleFiles(
-    {required List<ChatMessage> data,
-    required WidgetRef ref,
-    required MessageType filetype}) async {
+saveMultipleFiles({
+  required List<ChatMessage> data,
+  required WidgetRef ref,
+}) async {
   showLoading(ref);
   try {
-    switch (filetype) {
-      case MessageType.IMAGE:
-        for (int i = 0; i < data.length; i++) {
+    for (int i = 0; i < data.length; i++) {
+      switch (data[i].body.type) {
+        case MessageType.IMAGE:
           final body = data[i].body as ChatImageMessageBody;
           await saveSingleFile(ref, body.displayName ?? "",
               body.remotePath ?? "", MessageType.IMAGE);
-        }
-        break;
-      case MessageType.VIDEO:
-        break;
+          break;
+        case MessageType.VIDEO:
+          final body = data[i].body as ChatImageMessageBody;
+          await saveSingleFile(ref, body.displayName ?? "",
+              body.remotePath ?? "", MessageType.VIDEO);
+          break;
 
-      case MessageType.FILE:
-        for (int i = 0; i < data.length; i++) {
-          final body = data[i].body as ChatFileMessageBody;
+        case MessageType.FILE:
+          final body = data[i].body as ChatImageMessageBody;
           await saveSingleFile(ref, body.displayName ?? "",
               body.remotePath ?? "", MessageType.FILE);
-        }
-        break;
 
-      case MessageType.VOICE:
-        for (int i = 0; i < data.length; i++) {
-          final body = data[i].body as ChatVoiceMessageBody;
+          break;
+
+        case MessageType.VOICE:
+          final body = data[i].body as ChatImageMessageBody;
           await saveSingleFile(ref, body.displayName ?? "",
               body.remotePath ?? "", MessageType.VOICE);
-        }
-        break;
-      default:
-      // return const SizedBox.shrink();
+          break;
+        default:
+        // return const SizedBox.shrink();
+      }
     }
   } catch (e) {
     EasyLoading.showError(S.current.error);
@@ -112,31 +112,8 @@ saveFile(
         await _doSave(url, fileName, "Images");
         break;
       case MessageType.VIDEO:
+        await _doSave(url, fileName, "videos");
         break;
-      // case MessageType.CUSTOM:
-      //   ChatCustomMessageBody body = message.body as ChatCustomMessageBody;
-      //   if (message.chatType == ChatType.GroupChat) {
-      //     try {
-      //       // print('JSON=> ${body.event}');
-      //       final callBody =
-      //           GroupCallMessegeBody.fromJson(jsonDecode(body.event));
-
-      //       return _callBody(callBody.callType);
-      //     } catch (e) {
-      //       // print('Error Grp=> $e');
-      //       break;
-      //     }
-      //   } else if (message.chatType == ChatType.Chat) {
-      //     try {
-      //       final callBody = CallMessegeBody.fromJson(jsonDecode(body.event));
-
-      //       return _callBody(callBody.callType);
-      //     } catch (e) {
-      //       break;
-      //     }
-      //   } else {
-      //     break;
-      //   }
 
       case MessageType.FILE:
         await _doSave(url, fileName, "Documents");

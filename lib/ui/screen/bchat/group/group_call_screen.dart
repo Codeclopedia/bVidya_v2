@@ -285,7 +285,10 @@ class GroupCallScreen extends StatelessWidget {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
-              getCicleAvatar(groupName, groupImage, radius: 20.w),
+              getCicleAvatar(groupName, groupImage,
+                  radius: 20.w,
+                  cacheWidth: (150.w * devicePixelRatio).round(),
+                  cacheHeight: (150.w * devicePixelRatio).round()),
               Text(
                 'Group Call',
                 style: TextStyle(
@@ -649,7 +652,11 @@ class MemberListDialog extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       getCicleAvatar(u.contact.name,
-                                          u.contact.profileImage),
+                                          u.contact.profileImage,
+                                          cacheWidth:
+                                              (75.w * devicePixelRatio).round(),
+                                          cacheHeight: (75.w * devicePixelRatio)
+                                              .round()),
                                       SizedBox(width: 2.w),
                                       Expanded(
                                         child: Column(

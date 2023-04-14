@@ -90,12 +90,21 @@ class BaseDrawerSettingScreen extends StatelessWidget {
         children: [
           InkWell(
               onTap: () async {
-                await showImageViewer(context, getImageProvider(user.image),
+                await showImageViewer(
+                    context,
+                    getImageProvider(user.image,
+                        maxHeight: (200.w * devicePixelRatio).round(),
+                        maxWidth: (200.w * devicePixelRatio).round()),
                     doubleTapZoomable: true, onViewerDismissed: () {
                   // print("dismissed");
                 });
               },
-              child: getRectFAvatar(size: 22.w, user.name, user.image)),
+              child: getRectFAvatar(
+                  size: 22.w,
+                  user.name,
+                  user.image,
+                  cacheHeight: (50.w * devicePixelRatio).round(),
+                  cacheWidth: (50.w * devicePixelRatio).round())),
           Text(
             user.name,
             style: TextStyle(

@@ -112,8 +112,6 @@ class ActivePlanDetailScreen extends StatelessWidget {
                                               "${creditsDetails.subscriptionPurchaseHistory?[0].name} Plan",
                                           numberofCourses:
                                               "${creditsDetails.subscriptionPurchaseHistory?[0].courseCredit} Courses",
-                                          desc:
-                                              "*Subscribe any ${creditsDetails.avilableCourseCredits} courses through this subscription",
                                           price:
                                               "₹ ${creditsDetails.subscriptionPurchaseHistory?[0].price}",
                                           isSelected: true,
@@ -316,7 +314,11 @@ class ActivePlanDetailScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(15),
                                   image: DecorationImage(
                                       image: getImageProvider(
-                                          snapshot.data?.image ?? ''),
+                                          snapshot.data?.image ?? '',
+                                          maxHeight:
+                                              (60.w * devicePixelRatio).round(),
+                                          maxWidth: (60.w * devicePixelRatio)
+                                              .round()),
                                       fit: BoxFit.cover)),
                             ),
                           ),
@@ -435,7 +437,6 @@ class ActivePlanDetailScreen extends StatelessWidget {
       {required String planName,
       required String numberofCourses,
       required String price,
-      required String desc,
       required bool isSelected,
       required int index,
       required WidgetRef ref}) {
@@ -473,7 +474,7 @@ class ActivePlanDetailScreen extends StatelessWidget {
                       width: 2.w,
                     ),
                     SizedBox(
-                      width: 25.w,
+                      width: 35.w,
                       child: Text(
                         planName,
                         style: textStyleBlack,
@@ -496,20 +497,6 @@ class ActivePlanDetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 2.w,
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    SizedBox(
-                      width: 62.w,
-                      child: Text(
-                        desc,
-                        style: textStyleSettingDesc,
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
             Text(

@@ -227,7 +227,9 @@ Widget _attachFileView(AttachedFile attFile, Function() onSend) {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Icon(
-                          Icons.image,
+                          attFile.messageType == MessageType.VIDEO
+                              ? Icons.voice_chat_rounded
+                              : Icons.image,
                           size: 4.w,
                           color: Colors.grey,
                         ),

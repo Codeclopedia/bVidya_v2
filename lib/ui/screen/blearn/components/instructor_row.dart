@@ -13,12 +13,14 @@ class InstructorRowItem extends StatelessWidget {
       children: [
         Container(
           height: 40.w,
-          width: 30.w,
-          margin: EdgeInsets.only(left: 3.w),
+          // width: 60.w,
+          // margin: EdgeInsets.only(left: 3.w),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3.w),
               image: DecorationImage(
-                  image: getImageProvider(instructor.image ?? ''),
+                  image: getImageProvider(instructor.image ?? '',
+                      maxHeight: (40.w * devicePixelRatio).round(),
+                      maxWidth: (60.w * devicePixelRatio).round()),
                   fit: BoxFit.cover)),
         ),
         SizedBox(
