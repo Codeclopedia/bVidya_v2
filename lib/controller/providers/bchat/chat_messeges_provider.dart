@@ -299,7 +299,7 @@ ChatMessageExt getAlbum(List<ChatMessage> feedList, int offset) {
 
   while (i < feedList.length &&
       (feedList[i].body.type == MessageType.IMAGE ||
-          message.body.type == MessageType.VIDEO) &&
+          feedList[i].body.type == MessageType.VIDEO) &&
       feedList[i].from == message.from) {
     i++;
   }

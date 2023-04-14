@@ -9,6 +9,8 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../blive_providers.dart';
 
+
+
 class BLiveProvider extends ChangeNotifier {
 //
   int _localUid = 0;
@@ -27,13 +29,13 @@ class BLiveProvider extends ChangeNotifier {
   bool _allMuted = true;
   bool get allMuted => _allMuted;
 
-  int _cIndex = 0;
-  int get cIndex => _cIndex;
+  // int _cIndex = 0;
+  // int get cIndex => _cIndex;
 
-  setCIndex(int index) {
-    _cIndex = index;
-    notifyListeners();
-  }
+  // setCIndex(int index) {
+  //   _cIndex = index;
+  //   notifyListeners();
+  // }
 
 //
   bool _hostCamera = false;
@@ -207,7 +209,7 @@ class BLiveProvider extends ChangeNotifier {
 
           _localUid = connection.localUid ?? 0;
           _userRemoteIds.add(_localUid);
-          _userList.addAll({_localUid: _localView()});
+          // _userList.addAll({_localUid: _localView()});
           // _userList.addAll(
           //     {_localUid: ConnectedUserInfo(_localUid, '', _localView())});
           _updateMemberList();

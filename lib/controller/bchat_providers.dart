@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '../core/helpers/duration.dart';
+import '/core/helpers/duration.dart';
 import '/core/sdk_helpers/bchat_group_manager.dart';
 
 import '/core/helpers/extensions.dart';

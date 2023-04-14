@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/data/services/auth_api_service.dart';
+import '/data/services/auth_api_service.dart';
 
 import '../../dialog/ok_dialog.dart';
 import '/controller/profile_providers.dart';

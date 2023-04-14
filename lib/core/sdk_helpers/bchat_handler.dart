@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_contact_manager.dart';
-import 'package:bvidya/core/sdk_helpers/bchat_group_manager.dart';
-import 'package:bvidya/core/ui_core.dart';
+import '/core/sdk_helpers/bchat_contact_manager.dart';
+import '/core/sdk_helpers/bchat_group_manager.dart';
+import '/core/ui_core.dart';
 // import '../utils/request_utils.dart';
 // import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '../state.dart';

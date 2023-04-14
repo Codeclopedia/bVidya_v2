@@ -1,4 +1,4 @@
-import 'package:bvidya/ui/dialog/ok_dialog.dart';
+import '/ui/dialog/ok_dialog.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';

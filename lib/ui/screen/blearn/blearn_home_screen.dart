@@ -2,7 +2,7 @@
 // import '/co/blearntopbar.dart';
 import 'dart:convert';
 
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 // import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '/core/utils/local_data.dart';

@@ -1,5 +1,5 @@
-import 'package:bvidya/data/models/response/base_response.dart';
-import 'package:bvidya/ui/dialog/ok_dialog.dart';
+import '/data/models/response/base_response.dart';
+import '/ui/dialog/ok_dialog.dart';
 import 'package:flutter/gestures.dart';
 
 import '../../../dialog/basic_dialog.dart';

@@ -1,8 +1,8 @@
 // import 'dart:convert';
 import 'dart:convert';
 
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/data/models/response/blearn/base_response_watch_time.dart';
+import '/core/state.dart';
+import '/data/models/response/blearn/base_response_watch_time.dart';
 import 'package:dio/dio.dart';
 import '/core/constants.dart';
 import '../models/models.dart';

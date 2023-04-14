@@ -1,7 +1,7 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import 'package:bvidya/core/state.dart';
-import 'package:bvidya/core/utils/save_locally.dart';
-import 'package:bvidya/ui/screens.dart';
+import '/core/state.dart';
+import '/core/utils/save_locally.dart';
+import '/ui/screens.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 

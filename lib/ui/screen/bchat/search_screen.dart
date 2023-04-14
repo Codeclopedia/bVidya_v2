@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:bvidya/ui/screen/bchat/widgets/teacher_batch.dart';
+import '/ui/screen/bchat/widgets/teacher_batch.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '/core/constants/agora_config.dart';

@@ -567,7 +567,7 @@ packages:
       name: flutter_smartlook
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.1"
+    version: "4.0.8"
   flutter_spinkit:
     dependency: transitive
     description:

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:avatars/avatars.dart';
-import 'package:bvidya/app.dart';
+import '/app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_pdf_viewer/easy_pdf_viewer.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';

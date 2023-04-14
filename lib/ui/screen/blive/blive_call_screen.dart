@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:bvidya/core/constants/colors.dart';
+import '/core/constants/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:pip_view/pip_view.dart';
 import 'package:wakelock/wakelock.dart';
 
-import '../../../core/utils.dart';
+import '/core/utils.dart';
 import '/controller/blive_providers.dart';
 import '/controller/providers/blive_provider.dart';
 import '/core/state.dart';
@@ -21,6 +21,8 @@ import '../blearn/components/common.dart';
 final isDrawerAccessed = StateProvider.autoDispose((ref) {
   return true;
 });
+
+final currentScreenIndex = StateProvider.autoDispose<bool>((ref) => false);
 
 class BLiveClassScreen extends HookConsumerWidget {
   final LiveClass liveClass;
@@ -103,7 +105,7 @@ class BLiveClassScreen extends HookConsumerWidget {
                             },
                             child: Stack(
                               children: [
-                                ..._viewRows1(provider),
+                                ..._viewRows1(provider, ref),
                                 // !isLandscapeView
                                 //     ? _viewRows(provider)
                                 //     :
@@ -360,9 +362,9 @@ class BLiveClassScreen extends HookConsumerWidget {
   //   return wrappedViews.first;
   // }
 
-  List<Widget> _viewRows1(BLiveProvider provider) {
+  List<Widget> _viewRows1(BLiveProvider provider, WidgetRef ref) {
     final hostScreens = provider.userList;
-    hostScreens.removeWhere((key, value) => key == _me?.id);
+    // hostScreens.removeWhere((key, value) => key == _me?.id);
     final views = hostScreens.values.toList();
     switch (views.length) {
       case 1:
@@ -374,16 +376,19 @@ class BLiveClassScreen extends HookConsumerWidget {
           )
         ];
       case 2:
-        int cIndex = provider.cIndex;
+        bool cIndex = ref.watch(currentScreenIndex);
+        print('Current Index=$cIndex');
         return [
           Column(
             children: <Widget>[
               _expandedVideoRow([
                 GestureDetector(
                     onTap: () {
-                      provider.setCIndex(cIndex == 0 ? 1 : 0);
+                      ref.read(currentScreenIndex.notifier).state = !cIndex;
+                      // cIndex == 0 ? 0 : 1;
+                      // provider.setCIndex(cIndex == 0 ? 0 : 1);
                     },
-                    child: views[cIndex == 0 ? 0 : 1])
+                    child: views[cIndex ? 1 : 0])
               ]),
             ],
           ),
@@ -399,9 +404,10 @@ class BLiveClassScreen extends HookConsumerWidget {
                     color: AppColors.black.withOpacity(0.5)),
                 child: GestureDetector(
                     onTap: () {
-                      provider.setCIndex(cIndex == 0 ? 1 : 0);
+                      // provider.setCIndex(cIndex == 0 ? 1 : 0);
+                      ref.read(currentScreenIndex.notifier).state = !cIndex;
                     },
-                    child: views[cIndex == 0 ? 0 : 1]),
+                    child: views[cIndex ? 0 : 1]),
               )
               // _singleViewWindow(
               //     [provider.userList.values.first]
@@ -414,7 +420,7 @@ class BLiveClassScreen extends HookConsumerWidget {
 
   Widget _viewRows(BLiveProvider provider) {
     final hostScreens = provider.userList;
-    hostScreens.removeWhere((key, value) => key == _me?.id);
+    // hostScreens.removeWhere((key, value) => key == _me?.id);
     final views = hostScreens.values.toList();
     switch (views.length) {
       case 1:

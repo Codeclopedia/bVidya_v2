@@ -1,6 +1,6 @@
-import 'package:bvidya/app.dart';
+import '/app.dart';
 
-import '../../../core/constants.dart';
+import '/core/constants.dart';
 import '../../../data/models/models.dart';
 import '/core/constants/colors.dart';
 import '/core/state.dart';

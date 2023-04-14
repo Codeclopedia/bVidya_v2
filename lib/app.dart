@@ -31,7 +31,6 @@ import 'core/theme/apptheme.dart';
 import 'core/ui_core.dart';
 import 'core/utils/callkit_utils.dart';
 // import 'core/utils/notification_controller.dart';
-//TODO: init and dispose your smartlook
 import 'ui/screen/welcome/splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -74,10 +73,10 @@ Future<void> initSmartlook({required Smartlook smartlook}) async {
   await smartlook.preferences.setProjectKey(smartlookKey);
   await smartlook.start();
   // smartlook.registerIntegrationListener(CustomIntegrationListener());
-  // await smartlook.preferences.setWebViewEnabled(true);
+  await smartlook.preferences.setWebViewEnabled(true);
   smartlook.state.getRecordingStatus().then(
     (value) {
-      print('the status of the recording is $value');
+      debugPrint('the status of the recording is $value');
     },
   );
 
@@ -166,7 +165,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }
 
     FirebaseMessaging.onMessage.listen((message) async {
-      print('onMessage => ${message.data} : ${message.notification}');
+      // print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
       if (message.data['type'] == NotiConstants.typeCall) {
@@ -318,7 +317,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
       // ChatClient.getInstance.logout(false);
       Routes.resetScreen();
     } catch (e) {
-      print('object $e');
+      debugPrint('error in dispose app $e');
     }
 
     WidgetsBinding.instance.removeObserver(this);

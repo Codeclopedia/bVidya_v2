@@ -1,4 +1,4 @@
-import 'package:bvidya/data/models/response/blearn/base_response_watch_time.dart';
+import '/data/models/response/blearn/base_response_watch_time.dart';
 
 import '/controller/blearn_providers.dart';
 import '/core/state.dart';

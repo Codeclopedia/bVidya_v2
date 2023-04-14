@@ -1,7 +1,7 @@
 PODS:
   - agora_chat_sdk (0.0.1):
     - Flutter
-    - HyphenateChat (= 3.9.9)
+    - HyphenateChat (= 4.0.0)
   - agora_rtc_engine (6.0.0):
     - AgoraIrisRTC_iOS (= 4.0.0-rc.2)
     - AgoraRtcEngine_Special_iOS (= 4.0.0.5)
@@ -24,6 +24,8 @@ PODS:
   - camera_avfoundation (0.0.1):
     - Flutter
   - CryptoSwift (1.6.0)
+  - device_info_plus (0.0.1):
+    - Flutter
   - DKImagePickerController/Core (4.3.4):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -111,6 +113,8 @@ PODS:
     - Flutter
   - flutter_share (0.0.1):
     - Flutter
+  - flutter_smartlook (0.0.5):
+    - Flutter
   - flutter_video_info (1.1.0):
     - Flutter
   - fluttertoast (0.0.2):
@@ -140,7 +144,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.0):
     - GoogleUtilities/Logger
-  - HyphenateChat (3.9.9)
+  - HyphenateChat (4.0.0)
   - image_crop (0.0.1):
     - Flutter
   - image_cropper (0.0.4):
@@ -224,6 +228,7 @@ DEPENDENCIES:
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - easy_pdf_viewer (from `.symlinks/plugins/easy_pdf_viewer/ios`)
   - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -234,6 +239,7 @@ DEPENDENCIES:
   - flutter_facebook_sdk (from `.symlinks/plugins/flutter_facebook_sdk/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_share (from `.symlinks/plugins/flutter_share/ios`)
+  - flutter_smartlook (from `.symlinks/plugins/flutter_smartlook/ios`)
   - flutter_video_info (from `.symlinks/plugins/flutter_video_info/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_crop (from `.symlinks/plugins/image_crop/ios`)
@@ -304,6 +310,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audioplayers/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   easy_pdf_viewer:
     :path: ".symlinks/plugins/easy_pdf_viewer/ios"
   emoji_picker_flutter:
@@ -324,6 +332,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_share:
     :path: ".symlinks/plugins/flutter_share/ios"
+  flutter_smartlook:
+    :path: ".symlinks/plugins/flutter_smartlook/ios"
   flutter_video_info:
     :path: ".symlinks/plugins/flutter_video_info/ios"
   fluttertoast:
@@ -372,7 +382,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  agora_chat_sdk: f9772c5f21df937ab08f7b316e9474f4fbdfcc26
+  agora_chat_sdk: ce66fe2e4f70ee969f006d5c200fde9ac9613d45
   agora_rtc_engine: 732f1a488865cff9094bb29fe15f6889ba0d49ea
   agora_rtm: fe254f84e056f8dbcf878a2a20b9f46aa9e7d0dd
   AgoraIrisEventFlutter_iOS: a5ade1ea532633e8c26496f3eee87a3810ac92b0
@@ -385,6 +395,7 @@ SPEC CHECKSUMS:
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
   CryptoSwift: 562f8eceb40e80796fffc668b0cad9313284cfa6
+  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   easy_pdf_viewer: 0b396564ff0e65320c2a505551fb6de05d57f512
@@ -403,12 +414,13 @@ SPEC CHECKSUMS:
   flutter_facebook_sdk: 82c8d10c6226b66de5459d6115ab02d1ecd66cd9
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_share: 4be0208963c60b537e6255ed2ce1faae61cd9ac2
+  flutter_smartlook: 0cbe6a3a0db5140809031c288945ba70c2055243
   flutter_video_info: a932e1b0da369bba95c3a14b7f61d5f8b0d03280
   fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleDataTransport: ea169759df570f4e37bdee1623ec32a7e64e67c4
   GoogleUtilities: c2bdc4cf2ce786c4d2e6b3bcfd599a25ca78f06f
-  HyphenateChat: 2237c9ece3f1bb54645dea0a9918f08e03e1516d
+  HyphenateChat: 9f6e4ac3b290e52cc0e52491f85d86097b35c285
   image_crop: e0a67085d3ebf3cf46ca46d61c53a082507b0bc3
   image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 // import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:bvidya/ui/widgets.dart';
+// import '/ui/widgets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:spring/spring.dart';
 

@@ -1,4 +1,4 @@
-import 'package:bvidya/app.dart';
+import '/app.dart';
 import 'package:intl/intl.dart';
 
 import '../../../dialog/ok_dialog.dart';

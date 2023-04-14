@@ -2,7 +2,7 @@
 
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/ui/screens.dart';
+import '/ui/screens.dart';
 import 'package:smart_snackbars/enums/animate_from.dart';
 import 'package:smart_snackbars/smart_snackbars.dart';
 // import 'package:top_snackbar_flutter/top_snack_bar.dart';

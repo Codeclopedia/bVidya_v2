@@ -66,8 +66,8 @@ class ChatMessageBubbleExt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "message detail ${message.isGroupMedia} ${message.msg} ${message.messages}");
+    // print(
+    //     "message detail ${message.isGroupMedia} ${message.msg} ${message.messages}");
     return Padding(
       padding: EdgeInsets.only(
           left: isOwnMessage ? 0 : 4.w,
