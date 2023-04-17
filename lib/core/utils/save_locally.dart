@@ -1,14 +1,33 @@
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-import '/core/state.dart';
-import '/ui/screens.dart';
+
 import 'package:dio/dio.dart';
 import 'package:folder_file_saver/folder_file_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart' as p;
 
+import '/core/state.dart';
+import '/ui/screens.dart';
 import '../ui_core.dart';
 
 final Dio dio = Dio();
+
+String getFileExtension(String fileName) {
+  try {
+    return ".${fileName.split('.').last}";
+  } catch (e) {
+    return '';
+  }
+}
+
+Future<String?> saveTempFile(String url) async {
+  try {
+    String ext = getFileExtension(url);
+    return await _doTempSave(url, ext);
+  } catch (e) {
+    print(e);
+  }
+  return null;
+}
 
 saveMultipleFiles({
   required List<ChatMessage> data,
@@ -264,23 +283,21 @@ Future<void> _doSave(String urlImage, String filename, String filetype) async {
 
 // Don't forget to check
 // device permission
-// Future<void> _doSave(String urlVideo) async {
-//   final dir = await p.getTemporaryDirectory();
-//   // prepare the file and type extension that you want to download
-//   // remove originFile after success default = false
-//   final filePath = dir.path +
-//       ('/your_file_named ${DateTime.now().millisecondsSinceEpoch}.mp4');
-//   await dio.download(urlVideo, filePath, onReceiveProgress: (rec, total) {
-//     // setState(() {
-//     //   progress = ((rec / total) * 100).toStringAsFixed(0) + "%";
-//     // });
-//   });
-//   final result = await FolderFileSaver.saveFileToFolderExt(
-//     filePath,
-//     removeOriginFile: true,
-//   );
-//   print(result);
-// }
+Future<String> _doTempSave(String urlVideo, String ext) async {
+  final dir = await p.getTemporaryDirectory();
+  // prepare the file and type extension that you want to download
+  // remove originFile after success default = false
+  final filePath =
+      dir.path + ('/temp_${DateTime.now().millisecondsSinceEpoch}.$ext');
+  await dio.download(urlVideo, filePath, onReceiveProgress: (rec, total) {});
+
+  // final result = await FolderFileSaver.saveFileToFolderExt(
+  //   filePath,
+  //   removeOriginFile: true,
+  // );
+  print(filePath);
+  return filePath;
+}
 
 // Don't forget to check
 // device permission

@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:grouped_list/grouped_list.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
-import 'package:grouped_list/grouped_list.dart';
+
+import '/core/utils/save_locally.dart';
 import '/controller/bchat_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -91,7 +96,7 @@ class ForwardContactListDialog extends StatelessWidget {
                                         () async {
                                       bool sent = false;
                                       for (var message in messages) {
-                                        print("value of messages ${messages}");
+                                        // print("value of messages ${messages}");
                                         final msg = await _sendMessage(
                                             element, message);
                                         if (msg != null) {
@@ -229,11 +234,80 @@ class ForwardContactListDialog extends StatelessWidget {
     );
   }
 
+  Future<ChatMessageBody> _createBody(ChatMessage message) async {
+    final ChatMessageBody newBody; // = message.body;
+    if (message.body is ChatFileMessageBody) {
+      final body = message.body as ChatFileMessageBody;
+      if (body.localPath.isNotEmpty && File(body.localPath).existsSync()) {
+        // newBody = message.body;
+        newBody = message.body;
+      } else {
+        String localPath = '';
+        String? remotePath = body.remotePath;
+        if (remotePath != null && remotePath.isNotEmpty) {
+          localPath = await saveTempFile(remotePath) ?? '';
+        }
+        if (localPath.isNotEmpty) {
+          if (message.body.type == MessageType.VIDEO) {
+            final body = message.body as ChatVideoMessageBody;
+            final thumb = await VideoThumbnail.thumbnailFile(
+              video: localPath,
+              thumbnailPath: Directory.systemTemp.path,
+              imageFormat: ImageFormat.JPEG,
+              maxWidth: 128,
+              quality: 25,
+            );
+            newBody = ChatVideoMessageBody(
+              localPath: localPath,
+              displayName: body.displayName,
+              duration: body.duration,
+              fileSize: body.fileSize,
+              height: body.height,
+              width: body.width,
+              thumbnailLocalPath: thumb,
+            );
+          } else if (message.body.type == MessageType.VOICE) {
+            final body = message.body as ChatVoiceMessageBody;
+            newBody = ChatVideoMessageBody(
+              localPath: localPath,
+              displayName: body.displayName,
+              duration: body.duration,
+              fileSize: body.fileSize,
+            );
+          } else if (message.body.type == MessageType.IMAGE) {
+            final body = message.body as ChatImageMessageBody;
+            newBody = ChatImageMessageBody(
+              localPath: localPath,
+              displayName: body.displayName,
+              height: body.height,
+              width: body.width,
+              thumbnailLocalPath: localPath,
+              fileSize: body.fileSize,
+            );
+          } else {
+            final body = message.body as ChatFileMessageBody;
+            newBody = ChatFileMessageBody(
+              localPath: localPath,
+              displayName: body.displayName,
+              fileSize: body.fileSize,
+            );
+          }
+        } else {
+          newBody = message.body;
+        }
+      }
+    } else {
+      newBody = message.body;
+    }
+    return newBody;
+  }
+
   Future<ChatMessage?> _sendMessage(
       ForwardModel model, ChatMessage message) async {
     try {
+      ChatMessageBody newBody = await _createBody(message);
       ChatMessage msg = ChatMessage.createSendMessage(
-          body: message.body, to: model.id, chatType: model.chatType);
+          body: newBody, to: model.id, chatType: model.chatType);
 
       if (model.chatType == ChatType.GroupChat) {
         final gName = message.attributes?['from_name'] ?? 'Group';
@@ -306,20 +380,4 @@ class ForwardContactListDialog extends StatelessWidget {
     }
     return null;
   }
-
-  // _sendGroupMessage(ChatGroup group) async {
-  //   try {
-  //     ChatMessage msg = ChatMessage.createSendMessage(
-  //       body: message.body,
-  //       to: group.groupId,
-  //       chatType: ChatType.GroupChat,
-  //     );
-  //     final chat = await ChatClient.getInstance.chatManager.sendMessage(msg);
-  //     return chat;
-  //   } on ChatError catch (e) {
-  //     debugPrint('error in sening chat: $e');
-  //   } catch (e) {
-  //     debugPrint('other error in deleting chat: $e');
-  //   }
-  // }
 }
