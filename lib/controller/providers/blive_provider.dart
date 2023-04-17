@@ -9,8 +9,6 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '../blive_providers.dart';
 
-
-
 class BLiveProvider extends ChangeNotifier {
 //
   int _localUid = 0;
@@ -36,6 +34,9 @@ class BLiveProvider extends ChangeNotifier {
   //   _cIndex = index;
   //   notifyListeners();
   // }
+
+  bool _isEnd = false;
+  bool get isEnd => _isEnd;
 
 //
   bool _hostCamera = false;
@@ -255,10 +256,14 @@ class BLiveProvider extends ChangeNotifier {
         onUserOffline: (connection, remoteUid, UserOfflineReasonType reason) {
           _userRemoteIds.remove(remoteUid);
           _userList.removeWhere((key, value) => key == remoteUid);
+          if (_userList.isEmpty) {
+            _isEnd = true;
+          }
           // print("remote user $remoteUid left channel");
           // _userRemoteIds.removeWhere((item) => item == remoteUid);
           // _speakingUsersMap.removeWhere((key, value) => key == remoteUid);
           _updateMemberList();
+
           // notifyListeners();
         },
         onLocalVideoStateChanged: (source, state, error) {

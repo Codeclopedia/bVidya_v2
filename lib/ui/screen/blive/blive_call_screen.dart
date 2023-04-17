@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:pip_view/pip_view.dart';
 import 'package:wakelock/wakelock.dart';
 
-import '/core/utils.dart';
+// import '/core/utils.dart';
 import '/controller/blive_providers.dart';
 import '/controller/providers/blive_provider.dart';
 import '/core/state.dart';
@@ -30,7 +30,7 @@ class BLiveClassScreen extends HookConsumerWidget {
   final int userId;
 
   late final ScrollController _scrollController;
-  User? _me;
+  // User? _me;
   BLiveClassScreen(
       {Key? key,
       required this.liveClass,
@@ -43,7 +43,7 @@ class BLiveClassScreen extends HookConsumerWidget {
   }
 
   _loadMe() async {
-    _me = await getMeAsUser();
+    // _me = await getMeAsUser();
   }
 
   // late AnimationController _controller;
@@ -70,6 +70,14 @@ class BLiveClassScreen extends HookConsumerWidget {
     final provider = ref.watch(bLiveCallChangeProvider);
 
     provider.init(liveClass, rtmToken, userId, ref);
+    ref.listen(bLiveCallChangeProvider.select((value) => value.isEnd),
+        (previous, next) {
+      if (previous != next && next) {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+        Navigator.pop(context);
+      }
+    });
+    // ref.sel(bLiveCallChangeProvider).se
     if (ref.watch(isDrawerAccessed)) {
       Timer(const Duration(seconds: 5), () {
         ref.read(isDrawerAccessed.notifier).state = false;
@@ -268,27 +276,23 @@ class BLiveClassScreen extends HookConsumerWidget {
       bool isChatVisible, WidgetRef ref) {
     return Align(
         alignment: Alignment.bottomRight,
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // IconButton(
-            //     icon: Padding(
-            //       padding: EdgeInsets.all(1.w),
-            //       child: Icon(
-            //         Icons.close_fullscreen_outlined,
-            //         color: Colors.white,
-            //         shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
-            //       ),
-            //     ),
-            //     onPressed: () {
-            //       // setState(() {
-            //       //   chatvisibility = false;
-            //       // });
-            //       SystemChrome.setPreferredOrientations(
-            //           [DeviceOrientation.portraitUp]);
-
-            //       // PIPView.of(context)?.presentBelow(const BLiveHomeScreen());
-            //     }),
+            IconButton(
+                icon: Padding(
+                  padding: EdgeInsets.all(1.w),
+                  child: Icon(
+                    Icons.swap_horiz,
+                    color: Colors.white,
+                    shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
+                  ),
+                ),
+                onPressed: () {
+                  ref.read(currentScreenIndex.notifier).state =
+                      !ref.read(currentScreenIndex);
+                }),
             Row(
               children: [
                 if (isLandscapeView)
@@ -382,13 +386,7 @@ class BLiveClassScreen extends HookConsumerWidget {
           Column(
             children: <Widget>[
               _expandedVideoRow([
-                GestureDetector(
-                    onTap: () {
-                      ref.read(currentScreenIndex.notifier).state = !cIndex;
-                      // cIndex == 0 ? 0 : 1;
-                      // provider.setCIndex(cIndex == 0 ? 0 : 1);
-                    },
-                    child: views[cIndex ? 1 : 0])
+                cIndex ? views[1] : views[0],
               ]),
             ],
           ),
@@ -402,21 +400,20 @@ class BLiveClassScreen extends HookConsumerWidget {
                     border:
                         Border.all(width: 1.w, color: AppColors.darkChatColor),
                     color: AppColors.black.withOpacity(0.5)),
-                child: GestureDetector(
-                    onTap: () {
-                      // provider.setCIndex(cIndex == 0 ? 1 : 0);
-                      ref.read(currentScreenIndex.notifier).state = !cIndex;
-                    },
-                    child: views[cIndex ? 0 : 1]),
-              )
-              // _singleViewWindow(
-              //     [provider.userList.values.first]
-              // ),
-              )
+                child: cIndex ? views[0] : views[1],
+              ))
         ];
     }
     return [];
   }
+
+  // Widget _colorView() {
+  //   return Container(
+  //     color: Colors.red,
+  //     width: double.infinity,
+  //     height: double.infinity,
+  //   );
+  // }
 
   Widget _viewRows(BLiveProvider provider) {
     final hostScreens = provider.userList;
@@ -544,6 +541,9 @@ class BLiveClassScreen extends HookConsumerWidget {
             children: [
               InkWell(
                 onTap: () {
+                  SystemChrome.setPreferredOrientations(
+                      [DeviceOrientation.portraitUp]);
+
                   Navigator.pop(context);
                 },
                 child: Icon(
