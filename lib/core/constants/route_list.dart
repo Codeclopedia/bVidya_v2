@@ -12,6 +12,7 @@ class RouteList {
   RouteList._();
   // static const String splash = '/splash';
   static const String welcome = '/welcome';
+  static const String introductionScreen = '/introductionScreen';
 
   //Auth
   static const String login = '/login';
@@ -82,6 +83,7 @@ class RouteList {
   static const String bLearnHome = '/b-learn';
   static const String bLearnCategories = '/b-learn-categories';
   static const String bLearnSubCategories = '/b-learn-subcategories';
+  static const String bLearnAllReview = '/b-learn-all-reviews';
   // static const String bLearnSubjects = '/b-learn-subjects';
   static const String bLearnCoursesList = '/b-learn-courses-lists';
   static const String bLearnCourseDetail = '/b-learn-course-detail';

@@ -70,6 +70,7 @@ dependencies:
   image_picker: ^0.8.6
   image_picker_plus: ^0.5.5+2
   intl: ^0.17.0
+  intro_slider: ^4.2.0
   linkable: ^3.0.1
   linkfy_text: ^1.1.5
   lottie: ^2.2.0
@@ -141,8 +142,9 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/images/
+    - assets/images/intro_screen_icon/
     - assets/audio/
-    # - assets/images/bottombar/
+    # - assets/images/bottombar/ 
     - assets/icons/
     - assets/icons/lottie/
     - assets/icons/png/

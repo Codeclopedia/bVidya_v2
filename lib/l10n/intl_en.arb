@@ -1,5 +1,20 @@
 {
 
+
+  "intro_screen_1_title":"Welcome to bvidya",
+  "intro_screen_2_title":"Chat easily via bChat",
+  "intro_screen_3_title":"Meet via bMeet",
+  "intro_screen_4_title":"Go Live via bLive",
+  "intro_screen_5_title":"Learn via bLearn",
+  "intro_screen_6_title":"Let's Explore bvidya",
+
+  "intro_screen_1_desc":"Begin your Online Education Journey with the best Leading Application.",
+  "intro_screen_2_desc":"Connect faster with teachers through Messenger and get Instant replies to your queries.",
+  "intro_screen_3_desc":"Start Video conferencing with a group of people which even helps in recording sessions.",
+  "intro_screen_4_desc":"A Simple process to create and record Live videos to engage with multiple audiences.",
+  "intro_screen_5_desc":"Keep yourself updated about upcoming Webinars, new Courses, Teachers' profiles, etc.",
+  "intro_screen_6_desc":"Are you ready to start your Online education journey on this Top-notch Application?",
+
   "login_header_title":"Login",
   "login_email_caption":"Email Address",
   "login_email_hint":"Enter Your Email Address",
@@ -91,6 +106,10 @@
   "grp_caption_participation":"Participants",
   "grp_txt_add_participant":"Add Participants",
 
+  "admin_chat_profile_1":"We understand that using technology for education can be a new and exciting experience, but it can also come with its challenges. We’ll provide the best possible support to you.",
+"admin_chat_profile_2":"If you have any concerns or suggestions, please contact us at:",
+
+
   "chat_missed_call":"Missed call from {name} at {time}",
   "chat_missed_call_video":"Missed video call from {name} at {time}",
   "chat_yourself":"Yourself",
@@ -160,6 +179,9 @@
   "blearn_added":"Added",
   "blearn_testimonial":"Testimonials",
 
+  "blearn_popular_title_1st_half":"Popular",
+  "blearn_popular_title_2nd_half":"Categories",
+
 
   "blearn_subscribed_courses":"Subscribed Courses",
   "blearn_search_courses":"Embark on a journey of discovery through our extensive catalog of 100's of courses, and unlock a world of knowledge waiting to be explored!",
@@ -176,6 +198,8 @@
   "bmeet_today_meeting":"Today's Meeting",
   "bmeet_date_meeting":"{date} Meeting",
   "bmeet_no_meetings":"No scheduled Meetings.",
+
+  "blearn_review_title":"Review",
 
   
   "bmeet_join_desc":"You can also clink on the link received to join directly",
@@ -320,7 +344,7 @@
   "dg_confirm_deleteAccount":"Delete",
   
 
-  "sp_tab_course":"Courses",
+  "sp_tab_sub_course":"Subscribed Courses",
   "sp_tab_followed":"Teacher Followed",
 
   "t_scheduled_header":"Scheduled classes",
@@ -569,6 +593,7 @@
 "tpe_bio_hint": "Enter your bio",
 "tpe_worked_hint": "What was the name of our previous Organzation?",
 "tpe_lang_hint": "What language do you know?",
+"tp_courses":"Courses",
 "td_dash": "Dashboard",
 "td_revenue": "Total Revenue Generated",
 "td_amt": "₹ 20,456",

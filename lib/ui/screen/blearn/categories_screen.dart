@@ -33,7 +33,7 @@ class CategoriesScreen extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (context, index) {
                 return Shimmer.fromColors(
-                  baseColor: AppColors.cardWhite,
+                  baseColor: AppColors.iconGreyColor,
                   highlightColor: AppColors.cardBackground,
                   child: Container(
                     height: 20.w,

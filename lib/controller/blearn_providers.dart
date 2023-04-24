@@ -30,6 +30,11 @@ final bLearnSubCategoriesProvider =
   return ref.read(bLearnRepositoryProvider).getSubCategories(id);
 });
 
+final bLearnCategoriesCoursesProvider =
+    FutureProvider.family<Courses?, String>((ref, id) {
+  return ref.read(bLearnRepositoryProvider).getCoursesFromCategories(id);
+});
+
 final bLearnCoursesProvider =
     FutureProvider.family<Courses?, String>((ref, id) {
   return ref.read(bLearnRepositoryProvider).getCourses(id);

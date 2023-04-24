@@ -39,8 +39,8 @@ class WebinarDetailTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(2.w),
                       child: Image(
                         image: getImageProvider(broadcastData.image.toString(),
-                            maxHeight: (200.w * devicePixelRatio).round(),
-                            maxWidth: (200.w * devicePixelRatio).round()),
+                            maxHeight: (100.w * devicePixelRatio).round(),
+                            maxWidth: (100.w * devicePixelRatio).round()),
                         fit: BoxFit.cover,
                         height: double.infinity,
                         width: double.infinity,
@@ -55,7 +55,9 @@ class WebinarDetailTile extends StatelessWidget {
               height: 2.w,
             ),
             Text(
-              broadcastData.name.toString(),
+              broadcastData.name == "Coming soon"
+                  ? 'Coming soon'
+                  : broadcastData.name.toString(),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600),
@@ -63,13 +65,15 @@ class WebinarDetailTile extends StatelessWidget {
             SizedBox(
               height: 1.w,
             ),
-            Text(
-                "Scheduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",
-                style:
-                    TextStyle(fontSize: 6.sp, color: AppColors.primaryColor)),
-            SizedBox(
-              height: 2.w,
-            ),
+            if (broadcastData.name != "Coming soon")
+              Text(
+                  "Scheduled on: ${broadcastData.startsAt.toString().replaceRange(10, broadcastData.startsAt.toString().length, "")}",
+                  style:
+                      TextStyle(fontSize: 6.sp, color: AppColors.primaryColor)),
+            if (broadcastData.name != "Coming soon")
+              SizedBox(
+                height: 2.w,
+              ),
           ],
         ),
       ),

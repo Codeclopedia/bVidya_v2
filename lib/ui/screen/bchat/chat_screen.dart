@@ -669,7 +669,7 @@ class ChatScreen extends HookConsumerWidget {
                                 ? null
                                 : _onMessageTap(message.msg, context, ref),
                         child: Container(
-                          margin: const EdgeInsets.only(top: 2, bottom: 4),
+                          // margin: EdgeInsets.only(top: 1.w, bottom: 2.w),
                           width: double.infinity,
                           color: isSelected
                               ? Colors.grey.shade200

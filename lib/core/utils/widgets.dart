@@ -274,7 +274,9 @@ Widget getCicleAvatar(String name, String image,
         fontSize: 14.sp,
       ),
       sources: [
-        if (image.isNotEmpty && !image.startsWith("asset"))
+        if (image.isNotEmpty &&
+            !image.startsWith("asset") &&
+            !image.contains("users/default.png"))
           GenericSource(
             getImageProvider(
                 image.startsWith('http') ? image : '$baseImageApi$image',

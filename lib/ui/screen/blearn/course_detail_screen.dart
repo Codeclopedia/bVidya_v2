@@ -1,13 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
-
-import '/data/services/auth_api_service.dart';
-
 import '../../dialog/ok_dialog.dart';
 import '/controller/profile_providers.dart';
 import '/ui/dialog/basic_dialog.dart';
 
 import '/ui/screens.dart';
-import 'package:spring/spring.dart';
 
 import '/ui/widget/sliding_tab.dart';
 import '/controller/blearn_providers.dart';
@@ -16,10 +12,10 @@ import '/core/state.dart';
 import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import 'components/common.dart';
-import 'components/course_feedback_button.dart';
 import 'components/feeback_dialog.dart';
 import 'components/lesson_list_row.dart';
 import '../../widgets.dart';
+import 'components/wishlist_icon.dart';
 
 // int _selectedIndex = -1;
 
@@ -35,7 +31,6 @@ class CourseDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
       int selectedIndex = ref.watch(selectedTabCourseDetailProvider);
-      bool modelSheetOpened = ref.watch(isModelSheetOpened);
 
       return ref.watch(bLearnCourseDetailProvider(course.id ?? 0)).when(
           data: (data) {
@@ -44,17 +39,17 @@ class CourseDetailScreen extends StatelessWidget {
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 backgroundColor: AppColors.cardBackground,
-                floatingActionButton: data?.isSubscribed ?? false
-                    ? selectedIndex == 0
-                        ? CustomFeedbackButton(
-                            isOpen: modelSheetOpened,
-                            callback: (modelSheetState) {
-                              ref.read(isModelSheetOpened.notifier).state =
-                                  modelSheetState;
-                            },
-                          )
-                        : Container()
-                    : Container(),
+                // floatingActionButton: data?.isSubscribed ?? false
+                //     ? selectedIndex == 0
+                //         ? CustomFeedbackButton(
+                //             isOpen: modelSheetOpened,
+                //             callback: (modelSheetState) {
+                //               ref.read(isModelSheetOpened.notifier).state =
+                //                   modelSheetState;
+                //             },
+                //           )
+                //         : Container()
+                // : Container(),
                 body: SafeArea(
                   child: Stack(
                     // clipBehavior: Clip.none,
@@ -64,7 +59,6 @@ class CourseDetailScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             _topImage(context),
-
                             _subjectDetail(data, ref, context),
                             SlidingTab(
                               label1: 'Description',
@@ -80,7 +74,7 @@ class CourseDetailScreen extends StatelessWidget {
                             // _toggleItems(),
                             SizedBox(height: 2.h),
                             selectedIndex == 0
-                                ? _buildDescView(data)
+                                ? _buildDescView(context, data, ref)
                                 : _builCurriculumView(data),
                           ],
                         ),
@@ -112,23 +106,6 @@ class CourseDetailScreen extends StatelessWidget {
                                         ),
                                       )),
                                 ),
-                      Visibility(
-                        visible: modelSheetOpened,
-                        child: Spring.slide(
-                          slideType: SlideType.slide_in_bottom,
-                          curve: Curves.easeIn,
-                          // startOpacity: 0.5,
-                          // endOpacity: 1,
-                          withFade: true,
-                          animDuration: const Duration(milliseconds: 300),
-                          child: FeedbackPopup(
-                              course: course,
-                              onClose: () {
-                                ref.read(isModelSheetOpened.notifier).state =
-                                    false;
-                              }),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -324,7 +301,19 @@ class CourseDetailScreen extends StatelessWidget {
                         },
                         error: (error, stackTrace) =>
                             buildEmptyPlaceHolder('text'),
-                        loading: () => buildLoading);
+                        loading: () => ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: 10,
+                              scrollDirection: Axis.vertical,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: EdgeInsets.all(2.w),
+                                  child: CustomizableShimmerTile(
+                                      height: 20.w, width: 100.w),
+                                );
+                              },
+                            ));
                   },
                 ),
               ],
@@ -360,7 +349,8 @@ class CourseDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescView(CourseDetailBody? coursedetail) {
+  Widget _buildDescView(
+      BuildContext context, CourseDetailBody? coursedetail, WidgetRef ref) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
       child: SingleChildScrollView(
@@ -409,15 +399,7 @@ class CourseDetailScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 3.h),
-            Text(
-              'Description',
-              style: TextStyle(
-                fontFamily: kFontFamily,
-                color: AppColors.primaryColor,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+            heading('Description'),
             SizedBox(height: 1.h),
             // _getText(),
             Text(
@@ -430,9 +412,53 @@ class CourseDetailScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 4.w),
-            const TwoColorText(
-              first: 'Reviews',
-              second: '',
+            if (coursedetail?.isSubscribed ?? false)
+              yourReviewWidget(coursedetail),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    heading('Reviews'),
+                    Text(
+                      " (${coursedetail?.courseFeedback?.length ?? 0})",
+                      style: textStyleHeading.copyWith(fontSize: 12.sp),
+                    )
+                  ],
+                ),
+                if (coursedetail?.courseFeedback?.isNotEmpty ?? false)
+                  InkWell(
+                    onTap: () {
+                      final data = {
+                        'feedbacks': coursedetail?.courseFeedback,
+                        'title': coursedetail?.courses?[0].name,
+                      };
+                      Navigator.pushNamed(context, RouteList.bLearnAllReview,
+                          arguments: data);
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          S.current.blearn_btx_viewall,
+                          style: TextStyle(
+                            fontFamily: kFontFamily,
+                            fontSize: 10.sp,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.keyboard_arrow_right,
+                          color: AppColors.primaryColor,
+                        )
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(
+              height: 2.w,
             ),
             coursedetail?.courseFeedback?.isNotEmpty == true
                 ? _buildTestimonialList(coursedetail?.courseFeedback)
@@ -455,6 +481,138 @@ class CourseDetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget yourReviewWidget(CourseDetailBody? coursedetail) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        heading('Your Review'),
+        UserConsumer(builder: (context, user, ref) {
+          final bool hasAlreadyReviewed = coursedetail?.courseFeedback?.any(
+                (element) {
+                  return element.userId == user.id;
+                },
+              ) ??
+              false;
+
+          if (hasAlreadyReviewed) {
+            final myreview = coursedetail?.courseFeedback
+                ?.firstWhere((element) => element.userId == user.id);
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 3.w),
+              child: Center(child: feedbackTile(myreview ?? CourseFeedback())),
+            );
+          } else {
+            return FeedbackPopup(
+              course: course,
+              onClose: () {},
+            );
+          }
+        }),
+      ],
+    );
+  }
+
+  Widget heading(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontFamily: kFontFamily,
+        color: AppColors.primaryColor,
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+
+  // ownReviewWidget(WidgetRef ref) {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       mainAxisSize: MainAxisSize.min,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         SizedBox(height: 4.w),
+  //         Text(
+  //           'Rate Your Experience',
+  //           style: TextStyle(
+  //               fontFamily: kFontFamily,
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: 12.sp),
+  //         ),
+  //         Text(
+  //           'Are you satisfied with the experience?',
+  //           style: TextStyle(
+  //               fontFamily: kFontFamily,
+  //               fontWeight: FontWeight.w400,
+  //               fontSize: 9.sp),
+  //         ),
+  //         Padding(
+  //           padding: EdgeInsets.symmetric(vertical: 3.w),
+  //           child: RatingBar.builder(
+  //             initialRating: 3,
+  //             wrapAlignment: WrapAlignment.center,
+  //             itemCount: 5,
+  //             itemSize: 12.w,
+  //             // allowHalfRating: true,
+  //             itemBuilder: (context, _) => const Icon(
+  //               Icons.star,
+  //               color: Colors.amber,
+  //             ),
+  //             onRatingUpdate: (rating) {
+  //               // ref.read(ratingProvider.notifier).state = rating.toInt();
+  //             },
+  //           ),
+  //         ),
+  //         SizedBox(height: 1.w),
+  //         SizedBox(
+  //           width: 60.w,
+  //           child: TextField(
+  //             decoration:
+  //                 inputMultiLineStyle.copyWith(hintText: 'Write your feedback'),
+  //             minLines: 2,
+  //             maxLines: 3,
+  //             keyboardType: TextInputType.multiline,
+  //             onChanged: (input) {
+  //               // ref.read(inputFeedbackTextProvider.notifier).state = input;
+  //             },
+  //           ),
+  //         ),
+  //         SizedBox(height: 4.w),
+  //         ElevatedButton(
+  //           onPressed: () async {
+  //             String input = feedbackMessageController.text.trim();
+  //             ref.read(inputFeedbackTextProvider.notifier).state = input;
+  //             // if (input.isEmpty) {
+
+  //             // } else {
+  //             //   ref.read(inputFeedbackTextProvider.notifier).state = '';
+  //             //   feedbackMessageController.text = '';
+  //             //   showLoading(ref);
+
+  //             //   final BaseResponse response = await ref
+  //             //       .read(bLearnRepositoryProvider)
+  //             //       .setfeedback(course.id.toString(), rating, input);
+  //             //   ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+
+  //             //   // ref.read(isModelSheetOpened.notifier).state = false;
+  //             //   debugPrint(response.status);
+  //             //   hideLoading(ref);
+
+  //             // }
+  //           },
+  //           style: elevatedButtonTextStyle.copyWith(
+  //               fixedSize: MaterialStatePropertyAll(Size(40.w, 12.5.w))),
+  //           child: Text(
+  //             S.current.submitBtn,
+  //             style: textStyleCaption.copyWith(
+  //                 color: AppColors.cardWhite, fontSize: 10.sp),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _getText() {
     return Text(
@@ -482,59 +640,63 @@ class CourseDetailScreen extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           final feedback = feedbackList[index];
-          return Container(
-            width: 70.w,
-            margin: EdgeInsets.only(right: 2.w, left: 1.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.all(Radius.circular(5.w)),
-              border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
+          return feedbackTile(feedback);
+        },
+      ),
+    );
+  }
+
+  Widget feedbackTile(CourseFeedback feedback) {
+    return Container(
+      width: 70.w,
+      margin: EdgeInsets.only(right: 2.w, left: 1.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.all(Radius.circular(5.w)),
+        border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              getCicleAvatar(feedback.name ?? 'AA', feedback.image ?? '',
+                  radius: 8.w,
+                  cacheWidth: (35.w * devicePixelRatio).round(),
+                  cacheHeight: (35.w * devicePixelRatio).round()),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    getCicleAvatar(feedback.name ?? 'AA', feedback.image ?? '',
-                        radius: 8.w,
-                        cacheWidth: (35.w * devicePixelRatio).round(),
-                        cacheHeight: (35.w * devicePixelRatio).round()),
-                    SizedBox(width: 4.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            feedback.name ?? '',
-                            style: TextStyle(
-                                fontSize: 11.sp,
-                                fontFamily: kFontFamily,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                          buildRatingBar(feedback.rating?.toDouble() ?? 0.0),
-                        ],
-                      ),
+                    Text(
+                      feedback.name ?? '',
+                      style: TextStyle(
+                          fontSize: 11.sp,
+                          fontFamily: kFontFamily,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
+                    buildRatingBar(feedback.rating?.toDouble() ?? 0.0),
                   ],
                 ),
-                SizedBox(height: 2.w),
-                Text(
-                  feedback.comment ?? '',
-                  maxLines: 4,
-                  style: TextStyle(
-                    fontFamily: kFontFamily,
-                    fontSize: 10.sp,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          SizedBox(height: 2.w),
+          Text(
+            feedback.comment ?? '',
+            maxLines: 4,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: 10.sp,
+              color: Colors.black,
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -628,7 +790,7 @@ class CourseDetailScreen extends StatelessWidget {
   Widget _subjectDetail(
       CourseDetailBody? coursedata, WidgetRef ref, BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
+      padding: EdgeInsets.symmetric(horizontal: 5.w),
       child: Column(
         children: [
           Row(
@@ -637,55 +799,74 @@ class CourseDetailScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  coursedata?.courses?[0].name ?? '',
-                  style: TextStyle(
-                      fontFamily: kFontFamily,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
+                child: SizedBox(
+                  width: 80.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 2.w),
+                      Text(
+                        coursedata?.courses?[0].name?.trim() ?? '',
+                        style: TextStyle(
+                            fontFamily: kFontFamily,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(width: 12.w),
-              InkWell(
-                onTap: () async {
+              WishListIcon(
+                isWishlisted: coursedata?.isWishlisted ?? false,
+                ontap: () async {
                   showLoading(ref);
                   await ref
                       .read(bLearnRepositoryProvider)
                       .changeinWishlist(coursedata?.courses?[0].id ?? 0);
-                  // await ref.read(blearnAddorRemoveinWishlistProvider(
-                  //     coursedata?.courses?[0].id ?? 0));
                   ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
                   hideLoading(ref);
                 },
-                child: Container(
-                  width: 12.w,
-                  height: 12.w,
-                  decoration: BoxDecoration(
-                      color: coursedata?.isWishlisted == true
-                          ? Colors.pink[100]
-                          : AppColors.cardWhite,
-                      shape: BoxShape.circle,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          // offset: Offset(0, 0),
-                          // blurRadius: 1,
-                        )
-                      ]),
-                  child: coursedata?.isWishlisted == true
-                      ? Icon(
-                          Icons.favorite,
-                          size: 8.w,
-                          color: Colors.pink[400],
-                        )
-                      : Icon(
-                          Icons.favorite_outline,
-                          size: 8.w,
-                          color: AppColors.iconGreyColor,
-                        ),
-                ),
               ),
+              // InkWell(
+              //   onTap: () async {
+              //     showLoading(ref);
+              //     await ref
+              //         .read(bLearnRepositoryProvider)
+              //         .changeinWishlist(coursedata?.courses?[0].id ?? 0);
+              //     // await ref.read(blearnAddorRemoveinWishlistProvider(
+              //     //     coursedata?.courses?[0].id ?? 0));
+              //     ref.refresh(bLearnCourseDetailProvider(course.id ?? 0));
+              //     hideLoading(ref);
+              //   },
+              //   child: Container(
+              //     width: 12.w,
+              //     height: 12.w,
+              //     decoration: BoxDecoration(
+              //         color: coursedata?.isWishlisted == true
+              //             ? Colors.pink[100]
+              //             : AppColors.cardWhite,
+              //         shape: BoxShape.circle,
+              //         boxShadow: const [
+              //           BoxShadow(
+              //             color: Colors.grey,
+              //             // offset: Offset(0, 0),
+              //             // blurRadius: 1,
+              //           )
+              //         ]),
+              //     child: coursedata?.isWishlisted == true
+              //         ? Icon(
+              //             Icons.favorite,
+              //             size: 8.w,
+              //             color: Colors.pink[400],
+              //           )
+              //         : Icon(
+              //             Icons.favorite_outline,
+              //             size: 8.w,
+              //             color: AppColors.iconGreyColor,
+              //           ),
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: 3.h),

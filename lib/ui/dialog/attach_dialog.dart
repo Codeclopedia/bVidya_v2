@@ -67,14 +67,14 @@ class AttachDialog extends StatelessWidget {
               cameraColor,
               () => Navigator.pop(context, AttachType.cameraPhoto),
             ),
-            // _buildOption(
-            //   S.current.atc_record,
-            //   // S.current.im_picker_camera_desc,
-            //   '',
-            //   'icon_chat_record.svg',
-            //   recordColor,
-            //   () => Navigator.pop(context, AttachType.cameraVideo),
-            // ),
+            _buildOption(
+              S.current.atc_record,
+              // S.current.im_picker_camera_desc,
+              '',
+              'icon_chat_record.svg',
+              recordColor,
+              () => Navigator.pop(context, AttachType.cameraVideo),
+            ),
             _buildOption(
               S.current.atc_media,
               // S.current.atc_media_desc,

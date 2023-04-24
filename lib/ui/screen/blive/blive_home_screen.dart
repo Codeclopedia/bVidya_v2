@@ -228,7 +228,12 @@ class BLiveHomeScreen extends HookWidget {
             builder: (context, user, ref) {
               return Column(
                 children: [
-                  getRectFAvatar(size: 22.w, user.name, user.image),
+                  getRectFAvatar(
+                      size: 22.w,
+                      user.name,
+                      user.image,
+                      cacheHeight: (50.w * devicePixelRatio).round(),
+                      cacheWidth: (50.w * devicePixelRatio).round()),
                   SizedBox(height: 0.5.h),
                   Text(user.name, style: textStyleBlack)
                 ],
@@ -270,7 +275,7 @@ class BLiveHomeScreen extends HookWidget {
       itemBuilder: (context, index) {
         final broadcast = broadcastList[index];
         return liveClassRow(broadcast, () {
-          joinBroadcast(context, ref, broadcast.streamId ?? '');
+          // joinBroadcast(context, ref, broadcast.streamId ?? '');
         }, ref);
       },
     );
@@ -342,19 +347,19 @@ class BLiveHomeScreen extends HookWidget {
                     color:
                         pastDate ? AppColors.iconGreyColor : AppColors.black),
               ),
-              GestureDetector(
-                onTap: () {
-                  pastDate ? null : onJoin();
-                  // startMeeting(context, ref, meeting, true, false);
-                },
-                child: CircleAvatar(
-                  backgroundColor: pastDate
-                      ? AppColors.iconGreyColor
-                      : AppColors.yellowAccent,
-                  radius: 1.5.h,
-                  child: getSvgIcon('icon_next.svg', width: 1.4.h),
-                ),
+              // GestureDetector(
+              //   onTap: () {
+              //     pastDate ? null : onJoin();
+              //     // startMeeting(context, ref, meeting, true, false);
+              //   },
+              //   child:
+              CircleAvatar(
+                backgroundColor:
+                    pastDate ? AppColors.iconGreyColor : AppColors.yellowAccent,
+                radius: 1.5.h,
+                child: getSvgIcon('icon_next.svg', width: 1.4.h),
               ),
+              // ),
             ],
           )
         ],

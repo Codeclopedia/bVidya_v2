@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 
 // import '../models/response/profile/schduled_classes_model.dart';
 // import '../models/response/profile/scheduled_class_instructor_model.dart';
+import '../models/response/profile/instructor_dashboard_response.dart';
 import '/core/constants.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
@@ -103,6 +105,26 @@ class ProfileApiService {
     } catch (e) {
       return FollowInstructorResponse(
           status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
+  Future<DashboardResponse> getDashboardDetails(String authToken) async {
+    _dio.options.headers["X-Auth-Token"] = authToken;
+    try {
+      final response =
+          await _dio.get('$baseUrlApi${ApiList.instructorDashboard}');
+      if (response.statusCode == 200) {
+        return DashboardResponse.fromJson(response.data);
+      } else {
+        return DashboardResponse(
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      print(e);
+      return DashboardResponse(
+        status: 'error',
+      );
     }
   }
 

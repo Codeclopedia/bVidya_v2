@@ -64,7 +64,8 @@ class TeacherRequestedClassDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 S.current.class_requested_title,
-                                style: textStyleHeading,
+                                style:
+                                    textStyleHeading.copyWith(fontSize: 12.sp),
                               ),
                               SizedBox(
                                 height: 1.w,

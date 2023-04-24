@@ -47,6 +47,15 @@ class BLearnRepository {
     }
   }
 
+  Future<Courses?> getCoursesFromCategories(String catId) async {
+    final result = await _api.getCourseFromCategories(_authToken, catId);
+    if (result.status == "success" && result.body != null) {
+      return result.body;
+    } else {
+      return null;
+    }
+  }
+
   Future<BaseResponse> setCourseProgress(
       int courseId, int videoId, int lessonId) async {
     final result =

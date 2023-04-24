@@ -6,6 +6,7 @@ import 'dart:io';
 // import 'package:flutter_svg/flutter_svg.dart';
 // import '/ui/widgets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spring/spring.dart';
 
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
@@ -36,6 +37,12 @@ final splashImageProvider = StateProvider<Widget>((ref) => Image.asset(
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
+
+  Future isIntroductionLoaded() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool seen = (prefs.getBool('intro_loaded') ?? false);
+    return seen;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,12 +83,15 @@ class SplashScreen extends ConsumerWidget {
             Navigator.pushReplacementNamed(context, RouteList.home);
           });
         } else {
+          final isNotLoaded = await isIntroductionLoaded();
+
           ref.read(splashImageProvider.notifier).state = Image.asset(
             'assets/images/loader.gif',
             fit: BoxFit.fitWidth,
           );
           Future.delayed(const Duration(seconds: 4), () {
-            Navigator.pushReplacementNamed(context, RouteList.login);
+            Navigator.pushReplacementNamed(context,
+                isNotLoaded ? RouteList.login : RouteList.introductionScreen);
             appLoaded = true;
           });
         }
@@ -91,7 +101,7 @@ class SplashScreen extends ConsumerWidget {
         Navigator.pushReplacementNamed(context, RouteList.login);
       },
     );
-    final widget = ref.watch(splashImageProvider);
+    // final widget = ref.watch(splashImageProvider);
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(

@@ -50,6 +50,126 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `Welcome to bvidya`
+  String get intro_screen_1_title {
+    return Intl.message(
+      'Welcome to bvidya',
+      name: 'intro_screen_1_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chat easily via bChat`
+  String get intro_screen_2_title {
+    return Intl.message(
+      'Chat easily via bChat',
+      name: 'intro_screen_2_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meet via bMeet`
+  String get intro_screen_3_title {
+    return Intl.message(
+      'Meet via bMeet',
+      name: 'intro_screen_3_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go Live via bLive`
+  String get intro_screen_4_title {
+    return Intl.message(
+      'Go Live via bLive',
+      name: 'intro_screen_4_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Learn via bLearn`
+  String get intro_screen_5_title {
+    return Intl.message(
+      'Learn via bLearn',
+      name: 'intro_screen_5_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Let's Explore bvidya`
+  String get intro_screen_6_title {
+    return Intl.message(
+      'Let\'s Explore bvidya',
+      name: 'intro_screen_6_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Begin your Online Education Journey with the best Leading Application.`
+  String get intro_screen_1_desc {
+    return Intl.message(
+      'Begin your Online Education Journey with the best Leading Application.',
+      name: 'intro_screen_1_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect faster with teachers through Messenger and get Instant replies to your queries.`
+  String get intro_screen_2_desc {
+    return Intl.message(
+      'Connect faster with teachers through Messenger and get Instant replies to your queries.',
+      name: 'intro_screen_2_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start Video conferencing with a group of people which even helps in recording sessions.`
+  String get intro_screen_3_desc {
+    return Intl.message(
+      'Start Video conferencing with a group of people which even helps in recording sessions.',
+      name: 'intro_screen_3_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A Simple process to create and record Live videos to engage with multiple audiences.`
+  String get intro_screen_4_desc {
+    return Intl.message(
+      'A Simple process to create and record Live videos to engage with multiple audiences.',
+      name: 'intro_screen_4_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep yourself updated about upcoming Webinars, new Courses, Teachers' profiles, etc.`
+  String get intro_screen_5_desc {
+    return Intl.message(
+      'Keep yourself updated about upcoming Webinars, new Courses, Teachers\' profiles, etc.',
+      name: 'intro_screen_5_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you ready to start your Online education journey on this Top-notch Application?`
+  String get intro_screen_6_desc {
+    return Intl.message(
+      'Are you ready to start your Online education journey on this Top-notch Application?',
+      name: 'intro_screen_6_desc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Login`
   String get login_header_title {
     return Intl.message(
@@ -850,6 +970,26 @@ class S {
     );
   }
 
+  /// `We understand that using technology for education can be a new and exciting experience, but it can also come with its challenges. We’ll provide the best possible support to you.`
+  String get admin_chat_profile_1 {
+    return Intl.message(
+      'We understand that using technology for education can be a new and exciting experience, but it can also come with its challenges. We’ll provide the best possible support to you.',
+      name: 'admin_chat_profile_1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you have any concerns or suggestions, please contact us at:`
+  String get admin_chat_profile_2 {
+    return Intl.message(
+      'If you have any concerns or suggestions, please contact us at:',
+      name: 'admin_chat_profile_2',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Missed call from {name} at {time}`
   String chat_missed_call(Object name, Object time) {
     return Intl.message(
@@ -1430,6 +1570,26 @@ class S {
     );
   }
 
+  /// `Popular`
+  String get blearn_popular_title_1st_half {
+    return Intl.message(
+      'Popular',
+      name: 'blearn_popular_title_1st_half',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Categories`
+  String get blearn_popular_title_2nd_half {
+    return Intl.message(
+      'Categories',
+      name: 'blearn_popular_title_2nd_half',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Subscribed Courses`
   String get blearn_subscribed_courses {
     return Intl.message(
@@ -1575,6 +1735,16 @@ class S {
     return Intl.message(
       'No scheduled Meetings.',
       name: 'bmeet_no_meetings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Review`
+  String get blearn_review_title {
+    return Intl.message(
+      'Review',
+      name: 'blearn_review_title',
       desc: '',
       args: [],
     );
@@ -2670,11 +2840,11 @@ class S {
     );
   }
 
-  /// `Courses`
-  String get sp_tab_course {
+  /// `Subscribed Courses`
+  String get sp_tab_sub_course {
     return Intl.message(
-      'Courses',
-      name: 'sp_tab_course',
+      'Subscribed Courses',
+      name: 'sp_tab_sub_course',
       desc: '',
       args: [],
     );
@@ -4885,6 +5055,16 @@ class S {
     return Intl.message(
       'What language do you know?',
       name: 'tpe_lang_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Courses`
+  String get tp_courses {
+    return Intl.message(
+      'Courses',
+      name: 'tp_courses',
       desc: '',
       args: [],
     );

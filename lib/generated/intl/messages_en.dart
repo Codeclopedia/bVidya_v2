@@ -64,6 +64,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "active_plan_title":
             MessageLookupByLibrary.simpleMessage("Active Subscription"),
         "add_plan_title": MessageLookupByLibrary.simpleMessage("Add Plan"),
+        "admin_chat_profile_1": MessageLookupByLibrary.simpleMessage(
+            "We understand that using technology for education can be a new and exciting experience, but it can also come with its challenges. We’ll provide the best possible support to you."),
+        "admin_chat_profile_2": MessageLookupByLibrary.simpleMessage(
+            "If you have any concerns or suggestions, please contact us at:"),
         "atc_audio": MessageLookupByLibrary.simpleMessage("Audio"),
         "atc_audio_desc": MessageLookupByLibrary.simpleMessage("Share audios"),
         "atc_camera": MessageLookupByLibrary.simpleMessage("Camera"),
@@ -111,9 +115,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "blearn_instructors":
             MessageLookupByLibrary.simpleMessage("Instructors"),
         "blearn_learnfrom": MessageLookupByLibrary.simpleMessage("Learn From"),
+        "blearn_popular_title_1st_half":
+            MessageLookupByLibrary.simpleMessage("Popular"),
+        "blearn_popular_title_2nd_half":
+            MessageLookupByLibrary.simpleMessage("Categories"),
         "blearn_recently": MessageLookupByLibrary.simpleMessage("Recently"),
         "blearn_recommended":
             MessageLookupByLibrary.simpleMessage("Recommended"),
+        "blearn_review_title": MessageLookupByLibrary.simpleMessage("Review"),
         "blearn_search_courses": MessageLookupByLibrary.simpleMessage(
             "Embark on a journey of discovery through our extensive catalog of 100\'s of courses, and unlock a world of knowledge waiting to be explored!"),
         "blearn_search_instructor": MessageLookupByLibrary.simpleMessage(
@@ -511,6 +520,30 @@ class MessageLookup extends MessageLookupByLibrary {
             "NOTE: Teacher-specific features will remain unavailable till the bvidya team approves your profile. In case of any questions, you may contact our support team at Support@bvidya.com"),
         "internet_error": MessageLookupByLibrary.simpleMessage(
             "There was an error Connecting. Please check your connection and try again"),
+        "intro_screen_1_desc": MessageLookupByLibrary.simpleMessage(
+            "Begin your Online Education Journey with the best Leading Application."),
+        "intro_screen_1_title":
+            MessageLookupByLibrary.simpleMessage("Welcome to bvidya"),
+        "intro_screen_2_desc": MessageLookupByLibrary.simpleMessage(
+            "Connect faster with teachers through Messenger and get Instant replies to your queries."),
+        "intro_screen_2_title":
+            MessageLookupByLibrary.simpleMessage("Chat easily via bChat"),
+        "intro_screen_3_desc": MessageLookupByLibrary.simpleMessage(
+            "Start Video conferencing with a group of people which even helps in recording sessions."),
+        "intro_screen_3_title":
+            MessageLookupByLibrary.simpleMessage("Meet via bMeet"),
+        "intro_screen_4_desc": MessageLookupByLibrary.simpleMessage(
+            "A Simple process to create and record Live videos to engage with multiple audiences."),
+        "intro_screen_4_title":
+            MessageLookupByLibrary.simpleMessage("Go Live via bLive"),
+        "intro_screen_5_desc": MessageLookupByLibrary.simpleMessage(
+            "Keep yourself updated about upcoming Webinars, new Courses, Teachers\' profiles, etc."),
+        "intro_screen_5_title":
+            MessageLookupByLibrary.simpleMessage("Learn via bLearn"),
+        "intro_screen_6_desc": MessageLookupByLibrary.simpleMessage(
+            "Are you ready to start your Online education journey on this Top-notch Application?"),
+        "intro_screen_6_title":
+            MessageLookupByLibrary.simpleMessage("Let\'s Explore bvidya"),
         "issueDescriptionError": MessageLookupByLibrary.simpleMessage(
             "Issue description can\'t be empty"),
         "issues": MessageLookupByLibrary.simpleMessage("Issues Description"),
@@ -763,9 +796,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "soundDesc": MessageLookupByLibrary.simpleMessage(
             "Report an issue you are facing in app"),
         "soundTitle": MessageLookupByLibrary.simpleMessage("Sound"),
-        "sp_tab_course": MessageLookupByLibrary.simpleMessage("Courses"),
         "sp_tab_followed":
             MessageLookupByLibrary.simpleMessage("Teacher Followed"),
+        "sp_tab_sub_course":
+            MessageLookupByLibrary.simpleMessage("Subscribed Courses"),
         "submitBtn": MessageLookupByLibrary.simpleMessage("Submit"),
         "subscription_term_condition_title_part1":
             MessageLookupByLibrary.simpleMessage(
@@ -840,6 +874,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "total_incltax_title":
             MessageLookupByLibrary.simpleMessage("Total (Incl taxes)"),
         "tp_classes": MessageLookupByLibrary.simpleMessage("Class Requests"),
+        "tp_courses": MessageLookupByLibrary.simpleMessage("Courses"),
         "tp_dashboard": MessageLookupByLibrary.simpleMessage("My Dashboard"),
         "tp_schedule": MessageLookupByLibrary.simpleMessage("My Schedule"),
         "tpe_bio": MessageLookupByLibrary.simpleMessage("Bio"),

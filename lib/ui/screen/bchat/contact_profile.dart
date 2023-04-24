@@ -130,7 +130,7 @@ class ContactProfileScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: isAdmin
-              ? [_buildUserInfo()]
+              ? [_buildAdminInfo()]
               : isInContact
                   ? inContact()
                   : notInContact(),
@@ -193,6 +193,66 @@ class ContactProfileScreen extends HookConsumerWidget {
           Icons.thumb_down_off_alt_outlined, S.current.pr_btx_report, () {}),
       SizedBox(height: 4.h),
     ];
+  }
+
+  Widget _buildAdminInfo() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 2.h),
+          Text(
+            S.current.admin_chat_profile_1,
+            style: textStyleBlack.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+                color: AppColors.inputHintText),
+          ),
+          SizedBox(height: 4.w),
+          Text(
+            S.current.admin_chat_profile_2,
+            style: textStyleBlack.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 12.sp,
+            ),
+          ),
+          SizedBox(height: 2.w),
+          Text(
+            S.current.fp_email_caption,
+            style: textStyleBlack.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+                color: AppColors.inputHintText),
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.email,
+                size: 4.w,
+                color: AppColors.primaryColor,
+              ),
+              SizedBox(width: 2.w),
+              Text(
+                "Support@bvidya.com",
+                style: textStyleBlack.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.sp,
+                    color: AppColors.primaryColor),
+              ),
+            ],
+          ),
+          SizedBox(height: 4.w),
+          Text(
+            "Or simply message us from your app to our support team.",
+            style: textStyleBlack.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 12.sp,
+                color: AppColors.primaryColor),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildUserInfo() {

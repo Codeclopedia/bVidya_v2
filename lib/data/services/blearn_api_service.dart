@@ -73,6 +73,24 @@ class BLearnApiService {
     }
   }
 
+  Future<CoursesResponse> getCourseFromCategories(
+      String token, String categoryId) async {
+    _dio.options.headers["X-Auth-Token"] = token;
+    try {
+      final response = await _dio
+          .get(baseUrlApi + ApiList.lmsCourseFromCategory + categoryId);
+      if (response.statusCode == 200) {
+        return CoursesResponse.fromJson(response.data);
+      } else {
+        return CoursesResponse(
+            status: 'error',
+            message: '${response.statusCode}- ${response.statusMessage}');
+      }
+    } catch (e) {
+      return CoursesResponse(status: 'error', message: 'Unknown error -$e');
+    }
+  }
+
   Future<SubCategoriesResponse> getSubCategories(
       String token, String catId) async {
     _dio.options.headers["X-Auth-Token"] = token;

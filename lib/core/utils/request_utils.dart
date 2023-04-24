@@ -87,6 +87,7 @@ class ContactRequestHelper {
   static Future addNewRequest(String fId) async {
     final pref = await SharedPreferences.getInstance();
     final list = pref.getStringList('request_ids') ?? [];
+    await pref.setBool('newRequestNotification', true);
     if (!list.contains(fId)) {
       list.add(fId);
       await pref.setStringList('request_ids', list);

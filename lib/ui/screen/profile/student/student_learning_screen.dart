@@ -2,7 +2,6 @@ import '/controller/blearn_providers.dart';
 import '/ui/widgets.dart';
 import '/data/models/models.dart';
 import '/controller/profile_providers.dart';
-import '../../../widget/sliding_tab.dart';
 import '../../blearn/components/common.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
@@ -20,56 +19,57 @@ class StudentLearningScreen extends ConsumerWidget {
     final selectedIndex = ref.watch(selectedTabLearningProvider);
     return Scaffold(
       body: BaseNoScrollSettings(
-          bodyContent: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 3.h),
-          Center(
-              child: SlidingTab(
-                  label1: S.current.sp_tab_course,
-                  label2: S.current.sp_tab_followed,
-                  selectedIndex: selectedIndex,
-                  callback: (index) {
-                    ref.read(selectedTabLearningProvider.notifier).state =
-                        index;
-                  })
-              // child: SlideTab(
-              //     initialIndex: selectedIndex,
-              //     containerWidth: 88.w,
-              //     onSelect: (index) {
-              //       ref.read(selectedTabLearningProvider.notifier).state = index;
-              //     },
-              //     containerHeight: 6.h,
-              //     direction: Axis.horizontal,
-              //     sliderColor: AppColors.primaryColor,
-              //     containerBorderRadius: 2.w,
-              //     sliderBorderRadius: 2.6.w,
-              //     containerColor: AppColors.cardWhite,
-              //     activeTextStyle: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 9.sp,
-              //       fontWeight: FontWeight.w600,
-              //       fontFamily: kFontFamily,
-              //     ),
-              //     inactiveTextStyle: TextStyle(
-              //       fontSize: 9.sp,
-              //       fontWeight: FontWeight.w600,
-              //       fontFamily: kFontFamily,
-              //       color: Colors.black,
-              //     ),
-              //     texts: [
-              //       S.current.sp_tab_course,
-              //       S.current.sp_tab_followed,
-              //     ]),
-              ),
-          Expanded(
-              child: Padding(
-            padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 1.h),
-            child: selectedIndex == 0
-                ? _buildCourses(ref)
-                : _buildFollowed(ref: ref),
-          ))
-        ],
+          bodyContent: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 3.h),
+            Text(
+              S.current.sp_tab_sub_course,
+              style: textStyleHeading,
+            ),
+            // Center(
+            //     child: SlidingTab(
+            //         label1: S.current.sp_tab_course,
+            //         label2: S.current.sp_tab_followed,
+            //         selectedIndex: selectedIndex,
+            //         callback: (index) {
+            //           ref.read(selectedTabLearningProvider.notifier).state =
+            //               index;
+            //         })
+            //     // child: SlideTab(
+            //     //     initialIndex: selectedIndex,
+            //     //     containerWidth: 88.w,
+            //     //     onSelect: (index) {
+            //     //       ref.read(selectedTabLearningProvider.notifier).state = index;
+            //     //     },
+            //     //     containerHeight: 6.h,
+            //     //     direction: Axis.horizontal,
+            //     //     sliderColor: AppColors.primaryColor,
+            //     //     containerBorderRadius: 2.w,
+            //     //     sliderBorderRadius: 2.6.w,
+            //     //     containerColor: AppColors.cardWhite,
+            //     //     activeTextStyle: TextStyle(
+            //     //       color: Colors.white,
+            //     //       fontSize: 9.sp,
+            //     //       fontWeight: FontWeight.w600,
+            //     //       fontFamily: kFontFamily,
+            //     //     ),
+            //     //     inactiveTextStyle: TextStyle(
+            //     //       fontSize: 9.sp,
+            //     //       fontWeight: FontWeight.w600,
+            //     //       fontFamily: kFontFamily,
+            //     //       color: Colors.black,
+            //     //     ),
+            //     //     texts: [
+            //     //       S.current.sp_tab_course,
+            //     //       S.current.sp_tab_followed,
+            //     //     ]),
+            //     ),
+            Expanded(child: _buildCourses(ref))
+          ],
+        ),
       )),
     );
   }
@@ -283,6 +283,7 @@ class StudentLearningScreen extends ConsumerWidget {
                   specialization: followedInstructor.specialization));
         },
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             getCicleAvatar(followedInstructor.instructorName ?? '',
                 followedInstructor.image ?? '',

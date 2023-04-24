@@ -1,3 +1,4 @@
+import '../../../screens.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -24,7 +25,9 @@ class BlearnUserTopBar extends StatelessWidget {
                     Navigator.pushNamed(context, RouteList.studentProfile);
                   }
                 },
-                child: getRectFAvatar(user.name, user.image)),
+                child: getRectFAvatar(user.name, user.image,
+                    cacheHeight: (50.w * devicePixelRatio).round(),
+                    cacheWidth: (50.w * devicePixelRatio).round())),
             SizedBox(width: 3.w),
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -81,6 +84,7 @@ class BlearnUserTopBar extends StatelessWidget {
               onTap: () {
                 //need to add to route
                 Navigator.pushNamed(context, RouteList.bLearnAllCourses);
+                // print("push");
                 // Navigator.push(context, MaterialPageRoute(
                 //   builder: (context) {
                 //     return AllCoursesPage();

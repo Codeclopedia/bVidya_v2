@@ -1,3 +1,5 @@
+import 'package:bvidya/ui/widgets.dart';
+
 import '/core/ui_core.dart';
 import '/data/models/response/blearn/courses_response.dart';
 import '/data/models/response/blearn/instructors_response.dart';
@@ -131,24 +133,6 @@ class AllCoursesPage extends StatelessWidget {
             children: [
               SizedBox(height: 2.h),
               Consumer(builder: (context, ref, child) {
-                // if (ref.watch(inputTextProvider) == '' ||
-                //     ref.watch(inputTextProvider).isEmpty) {
-                //   return Center(
-                //       child: Column(
-                //     children: [
-                //       SizedBox(height: 50.w),
-                //       getSvgIcon('no_course.svg', width: 15.w),
-                //       SizedBox(height: 1.w),
-                //       Text(
-                //         S.current.blearn_search_courses,
-                //         textAlign: TextAlign.center,
-                //         style: textStyleBlack.copyWith(
-                //             fontSize: 6.sp, color: AppColors.inputHintText),
-                //       )
-                //     ],
-                //   ));
-                // }
-
                 return ref
                     .watch(bLearnSearchCoursesProvider(
                         ref.watch(inputTextProvider)))
@@ -184,7 +168,21 @@ class AllCoursesPage extends StatelessWidget {
                           );
                         }),
                         error: (e, t) => buildEmptyPlaceHolder('No User found'),
-                        loading: () => buildLoading);
+                        loading: () => GridView.builder(
+                              shrinkWrap: true,
+                              itemCount: 20,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 1,
+                                      crossAxisSpacing: 0.2.w,
+                                      mainAxisSpacing: 0.1.w),
+                              itemBuilder: (context, index) {
+                                return CustomizableShimmerTile(
+                                    height: 50.w, width: 40.w);
+                              },
+                            ));
               }),
             ],
           ),
@@ -233,14 +231,14 @@ class AllCoursesPage extends StatelessWidget {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: 0.7,
+                              childAspectRatio: 0.65,
                             ),
                             shrinkWrap: true,
                             itemCount: data?.instructors?.length,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               return Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: EdgeInsets.all(2.w),
                                 child: InkWell(
                                     onTap: () async {
                                       Navigator.pushNamed(context,
@@ -257,7 +255,21 @@ class AllCoursesPage extends StatelessWidget {
                           );
                         }),
                         error: (e, t) => buildEmptyPlaceHolder('No User found'),
-                        loading: () => buildLoading);
+                        loading: () => GridView.builder(
+                              shrinkWrap: true,
+                              itemCount: 20,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 1,
+                                      crossAxisSpacing: 0.1.w,
+                                      mainAxisSpacing: 0.1.w),
+                              itemBuilder: (context, index) {
+                                return CustomizableShimmerTile(
+                                    height: 30.w, width: 40.w);
+                              },
+                            ));
               }),
             ],
           ),

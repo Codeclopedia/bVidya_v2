@@ -15,6 +15,7 @@ import '/core/constants/colors.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
 import 'components/common.dart';
+import '/core/helpers/extensions.dart';
 
 final teacherOccupation = StateProvider.autoDispose<String>((ref) => '');
 
@@ -45,8 +46,8 @@ class TeacherProfileDetailScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                margin: EdgeInsets.only(top: 9.h),
-                padding: EdgeInsets.only(top: 20.h),
+                margin: EdgeInsets.only(top: 18.w),
+                padding: EdgeInsets.only(top: 40.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -179,181 +180,218 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     // if (body.watchtime?.isNotEmpty == true) {
     //   watchTotal = (body.watchtime?[0].total ?? '0');
     // }
+    final instructorFirstName = instructor.name?.split(' ');
 
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(right: 6.w, left: 6.w),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // teacherProfileTopRow(body, ref),
+          // SizedBox(height: 4.w),
+          TwoColorText(first: "About", second: instructorFirstName?[0] ?? ""),
+          teacherIntroduction(
+              teachername: instructor.name ?? "",
+              teacherExperienceFeild: instructor.occupation ?? "",
+              currentAddress: body.profile?.address ?? "",
+              dateOfJoining: DateFormat.yMMMd().format(
+                  DateFormat('yyyy-MM-dd hh:mm:ss').parse(
+                      body.profile?.joinedOn ?? DateTime.now().toString())),
+              yearsOfExperience: instructor.experience ?? ""),
+          SizedBox(height: 2.w),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, RouteList.teacherRequestClassForm,
+                  arguments: instructor);
+            },
+            child: Container(
+              padding: EdgeInsets.only(bottom: 5.w),
+              height: 20.w,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    body.followersCount.toString(),
-                    style: TextStyle(
+                  CircleAvatar(
+                    radius: 6.w,
+                    backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
+                    child: Center(
+                      child: Icon(
+                        Icons.message,
                         color: AppColors.primaryColor,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.sp),
-                  ),
-                  Text(
-                    S.current.teacher_followers,
-                    style: TextStyle(
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: kFontFamily,
-                        fontSize: 10.sp),
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    body.totalWatchtime ?? "",
-                    style: TextStyle(
-                        color: AppColors.primaryColor,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14.sp),
-                  ),
-                  Text(
-                    S.current.teacher_watch,
-                    style: TextStyle(
-                        color: AppColors.black,
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 10.sp),
-                  )
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  showLoading(ref);
-                  await ref
-                      .read(bLearnRepositoryProvider)
-                      .followInstructor(instructor.id.toString());
-                  hideLoading(ref);
-                  ref.refresh(bLearnProfileProvider(instructor.id.toString()));
-                  // ref.refresh(isFollowedInstructor(
-                  //     instructor.id.toString()));
-                },
-                style: ElevatedButton.styleFrom(
-                    fixedSize: Size(20.w, 5.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1.w),
+                        size: 6.w,
+                      ),
                     ),
-                    padding: EdgeInsets.zero,
-                    textStyle: TextStyle(
-                        fontFamily: kFontFamily,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 10.sp),
-                    // padding:
-                    //     EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
-                    backgroundColor: body.isFollowed ?? false
-                        ? AppColors.iconGreyColor
-                        : AppColors.primaryColor),
-                child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: body.isFollowed ?? false
-                        ? Text(
-                            S.current.teacher_followed,
-                            style: textStyleBlack.copyWith(
-                                color: Colors.white, fontSize: 9.sp),
-                          )
-                        : Text(
-                            S.current.teacher_follow,
-                            style: textStyleBlack.copyWith(
-                                color: Colors.white, fontSize: 9.sp),
-                          )),
+                  ),
+                  SizedBox(width: 3.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          S.current.request_class,
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: kFontFamily,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          S.current.t_schedule_class_msg,
+                          style: TextStyle(
+                              fontSize: 9.sp,
+                              fontFamily: kFontFamily,
+                              fontWeight: FontWeight.w200,
+                              color: AppColors.iconGreyColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // const Spacer(),
+                  Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 7.w,
+                    color: AppColors.iconGreyColor,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              final selectedIndex =
+                  ref.watch(selectedTabTeacherDetailsProvider);
+
+              return Column(
+                children: [
+                  Center(
+                      child: SlidingTab(
+                    label1: S.current.tp_courses,
+                    label2: S.current.teacher_about,
+                    selectedIndex: selectedIndex,
+                    callback: (index) {
+                      ref
+                          .read(selectedTabTeacherDetailsProvider.notifier)
+                          .state = index;
+                    },
+                  )),
+                  selectedIndex == 0
+                      ? _buildCoursesList(body.courses)
+                      : _buildAboutList(body)
+                ],
+              );
+            },
+          ),
+          SizedBox(height: 3.h),
+        ],
+      ),
+    );
+  }
+
+  Widget teacherIntroduction(
+      {required String teachername,
+      required String teacherExperienceFeild,
+      required String yearsOfExperience,
+      required String dateOfJoining,
+      required String currentAddress}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2.w),
+      child: Text(
+        '$teachername is adept as $teacherExperienceFeild with an experience of $yearsOfExperience+ years in this field and has been with the bvidya platform since $dateOfJoining. He is currently living in $currentAddress',
+        style: textStyleBlack.copyWith(
+            fontWeight: FontWeight.w500, fontSize: 8.sp),
+      ),
+    );
+  }
+
+  Widget teacherProfileTopRow(ProfileDetailBody body, WidgetRef ref) {
+    return Padding(
+      padding: EdgeInsets.only(right: 6.w, left: 6.w),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              Text(
+                body.followersCount.toString(),
+                style: TextStyle(
+                    color: AppColors.primaryColor,
+                    fontFamily: kFontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp),
+              ),
+              Text(
+                S.current.teacher_followers,
+                style: TextStyle(
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: kFontFamily,
+                    fontSize: 10.sp),
               )
             ],
           ),
-        ),
-        SizedBox(height: 2.h),
-        InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, RouteList.teacherRequestClassForm,
-                arguments: instructor);
-          },
-          child: Container(
-            padding: EdgeInsets.only(bottom: 2.3.h, right: 6.w, left: 6.w),
-            height: 10.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(
-                  radius: 6.w,
-                  backgroundColor: AppColors.iconGreyColor.withOpacity(0.2),
-                  child: Center(
-                    child: Icon(
-                      Icons.message,
-                      color: AppColors.primaryColor,
-                      size: 6.w,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 3.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        S.current.request_class,
-                        style: TextStyle(
-                            fontSize: 12.sp,
-                            fontFamily: kFontFamily,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w800),
-                      ),
-                      Text(
-                        S.current.t_schedule_class_msg,
-                        style: TextStyle(
-                            fontSize: 9.sp,
-                            fontFamily: kFontFamily,
-                            fontWeight: FontWeight.w200,
-                            color: AppColors.iconGreyColor),
-                      ),
-                    ],
-                  ),
-                ),
-                // const Spacer(),
-                Icon(
-                  Icons.keyboard_arrow_right,
-                  size: 7.w,
-                  color: AppColors.iconGreyColor,
-                )
-              ],
-            ),
+          Column(
+            children: [
+              Text(
+                body.totalWatchtime ?? "",
+                style: TextStyle(
+                    color: AppColors.primaryColor,
+                    fontFamily: kFontFamily,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp),
+              ),
+              Text(
+                S.current.teacher_watch,
+                style: TextStyle(
+                    color: AppColors.black,
+                    fontFamily: kFontFamily,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 10.sp),
+              )
+            ],
           ),
-        ),
-        Consumer(
-          builder: (context, ref, child) {
-            final selectedIndex = ref.watch(selectedTabTeacherDetailsProvider);
-
-            return Column(
-              children: [
-                Center(
-                    child: SlidingTab(
-                  label1: S.current.sp_tab_course,
-                  label2: S.current.teacher_about,
-                  selectedIndex: selectedIndex,
-                  callback: (index) {
-                    ref.read(selectedTabTeacherDetailsProvider.notifier).state =
-                        index;
-                  },
-                )),
-                selectedIndex == 0
-                    ? _buildCoursesList(body.courses)
-                    : _buildAboutList(body)
-              ],
-            );
-          },
-        ),
-        SizedBox(height: 3.h),
-      ],
+          ElevatedButton(
+            onPressed: () async {
+              showLoading(ref);
+              await ref
+                  .read(bLearnRepositoryProvider)
+                  .followInstructor(instructor.id.toString());
+              hideLoading(ref);
+              ref.refresh(bLearnProfileProvider(instructor.id.toString()));
+              // ref.refresh(isFollowedInstructor(
+              //     instructor.id.toString()));
+            },
+            style: ElevatedButton.styleFrom(
+                fixedSize: Size(20.w, 5.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(1.w),
+                ),
+                padding: EdgeInsets.zero,
+                textStyle: TextStyle(
+                    fontFamily: kFontFamily,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 10.sp),
+                // padding:
+                //     EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                backgroundColor: body.isFollowed ?? false
+                    ? AppColors.iconGreyColor
+                    : AppColors.primaryColor),
+            child: FittedBox(
+                fit: BoxFit.contain,
+                child: body.isFollowed ?? false
+                    ? Text(
+                        S.current.teacher_followed,
+                        style: textStyleBlack.copyWith(
+                            color: Colors.white, fontSize: 9.sp),
+                      )
+                    : Text(
+                        S.current.teacher_follow,
+                        style: textStyleBlack.copyWith(
+                            color: Colors.white, fontSize: 9.sp),
+                      )),
+          )
+        ],
+      ),
     );
   }
 
@@ -391,16 +429,16 @@ class TeacherProfileDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding:
-              EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h, bottom: 2.h),
+          padding: EdgeInsets.only(top: 8.w, bottom: 4.w),
           child: Text(
             S.current.teacher_all_courses,
-            style: textStyleCaption,
+            style: textStyleCaption.copyWith(
+                fontSize: 13.sp, fontWeight: FontWeight.w600),
           ),
         ),
         _buildAllCourseList(courses),
-        if (courses?.isNotEmpty == true) buildmostViewedTitle(),
-        if (courses?.isNotEmpty == true) _buildCriteriaList(courses)
+        // if (courses?.isNotEmpty == true) buildmostViewedTitle(),
+        // if (courses?.isNotEmpty == true) _buildCriteriaList(courses)
       ],
     );
   }
@@ -409,10 +447,10 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomizableShimmerTile(height: 10.w, width: 90.w),
-          SizedBox(
-            height: 5.w,
-          ),
+          // CustomizableShimmerTile(height: 10.w, width: 90.w),
+          // SizedBox(
+          //   height: 5.w,
+          // ),
           CustomizableShimmerTile(height: 15.w, width: 90.w),
           SizedBox(
             height: 5.w,
@@ -465,7 +503,7 @@ class TeacherProfileDetailScreen extends StatelessWidget {
       child: ListView.builder(
           itemCount: courses.length,
           shrinkWrap: true,
-          padding: EdgeInsets.only(left: 6.w, right: 6.w),
+          // padding: EdgeInsets.only(left: 6.w, right: 6.w),
           // physics: const NeverScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
@@ -489,22 +527,21 @@ class TeacherProfileDetailScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 2.h),
         Padding(
-          padding: EdgeInsets.only(top: 2.3.h, right: 6.w, left: 6.w),
+          padding: EdgeInsets.only(top: 8.w),
           child: Text(
             S.current.course_instructor_detail,
             style: TextStyle(
                 color: AppColors.primaryColor,
-                fontSize: 4.7.w,
-                fontWeight: FontWeight.w400),
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600),
           ),
         ),
         SizedBox(height: 2.h),
         _buildInstructorDetail(profileBody?.profile),
         SizedBox(height: 1.h),
-        _buildTestimonialCaption(),
-        _buildTestimonialList(profileBody?.courseFeedbacks),
+        // _buildTestimonialCaption(),
+        // _buildTestimonialList(profileBody?.courseFeedbacks),
       ],
     );
   }
@@ -520,85 +557,82 @@ Widget _buildInstructorDetail(Profile? profile) {
   final dateformat = DateFormat('yyyy-MM-dd hh:mm:ss')
       .parse(profile.joinedOn ?? DateTime.now().toString());
   final joinedDate = DateFormat.yMMMMd().format(dateformat);
-  return Padding(
-    padding: EdgeInsets.only(left: 6.w, right: 6.w),
-    child: Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            getSvgIcon("04.svg", width: 15.w),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                "Worked as ${profile.occupation ?? '(Unknown)'}",
-                style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 4.w,
-                    fontWeight: FontWeight.w400),
-              ),
-            )
-          ],
-        ),
-        SizedBox(height: 2.h),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            getSvgIcon("03.svg", width: 15.w),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                "Lives in ${profile.city ?? '(Unknown)'},${profile.state ?? ''}",
-                style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 4.w,
-                    fontWeight: FontWeight.w400),
-              ),
-            )
-          ],
-        ),
-        SizedBox(height: 2.h),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            getSvgIcon("02.svg", width: 15.w),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                "bvidya Educator since $joinedDate",
-                style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 4.w,
-                    fontWeight: FontWeight.w400),
-              ),
-            )
-          ],
-        ),
-        SizedBox(height: 2.h),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            getSvgIcon("01.svg", width: 15.w),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                "Knows ${profile.language ?? '(Unknown)'}",
-                style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: 4.w,
-                    fontWeight: FontWeight.w400),
-              ),
-            )
-          ],
-        )
-      ],
-    ),
+  return Column(
+    children: [
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          getSvgIcon("04.svg", width: 12.5.w),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              "Worked as ${profile.occupation ?? '(Unknown)'}",
+              style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 3.5.w,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
+      ),
+      SizedBox(height: 2.h),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          getSvgIcon("03.svg", width: 12.5.w),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              "Lives in ${profile.city ?? '(Unknown)'},${profile.state ?? ''}",
+              style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 3.5.w,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
+      ),
+      SizedBox(height: 2.h),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          getSvgIcon("02.svg", width: 12.5.w),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              "bvidya Educator since $joinedDate",
+              style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 3.5.w,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
+      ),
+      SizedBox(height: 2.h),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          getSvgIcon("01.svg", width: 12.5.w),
+          SizedBox(width: 4.w),
+          Expanded(
+            child: Text(
+              "Knows ${profile.language?.toTitleCase() ?? '(Unknown)'}",
+              style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 3.5.w,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
+      )
+    ],
   );
 }
 
 Widget _buildTestimonialCaption() {
   return Padding(
-    padding: EdgeInsets.only(top: 2.3.h, right: 1.3.h, left: 2.3.h),
+    padding: EdgeInsets.only(top: 5.w),
     child: Text(
       S.current.blearn_testimonial,
       style: TextStyle(
@@ -617,8 +651,8 @@ Widget _buildTestimonialList(List<CourseFeedback>? feedbackList) {
         child: Center(child: buildEmptyPlaceHolder("No Testimonials.")));
   }
   return Container(
-    margin: EdgeInsets.only(top: 0.8.h),
-    height: 22.h,
+    margin: EdgeInsets.only(top: 2.w),
+    height: 44.w,
     color: Colors.white,
     child: ListView.builder(
       shrinkWrap: true,

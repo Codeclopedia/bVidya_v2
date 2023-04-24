@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bvidya/data/models/response/profile/instructor_dashboard_response.dart';
+
 import '/core/utils/local_data.dart';
 
 import '../models/models.dart';
@@ -53,6 +55,15 @@ class ProfileRepository {
     } else {
       print('Error ${result.message ?? 'Error'} ');
       return null;
+    }
+  }
+
+  Future<DashBoardBody> instructorDashBoard() async {
+    final result = await _api.getDashboardDetails(_authToken);
+    if (result.status == success && result.body != null) {
+      return result.body!;
+    } else {
+      return DashBoardBody();
     }
   }
 

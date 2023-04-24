@@ -1,7 +1,6 @@
-import '/data/models/response/profile/schduled_classes_model.dart';
+import '../data/models/response/profile/instructor_dashboard_response.dart';
 import 'package:collection/collection.dart';
 
-import '../data/models/response/profile/scheduled_class_instructor_model.dart';
 import '/core/state.dart';
 import '/data/models/models.dart';
 import '/data/repository/profile_repository.dart';
@@ -28,6 +27,11 @@ final subscribedCoursesProvider =
 final follwedInstructorsProvider =
     FutureProvider.autoDispose<List<FollowedInstructor>?>((ref) {
   return ref.read(profileRepositoryProvider).followedInstructor();
+});
+
+final dashboardDetailsProvider =
+    FutureProvider.autoDispose<DashBoardBody>((ref) {
+  return ref.read(profileRepositoryProvider).instructorDashBoard();
 });
 
 // final isFollowedInstructor =

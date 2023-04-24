@@ -33,7 +33,7 @@ class InstructorRowItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontFamily: kFontFamily,
-              fontSize: 9.sp,
+              fontSize: 12.sp,
               fontWeight: FontWeight.bold,
               color: Colors.black),
         ),
@@ -47,7 +47,7 @@ class InstructorRowItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontFamily: kFontFamily,
-              fontSize: 6.sp,
+              fontSize: 8.sp,
               fontWeight: FontWeight.w500,
               color: Colors.grey),
         ),

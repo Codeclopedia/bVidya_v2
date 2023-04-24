@@ -1,3 +1,6 @@
+import 'package:bvidya/controller/profile_providers.dart';
+import 'package:bvidya/data/models/response/profile/instructor_dashboard_response.dart';
+
 import '/ui/widget/base_drawer_setting_screen.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
@@ -41,12 +44,9 @@ class DashBoardBLiveScreen extends StatelessWidget {
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
         child: UserConsumer(builder: (context, user, ref) {
-          final data = ref.watch(bLearnProfileProvider(user.id.toString()));
+          final data = ref.watch(dashboardDetailsProvider);
           return data.when(
               data: (data) {
-                if (data == null) {
-                  return const SizedBox.shrink();
-                }
                 return Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,11 +61,19 @@ class DashBoardBLiveScreen extends StatelessWidget {
                             fontFamily: kFontFamily,
                             fontWeight: FontWeight.bold),
                       ),
-                      // SizedBox(height: 2.h),
-                      // _buildRevenue(),
+                      SizedBox(height: 4.w),
+                      _buildRevenue(data),
                       SizedBox(height: 4.w),
                       _buildPerformance(
-                          data.followersCount, data.totalWatchtime),
+                          data.followers, data.totalWatchtime.toString()),
+                      SizedBox(height: 1.w),
+                      _buildtwodetailsTile(
+                          "Total broadcasts",
+                          data.broadcasts.toString(),
+                          Icons.broadcast_on_home,
+                          "Total meetings",
+                          data.meetings.toString(),
+                          Icons.video_label_sharp),
                       SizedBox(height: 6.w),
                       _buildUploadedCourse(),
                       SizedBox(height: 2.w),
@@ -124,7 +132,19 @@ class DashBoardBLiveScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRevenue() {
+  Widget _buildRevenue(DashBoardBody dashboardDetails) {
+    final List<double> payoutTrend = [];
+    int totalpayout = 0;
+    dashboardDetails.watchtimeTrends?.forEach(
+      (element) {
+        final payoutAtTime =
+            double.parse(element) * dashboardDetails.payoutRate!;
+        payoutTrend.add(payoutAtTime);
+        totalpayout = totalpayout + payoutAtTime.round();
+      },
+    );
+
+    totalpayout = totalpayout + dashboardDetails.personalClassEarning!;
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(4.w)),
       child: Container(
@@ -149,7 +169,7 @@ class DashBoardBLiveScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 6.w, top: 0.5.h),
               child: Text(
-                S.current.td_amt,
+                "₹ ${totalpayout.toString()}",
                 style: TextStyle(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
@@ -160,7 +180,7 @@ class DashBoardBLiveScreen extends StatelessWidget {
             SizedBox(height: 4.h),
             Sparkline(
                 fallbackHeight: 10.h,
-                data: dataX,
+                data: payoutTrend,
                 lineColor: const Color(0xFF6E2FFF),
                 useCubicSmoothing: true,
                 cubicSmoothingFactor: 0.12,
@@ -188,6 +208,23 @@ class DashBoardBLiveScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildtwodetailsTile(
+    String title1,
+    String data1,
+    IconData icon1,
+    String title2,
+    String data2,
+    IconData icon2,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        performanceTile(data: data1, title: title1, icon: icon1),
+        performanceTile(data: data2, title: title2, icon: icon2),
+      ],
+    );
+  }
+
   Widget performanceTile(
       {required String data, required String title, required IconData icon}) {
     return SizedBox(
@@ -206,7 +243,7 @@ class DashBoardBLiveScreen extends StatelessWidget {
                     Radius.circular(2.w),
                   ),
                 ),
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(vertical: 2.w, horizontal: 2.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

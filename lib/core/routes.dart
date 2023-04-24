@@ -65,6 +65,10 @@ class Routes {
       // case RouteList.splash:
       //   screen = const SplashScreen();
       //   break;
+      case RouteList.introductionScreen:
+        screen = const IntroductionScreenPage();
+        break;
+
       case RouteList.signup:
         screen = SignUpScreen();
         break;
@@ -577,6 +581,20 @@ class Routes {
           screen = _parameterMissing();
         }
 
+        break;
+      case RouteList.bLearnAllReview:
+        if (settings.arguments is Map) {
+          final data = settings.arguments as Map;
+          List<CourseFeedback?> feedbacks =
+              data['feedbacks'] as List<CourseFeedback?>;
+          String title = data['title'] as String;
+          screen = AllReviewsPage(
+            feedbacks: feedbacks,
+            title: title,
+          );
+        } else {
+          screen = _parameterMissing();
+        }
         break;
       case RouteList.bLearnLessionVideo:
         if (settings.arguments is Map<String, dynamic>) {

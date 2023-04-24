@@ -179,7 +179,9 @@ class RequestDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                           image: DecorationImage(
                               image: getImageProvider(
-                                  requestdata.instructorImage ?? ''),
+                                  requestdata.instructorImage ?? '',
+                                  maxHeight: (50.w * devicePixelRatio).round(),
+                                  maxWidth: (50.w * devicePixelRatio).round()),
                               fit: BoxFit.cover)),
                     ),
                   ),

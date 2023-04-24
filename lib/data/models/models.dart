@@ -30,6 +30,7 @@ export 'response/profile/subscription_plans_model.dart';
 export 'response/profile/credit_detail_model.dart';
 export 'response/profile/schduled_classes_model.dart';
 export 'response/profile/scheduled_class_instructor_model.dart';
+export 'response/profile/instructor_dashboard_response.dart';
 
 export 'response/bchat/search_contact_response.dart';
 export 'response/bchat/contacts_response.dart';

@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '/controller/providers/bchat/contact_list_provider.dart';
 import '/core/constants/colors.dart';
 import '/ui/widget/sliding_tab.dart';
@@ -56,6 +58,11 @@ class FriendRequestsScreen extends HookConsumerWidget {
     );
   }
 
+  seenRequest() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setBool('newRequestNotification', false);
+  }
+
   Widget requestSent() {
     return Consumer(
       builder: (context, ref, child) {
@@ -80,6 +87,7 @@ class FriendRequestsScreen extends HookConsumerWidget {
             ),
           );
         }
+        print("image of contact is : ${data[0].profileImage}");
 
         return ListView.builder(
           shrinkWrap: true,
@@ -280,6 +288,8 @@ class FriendRequestsScreen extends HookConsumerWidget {
                       getRectFAvatar(
                         user.name,
                         user.image,
+                        cacheHeight: (40.w * devicePixelRatio).round(),
+                        cacheWidth: (40.w * devicePixelRatio).round(),
                       ),
                       SizedBox(width: 2.w),
                       Expanded(

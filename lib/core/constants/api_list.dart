@@ -16,6 +16,7 @@ class ApiList {
   static const String updateProfile = 'profile/update';
   static const String updateProfileImage = 'profile/upload';
   static const String deleteUserAccount = 'account-dismiss';
+  static const String instructorDashboard = 'instructor-dashboard'; //GET
 
   static const String pinUnpinContact = 'chat-user/contact/pin-unpin'; //POST
 
@@ -56,6 +57,7 @@ class ApiList {
   static const String lmsHome = 'v2/home'; //GET
   static const String lmsCategories = 'categories'; //GET
   static const String lmsSubCategories = 'subcategories/'; //GET
+  static const String lmsCourseFromCategory = "courses-in-category/"; //GET
   static const String lmsCourses = 'courses'; //GET
   static const String lmsCoursesDetail = 'course-detail/'; //GET
   static const String lmsLiveClasses = 'live-classes'; //GET

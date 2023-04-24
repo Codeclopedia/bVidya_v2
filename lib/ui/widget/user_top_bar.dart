@@ -13,7 +13,9 @@ class UserTopBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             // SizedBox(width: 7.w),
-            getRectFAvatar(user.name, user.image),
+            getRectFAvatar(user.name, user.image,
+                cacheHeight: (50.w * devicePixelRatio).round(),
+                cacheWidth: (50.w * devicePixelRatio).round()),
             SizedBox(width: 3.w),
             Column(
               mainAxisSize: MainAxisSize.min,

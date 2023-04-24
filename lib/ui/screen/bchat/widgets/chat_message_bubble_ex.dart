@@ -72,8 +72,8 @@ class ChatMessageBubbleExt extends StatelessWidget {
       padding: EdgeInsets.only(
           left: isOwnMessage ? 0 : 4.w,
           right: isOwnMessage ? 4.w : 0,
-          top: isPreviousSameAuthor ? 2.h : 1.h,
-          bottom: 2.h),
+          top: isPreviousSameAuthor ? 1.w : 2.w,
+          bottom: 1.w),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -973,7 +973,11 @@ class ChatMessageBubbleExt extends StatelessWidget {
                 contactFgColor: AppColors.chatBoxMessageOthers,
                 contactPlayIconColor: Colors.white,
                 meFgColor: AppColors.chatBoxMessageMine,
-                audioSrc: isOwnMessage ? body.localPath : body.remotePath ?? "",
+                audioSrc: body.remotePath?.isEmpty ?? true
+                    ? isOwnMessage
+                        ? body.localPath
+                        : body.remotePath ?? ""
+                    : body.remotePath ?? "",
                 me: isOwnMessage,
               ),
               SizedBox(width: 1.w),

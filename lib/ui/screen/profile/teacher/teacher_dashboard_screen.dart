@@ -1,5 +1,7 @@
 import 'package:chart_sparkline/chart_sparkline.dart';
 
+import '../../../../controller/profile_providers.dart';
+import '../../../../data/models/response/profile/instructor_dashboard_response.dart';
 import '../../../widgets.dart';
 import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
@@ -41,12 +43,9 @@ class TeacherDashboard extends StatelessWidget {
       bodyContent: Padding(
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
         child: UserConsumer(builder: (context, user, ref) {
-          final data = ref.watch(bLearnProfileProvider(user.id.toString()));
+          final data = ref.watch(dashboardDetailsProvider);
           return data.when(
               data: (data) {
-                if (data == null) {
-                  return const SizedBox.shrink();
-                }
                 return Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,16 +60,24 @@ class TeacherDashboard extends StatelessWidget {
                             fontFamily: kFontFamily,
                             fontWeight: FontWeight.bold),
                       ),
-                      // SizedBox(height: 2.h),
-                      // _buildRevenue(),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 4.w),
+                      _buildRevenue(data),
+                      SizedBox(height: 4.w),
                       _buildPerformance(
-                          data.followersCount, data.totalWatchtime),
-                      SizedBox(height: 3.h),
+                          data.followers, data.totalWatchtime.toString()),
+                      SizedBox(height: 1.w),
+                      _buildtwodetailsTile(
+                          "Total broadcasts",
+                          data.broadcasts.toString(),
+                          Icons.broadcast_on_home,
+                          "Total meetings",
+                          data.meetings.toString(),
+                          Icons.video_label_sharp),
+                      SizedBox(height: 6.w),
                       _buildUploadedCourse(),
-                      SizedBox(height: 1.h),
+                      SizedBox(height: 2.w),
                       _buildCoursesList(data.courses),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 4.w),
                       // _buildRunningCourse(),
                       // _buildRunningList(data.webinar)
                     ]);
@@ -92,7 +99,6 @@ class TeacherDashboard extends StatelessWidget {
   //         fontWeight: FontWeight.bold),
   //   );
   // }
-
   Widget buildDashboardloading() {
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -135,7 +141,19 @@ class TeacherDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildRevenue() {
+  Widget _buildRevenue(DashBoardBody dashboardDetails) {
+    final List<double> payoutTrend = [];
+    int totalpayout = 0;
+    dashboardDetails.watchtimeTrends?.forEach(
+      (element) {
+        final payoutAtTime =
+            double.parse(element) * dashboardDetails.payoutRate!;
+        payoutTrend.add(payoutAtTime);
+        totalpayout = totalpayout + payoutAtTime.round();
+      },
+    );
+
+    totalpayout = totalpayout + dashboardDetails.personalClassEarning!;
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(4.w)),
       child: Container(
@@ -160,7 +178,7 @@ class TeacherDashboard extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 6.w, top: 0.5.h),
               child: Text(
-                S.current.td_amt,
+                "₹ ${totalpayout.toString()}",
                 style: TextStyle(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w600,
@@ -171,7 +189,7 @@ class TeacherDashboard extends StatelessWidget {
             SizedBox(height: 4.h),
             Sparkline(
                 fallbackHeight: 10.h,
-                data: data,
+                data: payoutTrend,
                 lineColor: const Color(0xFF6E2FFF),
                 useCubicSmoothing: true,
                 cubicSmoothingFactor: 0.12,
@@ -199,6 +217,23 @@ class TeacherDashboard extends StatelessWidget {
     );
   }
 
+  Widget _buildtwodetailsTile(
+    String title1,
+    String data1,
+    IconData icon1,
+    String title2,
+    String data2,
+    IconData icon2,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        performanceTile(data: data1, title: title1, icon: icon1),
+        performanceTile(data: data2, title: title2, icon: icon2),
+      ],
+    );
+  }
+
   Widget performanceTile(
       {required String data, required String title, required IconData icon}) {
     return SizedBox(
@@ -217,7 +252,7 @@ class TeacherDashboard extends StatelessWidget {
                     Radius.circular(2.w),
                   ),
                 ),
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(vertical: 2.w, horizontal: 2.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,6 +399,99 @@ class TeacherDashboard extends StatelessWidget {
 // }
 }
 
+// class InstructorCourseRowItem extends StatelessWidget {
+//   // final InstructorCourse course;
+//   final Course course;
+//   const InstructorCourseRowItem({Key? key, required this.course})
+//       : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       // width: double.infinity,
+//       margin: EdgeInsets.symmetric(horizontal: 3.w),
+//       width: 70.w,
+//       height: 30.h,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.all(Radius.circular(2.3.w)),
+//         color: AppColors.cardWhite,
+//         border: Border.all(color: const Color(0xFFCECECE), width: 0.5),
+//       ),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.start,
+//         mainAxisSize: MainAxisSize.max,
+//         children: [
+//           ClipRRect(
+//             borderRadius: BorderRadius.only(
+//                 topLeft: Radius.circular(2.3.w),
+//                 topRight: Radius.circular(2.3.w)),
+//             child: Image(
+//               image: getImageProvider(course.image ?? ''),
+//               height: 14.h,
+//               // width: 70.w,
+//               width: double.infinity,
+//               fit: BoxFit.fill,
+//             ),
+//           ),
+//           Expanded(
+//             child: Padding(
+//               padding: EdgeInsets.all(2.w),
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.max,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                 children: [
+//                   Text(
+//                     course.name ?? '',
+//                     maxLines: 2,
+//                     overflow: TextOverflow.ellipsis,
+//                     style: TextStyle(
+//                         fontSize: 12.sp,
+//                         fontWeight: FontWeight.bold,
+//                         fontFamily: kFontFamily,
+//                         color: Colors.black),
+//                   ),
+//                   SizedBox(height: 0.5.h),
+//                   Text(
+//                     course.description ?? '',
+//                     maxLines: 1,
+//                     style: TextStyle(
+//                         fontFamily: kFontFamily,
+//                         fontSize: 9.sp,
+//                         color: Colors.black),
+//                   ),
+//                   SizedBox(height: 0.5.h),
+//                   Row(
+//                     children: [
+//                       Text(
+//                         course.rating ?? '',
+//                         style: TextStyle(
+//                             color: AppColors.yellowAccent,
+//                             fontSize: 12.sp,
+//                             fontFamily: kFontFamily,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                       buildRatingBar(double.parse(course.rating ?? '0.0')),
+//                       Text(
+//                         '(${course.ratingCount})',
+//                         style: TextStyle(
+//                           color: Colors.black,
+//                           fontFamily: kFontFamily,
+//                           fontSize: 9.sp,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
 class InstructorCourseRowItem extends StatelessWidget {
   // final InstructorCourse course;
   final Course course;
@@ -375,8 +503,8 @@ class InstructorCourseRowItem extends StatelessWidget {
     return Container(
       // width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 3.w),
-      width: 70.w,
-      height: 30.h,
+      width: 50.w,
+      height: 40.w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(2.3.w)),
         color: AppColors.cardWhite,
@@ -404,7 +532,7 @@ class InstructorCourseRowItem extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
                     course.name ?? '',
@@ -419,7 +547,8 @@ class InstructorCourseRowItem extends StatelessWidget {
                   SizedBox(height: 0.5.h),
                   Text(
                     course.description ?? '',
-                    maxLines: 1,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         fontFamily: kFontFamily,
                         fontSize: 9.sp,

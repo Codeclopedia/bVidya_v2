@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
 // import 'package:uuid/uuid.dart';
 
@@ -755,46 +756,87 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
               const Spacer(),
-              InkWell(
-                onTap: () async {
-                  await Navigator.pushNamed(
-                      context, RouteList.friendRequestScreen);
-                  setScreen(RouteList.home);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(1.w),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(2.w)),
-                    color: AppColors.yellowAccent,
-                  ),
-                  child: const Icon(
-                    Icons.person_add_alt,
-                    color: AppColors.primaryColor,
+              SizedBox(
+                width: 11.w,
+                height: 11.w,
+                child: InkWell(
+                  onTap: () async {
+                    await Navigator.pushNamed(
+                        context, RouteList.friendRequestScreen);
+                    setScreen(RouteList.home);
+                  },
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 1.w, vertical: 1.w),
+                        child: Container(
+                          padding: EdgeInsets.all(1.w),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(2.w)),
+                            color: AppColors.yellowAccent,
+                          ),
+                          child: Icon(
+                            Icons.person_add_alt,
+                            size: 6.8.w,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                      ),
+                      // Positioned(
+                      //     top: 0,
+                      //     right: 0.5.w,
+                      //     child: CircleAvatar(
+                      //         backgroundColor: Colors.orange, radius: 1.5.w)),
+                      FutureBuilder(
+                        future: SharedPreferences.getInstance(),
+                        builder: (context, snapshot) {
+                          final newNotification =
+                              snapshot.data?.getBool('newRequestNotification');
+                          if (newNotification ?? false) {
+                            return Positioned(
+                                top: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                    backgroundColor: Colors.orange,
+                                    radius: 2.w));
+                          } else {
+                            return Container();
+                          }
+                        },
+                      )
+                    ],
                   ),
                 ),
               ),
               SizedBox(width: 3.w),
-              InkWell(
-                onTap: () async {
-                  // final result =
-                  await Navigator.pushNamed(context, RouteList.searchContact);
-                  // if (result == true) {
-                  setScreen(RouteList.home);
-                  await ref
-                      .read(chatConversationProvider.notifier)
-                      .updateUnread();
-                  // ref.read(bChatSDKControllerProvider).loadConversations(ref);
-                  // }
-                },
-                child: Container(
-                  padding: EdgeInsets.all(1.w),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(2.w)),
-                    color: AppColors.yellowAccent,
-                  ),
-                  child: const Icon(
-                    Icons.search,
-                    color: AppColors.primaryColor,
+              SizedBox(
+                width: 9.w,
+                height: 9.w,
+                child: InkWell(
+                  onTap: () async {
+                    // final result =
+                    await Navigator.pushNamed(context, RouteList.searchContact);
+                    // if (result == true) {
+                    setScreen(RouteList.home);
+                    await ref
+                        .read(chatConversationProvider.notifier)
+                        .updateUnread();
+                    // ref.read(bChatSDKControllerProvider).loadConversations(ref);
+                    // }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(1.w),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(2.w)),
+                      color: AppColors.yellowAccent,
+                    ),
+                    child: Icon(
+                      Icons.search,
+                      size: 6.8.w,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
               ),
