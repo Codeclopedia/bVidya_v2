@@ -49,7 +49,7 @@ class SubCategoriesScreen extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 2.w,
           mainAxisSpacing: 4.w,
-          childAspectRatio: 0.295.w,
+          childAspectRatio: 1.3,
         ),
         itemBuilder: (context, index) {
           SubCategory item = subCategories[index];
@@ -88,7 +88,7 @@ class SubCategoriesScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(2.w)),
                 child: SizedBox(
-                  height: 32.5.w,
+                  height: 24.5.w,
                   width: 40.w,
                   child: FittedBox(
                     fit: BoxFit.cover,

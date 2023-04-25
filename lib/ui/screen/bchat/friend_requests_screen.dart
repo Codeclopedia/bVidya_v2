@@ -136,6 +136,7 @@ class FriendRequestsScreen extends HookConsumerWidget {
   }
 
   Widget requestReceived() {
+    seenRequest();
     return Consumer(
       builder: (context, ref, child) {
         final data = ref

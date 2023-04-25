@@ -52,6 +52,8 @@ class NotificationController {
           padding: EdgeInsets.only(top: 2.w),
           child: Text(
             content,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: kFontFamily,
               color: Colors.white,

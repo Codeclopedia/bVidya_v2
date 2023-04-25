@@ -21,11 +21,11 @@ class _IntroScreenDefaultState extends State<IntroductionScreenPage> {
     super.initState();
 
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/Screen 1 Welcome.gif',
+        iconPath: 'intro_screen_icon/Screen 1 Welcome.gif',
         title: S.current.intro_screen_1_title,
         desc: S.current.intro_screen_1_desc));
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/Screen 2 bchat.gif',
+        iconPath: 'intro_screen_icon/Screen 2 bchat.gif',
         title: S.current.intro_screen_2_title,
         desc: S.current.intro_screen_2_desc));
     // listContentConfig.add(contentTile(
@@ -33,20 +33,20 @@ class _IntroScreenDefaultState extends State<IntroductionScreenPage> {
     //     title: S.current.intro_screen_3_title,
     //     desc: S.current.intro_screen_3_desc));
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/Screen 3 bmeet.gif',
+        iconPath: 'intro_screen_icon/Screen 3 bmeet.gif',
         title: S.current.intro_screen_3_title,
         desc: S.current.intro_screen_3_desc));
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/Screen4 Proto bvidya intro.gif',
+        iconPath: 'intro_screen_icon/Screen4 Proto bvidya intro.gif',
         title: S.current.intro_screen_4_title,
         desc: S.current.intro_screen_4_desc));
 
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/screen 5 blearn.gif',
+        iconPath: 'intro_screen_icon/screen 5 blearn.gif',
         title: S.current.intro_screen_5_title,
         desc: S.current.intro_screen_5_desc));
     listContentConfig.add(contentTile(
-        iconPath: 'intro_screen_lottie/screen 6 Explore bvidya.gif',
+        iconPath: 'intro_screen_icon/screen 6 Explore bvidya.gif',
         title: S.current.intro_screen_6_title,
         desc: S.current.intro_screen_6_desc));
   }

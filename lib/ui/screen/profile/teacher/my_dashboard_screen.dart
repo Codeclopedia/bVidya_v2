@@ -1,12 +1,11 @@
-import 'package:bvidya/controller/profile_providers.dart';
-import 'package:bvidya/data/models/response/profile/instructor_dashboard_response.dart';
+import '/controller/profile_providers.dart';
+// import 'package:bvidya/data/models/response/profile/instructor_dashboard_response.dart';
 
 import '/ui/widget/base_drawer_setting_screen.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 
 import '../../../widget/shimmer_tile.dart';
 import '../../blearn/components/common.dart';
-import '/controller/blearn_providers.dart';
 import '/core/constants.dart';
 import '/core/state.dart';
 import '/core/ui_core.dart';
@@ -305,7 +304,7 @@ class DashBoardBLiveScreen extends StatelessWidget {
 
   Widget _buildCoursesList(List<Course>? courses) {
     return Container(
-        height: 30.h,
+        height: 56.w,
         margin: EdgeInsets.only(top: 0.5.h),
         child: courses?.isNotEmpty == true
             ? ListView.builder(
