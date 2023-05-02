@@ -280,19 +280,32 @@ class BLiveClassScreen extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-                icon: Padding(
-                  padding: EdgeInsets.all(1.w),
+            // IconButton(
+            //     icon: Padding(
+            //       padding: EdgeInsets.all(1.w),
+            //       child: Icon(
+            //         Icons.swap_horiz,
+            //         color: Colors.white,
+            //         shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       ref.read(currentScreenIndex.notifier).state =
+            //           !ref.read(currentScreenIndex);
+            //     }),
+            InkWell(
+              onTap: () {
+                ref.read(currentScreenIndex.notifier).state =
+                    !ref.read(currentScreenIndex);
+              },
+              child: CircleAvatar(
+                  backgroundColor: Colors.black45,
                   child: Icon(
                     Icons.swap_horiz,
                     color: Colors.white,
                     shadows: [Shadow(color: Colors.black, blurRadius: 1.w)],
-                  ),
-                ),
-                onPressed: () {
-                  ref.read(currentScreenIndex.notifier).state =
-                      !ref.read(currentScreenIndex);
-                }),
+                  )),
+            ),
             Row(
               children: [
                 if (isLandscapeView)

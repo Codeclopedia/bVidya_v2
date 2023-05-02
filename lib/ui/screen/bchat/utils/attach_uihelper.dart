@@ -81,9 +81,9 @@ pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
       break;
     case AttachType.media:
       ipp.ImagePickerPlus pickerPlus = ipp.ImagePickerPlus(context);
-      ipp.SelectedImagesDetails? details = await pickerPlus.pickImage(
-          multiImages: true,
-          source: ipp.ImageSource.gallery); //todo change both
+      ipp.SelectedImagesDetails? details = await pickerPlus.pickBoth(
+          multiSelection: true,
+          source: ipp.ImageSource.gallery); //done picking both
       if (details != null && details.selectedFiles.isNotEmpty) {
         if (details.selectedFiles.length == 1) {
           ref.read(attachedFile.notifier).state =
@@ -130,7 +130,7 @@ pickFile(AttachType type, WidgetRef ref, BuildContext context) async {
 
 Widget _attachFilesView(List<AttachedFile> attaches, Function() onSend) {
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.w),
+    padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 4.w),
     margin: EdgeInsets.only(bottom: 1.h),
     alignment: Alignment.center,
     height: 10.h,
@@ -190,15 +190,15 @@ Widget _attachFilesView(List<AttachedFile> attaches, Function() onSend) {
 Widget _attachFileView(AttachedFile attFile, Function() onSend) {
   return Row(
     mainAxisSize: MainAxisSize.max,
-    crossAxisAlignment: CrossAxisAlignment.end,
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       Expanded(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 2.w),
+          margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
           alignment: Alignment.center,
           constraints: BoxConstraints(
-            minHeight: 2.h,
-            maxHeight: 10.h,
+            minHeight: 4.w,
+            maxHeight: 20.w,
           ),
           padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.w),
           decoration: BoxDecoration(

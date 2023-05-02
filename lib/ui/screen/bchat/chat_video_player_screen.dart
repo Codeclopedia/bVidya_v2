@@ -17,10 +17,14 @@ class ChatVideoPlayerScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     useEffect(() {
+      File file = File(body.localPath);
+
       flickManager = FlickManager(
         videoPlayerController: body.localPath.isEmpty
             ? VideoPlayerController.network(body.remotePath!)
-            : VideoPlayerController.file(File(body.localPath)),
+            : file.existsSync()
+                ? VideoPlayerController.file(File(body.localPath))
+                : VideoPlayerController.network(body.remotePath!),
       );
       Wakelock.enable();
       return () {

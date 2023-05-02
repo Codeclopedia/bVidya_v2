@@ -77,8 +77,8 @@ class AttachDialog extends StatelessWidget {
             ),
             _buildOption(
               S.current.atc_media,
-              // S.current.atc_media_desc,
-              'Share photos',
+              S.current.atc_media_desc,
+              // 'Share photos',
               'icon_chat_media.svg',
               mediaColor,
               () => Navigator.pop(context, AttachType.media),

@@ -1,5 +1,4 @@
-import 'package:bvidya/ui/widgets.dart';
-
+import '/ui/widgets.dart';
 import '/core/ui_core.dart';
 import '/data/models/response/blearn/courses_response.dart';
 import '/data/models/response/blearn/instructors_response.dart';
@@ -9,7 +8,7 @@ import '/core/constants/colors.dart';
 import '/core/constants/route_list.dart';
 import '/core/state.dart';
 import '../../screens.dart';
-import '../../widget/coloured_box_bar.dart';
+// import '../../widget/coloured_box_bar.dart';
 import '../../widget/sliding_tab.dart';
 import 'components/common.dart';
 import 'components/course_row.dart';
@@ -179,8 +178,11 @@ class AllCoursesPage extends StatelessWidget {
                                       crossAxisSpacing: 0.2.w,
                                       mainAxisSpacing: 0.1.w),
                               itemBuilder: (context, index) {
-                                return CustomizableShimmerTile(
-                                    height: 50.w, width: 40.w);
+                                return Padding(
+                                  padding: EdgeInsets.all(1.w),
+                                  child: CustomizableShimmerTile(
+                                      height: 50.w, width: 40.w),
+                                );
                               },
                             ));
               }),
@@ -266,8 +268,11 @@ class AllCoursesPage extends StatelessWidget {
                                       crossAxisSpacing: 0.1.w,
                                       mainAxisSpacing: 0.1.w),
                               itemBuilder: (context, index) {
-                                return CustomizableShimmerTile(
-                                    height: 30.w, width: 40.w);
+                                return Padding(
+                                  padding: EdgeInsets.all(2.w),
+                                  child: CustomizableShimmerTile(
+                                      height: 30.w, width: 40.w),
+                                );
                               },
                             ));
               }),

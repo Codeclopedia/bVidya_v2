@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 import '/ui/screens.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 
 // import '/ui/screen/blearn/components/request_class_form.dart';
 import '/ui/widget/sliding_tab.dart';

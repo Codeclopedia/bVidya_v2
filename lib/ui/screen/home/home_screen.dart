@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
 // import 'package:uuid/uuid.dart';
@@ -34,6 +35,10 @@ import '/core/ui_core.dart';
 import '/data/models/models.dart';
 import '/ui/dialog/conversation_menu_dialog.dart';
 import '/ui/widget/base_drawer_appbar_screen.dart';
+
+final requestNotificationNew = FutureProvider<bool>((ref) async =>
+    (await SharedPreferences.getInstance()).getBool('newRequestNotification') ??
+    false);
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool direct;
@@ -764,6 +769,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                     await Navigator.pushNamed(
                         context, RouteList.friendRequestScreen);
                     setScreen(RouteList.home);
+                    ref.invalidate(requestNotificationNew);
                   },
                   child: Stack(
                     children: [
@@ -789,23 +795,41 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       //     right: 0.5.w,
                       //     child: CircleAvatar(
                       //         backgroundColor: Colors.orange, radius: 1.5.w)),
-                      FutureBuilder(
-                        future: SharedPreferences.getInstance(),
-                        builder: (context, snapshot) {
-                          final newNotification =
-                              snapshot.data?.getBool('newRequestNotification');
-                          if (newNotification ?? false) {
-                            return Positioned(
-                                top: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                    backgroundColor: Colors.orange,
-                                    radius: 2.w));
-                          } else {
-                            return Container();
-                          }
-                        },
-                      )
+                      ref.watch(requestNotificationNew).when(
+                            data: (data) {
+                              if (data) {
+                                return Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: CircleAvatar(
+                                        backgroundColor: Colors.orange,
+                                        radius: 2.w));
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: ((error, stackTrace) {
+                              return const SizedBox.shrink();
+                            }),
+                          ),
+                      // FutureBuilder(
+                      //   future: SharedPreferences.getInstance(),
+                      //   builder: (context, snapshot) {
+                      //     final newNotification =
+                      //         snapshot.data?.getBool('newRequestNotification');
+                      //     if (newNotification ?? false) {
+                      //       return Positioned(
+                      //           top: 0,
+                      //           right: 0,
+                      //           child: CircleAvatar(
+                      //               backgroundColor: Colors.orange,
+                      //               radius: 2.w));
+                      //     } else {
+                      //       return Container();
+                      //     }
+                      //   },
+                      // )
                     ],
                   ),
                 ),

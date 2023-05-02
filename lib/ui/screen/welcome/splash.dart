@@ -24,16 +24,16 @@ import '/core/ui_core.dart';
 import '/core/helpers/foreground_message_helper.dart';
 import '/controller/providers/user_auth_provider.dart';
 
-final splashImageProvider = StateProvider<Widget>((ref) => Image.asset(
-          'assets/images/loader.gif',
-          fit: BoxFit.fitWidth,
-        )
-    //  SvgPicture.asset(
-    //   "assets/icons/svgs/splash_logo_full.svg",
-    //   // 'assets/images/loader.gif',
-    //   fit: BoxFit.fitWidth,
-    // ),
-    );
+// final splashImageProvider = StateProvider<Widget>((ref) => Image.asset(
+//           'assets/images/loader.gif',
+//           fit: BoxFit.fitWidth,
+//         )
+//     //  SvgPicture.asset(
+//     //   "assets/icons/svgs/splash_logo_full.svg",
+//     //   // 'assets/images/loader.gif',
+//     //   fit: BoxFit.fitWidth,
+//     // ),
+//     );
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -85,10 +85,12 @@ class SplashScreen extends ConsumerWidget {
         } else {
           final isNotLoaded = await isIntroductionLoaded();
 
-          ref.read(splashImageProvider.notifier).state = Image.asset(
-            'assets/images/loader.gif',
-            fit: BoxFit.fitWidth,
-          );
+          // ref.read(splashImageProvider.notifier).state = Image.asset(
+          //   'assets/images/loader.gif',
+          //   fit: BoxFit.fitWidth,
+          //   cacheHeight: (60.w * devicePixelRatio).round(),
+          //   cacheWidth: (60.w * devicePixelRatio).round(),
+          // );
           Future.delayed(const Duration(seconds: 4), () {
             Navigator.pushReplacementNamed(context,
                 isNotLoaded ? RouteList.login : RouteList.introductionScreen);

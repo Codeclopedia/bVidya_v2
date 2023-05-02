@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smartlook/flutter_smartlook.dart';
 
@@ -104,6 +105,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
   void initState() {
     super.initState();
     appLoaded = false;
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addObserver(this);
     setupCallKit();
     initSmartlook(smartlook: smartlook);
@@ -148,7 +150,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     } else if (Platform.isIOS) {
       ApnsPushConnectorOnly.instance.configureApns(
         onMessageTap: (message) async {
-          debugPrint('foreground=>:${message.data}');
+          // debugPrint('foreground=>:${message.data}');
           BuildContext? contx = navigatorKey.currentContext;
           if (contx != null) {
             showLoading(ref);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
@@ -957,6 +958,7 @@ class ChatMessageBubbleExt extends StatelessWidget {
     //   size = getFileSize(body.fileSize, 1);
     // }
     final message = this.message.msg;
+    final File file = File(body.localPath);
     return Container(
       decoration: _buildDecoration(),
       margin: EdgeInsets.only(
@@ -973,8 +975,8 @@ class ChatMessageBubbleExt extends StatelessWidget {
                 contactFgColor: AppColors.chatBoxMessageOthers,
                 contactPlayIconColor: Colors.white,
                 meFgColor: AppColors.chatBoxMessageMine,
-                audioSrc: body.remotePath?.isEmpty ?? true
-                    ? isOwnMessage
+                audioSrc: isOwnMessage
+                    ? body.localPath.isNotEmpty && file.existsSync()
                         ? body.localPath
                         : body.remotePath ?? ""
                     : body.remotePath ?? "",
