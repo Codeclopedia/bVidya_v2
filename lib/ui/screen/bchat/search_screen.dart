@@ -2,13 +2,15 @@
 
 import 'dart:ui';
 
+import '/data/services/push_api_service.dart';
+
 import '/ui/screen/bchat/widgets/teacher_batch.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '/core/constants/agora_config.dart';
 import '/core/utils.dart';
 import '/core/utils/request_utils.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/controller/providers/bchat/contact_list_provider.dart';
 import '/ui/dialog/add_contact_dialog.dart';
@@ -235,7 +237,8 @@ class SearchScreen extends StatelessWidget {
                                   await BChatContactManager.sendRequestResponse(
                                       ref,
                                       element.userId.toString(),
-                                      element.fcmToken,
+                                      element.apnToken != null,
+                                      element.apnToken ?? element.fcmToken,
                                       ContactAction.deleteContact);
                                   ref
                                       .read(contactListProvider.notifier)
@@ -360,7 +363,7 @@ class SearchScreen extends StatelessWidget {
     );
   }
 
-  _addContactSendRequest(
+  Future _addContactSendRequest(
       WidgetRef ref, BuildContext context, SearchContactResult item) async {
     final input = await showAddContactDialog(context, item.userId!, item.name!);
     if (input == null) {
@@ -388,8 +391,12 @@ class SearchScreen extends StatelessWidget {
             Contacts.fromContact(contacts[0], ContactStatus.sentInvite));
         User? me = await getMeAsUser();
         if (me != null && contacts[0].fcmToken != null) {
-          await FCMApiService.instance.pushContactAlert(
-            contacts[0].fcmToken!,
+          await
+              //  FCMApiService.instance
+              PushApiService.instance.pushContactAlert(
+            me.authToken,
+            contacts[0].apnToken != null,
+            contacts[0].apnToken ?? contacts[0].fcmToken!,
             me.id.toString(),
             item.userId.toString(),
             // '${me.name} sent you request',

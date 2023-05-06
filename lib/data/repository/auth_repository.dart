@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 // import '/controller/providers/user_auth_provider.dart';
 // import '/core/state.dart';
@@ -47,11 +48,20 @@ class AuthRepository {
     await pref.setString('user', jsonEncode(user.toJson()));
   }
 
+  static Future<String?> getIOSAPN() async {
+    if (Platform.isIOS) {
+      return await FirebaseMessaging.instance.getAPNSToken();
+    } else {
+      return null;
+    }
+  }
+
 //Login with email, password
   Future<String?> login(String email, String password) async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (fcmToken != null) {
-      final result = await api.userLogin(email, password, fcmToken);
+      final result =
+          await api.userLogin(email, password, fcmToken, await getIOSAPN());
       if (result.status != null &&
           result.status == successfull &&
           result.body != null) {
@@ -145,8 +155,8 @@ class AuthRepository {
     if (_mobileNumber == null) return 'Please enter mobile number';
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (fcmToken != null) {
-      final result =
-          await api.loginOTPVerification(_mobileNumber!, otp, fcmToken);
+      final result = await api.loginOTPVerification(
+          _mobileNumber!, otp, fcmToken, await getIOSAPN());
       if (result.status != null &&
           result.status == successfull &&
           result.body != null) {

@@ -31,7 +31,7 @@ class BChatSDKController {
         requireDeliveryAck: true,
       );
       if (Platform.isIOS) {
-        options.enableAPNs(isReleaseBuild ? 'bVidyaPushKey' : 'bVidyaDemoKey');
+        options.enableAPNs(isReleaseBuild ? 'bVidyaPushKey' : 'bVidyaSandbox');
         //bVidyaAPNKey
       }
       options.enableFCM(isReleaseBuild

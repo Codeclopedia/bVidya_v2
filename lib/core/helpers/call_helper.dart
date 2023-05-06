@@ -1,12 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/data/repository/auth_repository.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
+import '/data/services/push_api_service.dart';
 import '../routes.dart';
 import '/core/utils/callkit_utils.dart';
 import '../constants.dart';
@@ -117,11 +119,18 @@ Future<ChatMessage?> makeAudioCall(
     final CallBody callBody = response.body!;
 
     hideLoading(ref);
+
     // if (contact.fcmToken?.isNotEmpty == true) {
     //   FCMApiService.instance.sendCallPush(contact.fcmToken ?? '', user.fcmToken,
     //       callBody, user.id.toString(), user.name, user.image, false);
     // }
+
+    final myToken = await AuthRepository.getIOSAPN() ?? user.fcmToken;
+
     final chat = await logCallEvent(
+        user.authToken,
+        // false,
+        contact.apnToken != null,
         ref,
         callBody.callId,
         user.name,
@@ -130,9 +139,9 @@ Future<ChatMessage?> makeAudioCall(
         contact.name,
         CallType.audio,
         CallDirectionType.outgoing,
-        user.fcmToken,
+        myToken,
         contact.profileImage,
-        contact.fcmToken ?? '',
+        contact.apnToken ?? (contact.fcmToken ?? ''),
         user.id.toString(),
         callBody: callBody
         // fromFCM: user.fcmToken,
@@ -142,7 +151,8 @@ Future<ChatMessage?> makeAudioCall(
     Map<String, dynamic> map = {
       'name': contact.name,
       'image': contact.profileImage,
-      'fcm_token': contact.fcmToken,
+      'token': contact.apnToken ?? contact.fcmToken,
+      'is_ios': contact.apnToken != null,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
       'prev_screen': Routes.getCurrentScreen(),
@@ -163,7 +173,8 @@ Future<bool> receiveCall(BuildContext context, String fromId,
     CallMessegeBody callMessegeBody, bool direct) async {
   Map<String, dynamic> callMap = {
     'name': callMessegeBody.fromName,
-    'fcm_token': callMessegeBody.ext['fcm'],
+    'token': callMessegeBody.ext['token'],
+    'is_ios': callMessegeBody.ext['is_ios'] ?? false,
     'image': callMessegeBody.fromImage,
     'call_info': callMessegeBody.callBody,
     'call_direction_type': CallDirectionType.incoming,
@@ -228,7 +239,12 @@ Future<ChatMessage?> makeVideoCall(
     //       callBody, user.id.toString(), user.name, user.image, true);
     // }
     hideLoading(ref);
+    final myToken = await AuthRepository.getIOSAPN() ?? user.fcmToken;
+
     final chat = await logCallEvent(
+        user.authToken,
+        // false,
+        contact.apnToken != null,
         ref,
         callBody.callId,
         user.name,
@@ -237,14 +253,16 @@ Future<ChatMessage?> makeVideoCall(
         contact.name,
         CallType.video,
         CallDirectionType.outgoing,
-        user.fcmToken,
+        myToken,
         contact.profileImage,
-        contact.fcmToken ?? '',
+        contact.apnToken ?? (contact.fcmToken ?? ''),
         user.id.toString(),
         callBody: callBody);
     Map<String, dynamic> map = {
       'name': contact.name,
-      'fcm_token': contact.fcmToken,
+      // 'fcm_token': contact.fcmToken,
+      'token': contact.apnToken ?? contact.fcmToken,
+      'is_ios': contact.apnToken != null,
       'image': contact.profileImage,
       'call_info': callBody,
       'call_direction_type': CallDirectionType.outgoing,
@@ -290,6 +308,8 @@ Future<ChatMessage?> makeCall(
 }
 
 Future<ChatMessage?> logCallEvent(
+    String authToken,
+    bool isIos,
     WidgetRef ref,
     String callId,
     String fromName,
@@ -298,9 +318,9 @@ Future<ChatMessage?> logCallEvent(
     String toName,
     CallType callType,
     CallDirectionType callDirectionType,
-    String fcm,
+    String myToken,
     String image,
-    String toFcm,
+    String toToken,
     String fromId,
     {int duration = 0,
     CallStatus status = CallStatus.ongoing,
@@ -316,9 +336,10 @@ Future<ChatMessage?> logCallEvent(
       toName: toName,
       status: status,
       callBody: callBody,
-      ext: {'fcm': fcm},
+      ext: {'token': myToken, 'is_ios': Platform.isIOS},
     );
 
+    print('callBody ${callMessageBody.toJson()}');
     final message = ChatMessage.createCustomSendMessage(
         targetId: toId, event: jsonEncode(callMessageBody.toJson()));
 
@@ -354,8 +375,9 @@ Future<ChatMessage?> logCallEvent(
         callMessageBody);
     ref.read(callListProvider.notifier).addCall(model);
 
-    FCMApiService.instance.sendCallStartPush(
-        toFcm, fromId, callId, message.msgId, callMessageBody);
+    // FCMApiService.instance
+    PushApiService.instance.sendCallStartPush(authToken, isIos, toToken, fromId,
+        callId, message.msgId, callMessageBody);
     print('Message ID =>${msg.msgId}, $toId');
 
     return msg;

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/data/services/push_api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import '../../../app.dart';
@@ -787,7 +788,8 @@ class ContactProfileScreen extends HookConsumerWidget {
                       await BChatContactManager.sendRequestResponse(
                           ref,
                           contact.userId.toString(),
-                          contact.fcmToken,
+                          contact.apnToken != null,
+                          contact.apnToken ?? contact.fcmToken,
                           ContactAction.deleteContact);
                       ref
                           .read(contactListProvider.notifier)
@@ -954,14 +956,18 @@ class ContactProfileScreen extends HookConsumerWidget {
             );
         User? me = await getMeAsUser();
         if (me != null && contacts[0].fcmToken != null) {
-          await FCMApiService.instance.pushContactAlert(
-              contacts[0].fcmToken!,
-              me.id.toString(),
-              item.userId.toString(),
-              'You\'ve got a new invitation',
-              // input,
-              '${me.name} sent you request',
-              ContactAction.sendRequestContact);
+          await PushApiService.instance
+              // FCMApiService.instance
+              .pushContactAlert(
+                  me.authToken,
+                  contacts[0].apnToken != null,
+                  contacts[0].apnToken ?? contacts[0].fcmToken!,
+                  me.id.toString(),
+                  item.userId.toString(),
+                  'You\'ve got a new invitation',
+                  // input,
+                  '${me.name} sent you request',
+                  ContactAction.sendRequestContact);
         }
       }
     } else {

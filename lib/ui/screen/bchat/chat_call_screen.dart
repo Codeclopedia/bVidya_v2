@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import '/data/services/push_api_service.dart';
 import 'package:wakelock/wakelock.dart';
 import '/data/models/call_message_body.dart';
 // import '/core/utils/connectycubekit.dart';
@@ -37,7 +38,8 @@ final audioCallChangeProvider =
 bool _endingCall = false;
 
 class ChatCallScreen extends HookConsumerWidget {
-  final String fcmToken;
+  final bool isIos;
+  final String token;
   final String name;
   final String image;
   final CallBody callInfo;
@@ -49,7 +51,8 @@ class ChatCallScreen extends HookConsumerWidget {
 
   const ChatCallScreen({
     super.key,
-    required this.fcmToken,
+    required this.token,
+    required this.isIos,
     required this.name,
     required this.image,
     required this.callInfo,
@@ -382,15 +385,18 @@ class ChatCallScreen extends HookConsumerWidget {
                     markCallMessageToMissed(
                         otherUserId, msgId!, CallStatus.missed);
                   }
-
-                  FCMApiService.instance.sendCallEndPush(
-                      fcmToken,
-                      NotiConstants.actionCallEnd,
-                      user.id.toString(),
-                      callInfo.callId,
-                      user.name,
-                      user.image,
-                      callType == CallType.video);
+                  PushApiService.instance
+                      // FCMApiService.instance
+                      .sendCallEndPush(
+                          user.authToken,
+                          isIos,
+                          token,
+                          NotiConstants.actionCallEnd,
+                          user.id.toString(),
+                          callInfo.callId,
+                          user.name,
+                          user.image,
+                          callType == CallType.video);
                 }
 
                 _finish(context);

@@ -72,6 +72,7 @@ class GroupCallMessegeBody {
   final String fromFCM;
   final String fromName;
   final String fromImage;
+  bool isIos = false;
 // final String groupId;
 
   final String groupName;
@@ -100,6 +101,7 @@ class GroupCallMessegeBody {
     required this.duration,
     required this.callType,
     required this.meeting,
+
     // required this.ext,
   });
 
@@ -113,6 +115,7 @@ class GroupCallMessegeBody {
         groupImage = json['grp_image'],
         memberIds = json['members_ids'],
         duration = json['duration'] ?? 0,
+        isIos = json['is_ios'] ?? false,
         status = CallStatus.values[json['status'] as int],
         callType = CallType.values[json['call_type'] as int],
         meeting = Meeting.fromJson(jsonDecode(json['meeting']));
@@ -131,6 +134,7 @@ class GroupCallMessegeBody {
     data['duration'] = duration;
     data['status'] = status.index;
     data['call_type'] = callType.index;
+    data['is_ios'] == isIos;
     data['meeting'] = jsonEncode(meeting.toJson());
     // data['ext'] = ext;
     return data;

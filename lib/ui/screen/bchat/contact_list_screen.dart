@@ -97,7 +97,8 @@ class ContactListScreen extends StatelessWidget {
                         await BChatContactManager.sendRequestResponse(
                             ref,
                             element.userId.toString(),
-                            element.fcmToken,
+                            element.apnToken != null,
+                            element.apnToken ?? element.fcmToken,
                             ContactAction.deleteContact);
                         ref
                             .read(contactListProvider.notifier)
@@ -108,7 +109,7 @@ class ContactListScreen extends StatelessWidget {
                         // ref
                         //     .read(chatConversationProvider)
                         //     .removedContact(element.userId);
-                      } else {}
+                      }
                     },
                     onTap: (() async {
                       openChatScreen(context, element, ref);

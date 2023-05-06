@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:bvidya/ui/dialog/ok_dialog.dart';
+import '/ui/dialog/ok_dialog.dart';
 import 'package:spring/spring.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';

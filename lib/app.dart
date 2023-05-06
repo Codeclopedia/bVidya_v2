@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/firebase_options.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
@@ -99,7 +100,7 @@ class BVidyaApp extends ConsumerStatefulWidget {
 
 class _BVidyaAppState extends ConsumerState<BVidyaApp>
     with WidgetsBindingObserver {
-  final Smartlook smartlook = Smartlook.instance;
+  final Smartlook? smartlook = isReleaseBuild ? Smartlook.instance : null;
 
   @override
   void initState() {
@@ -108,7 +109,10 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addObserver(this);
     setupCallKit();
-    initSmartlook(smartlook: smartlook);
+    if (smartlook != null) {
+      initSmartlook(smartlook: smartlook!);
+    }
+
     initLoading();
     _firebase();
     registerForContact();
@@ -130,7 +134,9 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }
     if (state == AppLifecycleState.detached) {
       debugPrint('Hello I m here in termination');
-      disposeSmartlook(smartlook: smartlook);
+      if (smartlook != null) {
+        disposeSmartlook(smartlook: smartlook!);
+      }
     }
   }
 
@@ -160,8 +166,55 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
             debugPrint('Null Context =>');
           }
         },
-        onMessage: (message) async {
-          // print('onMessage:${message.data}');
+        onMessage: (message) {
+          try {
+            print('onMessage:${message.data['data']}');
+
+            final data = Map<String, dynamic>.from(message.data['data']);
+            print('Type:${data['type']}  ${data['action']}');
+
+            if (data['type'] == NotiConstants.typeCall) {
+              final String? action = data['action'];
+              if (action == NotiConstants.actionCallStart) {
+                print('Pre showCallingNotification');
+                showCallingNotification(data, false);
+                print('Post showCallingNotification');
+              } else if (action == NotiConstants.actionCallEnd) {
+                print('Pre closeIncomingCall');
+                closeIncomingCall(data);
+                print('Post closeIncomingCall');
+              }
+            } else if (data['type'] == NotiConstants.typeGroupCall) {
+              final String? action = data['action'];
+              if (action == NotiConstants.actionCallStart) {
+                showGroupCallingNotification(data, false);
+              }
+              if (action == NotiConstants.actionCallEnd) {
+                closeIncomingGroupCall(data);
+              }
+            } else if (data['type'] == NotiConstants.typeContact) {
+              final String? fromId = data['f'];
+              ContactAction? action = contactActionFrom(data['action']);
+              if (action != null && fromId != null) {
+                ContactRequestHelper.handleNotification(message.data['title'],
+                    message.data['body'], action, fromId, true,
+                    ref: ref);
+              }
+            } else if (data['type'] == NotiConstants.typeGroupMemberUpdate) {
+              final String? fromId = data['f'];
+              final String? grpId = data['g'];
+              GroupMemberAction? action = groupActionFrom(data['action']);
+              if (action != null && fromId != null && grpId != null) {
+                GroupMemberHelper.handleNotification(message.data['title'],
+                    message.data['body'], action, fromId, grpId, true,
+                    ref: ref);
+              }
+            }
+          } catch (e) {
+            print('Error222 : $e');
+          }
+          // ForegroundMessageHelper.onForegroundMessage(ref, message.data['data'],
+          //     message.data['title'], message.data['body']);
         },
       );
     }
@@ -170,39 +223,8 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
       // print('onMessage => ${message.data} : ${message.notification}');
       if ((await getMeAsUser()) == null) return;
       //For P2P Call
-      if (message.data['type'] == NotiConstants.typeCall) {
-        final String? action = message.data['action'];
-        if (action == NotiConstants.actionCallStart) {
-          BackgroundHelper.showCallingNotification(message, false);
-        } else if (action == NotiConstants.actionCallEnd) {
-          closeIncomingCall(message);
-        }
-      } else if (message.data['type'] == NotiConstants.typeGroupCall) {
-        final String? action = message.data['action'];
-        if (action == NotiConstants.actionCallStart) {
-          BackgroundHelper.showGroupCallingNotification(message, false);
-        }
-        if (action == NotiConstants.actionCallEnd) {
-          closeIncomingGroupCall(message);
-        }
-      } else if (message.data['type'] == NotiConstants.typeContact) {
-        final String? fromId = message.data['f'];
-        ContactAction? action = contactActionFrom(message.data['action']);
-        if (action != null && fromId != null) {
-          ContactRequestHelper.handleNotification(
-              message.notification, action, fromId, true,
-              ref: ref);
-        }
-      } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
-        final String? fromId = message.data['f'];
-        final String? grpId = message.data['g'];
-        GroupMemberAction? action = groupActionFrom(message.data['action']);
-        if (action != null && fromId != null && grpId != null) {
-          GroupMemberHelper.handleNotification(
-              message.notification, action, fromId, grpId, true,
-              ref: ref);
-        }
-      }
+      ForegroundMessageHelper.onForegroundMessage(ref, message.data,
+          message.notification?.title, message.notification?.body);
     });
     final atoken = await FirebaseMessaging.instance.getToken();
     debugPrint('FCM Token => $atoken');
@@ -223,12 +245,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
     }, onError: (e) {
       debugPrint('onTokenRefresh Error $e');
     });
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    //   if (message.data['alert'] != null && message.data['e'] != null) {
-    //     handleRemoteMessage(message, context, fallbackScreen: '');
-    //   }
-    // });
-    // if ((await getMeAsUser()) == null) return;
+
     registerForNewMessage(
       'bVidyaApp',
       (msgs) async {
@@ -265,11 +282,8 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
               ForegroundMessageHelper.showForegroundGroupChatNotification(
                   value, lastMessage);
             }
-
             ref.invalidate(groupUnreadCountProvider); //Reset Group Unread count
-            // if(values.l.contains(lastMessage.conversationId)){
-            // }
-            // NotificationController.handleForegroundMessage(lastMessage);
+
           }
         }
       },
@@ -288,7 +302,6 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
       }
     });
 
-    // debugInvertOversizedImages = true;
     return MaterialApp(
       navigatorObservers: [SmartlookObserver()],
       debugShowCheckedModeBanner: false,

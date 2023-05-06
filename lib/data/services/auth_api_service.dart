@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
-import '../models/response/auth/signup_reponse.dart';
+
 import '/core/constants.dart';
+import '../models/response/auth/signup_reponse.dart';
 import '../models/models.dart';
 import '../network/dio_services.dart';
 
@@ -23,17 +24,30 @@ class ApiAuthService {
     }
   }
 
+  
+
 //Login with email password
   Future<LoginResponse> userLogin(
     String email,
     String password,
     String fcmToken,
+    String? apnToken,
   ) async {
-    final data = {
+    var data = {
       'email': email,
       'password': password,
       'fcm_token': fcmToken,
     };
+
+    if (apnToken != null) {
+      data = {
+        'email': email,
+        'password': password,
+        'fcm_token': fcmToken,
+        'apn_token': apnToken,
+      };
+    }
+
     try {
       final response =
           await _dio.post('$baseUrlApi${ApiList.login}', data: data);
@@ -77,12 +91,21 @@ class ApiAuthService {
     String mobile,
     String otp,
     String fcmToken,
+    String? apnToken,
   ) async {
-    final data = {
+    var data = {
       'mobile': mobile,
       'otp': otp,
       'fcm_token': fcmToken,
     };
+    if (apnToken != null) {
+      data = {
+        'mobile': mobile,
+        'otp': otp,
+        'fcm_token': fcmToken,
+        'apn_token': apnToken,
+      };
+    }
     try {
       final response =
           await _dio.post('$baseUrlApi${ApiList.verifyloginOtp}', data: data);

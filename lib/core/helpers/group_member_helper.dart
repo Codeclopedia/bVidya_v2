@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/data/services/push_api_service.dart';
 import '/controller/providers/bchat/groups_conversation_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../state.dart';
 import '../ui_core.dart';
 import '../utils/notification_controller.dart';
 import '/data/services/bchat_api_service.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
 import '/core/utils.dart';
 import '/data/models/models.dart';
 
@@ -67,7 +68,7 @@ GroupMemberAction? groupActionFrom(String? name) {
 class GroupMemberHelper {
   GroupMemberHelper._();
 
-  static Future handleNotification(RemoteNotification? notification,
+  static Future handleNotification(String? title, String? body,
       GroupMemberAction action, String fromId, String grpId, bool foreground,
       {WidgetRef? ref}) async {
     // print('Action  $action');
@@ -77,12 +78,9 @@ class GroupMemberHelper {
           ref
               ?.read(groupConversationProvider.notifier)
               .addConversationOnly(grpId);
-          if (notification != null) {
+          if (title != null) {
             NotificationController.showContactActionNotification(
-                fromId,
-                notification.title ?? '',
-                notification.body ?? '',
-                Colors.green);
+                fromId, title, body ?? '', Colors.green);
           }
         }
         break;
@@ -111,9 +109,9 @@ class GroupMemberHelper {
       case GroupMemberAction.removed:
         if (foreground) {
           ref?.read(groupConversationProvider.notifier).removeEntry(grpId);
-          if (notification != null) {
-            NotificationController.showContactActionNotification(fromId,
-                notification.title ?? '', notification.body ?? '', Colors.blue);
+          if (title != null) {
+            NotificationController.showContactActionNotification(
+                fromId, title, body ?? '', Colors.blue);
           }
         }
 
@@ -162,10 +160,23 @@ class GroupMemberHelper {
 
       await ChatClient.getInstance.chatManager.sendMessage(message);
       if (result.body?.contacts?.isNotEmpty == true) {
-        final fcmIds =
-            result.body!.contacts!.map((e) => e.fcmToken ?? '').toList();
-        FCMApiService.instance.sendGroupMemberUpdatePush(
+        // final fcmIds =
+        //     result.body!.contacts!.map((e) => e.fcmToken ?? '').toList();
+        List<String> fcmIds = [];
+        List<String> apnIds = [];
+        for (Contact c in result.body!.contacts!) {
+          String? fcm = c.fcmToken;
+          if (c.apnToken != null && c.apnToken!.isNotEmpty) {
+            apnIds.add(c.apnToken!);
+          } else if (fcm?.isNotEmpty == true) {
+            fcmIds.add(fcm!);
+          }
+        }
+        // FCMApiService.instance
+        PushApiService.instance.sendGroupMemberUpdatePush(
+            me.authToken,
             fcmIds,
+            apnIds,
             GroupMemberAction.added.name,
             groupName,
             me.id,
@@ -217,10 +228,23 @@ class GroupMemberHelper {
       await ChatClient.getInstance.chatManager.sendMessage(message);
 
       if (result.body?.contacts?.isNotEmpty == true) {
-        final fcmIds =
-            result.body!.contacts!.map((e) => e.fcmToken ?? '').toList();
-        FCMApiService.instance.sendGroupMemberUpdatePush(
+        // final fcmIds =
+        //     result.body!.contacts!.map((e) => e.fcmToken ?? '').toList();
+        // FCMApiService.instance
+        List<String> fcmIds = [];
+        List<String> apnIds = [];
+        for (Contact c in result.body!.contacts!) {
+          String? fcm = c.fcmToken;
+          if (c.apnToken != null && c.apnToken!.isNotEmpty) {
+            apnIds.add(c.apnToken!);
+          } else if (fcm?.isNotEmpty == true) {
+            fcmIds.add(fcm!);
+          }
+        }
+        PushApiService.instance.sendGroupMemberUpdatePush(
+            me.authToken,
             fcmIds,
+            apnIds,
             GroupMemberAction.removed.name,
             groupName,
             me.id,

@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../state.dart';
@@ -10,8 +9,13 @@ import 'notification_controller.dart';
 
 class ContactRequestHelper {
   ContactRequestHelper._();
-  static Future handleNotification(RemoteNotification? notification,
-      ContactAction action, String fromId, bool foreground,
+  static Future handleNotification(
+      String? title,
+      String? body,
+      // RemoteNotification? notification,
+      ContactAction action,
+      String fromId,
+      bool foreground,
       {WidgetRef? ref}) async {
     // print('Action  $action');
     switch (action) {
@@ -26,8 +30,8 @@ class ContactRequestHelper {
                 ?.read(chatConversationProvider.notifier)
                 .addConversationByContact(contact);
             if (ref != null) {
-              NotificationController.showNewInvitation(fromId, contact,
-                  notification?.title ?? '', notification?.body ?? '', ref);
+              NotificationController.showNewInvitation(
+                  fromId, contact, title ?? '', body ?? '', ref);
             }
           }
         }
@@ -42,12 +46,9 @@ class ContactRequestHelper {
             ref
                 ?.read(chatConversationProvider.notifier)
                 .addConversationByContact(contact);
-            if (notification != null) {
+            if (title != null) {
               NotificationController.showContactActionNotification(
-                  fromId,
-                  notification.title ?? '',
-                  notification.body ?? '',
-                  Colors.green);
+                  fromId, title, body ?? '', Colors.green);
             }
           }
         }
@@ -61,8 +62,8 @@ class ContactRequestHelper {
           ref
               ?.read(chatConversationProvider.notifier)
               .removeConversation(fromId);
-          NotificationController.showContactActionNotification(fromId,
-              notification?.title ?? '', notification?.body ?? '', Colors.red);
+          NotificationController.showContactActionNotification(
+              fromId, title ?? '', body ?? '', Colors.red);
         }
         break;
       case ContactAction.deleteContact:
@@ -73,9 +74,9 @@ class ContactRequestHelper {
           ref
               ?.read(chatConversationProvider.notifier)
               .removeConversation(fromId);
-          if (notification != null) {
-            NotificationController.showContactActionNotification(fromId,
-                notification.title ?? '', notification.body ?? '', Colors.blue);
+          if (title != null) {
+            NotificationController.showContactActionNotification(
+                fromId, title, body ?? '', Colors.blue);
           }
         }
 

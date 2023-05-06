@@ -1,5 +1,5 @@
 import '/controller/profile_providers.dart';
-// import 'package:bvidya/data/models/response/profile/instructor_dashboard_response.dart';
+// import '/data/models/response/profile/instructor_dashboard_response.dart';
 
 import '/ui/widget/base_drawer_setting_screen.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';

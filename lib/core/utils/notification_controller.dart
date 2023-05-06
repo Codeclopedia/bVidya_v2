@@ -201,7 +201,8 @@ class NotificationController {
           await BChatContactManager.sendRequestResponse(
               ref,
               contact.userId.toString(),
-              contact.fcmToken,
+              contact.apnToken != null,
+              contact.apnToken ?? contact.fcmToken,
               ContactAction.acceptRequest);
           final contacts = await ref
               .read(contactListProvider.notifier)
@@ -221,7 +222,8 @@ class NotificationController {
           await BChatContactManager.sendRequestResponse(
               ref,
               contact.userId.toString(),
-              contact.fcmToken,
+              contact.apnToken != null,
+              contact.apnToken ?? contact.fcmToken,
               ContactAction.declineRequest);
 
           ref.read(contactListProvider.notifier).removeContact(contact.userId);

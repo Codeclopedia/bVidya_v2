@@ -30,13 +30,13 @@ class BChatRepository {
     return result.message ?? 'Error while adding to contact';
   }
 
-  Future<ContactsBody?> getContacts() async {
-    final result = await api.getContacts(token);
-    if (result.status == successfull) {
-      return result.body;
-    }
-    return null;
-  }
+  // Future<ContactsBody?> getContacts() async {
+  //   final result = await api.getContacts(token);
+  //   if (result.status == successfull) {
+  //     return result.body;
+  //   }
+  //   return null;
+  // }
 
   Future<List<Contact>?> getContactsByIds(String userIds) async {
     final result = await api.getContactsByIds(token, userIds);

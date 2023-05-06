@@ -37,11 +37,34 @@ import UserNotifications
     }
     
     
-    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
-        //        print("Received: \(userInfo)")
+    override func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ){
+//        print("Received:")
+//        for key in userInfo.keys {
+//          print("background: \(key): \(userInfo[key])")
+//        }
         
-        completionHandler(.noData)
-        return true
+        var payload = [String : Any]()
+        let myData = userInfo["data"]
+        let noAlert = userInfo["no_alert"] != nil
+        if myData != nil {
+            payload.updateValue(myData!, forKey: "data")
+        }
+        
+        self.channel?.invokeMethod("onMessage", arguments: payload)
+
+//        print("Received: \(userInfo)")
+//        fetchCompletionHandler()
+        if(noAlert){
+            completionHandler(.failed)
+        }else{
+            completionHandler(.noData)
+        }
+        
+//        return true
     }
     // override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     //    NSLog("PUSH registration failed: \(error)")
@@ -51,7 +74,7 @@ import UserNotifications
         //        print("Registered for Apple Remote Notifications:")
         let deviceTokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         
-        //        print(deviceTokenString)
+        print(deviceTokenString)
         Messaging.messaging().setAPNSToken(deviceToken, type: .unknown)
     }
     
@@ -64,27 +87,14 @@ import UserNotifications
                 print("FCM registration token: \(token)")
             }
         }
-        
-        //            UNUserNotificationCenter.current().delegate = self
-        //            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
-        //                (granted, error) in
-        //                print("Permission granted: \(granted)")
-        //                // 1. Check if permission granted
-        //                guard granted else { return }
-        //                // 2. Attempt registration for remote notifications on the main thread
-        //                DispatchQueue.main.async {
-        //                    UIApplication.shared.registerForRemoteNotifications()
-        //                }
-        //            }
-        
     }
     
     func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         print(credentials.token)
         let deviceToken = credentials.token.map { String(format: "%02x", $0) }.joined()
-        print("pushRegistry TOKEN")
-        
-        print(deviceToken)
+//        print("pushRegistry TOKEN")
+//
+//        print(deviceToken)
         //Save deviceToken to your server
         SwiftFlutterCallkitIncomingPlugin.sharedInstance?.setDevicePushTokenVoIP(deviceToken)
     }
@@ -124,24 +134,57 @@ import UserNotifications
     //    }
     
     override  func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        let userInfo = notification.request.content.userInfo
         
-        //        for key in userInfo.keys {
-        //            print("foreground: \(key): \(userInfo[key])")
-        //        }
-        self.channel?.invokeMethod("onMessage", arguments: userInfo)
-        completionHandler([.alert])
+//        print("notification ")
+
+        let userInfo = notification.request.content.userInfo
+        var payload = [String : Any]()
+        let myData = userInfo["data"]
+        let noAlert = userInfo["no_alert"] != nil
+        if myData != nil {
+            payload.updateValue(myData!, forKey: "data")
+        }
+//
+//        print("myData: \(payload)")
+
+//        for key in userInfo.keys {
+//          print("notification: \(key): \(userInfo[key])")
+//            if((key as String )=="data"){
+//                payload.updateValue(value:userInfo[key], forKey: "data")
+//            }
+//        }
+        let title = notification.request.content.title as String?
+        let body = notification.request.content.body as String?
+//        print("notification t:b: => \(title): \(body)")
+        if title != nil {
+            payload.updateValue(title!, forKey: "title")
+        }
+        if body != nil {
+            payload.updateValue(body!, forKey: "body")
+        }
+//        let state = UIApplication.shared.applicationState
+//        if state == .background {
+//            print("App in Background")
+//        }
+        self.channel?.invokeMethod("onMessage", arguments: payload)
+        if(noAlert){
+            completionHandler([])
+        }else{
+            completionHandler([.alert, .badge, .sound])
+        }
     }
     
+
+  
     //This method is to handle a notification that arrived while the app was not in foreground
     override func userNotificationCenter(_ center: UNUserNotificationCenter,
                                          didReceive response: UNNotificationResponse,
                                          withCompletionHandler completionHandler: @escaping () -> Void) {
         
         let userInfo = response.notification.request.content.userInfo
-        //        for key in userInfo.keys {
-        //            print("click: \(key): \(userInfo[key])")
-        //        }
+        for key in userInfo.keys {
+         print("click: \(key): \(userInfo[key])")
+        }
         self.channel?.invokeMethod("onMessageTap", arguments: userInfo)
         completionHandler()
     }

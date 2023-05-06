@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '../../data/repository/auth_repository.dart';
+import '/data/services/push_api_service.dart';
 
 // import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,7 +20,7 @@ import '/core/helpers/call_helper.dart';
 import '/core/utils.dart';
 import '/data/models/call_message_body.dart';
 import '/data/models/models.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
 import '/controller/bmeet_providers.dart';
 import '/ui/screens.dart';
 // import '../constants/notification_const.dart';
@@ -150,7 +152,9 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
     //     .fetchUserToken(1000000 + me.id, me.name);
     hideLoading(ref);
     // if (userRTMToken != null) {
+
     if (meeting != null) {
+      final myToken = await AuthRepository.getIOSAPN() ?? me.fcmToken;
       final callMessageBody = GroupCallMessegeBody(
         requestId: scheduledMeeting.id,
         callId: scheduledMeeting.meetingId,
@@ -161,25 +165,36 @@ Future<ChatMessage?> makeGroupCall(WidgetRef ref, BuildContext context,
         groupName: group.name ?? '',
         status: CallStatus.ongoing,
         meeting: meeting,
-        fromFCM: me.fcmToken,
+        fromFCM: myToken,
         memberIds: contacts.map((e) => e.userId.toString()).join(','),
         duration: 0,
         // ext: {},
       );
-      List<String> fcmIds = [];
+      callMessageBody.isIos = Platform.isIOS;
 
+      List<String> fcmIds = [];
+      List<String> apnIds = [];
       for (Contacts c in contacts) {
-        String? fcm = c.fcmToken;
-        if (fcm?.isNotEmpty == true) {
-          fcmIds.add(fcm!);
+        // String? fcm = c.fcmToken;
+        if (c.apnToken?.isNotEmpty == true) {
+          apnIds.add(c.apnToken!);
+        } else if (c.fcmToken?.isNotEmpty == true) {
+          fcmIds.add(c.fcmToken!);
         }
       }
 
       final msg = await _logGroupCallEvent(
           ref, me.name, me.image, group.groupId, callMessageBody);
 
-      FCMApiService.instance.sendGroupCallStartPush(fcmIds, me.id,
-          group.groupId, callMessageBody.callId, callMessageBody);
+      // FCMApiService.instance
+      PushApiService.instance.sendGroupCallStartPush(
+          me.authToken,
+          fcmIds,
+          apnIds,
+          me.id,
+          group.groupId,
+          callMessageBody.callId,
+          callMessageBody);
 
       Map<String, dynamic> args = {
         'group_id': group.groupId,

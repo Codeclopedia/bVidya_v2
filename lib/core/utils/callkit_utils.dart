@@ -6,13 +6,14 @@ import 'package:agora_chat_sdk/agora_chat_sdk.dart';
 
 import 'package:uuid/uuid.dart';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/services/push_api_service.dart';
 import '/data/models/response/auth/login_response.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
 import '/core/utils/common.dart';
 import '/core/helpers/group_call_helper.dart';
 import '/data/models/call_message_body.dart';
@@ -30,7 +31,7 @@ Map? _activeCallMap;
 String? _activeCallId;
 String? _lastCallId;
 String? _onGoingCallId;
-DateTime? _lastCallTime;
+// DateTime? _lastCallTime;
 
 Map? get activeCallMap => _activeCallMap;
 String? get activeCallId => _activeCallId;
@@ -39,7 +40,7 @@ String? get onGoingCallId => _onGoingCallId;
 
 // String? _uuid;
 
-DateTime? get lastCallTime => _lastCallTime;
+// DateTime? get lastCallTime => _lastCallTime;
 
 setOnGoing(String? callId) {
   _onGoingCallId = callId;
@@ -115,7 +116,8 @@ Future setupCallKit() async {
     if (map == null) {
       return;
     }
-    String type = map['type'];
+    // print('Type ${map}');
+    String? type = map['type'];
     if (type == NotiConstants.typeGroupCall) {
       String fromId = map['from_id'];
       String grpId = map['grp_id'];
@@ -145,7 +147,7 @@ Future setupCallKit() async {
         showOnLock(true);
         _activeCallId = body.callId;
         _activeCallMap = map;
-        _lastCallTime = DateTime.now();
+        // _lastCallTime = DateTime.now();
         onCallAccept(body, fromId);
         break;
       case Event.ACTION_CALL_DECLINE:
@@ -160,13 +162,13 @@ Future setupCallKit() async {
   });
 }
 
-Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
-  int fromId = int.parse(remoteMessage.data['from_id']);
-  final callId = remoteMessage.data['call_id'];
-  final groupId = remoteMessage.data['grp_id'];
-  final name = remoteMessage.data['name'];
-  final image = remoteMessage.data['image'];
-  final hasVideo = remoteMessage.data['has_video'] == 'true';
+Future<void> closeIncomingGroupCall(Map<String, dynamic> payload) async {
+  int fromId = int.parse(payload['from_id']);
+  final callId = payload['call_id'];
+  final groupId = payload['grp_id'];
+  final name = payload['name'];
+  final image = payload['image'];
+  final hasVideo = payload['has_video'] == 'true';
   if (callId == null) {
     clearCall();
     await FlutterCallkitIncoming.endAllCalls();
@@ -179,7 +181,7 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
   }
   clearCall();
   _lastCallId = callId;
-  _lastCallTime = remoteMessage.sentTime;
+  // _lastCallTime = remoteMessage.sentTime;
 
   String? avImage;
   if (image.isNotEmpty) {
@@ -226,9 +228,11 @@ Future<void> closeIncomingGroupCall(RemoteMessage remoteMessage) async {
   FlutterCallkitIncoming.showMissCallNotification(kitParam);
 }
 
-Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
+Future<void> closeIncomingCall(
+  Map<String, dynamic> data,
+) async {
   // CallMessegeBody? callBody = remoteMessage.payload();
-  final callId = remoteMessage.data['call_id'];
+  final callId = data['call_id'];
 
   if (callId == null) {
     clearCall();
@@ -243,15 +247,15 @@ Future<void> closeIncomingCall(RemoteMessage remoteMessage) async {
   }
   clearCall();
   _lastCallId = callId;
-  _lastCallTime = remoteMessage.sentTime;
+  // _lastCallTime = remoteMessage.sentTime;
   final uid = const Uuid().v5(Uuid.NAMESPACE_OID, callId);
 
   await FlutterCallkitIncoming.endCall(uid);
 
-  final fromId = remoteMessage.data['from_id'];
-  final name = remoteMessage.data['name'];
-  final image = remoteMessage.data['image'];
-  final hasVideo = remoteMessage.data['has_video'] == 'true';
+  final fromId = data['from_id'];
+  final name = data['name'];
+  final image = data['image'];
+  final hasVideo = data['has_video'] == 'true';
   String? avImage;
   if (image.isNotEmpty) {
     avImage = '$baseImageApi$image';
@@ -308,7 +312,7 @@ showIncomingCallScreen(
   if (body.callId == lastCallId) {
     return;
   }
-  _lastCallTime = DateTime.now();
+  // _lastCallTime = DateTime.now();
   _activeCallId = body.callId;
   _lastCallId = _activeCallId;
   String? avImage;
@@ -377,7 +381,7 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
   if (callBody.callId == lastCallId) {
     return;
   }
-  _lastCallTime = DateTime.now();
+  // _lastCallTime = DateTime.now();
   _activeCallId = callBody.callId;
   _lastCallId = _activeCallId;
   String? avImage = callBody.groupImage;
@@ -477,7 +481,9 @@ onCallAccept(
   _futureClearPref();
   Map<String, dynamic> map = {
     'name': callMessegeBody.fromName,
-    'fcm_token': callMessegeBody.ext['fcm'],
+    // 'fcm_token': callMessegeBody.ext['token'],
+    'token': callMessegeBody.ext['token'],
+    'is_ios': callMessegeBody.ext['is_ios'] ?? false,
     'image': callMessegeBody.fromImage,
     'call_info': callMessegeBody.callBody,
     'call_direction_type': CallDirectionType.incoming,
@@ -512,18 +518,24 @@ onDeclineGroupCall(
 
   if (user == null) {
     userId = ChatClient.getInstance.currentUserId ?? '';
+    return;
   } else {
     userId = user.id.toString();
   }
-  FCMApiService.instance.sendGroupCallEndPush(
-      [body.fromFCM],
-      NotiConstants.actionCallDecline,
-      int.parse(userId),
-      grpId,
-      body.callId,
-      body.groupName,
-      body.groupImage,
-      body.callType == CallType.video);
+  PushApiService.instance
+      // FCMApiService.instance
+      .sendGroupCallEndPush(
+          user.authToken,
+          body.isIos ? [body.fromFCM] : [],
+          // contacts[0].apnToken
+          body.isIos ? [] : [body.fromFCM],
+          NotiConstants.actionCallDecline,
+          int.parse(userId),
+          grpId,
+          body.callId,
+          body.groupName,
+          body.groupImage,
+          body.callType == CallType.video);
   final uid = const Uuid().v5(Uuid.NAMESPACE_OID, body.callId);
 
   await FlutterCallkitIncoming.endCall(uid);
@@ -537,12 +549,17 @@ onDeclineGrpCallBusy(
 
   if (user == null) {
     userId = ChatClient.getInstance.currentUserId ?? '';
-    // return;
+    return;
   } else {
     userId = user.id.toString();
   }
-  FCMApiService.instance.sendGroupCallEndPush(
-      [body.fromFCM],
+  // FCMApiService.instance
+  PushApiService.instance.sendGroupCallEndPush(
+      user.authToken,
+      body.isIos ? [body.fromFCM] : [],
+      // contacts[0].apnToken
+      body.isIos ? [] : [body.fromFCM],
+      // [body.fromFCM],
       NotiConstants.actionCallDeclineBusy,
       int.parse(userId),
       grpId,
@@ -608,20 +625,24 @@ onDeclineCall(
   String userId;
   String name = '';
   if (user == null) {
-    userId = ChatClient.getInstance.currentUserId ?? '';
+    // userId = ChatClient.getInstance.currentUserId ?? '';
+    return;
   } else {
     userId = user.id.toString();
     name = user.name;
   }
   // callMessegeBody.callBody.
 
-  FCMApiService.instance.sendCallEndPush(
-    callMessegeBody.ext['fcm'],
+  // FCMApiService.instance
+  PushApiService.instance.sendCallEndPush(
+    user.authToken,
+    callMessegeBody.ext['is_ios'] ?? false,
+    callMessegeBody.ext['token'],
     NotiConstants.actionCallDecline,
     userId,
     callMessegeBody.callId,
-    user?.name ?? '',
-    user?.image ?? '',
+    user.name,
+    user.image,
     callMessegeBody.callType == CallType.video,
   );
   await FlutterCallkitIncoming.endAllCalls();
@@ -640,19 +661,22 @@ onDeclineCallBusy(
   if (user == null) {
     userId = ChatClient.getInstance.currentUserId ?? '';
     // userName = callMessegeBody.callBody.calleeName;
-    // return;
+    return;
   } else {
     userId = user.id.toString();
     // userName = user.name;
   }
 
-  FCMApiService.instance.sendCallEndPush(
-    callMessegeBody.ext['fcm'],
+  // FCMApiService.instance
+  PushApiService.instance.sendCallEndPush(
+    user.authToken,
+    callMessegeBody.ext['is_ios'] ?? false,
+    callMessegeBody.ext['token'],
     NotiConstants.actionCallDeclineBusy,
     userId,
     callMessegeBody.callId,
-    user?.name ?? '',
-    user?.image ?? '',
+    user.name,
+    user.image,
     callMessegeBody.callType == CallType.video,
   );
   String? avImage = callMessegeBody.fromImage;

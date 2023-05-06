@@ -14,7 +14,7 @@ class ApnsRemoteMessage {
   ApnsRemoteMessage.fromMap(this.data);
 }
 
-typedef ApnsMessageHandler = Future<void> Function(ApnsRemoteMessage);
+typedef ApnsMessageHandler = Function(ApnsRemoteMessage);
 
 class ApnsPushConnectorOnly {
   static ApnsPushConnectorOnly instance = ApnsPushConnectorOnly._();
@@ -40,9 +40,9 @@ class ApnsPushConnectorOnly {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'onMessage':
-        return _onMessage?.call(_extractMessage(call));
+        return await _onMessage?.call(_extractMessage(call));
       case 'onMessageTap':
-        return _onMessageTap?.call(_extractMessage(call));
+        return await _onMessageTap?.call(_extractMessage(call));
 
       default:
     }
@@ -50,6 +50,7 @@ class ApnsPushConnectorOnly {
 
   ApnsRemoteMessage _extractMessage(MethodCall call) {
     final map = call.arguments as Map;
+
     return ApnsRemoteMessage.fromMap(map.cast());
   }
 
@@ -71,7 +72,7 @@ class ApnsPushConnectorOnly {
 
   static Future<bool> onMessageOpen(
       ApnsRemoteMessage message, BuildContext context) async {
-    // print('onMessageOpen=> ${message.payload} ');
+    print('onMessageOpen=> ${message.data} ');
     if (message.data.isNotEmpty && message.data['e'] != null) {
       final extra = message.data['e'];
       String? type = extra['type'];

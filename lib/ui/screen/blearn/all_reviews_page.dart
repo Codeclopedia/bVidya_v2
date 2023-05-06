@@ -1,4 +1,4 @@
-import 'package:bvidya/core/constants/colors.dart';
+import '/core/constants/colors.dart';
 
 import '../../../core/ui_core.dart';
 import '../../../data/models/models.dart';

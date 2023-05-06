@@ -1,4 +1,4 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 
@@ -32,22 +32,22 @@ class BChatApiService {
     }
   }
 
-  Future<ContactListResponse> getContacts(String token) async {
-    _dio.options.headers["X-Auth-Token"] = token;
-    try {
-      final response = await _dio.get('$baseUrlApi${ApiList.allContacts}');
-      print('${jsonEncode(response.data)}');
-      if (response.statusCode == 200) {
-        return ContactListResponse.fromJson(response.data);
-      } else {
-        return ContactListResponse(
-            status: 'error',
-            message: '${response.statusCode}- ${response.statusMessage}');
-      }
-    } catch (e) {
-      return ContactListResponse(status: 'error', message: '$e');
-    }
-  }
+  // Future<ContactListResponse> getContacts(String token) async {
+  //   _dio.options.headers["X-Auth-Token"] = token;
+  //   try {
+  //     final response = await _dio.get('$baseUrlApi${ApiList.allContacts}');
+  //     // print('${jsonEncode(response.data)}');
+  //     if (response.statusCode == 200) {
+  //       return ContactListResponse.fromJson(response.data);
+  //     } else {
+  //       return ContactListResponse(
+  //           status: 'error',
+  //           message: '${response.statusCode}- ${response.statusMessage}');
+  //     }
+  //   } catch (e) {
+  //     return ContactListResponse(status: 'error', message: '$e');
+  //   }
+  // }
 
   Future<ContactListResponse> getContactsByIds(
       String token, String userIds) async {

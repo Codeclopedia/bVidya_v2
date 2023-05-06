@@ -1,13 +1,14 @@
 // ignore_for_file: avoid_print
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import '/data/services/push_api_service.dart';
 import '../../data/models/models.dart';
 import '../utils.dart';
 import '/controller/providers/bchat/chat_conversation_list_provider.dart';
 import '/core/constants/agora_config.dart';
 import '/ui/base_back_screen.dart';
 import '/core/utils/request_utils.dart';
-import '/data/services/fcm_api_service.dart';
+// import '/data/services/fcm_api_service.dart';
 
 import '/controller/bchat_providers.dart';
 import '../state.dart';
@@ -170,7 +171,7 @@ class BChatContactManager {
     return '';
   }
 
-  static Future sendRequestResponse(WidgetRef ref, String contactId,
+  static Future sendRequestResponse(WidgetRef ref, String contactId, bool isIos,
       String? fcmToken, ContactAction action) async {
     User? me = await getMeAsUser();
     if (me != null) {
@@ -187,17 +188,20 @@ class BChatContactManager {
       } else if (action == ContactAction.deleteContact) {
         await BChatContactManager.deleteContact(contactId);
         if (fcmToken != null) {
-          await FCMApiService.instance
-              .pushContactDeleteAlert(fcmToken, me.id.toString(), contactId);
+          // await FCMApiService.instance
+          await PushApiService.instance.pushContactDeleteAlert(
+              me.authToken, isIos, fcmToken, me.id.toString(), contactId);
         }
-
         return;
       } else {
         // title = 'Contact removed';
         return;
       }
       if (fcmToken != null) {
-        await FCMApiService.instance.pushContactAlert(
+        // await FCMApiService.instance
+        await PushApiService.instance.pushContactAlert(
+          me.authToken,
+          isIos,
           fcmToken,
           me.id.toString(),
           contactId,

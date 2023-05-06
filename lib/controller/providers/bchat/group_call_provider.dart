@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import '/data/services/push_api_service.dart';
 import '/core/utils/common.dart';
 
 import 'package:flutter/foundation.dart';
@@ -607,18 +608,27 @@ class GroupCallProvider extends ChangeNotifier {
       //   if (status == CallConnectionStatus.Connecting ||
       //       status == CallConnectionStatus.Ringing) {
       List<String> fcmIds = [];
+      List<String> apnIds = [];
       for (var user in _groupCallingMembers.values) {
-        if (user.status == JoinStatus.ringing &&
-            _me.id != user.contact.userId &&
-            user.contact.fcmToken?.isNotEmpty == true) {
-          fcmIds.add(user.contact.fcmToken!);
+        if (user.status == JoinStatus.ringing && _me.id != user.contact.userId
+            // &&
+            // user.contact.fcmToken?.isNotEmpty == true
+            ) {
+          if (user.contact.apnToken?.isNotEmpty == true) {
+            apnIds.add(user.contact.apnToken!);
+          } else if (user.contact.fcmToken?.isNotEmpty == true) {
+            fcmIds.add(user.contact.fcmToken!);
+          }
         }
       }
 
       if (fcmIds.isNotEmpty) {
         // print('fcm =>${fcmIds}');
-        await FCMApiService.instance.sendGroupCallEndPush(
+        // await FCMApiService.instance
+        await PushApiService.instance.sendGroupCallEndPush(
+            _me.authToken,
             fcmIds,
+            apnIds,
             NotiConstants.actionCallEnd,
             _me.id,
             _groupId,

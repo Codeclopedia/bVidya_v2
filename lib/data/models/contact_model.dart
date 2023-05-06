@@ -21,6 +21,7 @@ class Contacts {
   final String? bio;
   final ContactStatus status;
   final String? role;
+  final String? apnToken;
   bool? ispinned;
   // final int statusIndex;
   // ContactStatus get status => ContactStatus.values[statusIndex];
@@ -37,6 +38,7 @@ class Contacts {
       required this.profileImage,
       this.email,
       this.phone,
+      this.apnToken,
       this.role,
       this.fcmToken,
       this.bio,
@@ -48,6 +50,7 @@ class Contacts {
         email = json['email'],
         phone = json['phone'],
         role = json['role'],
+        apnToken = json['apn_token'],
         status = ContactStatus.values[(json['status'] as int?) ?? 0],
         fcmToken = json['fcm_token'],
         profileImage = json['profile_image'],
@@ -61,6 +64,7 @@ class Contacts {
     data['email'] = email;
     data['phone'] = phone;
     data['role'] = role;
+    data['apn_token'] = apnToken;
     data['status'] = status.index;
     data['fcm_token'] = fcmToken;
     data['profile_image'] = profileImage;

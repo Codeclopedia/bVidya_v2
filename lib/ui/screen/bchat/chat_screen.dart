@@ -73,7 +73,7 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      // print('useEffect Called');
+      print('useEffect ${model.contact.apnToken}');
       // _scrollController = ScrollController();
       _scrollController = AutoScrollController(
         viewportBoundaryGetter: () =>
@@ -310,7 +310,9 @@ class ChatScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
-                                model.contact.fcmToken,
+                                model.contact.apnToken != null,
+                                model.contact.apnToken ??
+                                    model.contact.fcmToken,
                                 ContactAction.declineRequest);
 
                             ref
@@ -342,7 +344,9 @@ class ChatScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 model.id,
-                                model.contact.fcmToken,
+                                model.contact.apnToken != null,
+                                model.contact.apnToken ??
+                                    model.contact.fcmToken,
                                 ContactAction.acceptRequest);
                             final contact = await ref
                                 .read(contactListProvider.notifier)

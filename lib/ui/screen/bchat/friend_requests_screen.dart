@@ -205,7 +205,8 @@ class FriendRequestsScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 user.userId.toString(),
-                                user.fcmToken,
+                                user.apnToken != null,
+                                user.apnToken ?? user.fcmToken,
                                 ContactAction.declineRequest);
 
                             ref
@@ -231,7 +232,8 @@ class FriendRequestsScreen extends HookConsumerWidget {
                             await BChatContactManager.sendRequestResponse(
                                 ref,
                                 user.userId.toString(),
-                                user.fcmToken,
+                                user.apnToken != null,
+                                user.apnToken ?? user.fcmToken,
                                 ContactAction.acceptRequest);
                             final contacts = await ref
                                 .read(contactListProvider.notifier)

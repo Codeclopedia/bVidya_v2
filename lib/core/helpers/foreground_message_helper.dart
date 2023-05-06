@@ -2,23 +2,18 @@
 
 import 'dart:convert';
 
-// import '/core/constants/colors.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
-
-// import '../constants/colors.dart';
-import '../constants/colors.dart';
-import '/core/helpers/group_member_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:smart_snackbars/enums/animate_from.dart';
 import 'package:smart_snackbars/smart_snackbars.dart';
-// import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-// import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
-// import '../utils/connectycubekit.dart';
+
 import '../constants/notification_const.dart';
+import '../utils/callkit_utils.dart';
 import '../utils/request_utils.dart';
 import '/controller/providers/bchat/call_list_provider.dart';
 import '/data/models/conversation_model.dart';
+import '../constants/colors.dart';
+import '/core/helpers/group_member_helper.dart';
 
 import '../sdk_helpers/bchat_call_manager.dart';
 import '../state.dart';
@@ -29,8 +24,46 @@ import '../routes.dart';
 import '../ui_core.dart';
 import '../utils/chat_utils.dart';
 import 'background_helper.dart';
+// import 'background_helper.dart';
 
 class ForegroundMessageHelper {
+  static onForegroundMessage(
+      WidgetRef ref, Map<String, dynamic> data, String? title, String? body) {
+    if (data['type'] == NotiConstants.typeCall) {
+      final String? action = data['action'];
+      if (action == NotiConstants.actionCallStart) {
+        showCallingNotification(data, false);
+      } else if (action == NotiConstants.actionCallEnd) {
+        closeIncomingCall(data);
+      }
+    } else if (data['type'] == NotiConstants.typeGroupCall) {
+      final String? action = data['action'];
+      if (action == NotiConstants.actionCallStart) {
+        showGroupCallingNotification(data, false);
+      }
+      if (action == NotiConstants.actionCallEnd) {
+        closeIncomingGroupCall(data);
+      }
+    } else if (data['type'] == NotiConstants.typeContact) {
+      final String? fromId = data['f'];
+      ContactAction? action = contactActionFrom(data['action']);
+      if (action != null && fromId != null) {
+        ContactRequestHelper.handleNotification(
+            title, body, action, fromId, true,
+            ref: ref);
+      }
+    } else if (data['type'] == NotiConstants.typeGroupMemberUpdate) {
+      final String? fromId = data['f'];
+      final String? grpId = data['g'];
+      GroupMemberAction? action = groupActionFrom(data['action']);
+      if (action != null && fromId != null && grpId != null) {
+        GroupMemberHelper.handleNotification(
+            title, body, action, fromId, grpId, true,
+            ref: ref);
+      }
+    }
+  }
+
   static Future<bool> onMessageOpen(
       RemoteMessage message, BuildContext context) async {
     if (message.data.isNotEmpty &&
@@ -436,25 +469,25 @@ class ForegroundMessageHelper {
     );
   }
 
-  static void handleCallingNotificationForeground(RemoteMessage message) {
-    if (message.data.isNotEmpty &&
-        message.data['alert'] != null &&
-        message.data['e'] != null) {
-      final extra = jsonDecode(message.data['e']);
-      String? type = extra['type'];
-      // print('Type $type =>$extra');
-      if (type == NotiConstants.typeCall) {
-        debugPrint('InComing call=>  ');
-        BackgroundHelper.showCallingNotification(message, false);
-        return;
-      }
-      if (type == NotiConstants.typeGroupCall) {
-        debugPrint('InComing Group call=>  ');
-        BackgroundHelper.showGroupCallingNotification(message, false);
-        return;
-      }
-    }
-  }
+  // static void handleCallingNotificationForeground(RemoteMessage message) {
+  //   if (message.data.isNotEmpty &&
+  //       message.data['alert'] != null &&
+  //       message.data['e'] != null) {
+  //     final extra = jsonDecode(message.data['e']);
+  //     String? type = extra['type'];
+  //     // print('Type $type =>$extra');
+  //     if (type == NotiConstants.typeCall) {
+  //       debugPrint('InComing call=>  ');
+  //       BackgroundHelper.showCallingNotification(message.data, false);
+  //       return;
+  //     }
+  //     if (type == NotiConstants.typeGroupCall) {
+  //       debugPrint('InComing Group call=>  ');
+  //       BackgroundHelper.showGroupCallingNotification(message.data, false);
+  //       return;
+  //     }
+  //   }
+  // }
 
   static void handleCallNotification(ChatMessage msg, WidgetRef ref) async {
     try {

@@ -1,19 +1,43 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
-import '../../core/utils/request_utils.dart';
+import '/data/models/response/base_response.dart';
+import '/core/utils/request_utils.dart';
+import '/core/constants.dart';
+// import 'fcm_api_service.dart';
+import '/firebase_options.dart';
+
 import '../models/call_message_body.dart';
 import '../network/dio_services.dart';
-import '/core/constants.dart';
+
+String get webPushKey => isReleaseBuild
+    ? 'AAAAG8bzeow:APA91bEQai_ldUEZoR-i2WWNqPhjycgkH93YSE90pjKBF2LjjT6HrgtRfbTxvMh0wPsTWMquzBRHp29BX8iPykTbeMYThG4r7SVzQwGsRuVd0rOhyJsrB593XsKopDdVEjIdqyEuESxT'
+    : 'AAAAgYFiXhQ:APA91bFY7G3nD7GtydIzctAaSO585gguQbbWEq5zIURsjFYRB7BBwl4ZDUU689TWAokrNfUHSAQ47zD_Wi9U26Z4jjoDsfDPF7zKjPQoD3iXJeCG5GQSDjioBNfavCHIHhiyUVZf2jlR'; //Demo
 
 class PushApiService {
   static PushApiService instance = PushApiService._();
 
+  late Dio _apiDio;
   late Dio _dio;
 
   PushApiService._() {
-    _dio = DioServices.instance.dio;
+    _apiDio = DioServices.instance.dio;
+
+    BaseOptions options = BaseOptions(
+      baseUrl: 'https://fcm.googleapis.com',
+      receiveDataWhenStatusError: true,
+    );
+    _dio = Dio(options);
+    _dio.options.headers["Accept"] = "application/json";
+    // _dio.options.connectTimeout = 150000;
+    // _dio.options.sendTimeout = 100000;
+    // _dio.options.receiveTimeout = 120000;
+    _dio.options.connectTimeout = const Duration(seconds: 150);
+    _dio.options.sendTimeout = const Duration(seconds: 100);
+    _dio.options.receiveTimeout = const Duration(seconds: 120);
+    _dio.options.headers['Authorization'] = 'key=  $webPushKey';
   }
 
   Future sendCallEndPush(
@@ -27,7 +51,6 @@ class PushApiService {
     String image,
     bool hasVideo,
   ) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
     final data = {
       'type': NotiConstants.typeCall,
       'action': action,
@@ -38,15 +61,14 @@ class PushApiService {
       'has_video': hasVideo ? 'video' : 'audio'
     };
     if (isIos) {
-      return _sendToIOS(token, data);
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      return _sendToIOS(authToken, token, data);
     }
-    return _sendToAndroid(token, data);
+    return _sendToAndroid([token], data);
   }
 
   Future sendCallStartPush(String authToken, bool isIos, String token,
       String fromId, String callId, String msgId, CallMessegeBody body) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
-
     final data = {
       'call_id': callId,
       'type': NotiConstants.typeCall,
@@ -56,9 +78,12 @@ class PushApiService {
       'm': msgId
     };
     if (isIos) {
-      return _sendToIOS(token, data);
+      // print('$authToken');
+
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      return _sendToIOS(authToken, token, data);
     }
-    return _sendToAndroid(token, data);
+    return _sendToAndroid([token], data);
   }
 
   Future pushContactAlert(
@@ -70,7 +95,6 @@ class PushApiService {
       String title,
       String message,
       ContactAction action) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
     final data = {
       'type': NotiConstants.typeContact,
       'action': action.name,
@@ -80,9 +104,10 @@ class PushApiService {
     };
 
     if (isIos) {
-      return _sendToIOSNotification(token, title, message, data);
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      return _sendToIOSNotification(authToken, token, title, message, data);
     }
-    return _sendToAndroidNotification(token, title, message, data);
+    return _sendToAndroidNotification([token], title, message, data);
   }
 
   Future pushContactDeleteAlert(
@@ -92,7 +117,6 @@ class PushApiService {
     String fromId,
     String toId,
   ) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
     final data = {
       'type': NotiConstants.typeContact,
       'action': ContactAction.deleteContact.name,
@@ -101,20 +125,49 @@ class PushApiService {
       'tm': DateTime.now().millisecondsSinceEpoch
     };
     if (isIos) {
-      return _sendToIOS(token, data);
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      return _sendToIOS(authToken, token, data);
     }
-    return _sendToAndroid(token, data);
+    return _sendToAndroid([token], data);
+  }
+
+  Future sendGroupMemberUpdatePush(
+    String authToken,
+    List<String> fcmTokens,
+    List<String> apnTokens,
+    String action,
+    String grpName,
+    int fromId,
+    String grpId,
+    String title,
+    String body,
+  ) async {
+    final data = {
+      'type': NotiConstants.typeGroupMemberUpdate,
+      'action': action,
+      'f': fromId,
+      'g': grpId,
+    };
+
+    if (fcmTokens.isNotEmpty) {
+      await _sendToAndroid(fcmTokens, data);
+    }
+    if (apnTokens.isNotEmpty) {
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      for (var token in apnTokens) {
+        await _sendToIOS(authToken, token, data);
+      }
+    }
   }
 
   Future sendGroupCallStartPush(
       String authToken,
-      List<String> toTokens,
+      List<String> fcmTokens,
+      List<String> apnTokens,
       int fromId,
       String grpId,
       String callId,
       GroupCallMessegeBody body) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
-
     final data = {
       'call_id': callId,
       'type': NotiConstants.typeGroupCall,
@@ -123,11 +176,22 @@ class PushApiService {
       'g': grpId,
       'e': jsonEncode(body)
     };
+
+    if (fcmTokens.isNotEmpty) {
+      await _sendToAndroid(fcmTokens, data);
+    }
+    if (apnTokens.isNotEmpty) {
+      // _apiDio.options.headers['X-Auth-Token'] = authToken;
+      for (var token in apnTokens) {
+        await _sendToIOS(authToken, token, data);
+      }
+    }
   }
 
   Future sendGroupCallEndPush(
     String authToken,
-    List<String> toTokens,
+    List<String> fcmTokens,
+    List<String> apnTokens,
     String action,
     int fromId,
     String grpId,
@@ -136,8 +200,6 @@ class PushApiService {
     String image,
     bool hasVideo,
   ) async {
-    _dio.options.headers['X-Auth-Token'] = authToken;
-
     final data = {
       'call_id': callId,
       'type': NotiConstants.typeGroupCall,
@@ -149,91 +211,174 @@ class PushApiService {
       'grp_id': grpId,
     };
 
+    if (fcmTokens.isNotEmpty) {
+      await _sendToAndroid(fcmTokens, data);
+    }
+    if (apnTokens.isNotEmpty) {
+      for (var token in apnTokens) {
+        await _sendToIOS(authToken, token, data);
+      }
+    }
+
     // return _sendToAndroid(token, data);
   }
 
-  Future<String?> _sendToAndroidNotification(String token, String title,
-      String body, Map<String, dynamic> payload) async {
+  Future<String?> _sendToAndroidNotification(List<String> fcmTokens,
+      String title, String body, Map<String, dynamic> payload) async {
     final data = {
-      'device_os': 'android',
-      'token': token,
-      'payload': {
-        'notification': {
-          'title': title,
-          'body': body,
-        },
-        'data': payload,
+      'registration_ids': fcmTokens,
+      'notification': {
+        'title': title,
+        'body': body,
       },
+      'data': payload,
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
     };
     var response =
-        await _dio.post('${baseUrlApi}notification-server/send', data: data);
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
     if (response.statusCode == 200) {
+      debugPrint('fcm response.data:${response.data}');
+      return null;
+    } else {
+      debugPrint(
+          'error code: ${response.statusCode} response.data:${response.data}');
       return null;
     }
-    return "Error ${response.statusCode}";
+
+    // final data = {
+    //   'device_os': 'android',
+    //   'token': token,
+    //   'payload': {
+    //     'notification': {
+    //       'title': title,
+    //       'body': body,
+    //     },
+    //     'data': payload,
+    //   },
+    // };
+    // var response =
+    //     await _apiDio.post('${baseUrlApi}notification-server/send', data: data);
+    // if (response.statusCode == 200) {
+    //   return null;
+    // }
+    // return "Error ${response.statusCode}";
   }
 
   Future<String?> _sendToAndroid(
-      String token, Map<String, dynamic> payload) async {
+      List<String> fcmTokens, Map<String, dynamic> payload) async {
     final data = {
-      'device_os': 'android',
-      'token': token,
-      'payload': {
-        'notification': {},
-        'data': payload,
-      },
+      'registration_ids': fcmTokens,
+      'notification': {},
+      'data': payload,
+      // 'ttl': '30s',
+      'android': {'priority': 'normal'},
+      'priority': 10
     };
     var response =
-        await _dio.post('${baseUrlApi}notification-server/send', data: data);
+        await _dio.post('https://fcm.googleapis.com/fcm/send', data: data);
     if (response.statusCode == 200) {
+      debugPrint('fcm response.data:${response.data}');
+      return null;
+    } else {
+      debugPrint(
+          'error code: ${response.statusCode} response.data:${response.data}');
       return null;
     }
-    return "Error ${response.statusCode}";
+
+    // final payload = {
+    //   'device_os': 'android',
+    //   'token': token,
+    //   'payload': {
+    //     'notification': {},
+    //     'data': payload,
+    //   },
+    // };
+    // var response =
+    //     await _apiDio.post('${baseUrlApi}notification-server/send', data: data);
+    // if (response.statusCode == 200) {
+    //   return null;
+    // }
+    // return "Error ${response.statusCode}";
   }
 
-  Future<String?> _sendToIOS(String token, Map<String, dynamic> payload) async {
+  Future<BaseResponse> _sendToIOS(
+      String authToken, String apnToken, Map<String, dynamic> payload) async {
+    final payloadx = {
+      "aps": {
+        "content-available": 1,
+        "alert": "",
+        'sound': '',
+        // 'badge': 1,
+      },
+      "data": payload,
+      "no_alert": 1
+    };
     final data = {
       'device_os': 'ios',
-      'token': token,
-      'payload': {
-        "aps": {
-          "content-available": 1,
-        },
-        "data": payload,
-      },
+      'token': apnToken,
+      'payload': jsonEncode(payloadx),
+      'sandbox': 1
     };
-    var response =
-        await _dio.post('${baseUrlApi}notification-server/send', data: data);
-    if (response.statusCode == 200) {
-      return null;
-    }
-    return "Error ${response.statusCode}";
+    _apiDio.options.headers['X-Auth-Token'] = authToken;
+    print(authToken);
+    return _send(data);
   }
 
-  Future<String?> _sendToIOSNotification(String token, String title,
-      String body, Map<String, dynamic> payload) async {
+  Future<BaseResponse> _sendToIOSNotification(String authToken, String apnToken,
+      String title, String body, Map<String, dynamic> payload) async {
+    final payloadx = {
+      "aps": {
+        'alert': {
+          'title': title,
+          'body': body,
+        },
+        'sound': 'default',
+        'badge': 1,
+        "content-available": 1,
+      },
+      "data": payload,
+    };
     final data = {
       'device_os': 'ios',
-      'token': token,
-      'payload': {
-        "aps": {
-          'alert': {
-            'title': title,
-            'body': body,
-          },
-          'sound': 'default',
-          'badge': 1,
-          "content-available": 1,
-        },
-        //  "{"aps":{"alert":{"title":"Bvidya Notification","body":"Hi Chetan! Welcome To Bvidya. Your application for Sunday working is accepted and soon all Saturdays will be ON and for now its going to 9 to 6."},"sound":"default","badge":1}}",
-        "data": payload,
-      },
+      'token': apnToken,
+      'sandbox': 1,
+      'payload': jsonEncode(payloadx),
     };
-    var response =
-        await _dio.post('${baseUrlApi}notification-server/send', data: data);
-    if (response.statusCode == 200) {
-      return null;
+    _apiDio.options.headers['X-Auth-Token'] = authToken;
+    return _send(data);
+  }
+
+  Future<BaseResponse> _send(Map<String, dynamic> data) async {
+    try {
+      debugPrint("Req => ${data}");
+      var response = await _apiDio.post(
+          'https://app.bvidya.com/api/notification-server/send',
+          data: data);
+      debugPrint("Success => ${response.data}");
+      if (response.statusCode == 200) {
+        return BaseResponse.fromJson(response.data);
+      }
+      return BaseResponse(
+          status: 'error',
+          message: '${response.statusCode}- ${response.statusMessage}');
+
+      // "Error ${response.statusCode}  ${response.statusMessage}";
+    } on DioError catch (error) {
+      debugPrint('Error loading ${error.response}');
+      // return "Error : $error";
+    } catch (e) {
+      debugPrint("errorx $e");
+      // return "Error : $e";
     }
-    return "Error ${response.statusCode}";
+    return BaseResponse(status: 'error', message: 'Unknown error');
   }
 }
+
+// enum GroupMemberUpdateAction {
+//   addedMember,
+//   leftMember,
+//   removeMember,
+//   deleteContact;
+// }

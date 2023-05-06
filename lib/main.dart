@@ -64,23 +64,23 @@ Future<void> backgroundHandler(RemoteMessage message) async {
     final String? action = message.data['action'];
     if (message.data['type'] == NotiConstants.typeCall) {
       if (action == NotiConstants.actionCallStart) {
-        BackgroundHelper.showCallingNotification(message, true);
+        showCallingNotification(message.data, true);
       } else if (action == NotiConstants.actionCallEnd) {
-        closeIncomingCall(message);
+        closeIncomingCall(message.data);
       }
     } else if (message.data['type'] == NotiConstants.typeGroupCall) {
       // final String? action = message.data['action'];
       if (action == NotiConstants.actionCallStart) {
-        BackgroundHelper.showGroupCallingNotification(message, true);
+        showGroupCallingNotification(message.data, true);
       } else if (action == NotiConstants.actionCallEnd) {
-        closeIncomingGroupCall(message);
+        closeIncomingGroupCall(message.data);
       }
     } else if (message.data['type'] == NotiConstants.typeContact) {
       ContactAction? cAction = contactActionFrom(action);
       final String? fromId = message.data['f'];
       if (cAction != null && fromId != null) {
-        ContactRequestHelper.handleNotification(
-            message.notification, cAction, fromId, false);
+        ContactRequestHelper.handleNotification(message.notification?.title,
+            message.notification?.body, cAction, fromId, false);
       } else if (message.data['type'] == NotiConstants.typeGroupMemberUpdate) {
         // final String? fromId = message.data['f'];
         // final String? grpId = message.data['g'];
@@ -97,5 +97,31 @@ Future<void> backgroundHandler(RemoteMessage message) async {
     }
   } catch (e) {
     // print('error $e');
+  }
+}
+
+onBackgroundMessage(Map<String, dynamic> data) async {
+  if (Platform.isIOS) {
+    final String? action = data['action'];
+    if (data['type'] == NotiConstants.typeCall) {
+      if (action == NotiConstants.actionCallStart) {
+        showCallingNotification(data, true);
+      } else if (action == NotiConstants.actionCallEnd) {
+        closeIncomingCall(data);
+      }
+    } else if (data['type'] == NotiConstants.typeGroupCall) {
+      if (action == NotiConstants.actionCallStart) {
+        showGroupCallingNotification(data, true);
+      } else if (action == NotiConstants.actionCallEnd) {
+        closeIncomingGroupCall(data);
+      }
+    } else if (data['type'] == NotiConstants.typeContact) {
+      ContactAction? cAction = contactActionFrom(action);
+      final String? fromId = data['f'];
+      if (cAction != null && fromId != null) {
+        ContactRequestHelper.handleNotification(
+            null, null, cAction, fromId, false);
+      } else if (data['type'] == NotiConstants.typeGroupMemberUpdate) {}
+    }
   }
 }

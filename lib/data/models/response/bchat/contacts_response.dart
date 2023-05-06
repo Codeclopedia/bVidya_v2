@@ -56,12 +56,13 @@ class Contact {
   final String? bio;
   final String? role;
   final bool? ispinned;
+  final String? apnToken;
 
   Contact({
     required this.userId,
     required this.name,
-    // required this.peerId,
     required this.profileImage,
+    this.apnToken,
     this.email,
     this.phone,
     this.fcmToken,
@@ -75,7 +76,7 @@ class Contact {
         name = json['name'],
         email = json['email'],
         phone = json['phone'],
-        // peerId = json['peer_id'],
+        apnToken = json['apn_token'],
         fcmToken = json['fcm_token'],
         profileImage = json['profile_image'],
         bio = json['bio'],
@@ -88,7 +89,7 @@ class Contact {
     data['name'] = name;
     data['email'] = email;
     data['phone'] = phone;
-    // data['peer_id'] = peerId;
+    data['apn_token'] = apnToken;
     data['fcm_token'] = fcmToken;
     data['profile_image'] = profileImage;
     data['bio'] = bio;

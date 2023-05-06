@@ -1,4 +1,4 @@
-import 'package:bvidya/core/ui_core.dart';
+import '/core/ui_core.dart';
 import 'package:lottie/lottie.dart';
 
 class WishListIcon extends StatefulWidget {

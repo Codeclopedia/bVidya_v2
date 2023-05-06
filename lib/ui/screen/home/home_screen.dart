@@ -5,12 +5,11 @@ import 'dart:io';
 // import 'dart:io';
 
 import 'package:agora_chat_sdk/agora_chat_sdk.dart';
+import 'package:bvidya/firebase_options.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
-// import 'package:uuid/uuid.dart';
 
 import '../bchat/widgets/teacher_batch.dart';
 import '/core/utils/callkit_utils.dart';
@@ -80,6 +79,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       } catch (e) {
         print('Error =>$e');
       }
+      await Future.delayed(const Duration(seconds: 3));
       appLoaded = true;
       // ref
       //     .read(chatConversationProvider.notifier)
@@ -121,12 +121,21 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    appLoaded = true;
     _disposeAll();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!isReleaseBuild) {
+      return BaseDrawerAppBarScreen(
+        currentIndex: DrawerMenu.bChat,
+        routeName: RouteList.home,
+        topBar: _userAppBar(context),
+        body: _chatListScreen(context),
+      );
+    }
     return UpgradeAlert(
       upgrader: Upgrader(
           minAppVersion: '2.0.0',
