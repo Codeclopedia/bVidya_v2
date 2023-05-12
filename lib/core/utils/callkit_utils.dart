@@ -66,7 +66,7 @@ _futureClearPref() async {
     await pref.setString('call_extra', '');
     await pref.setString('call_accept_time', "0");
   } catch (e) {
-    print('Error in writting to preferece');
+    // print('Error in writting to preferece');
   }
 }
 
@@ -133,7 +133,6 @@ Future setupCallKit() async {
           break;
         default:
       }
-
       return;
     }
     String? fromId = map['from_id'];
@@ -221,6 +220,9 @@ Future<void> closeIncomingGroupCall(Map<String, dynamic> payload) async {
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-$name',
@@ -290,6 +292,9 @@ Future<void> closeIncomingCall(
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     // handle: name,
@@ -354,6 +359,9 @@ showIncomingCallScreen(
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${body.fromName}',
@@ -427,6 +435,9 @@ showIncomingGroupCallScreen(GroupCallMessegeBody callBody, String fromId,
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${callBody.groupName}',
@@ -466,10 +477,7 @@ onGroupCallAccept(
       direct: false);
 }
 
-onCallAccept(
-  CallMessegeBody callMessegeBody,
-  String fromId,
-) async {
+onCallAccept(CallMessegeBody callMessegeBody, String fromId) async {
   _lastCallId = callMessegeBody.callId;
   // print('onCallAccept Call Called => active: $_activeCallId last:$_lastCallId');
   BuildContext? context = navigatorKey.currentContext;
@@ -609,6 +617,9 @@ onDeclineGrpCallBusy(
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     handle: '${hasVideo ? 'Video Call' : 'Audio Call'}-${body.groupName}',
@@ -717,6 +728,9 @@ onDeclineCallBusy(
     ios: IOSParams(
       ringtonePath: 'system_ringtone_default',
       supportsVideo: hasVideo,
+      supportsDTMF: false,
+      supportsHolding: false,
+      iconName: 'AppIcon',
     ),
     type: hasVideo ? 1 : 0,
     handle:

@@ -169,20 +169,20 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
         onMessage: (message) {
           try {
             print('onMessage:${message.data['data']}');
-
+            // bool background = message.data['background']=="1";
             final data = Map<String, dynamic>.from(message.data['data']);
-            print('Type:${data['type']}  ${data['action']}');
+            // print('Type:${data['type']}  ${data['action']}');
 
             if (data['type'] == NotiConstants.typeCall) {
               final String? action = data['action'];
               if (action == NotiConstants.actionCallStart) {
-                print('Pre showCallingNotification');
+                // print('Pre showCallingNotification');
                 showCallingNotification(data, false);
-                print('Post showCallingNotification');
+                // print('Post showCallingNotification');
               } else if (action == NotiConstants.actionCallEnd) {
-                print('Pre closeIncomingCall');
+                // print('Pre closeIncomingCall $data');
                 closeIncomingCall(data);
-                print('Post closeIncomingCall');
+                // print('Post closeIncomingCall');
               }
             } else if (data['type'] == NotiConstants.typeGroupCall) {
               final String? action = data['action'];
@@ -211,7 +211,7 @@ class _BVidyaAppState extends ConsumerState<BVidyaApp>
               }
             }
           } catch (e) {
-            print('Error222 : $e');
+            // print('Error222 : $e');
           }
           // ForegroundMessageHelper.onForegroundMessage(ref, message.data['data'],
           //     message.data['title'], message.data['body']);

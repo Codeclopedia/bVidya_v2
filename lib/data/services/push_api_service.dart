@@ -308,8 +308,8 @@ class PushApiService {
     final payloadx = {
       "aps": {
         "content-available": 1,
-        "alert": "",
-        'sound': '',
+        // "alert": "",
+        // 'sound': '',
         // 'badge': 1,
       },
       "data": payload,
@@ -319,10 +319,11 @@ class PushApiService {
       'device_os': 'ios',
       'token': apnToken,
       'payload': jsonEncode(payloadx),
-      'sandbox': 1
+      'sandbox': isReleaseBuild ? 0 : 1,
+      'background': 1,
     };
     _apiDio.options.headers['X-Auth-Token'] = authToken;
-    print(authToken);
+    // print(authToken);
     return _send(data);
   }
 
@@ -343,7 +344,8 @@ class PushApiService {
     final data = {
       'device_os': 'ios',
       'token': apnToken,
-      'sandbox': 1,
+      'sandbox': isReleaseBuild ? 0 : 1,
+      'background': 0,
       'payload': jsonEncode(payloadx),
     };
     _apiDio.options.headers['X-Auth-Token'] = authToken;

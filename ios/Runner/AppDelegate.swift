@@ -8,7 +8,15 @@ import UserNotifications
 
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate, PKPushRegistryDelegate {
+@objc class AppDelegate: FlutterAppDelegate
+, PKPushRegistryDelegate
+{
+    
+    var channel: FlutterMethodChannel?
+    var channelBack: FlutterMethodChannel?
+    var launchNotification: [String: Any]?
+    
+    
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -16,13 +24,16 @@ import UserNotifications
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let messanger = controller.binaryMessenger as FlutterBinaryMessenger
         let channel = FlutterMethodChannel(name: "notification_plugin", binaryMessenger: messanger)
+        self.channelBack = FlutterMethodChannel(name: "notification_plugin_bg", binaryMessenger: messanger)
         initChannel(channel: channel)
+        
         GeneratedPluginRegistrant.register(with: self)
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
         registerForPushNotifications();
+        
         let mainQueue = DispatchQueue.main
         let voipRegistry: PKPushRegistry = PKPushRegistry(queue: mainQueue)
         voipRegistry.delegate = self
@@ -42,27 +53,41 @@ import UserNotifications
         didReceiveRemoteNotification userInfo: [AnyHashable : Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ){
-//        print("Received:")
 //        for key in userInfo.keys {
 //          print("background: \(key): \(userInfo[key])")
 //        }
         
         var payload = [String : Any]()
-        let myData = userInfo["data"]
+        let data = userInfo["data"]
         let noAlert = userInfo["no_alert"] != nil
-        if myData != nil {
-            payload.updateValue(myData!, forKey: "data")
+        if data != nil {
+            payload.updateValue(data!, forKey: "data")
         }
+        payload.updateValue("1", forKey: "background")
         
+//        self.channel?.invokeMethod("onMessage", arguments: payload)
+        
+        let state = UIApplication.shared.applicationState
+//        print("Received: \(userInfo) state:\(state)")
+//        if state == .background {
+//            print("App in Background")
+//            self.channelBack?.invokeMethod("onBackgroundMessage", arguments: payload)
+//        }else{
+//            print("App in not Background")
+//            self.channel?.invokeMethod("onMessage", arguments: payload)
+//        }
+    
+        self.channelBack?.invokeMethod("onBackgroundMessage", arguments: payload)
         self.channel?.invokeMethod("onMessage", arguments: payload)
 
-//        print("Received: \(userInfo)")
+        
 //        fetchCompletionHandler()
-        if(noAlert){
-            completionHandler(.failed)
-        }else{
-            completionHandler(.noData)
-        }
+//        if(noAlert){
+//            completionHandler(.failed)
+//        }else{
+//            completionHandler(.noData)
+//        }
+        completionHandler(.noData)
         
 //        return true
     }
@@ -93,17 +118,16 @@ import UserNotifications
         print(credentials.token)
         let deviceToken = credentials.token.map { String(format: "%02x", $0) }.joined()
 //        print("pushRegistry TOKEN")
-//
 //        print(deviceToken)
         //Save deviceToken to your server
         SwiftFlutterCallkitIncomingPlugin.sharedInstance?.setDevicePushTokenVoIP(deviceToken)
     }
-    
+
     func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         print("didInvalidatePushTokenFor")
         SwiftFlutterCallkitIncomingPlugin.sharedInstance?.setDevicePushTokenVoIP("")
     }
-    
+
     
     //    override func applicationDidEnterBackground(_ application: UIApplication) {
     //        resumingFromBackground = true
@@ -135,24 +159,14 @@ import UserNotifications
     
     override  func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
-//        print("notification ")
-
         let userInfo = notification.request.content.userInfo
         var payload = [String : Any]()
-        let myData = userInfo["data"]
+        let data = userInfo["data"]
         let noAlert = userInfo["no_alert"] != nil
-        if myData != nil {
-            payload.updateValue(myData!, forKey: "data")
+        if data != nil {
+            payload.updateValue(data!, forKey: "data")
         }
-//
-//        print("myData: \(payload)")
-
-//        for key in userInfo.keys {
-//          print("notification: \(key): \(userInfo[key])")
-//            if((key as String )=="data"){
-//                payload.updateValue(value:userInfo[key], forKey: "data")
-//            }
-//        }
+        
         let title = notification.request.content.title as String?
         let body = notification.request.content.body as String?
 //        print("notification t:b: => \(title): \(body)")
@@ -162,10 +176,8 @@ import UserNotifications
         if body != nil {
             payload.updateValue(body!, forKey: "body")
         }
-//        let state = UIApplication.shared.applicationState
-//        if state == .background {
-//            print("App in Background")
-//        }
+        payload.updateValue("0", forKey: "background")
+        
         self.channel?.invokeMethod("onMessage", arguments: payload)
         if(noAlert){
             completionHandler([])
@@ -182,20 +194,19 @@ import UserNotifications
                                          withCompletionHandler completionHandler: @escaping () -> Void) {
         
         let userInfo = response.notification.request.content.userInfo
-        for key in userInfo.keys {
-         print("click: \(key): \(userInfo[key])")
-        }
+//        for key in userInfo.keys {
+//         print("click: \(key): \(userInfo[key])")
+//        }
         self.channel?.invokeMethod("onMessageTap", arguments: userInfo)
         completionHandler()
     }
     
-    var channel: FlutterMethodChannel?
-    //    var resumingFromBackground = false
-    var launchNotification: [String: Any]?
-    
-    
     func initChannel(channel: FlutterMethodChannel){
         self.channel = channel
+        self.channelBack?.setMethodCallHandler({
+            (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            result(FlutterMethodNotImplemented)
+        })
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             

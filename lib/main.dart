@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
+import 'core/helpers/apns_handler.dart';
 import 'core/helpers/background_helper.dart';
 import 'core/sdk_helpers/bchat_sdk_controller.dart';
 import 'core/constants/notification_const.dart';
@@ -23,6 +24,9 @@ Future<void> main() async {
     await Firebase.initializeApp();
   } else {
     try {
+      ApnsPushConnectorOnly.configure(
+          (message) => onBackgroundAPNMessage(message));
+
       await Firebase.initializeApp(
           options: isReleaseBuild
               ? DefaultFirebaseOptions.currentPlatformRelease
@@ -100,28 +104,38 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   }
 }
 
-onBackgroundMessage(Map<String, dynamic> data) async {
-  if (Platform.isIOS) {
-    final String? action = data['action'];
-    if (data['type'] == NotiConstants.typeCall) {
-      if (action == NotiConstants.actionCallStart) {
-        showCallingNotification(data, true);
-      } else if (action == NotiConstants.actionCallEnd) {
-        closeIncomingCall(data);
+@pragma('vm:entry-point')
+Future<void> onBackgroundAPNMessage(ApnsRemoteMessage message) async {
+  // await NotificationController.initializeLocalNotifications();
+  BuildContext? contx = navigatorKey.currentContext;
+  if (contx != null) return;
+  try {
+    setupCallKit();
+    if (Platform.isIOS) {
+      final data = Map<String, dynamic>.from(message.data['data']);
+      final String? action = data['action'];
+      if (data['type'] == NotiConstants.typeCall) {
+        if (action == NotiConstants.actionCallStart) {
+          showCallingNotification(data, true);
+        } else if (action == NotiConstants.actionCallEnd) {
+          closeIncomingCall(data);
+        }
+      } else if (data['type'] == NotiConstants.typeGroupCall) {
+        if (action == NotiConstants.actionCallStart) {
+          showGroupCallingNotification(data, true);
+        } else if (action == NotiConstants.actionCallEnd) {
+          closeIncomingGroupCall(data);
+        }
+      } else if (data['type'] == NotiConstants.typeContact) {
+        ContactAction? cAction = contactActionFrom(action);
+        final String? fromId = data['f'];
+        if (cAction != null && fromId != null) {
+          ContactRequestHelper.handleNotification(
+              null, null, cAction, fromId, false);
+        } else if (data['type'] == NotiConstants.typeGroupMemberUpdate) {}
       }
-    } else if (data['type'] == NotiConstants.typeGroupCall) {
-      if (action == NotiConstants.actionCallStart) {
-        showGroupCallingNotification(data, true);
-      } else if (action == NotiConstants.actionCallEnd) {
-        closeIncomingGroupCall(data);
-      }
-    } else if (data['type'] == NotiConstants.typeContact) {
-      ContactAction? cAction = contactActionFrom(action);
-      final String? fromId = data['f'];
-      if (cAction != null && fromId != null) {
-        ContactRequestHelper.handleNotification(
-            null, null, cAction, fromId, false);
-      } else if (data['type'] == NotiConstants.typeGroupMemberUpdate) {}
     }
+  } catch (e) {
+    // print('error $e');
   }
 }

@@ -15,15 +15,32 @@ class ApnsRemoteMessage {
 }
 
 typedef ApnsMessageHandler = Function(ApnsRemoteMessage);
+typedef ApnsBackgroundMessageHandler = Future<void> Function(
+    ApnsRemoteMessage message);
 
 class ApnsPushConnectorOnly {
   static ApnsPushConnectorOnly instance = ApnsPushConnectorOnly._();
 
   final MethodChannel _channel = const MethodChannel('notification_plugin');
+  final MethodChannel _channelBack =
+      const MethodChannel('notification_plugin_bg');
+
+  static ApnsBackgroundMessageHandler? _onBackgroundMessage;
   ApnsMessageHandler? _onMessage;
   ApnsMessageHandler? _onMessageTap;
 
   ApnsPushConnectorOnly._();
+
+  static void configure(
+    ApnsBackgroundMessageHandler? onBackgroundMessage,
+  ) {
+    if (!Platform.isIOS) {
+      return;
+    }
+    _onBackgroundMessage = onBackgroundMessage;
+    instance._channelBack
+        .setMethodCallHandler(instance._handleBackgroundMethod);
+  }
 
   void configureApns({
     ApnsMessageHandler? onMessage,
@@ -44,6 +61,15 @@ class ApnsPushConnectorOnly {
       case 'onMessageTap':
         return await _onMessageTap?.call(_extractMessage(call));
 
+      default:
+    }
+  }
+
+  @pragma('vm:entry-point')
+  Future<dynamic> _handleBackgroundMethod(MethodCall call) async {
+    switch (call.method) {
+      case 'onBackgroundMessage':
+        return _onBackgroundMessage?.call(_extractMessage(call));
       default:
     }
   }
@@ -72,7 +98,7 @@ class ApnsPushConnectorOnly {
 
   static Future<bool> onMessageOpen(
       ApnsRemoteMessage message, BuildContext context) async {
-    print('onMessageOpen=> ${message.data} ');
+    // print('onMessageOpen=> ${message.data} ');
     if (message.data.isNotEmpty && message.data['e'] != null) {
       final extra = message.data['e'];
       String? type = extra['type'];

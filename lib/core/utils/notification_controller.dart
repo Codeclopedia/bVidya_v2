@@ -26,6 +26,7 @@ class NotificationController {
       SmartSnackBars.showTemplatedSnackbar(
         context: context,
         backgroundColor: color,
+        // duration: const Duration( : 3),
         animateFrom: AnimateFrom.fromTop,
         leading: Container(
           margin: const EdgeInsets.only(right: 10),
@@ -71,6 +72,10 @@ class NotificationController {
           ),
         ),
       );
+
+      // final w = Column(
+
+      // );
 
       // showTopSnackBar(
       //   Overlay.of(context)!,

@@ -206,7 +206,9 @@ class ChatMessagesChangeProvider extends StateNotifier<List<ChatMessageExt>> {
   Future readAll() async {
     try {
       await convModel.conversation?.markAllMessagesAsRead();
-
+      (await ChatClient.getInstance.chatManager
+              .getConversation(convModel.id, type: ChatConversationType.Chat))
+          ?.markAllMessagesAsRead();
       await ChatClient.getInstance.chatManager
           .sendConversationReadAck(convModel.id);
     } catch (e) {}
